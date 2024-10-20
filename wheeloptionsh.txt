@@ -200,7 +200,7 @@ Cuddle with the player to your right (or left, whatever) until your next turn
 Drink if you have maple syrup at home
 Drink if you like candy corn
 Drink if you believe in ghosts
-Drink if you've been lost in a corn maze
+Drink if you've been lost
 Drink if you like pumpkin spice flavor
 Drink if you think turkey is overrated
 Drink if you don't like bacon

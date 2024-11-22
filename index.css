@@ -11,7 +11,11 @@
   color: rgb(114, 131, 162);
   text-align: center;
 }
+.home-link {
+  display: contents;
+}
 .home-image {
   width: 200px;
   object-fit: cover;
+  text-decoration: none;
 }

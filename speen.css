@@ -1,0 +1,118 @@
+.gallery21-wrapper {
+  display: contents;
+}
+.gallery21-gallery3 {
+  width: 100%;
+  height: auto;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+.gallery21-max-width {
+  gap: var(--dl-space-space-threeunits);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.gallery21-content {
+  gap: var(--dl-space-space-oneandhalfunits);
+  width: 100%;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: center;
+}
+.gallery21-container1 {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gallery21-image1 {
+  width: 200px;
+  object-fit: cover;
+}
+.gallery21-container2 {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gallery21-image2 {
+  width: 200px;
+  object-fit: cover;
+}
+.gallery21-container3 {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gallery21-image3 {
+  width: 200px;
+  object-fit: cover;
+}
+.gallery21-container4 {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gallery21-image4 {
+  width: 200px;
+  object-fit: cover;
+}
+
+@media(max-width: 991px) {
+  .gallery21-content {
+    align-items: center;
+    flex-direction: column;
+  }
+}
+@media(max-width: 479px) {
+  .gallery21-content {
+    gap: var(--dl-space-space-oneandhalfunits);
+  }
+}
+
+.speen-container1 {
+  width: 100%;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #545454;
+}
+.speen-text1 {
+  color: #848e9a;
+}
+.speen-text2 {
+  color: #7d8590;
+}
+.speen-container2 {
+  box-shadow: 5px 5px 10px 0px #000000;
+}
+.speen-container3 {
+  display: contents;
+}
+.speen-container4 {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.speen-link {
+  color: #808fa2;
+  box-shadow: rgb(0, 0, 0) 5px 5px 10px 0px;
+  text-transform: lowercase;
+  text-decoration: none;
+  background-color: rgb(72, 72, 72);
+}

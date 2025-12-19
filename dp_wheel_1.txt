@@ -302,36 +302,36 @@ Take a drink if you play Final Fantasy
 <player> sits on <rem_player>’s lap until their next turn.
 <player> gives <rem_player> 3 drinks.
 <player> and <rem_player> WATERFALL together — last one to stop drinks 5.
-<player> must compliment <rem_player> — if they refuse, <player> drinks 5.
+<player> must compliment <rem_player> — if they refuse, <random> drinks 5.
 <player> chooses: drink 3, or <rem_player> drinks 5.
 <player> becomes <rem_player>’s lap pet until their next turn (or drink 5).
-<player> gives <rem_player> a drink for every year <player> has played VRChat.
-<player> and <rem_player> switch seats/positions until <player>’s next turn.
+<player> gives <rem_player> a drink for every year <random> has played VRChat.
+<player> and <rem_player> switch seats/positions until <random>’s next turn.
 <player> drinks 2 for every private avatar <rem_player> owns.
 <player> picks a new status for <rem_player> until their next turn.
 <player> takes a drink for every language <rem_player> speaks.
 <player> must DM <rem_player> “cheers” — or drink 4.
-<player> gives <rem_player> control: <rem_player> decides who drinks 3 (can be <player>).
+<player> gives <rem_player> control: <rem_player> decides who drinks 3 (can be <random>).
 <player> and <rem_player> drink if they’ve ever ERP’d in the same world.
 <player> drinks while <rem_player> counts down from 10 — stop early and drink 5 more.
 <player> must sit on the floor next to <rem_player> until their next turn.
-<player> gives <rem_player> 1 drink for every pet <player> owns.
+<player> gives <rem_player> 1 drink for every pet <rem_player> owns.
 <player> and <rem_player> both drink 3 if either of them is using a private avatar.
 <player> chooses: bark or meow to <rem_player> until next turn, or drink 5.
 <player> drinks 2 if <rem_player> is wearing mostly black.
-<player> gives <rem_player> a drink if <player> has laughed this round.
+<player> gives <rem_player> a drink if <rem_player> has laughed this round.
 <player> must hold hands with <rem_player> until someone else’s turn — loser drinks 4.
 <player> drinks for every country <rem_player> has been to.
-<player> picks: <rem_player> drinks 5, or <player> drinks 3 and spins again.
+<player> picks: <rem_player> drinks 5, or <rem_player> drinks 3 and spins again.
 <player> and <rem_player> cheers — everyone else drinks 2.
 <player> do a waterfall with <rem_player>
 <rem_player> gives <player> 5 drinks immediately, no questions asked.
-<player> drinks 3, then <rem_player> decides if <player> drinks 3 more.
+<player> drinks 3, then <rem_player> decides if <rem_player> drinks 3 more.
 <rem_player> and <player> start a WATERFALL — everyone joins, last two drink 5.
-<player> gives <rem_player> a drink for every drink <player> has already had tonight.
+<player> gives <rem_player> a drink for every drink <rem_player> has already had tonight.
 <rem_player> chooses a number (1–5). <player> drinks that number times two.
 <player> and <rem_player> both drink 3, then pick someone else to drink 3.
-<rem_player> drinks until <player> says stop — then <player> drinks the same amount.
+<rem_player> drinks until <player> says stop — then <random> drinks the same amount.
 <player> drinks 5 if they hesitate for more than 3 seconds.
 <rem_player> assigns a DOUBLE DRINK to anyone — including <player>.
 <player> drinks once for every person currently holding a drink.
@@ -339,7 +339,7 @@ Take a drink if you play Final Fantasy
 <player> drinks 3, then spins again immediately.
 <rem_player> chooses: <player> drinks 4 now, or 8 spread out over the next 2 turns.
 <player> and <rem_player> drink 2 — everyone else drinks 1.
-<rem_player> gives <player> one drink for every word in <player>’s username (cap at 6).
+<rem_player> gives <player> one drink for every word in <rem_player>’s username (cap at 6).
 <player> drinks until <rem_player> finishes a sentence (no rushing).
 <rem_player> declares “CHAOS” — everyone drinks 2, <player> drinks 4.
 <player> gives <rem_player> 2 drinks, then takes 3 themselves.

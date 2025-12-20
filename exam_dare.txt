@@ -1,157 +1,160 @@
-<player>, sit on <rem_player>'s lap until the end of your turn.
-<player>, whisper something naughty in <rem_player>'s ear.
-<player>, let <rem_player> choose a flirty dare for you to do.
-<player>, give <rem_player> a playful kiss on the cheek.
-<player>, hold <rem_player>'s hand for the next 30 seconds.
-<player>, feed <rem_player> a bite of your snack.
-<player>, let <rem_player> draw something silly on your face with a marker.
-<player>, copy <rem_player>'s laugh until your next turn.
-<player>, send a flirty text to <rem_player> right now.
-<player>, tell <rem_player> your most embarrassing fantasy.
-<player>, act out a sexy scenario with <rem_player> without using words.
-<player>, let <rem_player> tickle you for 15 seconds.
-<player>, give <rem_player> a dramatic compliment.
-<player>, let <rem_player> choose a funny nickname for you.
-<player>, do a sexy dance in front of <rem_player> for 10 seconds.
-<player>, let <rem_player> apply a sticker anywhere on your body.
-<player>, draw a heart on <rem_player>'s hand with your finger.
-<player>, act like <rem_player> for 20 seconds.
-<player>, let <rem_player> write a word on your hand.
-<player>, take a selfie with <rem_player> making a silly face.
-<player>, let <rem_player> choose a part of your outfit to swap with theirs.
-<player>, sing a love song to <rem_player> in your funniest voice.
-<player>, let <rem_player> slap your butt gently.
-<player>, tell <rem_player> a flirty secret.
-<player>, try to make <rem_player> laugh with a naughty joke.
-<player>, kiss <rem_player> on the hand.
-<player>, let <rem_player> draw a mustache on your face.
-<player>, hug <rem_player> like you mean it for 10 seconds.
-<player>, let <rem_player> put a silly hat on your head.
-<player>, tell <rem_player> your wildest sexual fantasy.
-<player>, do your best impression of <rem_player> doing something embarrassing.
-<player>, sit back-to-back with <rem_player> for 20 seconds.
-<player>, let <rem_player> give you a silly nickname for the rest of the game.
-<player>, act out a scenario where <rem_player> is your secret crush.
-<player>, lick your hand and shake <rem_player>'s hand.
-<player>, pretend <rem_player> is your date and serenade them.
-<player>, let <rem_player> choose an emoji that represents you and explain why.
-<player>, do a dramatic slow-motion walk toward <rem_player>.
-<player>, let <rem_player> draw on your arm with a pen.
-<player>, whisper a naughty compliment about <rem_player>.
-<player>, let <rem_player> put a piece of tape on your shirt.
-<player>, tell <rem_player> about the last person you fantasized about.
-<player>, let <rem_player> pull a silly face and you have to copy it.
-<player>, do a 10-second “sexy model walk” past <rem_player>.
-<player>, let <rem_player> choose a song and dance with them.
-<player>, hold <rem_player>'s hand while saying something embarrassing.
-<player>, let <rem_player> pick a body part of yours to massage for 10 seconds.
-<player>, act shy and flustered around <rem_player> for the next 2 rounds.
-<player>, let <rem_player> place a sticker on your face anywhere they like.
-<player>, pretend <rem_player> is your crush and confess your love dramatically.
-<player>, mimic <rem_player>'s gestures until someone else joins in.
-<player>, do 10 jumping jacks while making eye contact with <rem_player>.
-<player>, attempt to seductively eat a snack in front of <rem_player>.
-<player>, let <rem_player> choose a dare for you from the group.
-<player>, perform your best runway walk for 15 seconds.
-<player>, swap seats with the player on your left while giving them a compliment.
-<player>, attempt a dramatic faint and let <rem_player> catch you.
-<player>, let <rem_player> put a sticker on your arm.
-<player>, make a heart shape with your hands and show <rem_player>.
-<player>, try to whisper your favorite fantasy to <rem_player> without laughing.
-<player>, hold a yoga pose while making silly faces at <rem_player>.
-<player>, let <rem_player> draw a temporary tattoo on your arm.
-<player>, give <rem_player> your best flirtatious wink.
-<player>, try to make <rem_player> laugh using only gestures.
-<player>, hum a song to <rem_player> in a silly voice.
-<player>, let <rem_player> choose a funny dance move for you.
-<player>, imitate <rem_player>'s signature pose for 10 seconds.
-<player>, act like a model walking down a runway and show off to <rem_player>.
-<player>, let <rem_player> choose a word and you have to use it in a sexy sentence.
-<player>, take a dramatic selfie with <rem_player> making a funny face.
-<player>, let <rem_player> gently tug your hair as a joke.
-<player>, make a dramatic confession of love to <rem_player>.
-<player>, act like a famous celebrity flirting with <rem_player>.
-<player>, let <rem_player> assign you a silly nickname.
-<player>, do 10 push-ups while trying to impress <rem_player>.
-<player>, give <rem_player> a dramatic hug like in a movie scene.
-<player>, let <rem_player> place a sticker anywhere on your shirt.
-<player>, imitate your favorite movie kiss scene with <rem_player> using only gestures.
-<player>, act shy and fidgety every time <rem_player> looks at you.
-<player>, pretend <rem_player> is a secret crush and write them a note.
-<player>, let <rem_player> feed you a piece of candy or snack.
-<player>, try to make <rem_player> blush with a cheesy pickup line.
-<player>, let <rem_player> whisper a dare in your ear and act it out.
-<player>, draw a heart in the air pointing at <rem_player>.
-<player>, do a dramatic slow-motion hair flip toward <rem_player>.
-<player>, let <rem_player> choose a silly pose for your next turn.
-<player>, act like a romantic movie character and recite lines to <rem_player>.
-<player>, let <rem_player> choose a playful nickname for your next dare.
-<player>, hold your hand over your heart and give a flirty glance to <rem_player>.
-<player>, pretend you are a superhero impressing <rem_player>.
-<player>, let <rem_player> clap dramatically at your “performance.”
-<player>, whisper your most embarrassing secret to <rem_player>.
-<player>, attempt a seductive hair toss in front of <rem_player>.
-<player>, let <rem_player> put a funny sticker on your face.
-<player>, do a dramatic “walk of shame” past <rem_player>.
-<player>, let <rem_player> pick a dance style for you to act out.
-<player>, act like <rem_player> is your crush and write a love letter aloud.
-<player>, let <rem_player> decide a silly punishment if you fail a dare.
-<player>, give <rem_player> a playful nudge.
-<player>, act like a cat trying to impress <rem_player>.
-<player>, let <rem_player> gently tap your shoulder whenever you mess up a dare.
-<player>, whisper a compliment about <rem_player> to someone else in the group.
-<player>, let <rem_player> decide how you should walk for your next turn.
-<player>, do 5 dramatic spins while looking at <rem_player>.
-<player>, act like you are proposing to <rem_player> using only gestures.
-<player>, let <rem_player> choose a funny sound for you to repeat.
-<player>, hold a pose of admiration toward <rem_player> for 10 seconds.
-<player>, pretend you are on a date with <rem_player> and describe it loudly.
-<player>, let <rem_player> choose a flirty nickname for you for the next round.
-<player>, do a dramatic sigh while looking longingly at <rem_player>.
-<player>, act like <rem_player> is a celebrity and give them your autograph.
-<player>, let <rem_player> pick a random object and use it to flirt with them.
-<player>, sing a silly love song to <rem_player> while making exaggerated gestures.
-<player>, let <rem_player> choose your next funny dance move.
-<player>, give <rem_player> a dramatic bow as if they are royalty.
-<player>, pretend you are secretly in love with <rem_player> and confess dramatically.
-<player>, let <rem_player> assign a nickname for your next turn.
-<player>, do a funny runway walk with exaggerated sass while looking at <rem_player>.
-<player>, let <rem_player> choose a dramatic pose for you to hold for 10 seconds.
-<player>, act like you are giving <rem_player> a dramatic award speech.
-<player>, let <rem_player> clap and cheer for your next action.
-<player>, act like a soap opera character having a dramatic moment with <rem_player>.
-<player>, let <rem_player> give you a playful nudge whenever you laugh.
-<player>, give <rem_player> your best “puppy eyes” look.
-<player>, act like you are a superhero showing off your powers to <rem_player>.
-<player>, let <rem_player> assign a silly nickname to your character for the next round.
-<player>, pretend you are writing a love letter to <rem_player> aloud.
-<player>, let <rem_player> decide your next silly dare for the group.
-<player>, do a dramatic slow-motion run toward <rem_player>.
-<player>, let <rem_player> place a sticker anywhere on your arm.
-<player>, act like <rem_player> is your secret admirer and react dramatically.
-<player>, let <rem_player> give you a playful tap on the shoulder when you fail a dare.
-<player>, pretend you are your favorite celebrity flirting with <rem_player>.
-<player>, let <rem_player> whisper a funny line in your ear and repeat it to the group.
-<player>, act like a romantic movie scene is happening with <rem_player>.
-<player>, let <rem_player> assign a flirty nickname for your next turn.
-<player>, give <rem_player> your most dramatic wink.
-<player>, pretend you are serenading <rem_player> with a silly love song.
-<player>, let <rem_player> clap dramatically at your performance.
-<player>, act shyly every time <rem_player> looks at you.
-<player>, let <rem_player> choose your next dramatic pose.
-<player>, do a slow-motion dramatic walk away from <rem_player>.
-<player>, pretend <rem_player> is your crush and write a dramatic note to them.
-<player>, let <rem_player> pick a funny expression for you to copy.
-<player>, act like you are presenting a dramatic award to <rem_player>.
-<player>, let <rem_player> assign a silly nickname for the next round.
-<player>, whisper a dramatic confession to <rem_player>.
-<player>, let <rem_player> decide your next flirty dare.
-<player>, perform a silly dance while looking at <rem_player>.
-<player>, let <rem_player> choose a random object and use it to flirt with you.
-<player>, act like you are proposing to <rem_player> dramatically.
-<player>, let <rem_player> clap and cheer for your silly performance.
-<player>, pretend you are in a romantic scene with <rem_player> and act it out.
-<player>, let <rem_player> assign a dramatic nickname for you.
-<player>, give <rem_player> your best exaggerated flirtatious wink.
-<player>, act like a romantic soap opera character in front of <rem_player>.
-<player>, let <rem_player> choose a funny sound for you to repeat to the group.
+string[] chaoticFlirtyPrompts = new string[]
+{
+"<player> sit on <rem_player>'s lap untill end of youre turn",
+"<player> whisper somethin naughty in <rem_player>'s ear",
+"<player> let <rem_player> choos a flirty dare for u too do",
+"<player> give <rem_player> a playfull kiss on the cheek",
+"<player> hold <rem_player>'s hand for next 30 seconds",
+"<player> feed <rem_player> a bite of youre snack",
+"<player> let <rem_player> draw somethin silly on youre face with marker",
+"<player> copy <rem_player>'s laugh untill your next turn",
+"<player> send a flirty text too <rem_player> right now",
+"<player> tell <rem_player> your most embarassing fantasy",
+"<player> act out a sexy scenario with <rem_player> without words",
+"<player> let <rem_player> tickle u for 15 seconds",
+"<player> give <rem_player> a dramatick compliment",
+"<player> let <rem_player> choose a funny nickname for u",
+"<player> do sexy dance in front of <rem_player> 10 sec",
+"<player> let <rem_player> apply sticker anywhere on youre body",
+"<player> draw heart on <rem_player>'s hand with youre finger",
+"<player> act like <rem_player> for 20 sec",
+"<player> let <rem_player> write word on youre hand",
+"<player> take selfie with <rem_player> makin silly face",
+"<player> let <rem_player> choose part of youre outfit to swap with theres",
+"<player> sing love song to <rem_player> in youre funniest voice",
+"<player> let <rem_player> slap youre butt gentle",
+"<player> tell <rem_player> a flirty secret",
+"<player> try make <rem_player> laugh with naughty joke",
+"<player> kiss <rem_player> on hand",
+"<player> let <rem_player> draw mustache on youre face",
+"<player> hug <rem_player> like u mean it 10 sec",
+"<player> let <rem_player> put silly hat on youre head",
+"<player> tell <rem_player> youre wildest sexual fantasy",
+"<player> do youre best impression of <rem_player> doin somethin embarassing",
+"<player> sit back-2-back with <rem_player> 20 sec",
+"<player> let <rem_player> give u silly nickname for rest of game",
+"<player> act out scenario were <rem_player> is youre secret crush",
+"<player> lick youre hand n shake <rem_player>'s hand",
+"<player> pretend <rem_player> is youre date n serenade them",
+"<player> let <rem_player> choose emoji that represents u n explain why",
+"<player> do dramatick slow-motion walk toward <rem_player>",
+"<player> let <rem_player> draw on youre arm with pen",
+"<player> whisper naughty compliment bout <rem_player>",
+"<player> let <rem_player> put piece of tape on youre shirt",
+"<player> tell <rem_player> bout last person u fantasized bout",
+"<player> let <rem_player> pull silly face n u have 2 copy it",
+"<player> do 10-sec 'sexy model walk' past <rem_player>",
+"<player> let <rem_player> choose song n dance with them",
+"<player> hold <rem_player>'s hand while sayin somethin embarassing",
+"<player> let <rem_player> pick body part of yours to massage 10 sec",
+"<player> act shy n flustered around <rem_player> next 2 rounds",
+"<player> let <rem_player> place sticker on youre face anywhere they like",
+"<player> pretend <rem_player> is youre crush n confess love dramatickly",
+"<player> mimic <rem_player>'s gestures untill someone else joins",
+"<player> do 10 jumpin jacks while makin eye contact with <rem_player>",
+"<player> attempt seductively eat snack in front of <rem_player>",
+"<player> let <rem_player> choose dare for u from group",
+"<player> perform youre best runway walk 15 sec",
+"<player> swap seats with player on youre left while givin compliment",
+"<player> attempt dramatick faint n let <rem_player> catch u",
+"<player> let <rem_player> put sticker on youre arm",
+"<player> make heart shape with youre hands n show <rem_player>",
+"<player> try whisper youre favorite fantasy to <rem_player> without laughin",
+"<player> hold yoga pose while makin silly faces at <rem_player>",
+"<player> let <rem_player> draw temporary tattoo on youre arm",
+"<player> give <rem_player> youre best flirtatious wink",
+"<player> try make <rem_player> laugh usin only gestures",
+"<player> hum song to <rem_player> in silly voice",
+"<player> let <rem_player> choose funny dance move for u",
+"<player> imitate <rem_player>'s signature pose 10 sec",
+"<player> act like model walkin down runway n show off to <rem_player>",
+"<player> let <rem_player> choose word n u have 2 use it in sexy sentence",
+"<player> take dramatick selfie with <rem_player> makin funny face",
+"<player> let <rem_player> gently tug youre hair as joke",
+"<player> make dramatick confession of love to <rem_player>",
+"<player> act like famous celebrity flirtin with <rem_player>",
+"<player> let <rem_player> assign silly nickname",
+"<player> do 10 push-ups while tryin to impress <rem_player>",
+"<player> give <rem_player> dramatick hug like in movie scene",
+"<player> let <rem_player> place sticker anywhere on youre shirt",
+"<player> imitate youre favorite movie kiss scene with <rem_player> usin only gestures",
+"<player> act shy n fidgety everytime <rem_player> looks at u",
+"<player> pretend <rem_player> is secret crush n write note",
+"<player> let <rem_player> feed u piece of candy or snack",
+"<player> try make <rem_player> blush with cheesy pickup line",
+"<player> let <rem_player> whisper dare in youre ear n act it out",
+"<player> draw heart in air pointin at <rem_player>",
+"<player> do dramatick slow-mo hair flip toward <rem_player>",
+"<player> let <rem_player> choose silly pose for youre next turn",
+"<player> act like romantic movie character n recite lines to <rem_player>",
+"<player> let <rem_player> choose playful nickname for youre next dare",
+"<player> hold hand over heart n give flirty glance to <rem_player>",
+"<player> pretend u superhero impressin <rem_player>",
+"<player> let <rem_player> clap dramatickly at youre 'performance'",
+"<player> whisper most embarassing secret to <rem_player>",
+"<player> attempt seductive hair toss in front of <rem_player>",
+"<player> let <rem_player> put funny sticker on youre face",
+"<player> do dramatick 'walk of shame' past <rem_player>",
+"<player> let <rem_player> pick dance style for u 2 act out",
+"<player> act like <rem_player> is youre crush n write love letter aloud",
+"<player> let <rem_player> decide silly punishment if u fail dare",
+"<player> give <rem_player> playful nudge",
+"<player> act like cat tryin to impress <rem_player>",
+"<player> let <rem_player> gently tap youre shoulder whenever u mess up dare",
+"<player> whisper compliment bout <rem_player> to someone else in group",
+"<player> let <rem_player> decide how u should walk next turn",
+"<player> do 5 dramatick spins while lookin at <rem_player>",
+"<player> act like proposin to <rem_player> usin only gestures",
+"<player> let <rem_player> choose funny sound for u to repeat",
+"<player> hold pose admiration toward <rem_player> 10 sec",
+"<player> pretend on date with <rem_player> n describe loudly",
+"<player> let <rem_player> choose flirty nickname for u next round",
+"<player> do dramatick sigh while lookin longingly at <rem_player>",
+"<player> act like <rem_player> is celebrity n give autograph",
+"<player> let <rem_player> pick random object n use it flirtin with them",
+"<player> sing silly love song to <rem_player> while makin exaggerated gestures",
+"<player> let <rem_player> choose youre next funny dance move",
+"<player> give <rem_player> dramatick bow as if royalty",
+"<player> pretend secretly in love with <rem_player> n confess dramatickly",
+"<player> let <rem_player> assign nickname for next turn",
+"<player> do funny runway walk w/ exaggerated sass while lookin at <rem_player>",
+"<player> let <rem_player> choose dramatick pose for u hold 10 sec",
+"<player> act like givin <rem_player> dramatick award speech",
+"<player> let <rem_player> clap n cheer for next action",
+"<player> act like soap opera character havin dramatick moment w/ <rem_player>",
+"<player> let <rem_player> give playful nudge whenever u laugh",
+"<player> give <rem_player> youre best 'puppy eyes' look",
+"<player> act like superhero showin powers to <rem_player>",
+"<player> let <rem_player> assign silly nickname 4 youre character next round",
+"<player> pretend writin love letter to <rem_player> aloud",
+"<player> let <rem_player> decide next silly dare for group",
+"<player> do dramatick slow-mo run toward <rem_player>",
+"<player> let <rem_player> place sticker anywhere on youre arm",
+"<player> act like <rem_player> is secret admirer n react dramatickly",
+"<player> let <rem_player> give playful tap on shoulder when u fail dare",
+"<player> pretend youre favorite celebrity flirtin with <rem_player>",
+"<player> let <rem_player> whisper funny line in youre ear n repeat to group",
+"<player> act like romantic movie scene happenin with <rem_player>",
+"<player> let <rem_player> assign flirty nickname for next turn",
+"<player> give <rem_player> youre most dramatick wink",
+"<player> pretend serenadin <rem_player> w/ silly love song",
+"<player> let <rem_player> clap dramatickly at youre performance",
+"<player> act shyly everytime <rem_player> looks at u",
+"<player> let <rem_player> choose youre next dramatick pose",
+"<player> do slow-mo dramatick walk away from <rem_player>",
+"<player> pretend <rem_player> is youre crush n write dramatick note",
+"<player> let <rem_player> pick funny expression 4 u 2 copy",
+"<player> act like presentin dramatick award to <rem_player>",
+"<player> let <rem_player> assign silly nickname next round",
+"<player> whisper dramatick confession to <rem_player>",
+"<player> let <rem_player> decide youre next flirty dare",
+"<player> perform silly dance while lookin at <rem_player>",
+"<player> let <rem_player> choose random object n use it flirtin with u",
+"<player> act like proposin to <rem_player> dramatickly",
+"<player> let <rem_player> clap n cheer for youre silly performance",
+"<player> pretend in romantic scene w/ <rem_player> n act it out",
+"<player> let <rem_player> assign dramatick nickname 4 u",
+"<player> give <rem_player> youre best exaggerated flirtatious wink",
+"<player> act like romantic soap opera character in front of <rem_player>",
+"<player> let <rem_player> choose funny sound 4 u to repeat group"
+};

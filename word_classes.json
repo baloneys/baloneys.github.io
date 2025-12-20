@@ -1,0 +1,47 @@
+{
+  "pronouns": {
+    "subject": ["I", "you", "he", "she", "it", "we", "they"],
+    "object": ["me", "you", "him", "her", "it", "us", "them"],
+    "possessive": ["my", "your", "his", "her", "its", "our", "their"],
+    "possessive_pronoun": ["mine", "yours", "his", "hers", "ours", "theirs"]
+  },
+  "verbs": {
+    "be": ["am", "is", "are", "was", "were", "be", "being", "been"],
+    "have": ["have", "has", "had", "having"],
+    "do": ["do", "does", "did", "doing"]
+  },
+  "contractions": {
+    "you're": ["you are"],
+    "we're": ["we are"],
+    "they're": ["they are"],
+    "it's": ["it is", "it has"],
+    "I've": ["I have"],
+    "we've": ["we have"]
+  },
+  "homophones": {
+    "their": ["possessive", "they own something"],
+    "there": ["location", "existence"],
+    "they're": ["they are"],
+    "your": ["possessive", "belonging to you"],
+    "you're": ["you are"],
+    "where": ["location question"],
+    "were": ["past tense of be"],
+    "we're": ["we are"]
+  },
+  "articles": ["a", "an", "the"],
+  "prepositions": ["in", "on", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "over", "under", "again", "further", "then", "once"],
+  "conjunctions": ["and", "but", "or", "nor", "for", "yet", "so", "although", "because", "since", "unless", "while", "whereas"],
+  "punctuation": {
+    "sentence_end": [".", "!", "?"],
+    "commas": [","],
+    "quotes": ["\"", "'"],
+    "colon": [":"],
+    "semicolon": [";"],
+    "parentheses": ["(", ")"],
+    "dash": ["-"]
+  },
+  "adjectives": ["stinky", "happy", "sad", "angry", "smelly", "big", "small", "fast", "slow", "hot", "cold", "bright", "dark", "soft", "hard", "good", "bad", "beautiful", "ugly"],
+  "adverbs": ["quickly", "slowly", "carefully", "easily", "well", "badly", "happily", "sadly", "very", "too", "enough"],
+  "common_nouns": ["dog", "cat", "house", "car", "friend", "game", "day", "night", "world", "time", "player", "text", "sentence", "word"],
+  "common_verbs": ["run", "jump", "eat", "sleep", "play", "read", "write", "talk", "say", "go", "come", "see", "look", "make", "take"]
+}

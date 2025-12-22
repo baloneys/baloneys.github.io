@@ -1,0 +1,85 @@
+.vrc-dynamic-player-tags-container {
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  min-height: 500px;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.vrc-dynamic-player-tags-thq-vrc-dpt-background-elm {
+  background-image: url('https://kanaris-beans.com/moon_knight.png');
+}
+ 
+.vrc-dynamic-player-tags-thq-vrc-dpt-content-elm {
+  gap: var(--spacing-3xl);
+  width: 100%;
+  display: flex;
+  padding: var(--spacing-4xl);
+  z-index: 3;
+  position: relative;
+  max-width: 1200px;
+  align-items: center;
+  justify-content: space-between;
+}
+ 
+.vrc-dynamic-player-tags-thq-vrc-dpt-text-content-elm {
+  flex: 1;
+  text-align: center;
+}
+ 
+.vrc-dynamic-player-tags-thq-vrc-dpt-title-elm {
+  color: var(--color-on-surface);
+  font-size: var(--font-size-3xl);
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-heading);
+  margin-bottom: var(--spacing-lg);
+  letter-spacing: var(--letter-spacing-heading);
+}
+ 
+.vrc-dynamic-player-tags-thq-vrc-dpt-description-elm {
+  color: var(--color-on-surface-secondary);
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-body);
+  line-height: var(--line-height-body);
+}
+ 
+.vrc-dynamic-player-tags-thq-btn-elm1 {
+  text-decoration: none;
+}
+ 
+.vrc-dynamic-player-tags-thq-btn-elm2 {
+  text-decoration: none;
+}
+ 
+
+ 
+@media(max-width: 991px) {
+  .vrc-dynamic-player-tags-thq-vrc-dpt-content-elm {
+    gap: var(--spacing-2xl);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    flex-direction: column;
+  }
+  .vrc-dynamic-player-tags-thq-vrc-dpt-title-elm {
+    font-size: var(--font-size-2xl);
+  }
+}
+ 
+@media(max-width: 479px) {
+  .vrc-dynamic-player-tags-container {
+    min-height: 400px;
+  }
+  .vrc-dynamic-player-tags-thq-vrc-dpt-content-elm {
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl);
+  }
+  .vrc-dynamic-player-tags-thq-vrc-dpt-title-elm {
+    font-size: var(--font-size-xl);
+  }
+  .vrc-dynamic-player-tags-thq-vrc-dpt-description-elm {
+    font-size: var(--font-size-sm);
+  }
+}

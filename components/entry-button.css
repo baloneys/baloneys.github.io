@@ -1,0 +1,26 @@
+.entry-button-container1 {
+  display: contents;
+}
+ 
+.entry-button-container2 {
+  display: none;
+}
+ 
+.entry-button-container3 {
+  display: contents;
+}
+ 
+.entry-button-container4 {
+  display: none;
+}
+ 
+.entry-button-container5 {
+  display: contents;
+}
+ 
+.entry-button-thq-entry-button-icon-wrapper-elm {
+  display: flex;
+  transition: transform 0.3s ease;
+  align-items: center;
+  justify-content: center;
+}

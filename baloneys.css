@@ -1,0 +1,153 @@
+.navigation-wrapper {
+  display: contents;
+}
+ 
+.navigation-container1 {
+  display: contents;
+}
+ 
+.navigation-container2 {
+  display: none;
+}
+ 
+.navigation-container3 {
+  display: contents;
+}
+ 
+.navigation-thq-navigation-link-elm1 {
+  text-decoration: none;
+}
+ 
+.navigation-container4 {
+  display: none;
+}
+ 
+.navigation-container5 {
+  display: contents;
+}
+ 
+.navigation-container6 {
+  display: none;
+}
+ 
+.navigation-container7 {
+  display: contents;
+}
+
+.footer-wrapper {
+  display: contents;
+}
+ 
+.footer-container1 {
+  display: contents;
+}
+ 
+.footer-thq-footer-social-icon-elm1 {
+  text-decoration: none;
+}
+ 
+.footer-thq-footer-social-icon-elm2 {
+  text-decoration: none;
+}
+ 
+.footer-thq-footer-social-icon-elm3 {
+  text-decoration: none;
+}
+ 
+.footer-thq-footer-nav-link-elm2 {
+  text-decoration: none;
+}
+ 
+.footer-thq-footer-nav-link-elm3 {
+  text-decoration: none;
+}
+ 
+.footer-thq-footer-nav-link-elm4 {
+  text-decoration: none;
+}
+ 
+.footer-thq-footer-nav-link-elm5 {
+  text-decoration: none;
+}
+ 
+.footer-thq-footer-nav-link-elm6 {
+  text-decoration: none;
+}
+ 
+.footer-thq-footer-nav-link-elm7 {
+  text-decoration: none;
+}
+ 
+.footer-thq-footer-nav-link-elm8 {
+  border: 2px dashed rgba(120, 120, 120, 0.4);
+}
+ 
+.footer-thq-footer-nav-link-elm9 {
+  border: 2px dashed rgba(120, 120, 120, 0.4);
+}
+ 
+.footer-thq-footer-bottom-links-elm {
+  border: 2px dashed rgba(120, 120, 120, 0.4);
+}
+ 
+.footer-container2 {
+  display: none;
+}
+ 
+.footer-container3 {
+  display: contents;
+}
+ 
+.footer-container4 {
+  display: none;
+}
+ 
+.footer-container5 {
+  display: contents;
+}
+
+.baloneys-container1 {
+  width: 100%;
+  display: block;
+  min-height: 100vh;
+}
+ 
+.baloneys-container2 {
+  display: none;
+}
+ 
+.baloneys-container3 {
+  display: contents;
+}
+ 
+.baloneys-container4 {
+  right: 50px;
+  border: 1px solid #ffffff5c;
+  bottom: 30px;
+  display: flex;
+  z-index: 22;
+  position: fixed;
+  box-shadow: 5px 5px 10px 0px rgba(31, 31, 31, 0.4);
+  min-height: auto;
+  align-items: center;
+  padding-top: 8px;
+  padding-left: 12px;
+  border-radius: 8px;
+  padding-right: 12px;
+  padding-bottom: 8px;
+  backdrop-filter: blur(6px);
+  background-color: rgba(41, 41, 41, 0.41);
+}
+ 
+.baloneys-icon1 {
+  width: 24px;
+  margin-right: 4px;
+}
+ 
+.baloneys-text2 {
+  color: white;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+}

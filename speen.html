@@ -4,16 +4,29 @@
     <meta charset="UTF-8" />
     <title>SPEEEEEEN | baloneys</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" href="https://kanaris-beans.com/public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" sizes="32x32" />
-    <link rel="stylesheet" href="https://kanaris-beans.com/style.css" />
+
+    <!-- SAME FAVICON AS MAIN SITE -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/public/pw64s5dmavz539gvjm065tw71xp1.png"
+    />
+
+    <!-- SAME CSS AS HOMEPAGE -->
+    <link rel="stylesheet" href="/index.css" />
   </head>
+
   <body>
 
-    <!-- HEADER (from kanaris-beans.com) -->
+    <!-- ================= HEADER (COPIED STRUCTURE FROM kanaris-beans.com) ================= -->
     <div class="navigation-container">
-      <a href="https://kanaris-beans.com/">
-        <div class="navigation-logo"><span class="section-title">baloneys</span></div>
+      <a href="/">
+        <div class="navigation-logo">
+          <span class="section-title">baloneys</span>
+        </div>
       </a>
+
       <div class="navigation-desktop-menu">
         <a
           href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555"
@@ -22,19 +35,21 @@
         >
           <div class="navigation-link"><span>Worlds</span></div>
         </a>
+
         <a
-          href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html"
+          href="/dynabackend/vrc-dynamic-player-tags.html"
           target="_blank"
           rel="noreferrer noopener"
         >
           <div class="navigation-link"><span>Tagging</span></div>
         </a>
-        <a
-          href="https://kanaris-beans.com/speen"
-          class="navigation-link-active"
-        >
-          <div class="navigation-link"><span>Speen</span></div>
+
+        <a href="/speen">
+          <div class="navigation-link navigation-link-active">
+            <span>Speen</span>
+          </div>
         </a>
+
         <a
           href="https://jinxxy.com/baloneys"
           target="_blank"
@@ -42,6 +57,7 @@
         >
           <div class="navigation-link"><span>Store</span></div>
         </a>
+
         <a
           href="https://discord.gg/gYWJsYhwXN"
           target="_blank"
@@ -53,59 +69,89 @@
         </a>
       </div>
     </div>
+    <!-- ================= END HEADER ================= -->
 
-    <!-- SPEEEEEEN CONTENT -->
-    <section class="showcase-section" style="padding-top:60px; text-align:center;">
-      <h1 class="section-title">SPEEEEEEN</h1>
-      <p class="section-subtitle">I like how these things speen</p>
 
-      <div class="showcase-grid-container" style="justify-content:center; gap:2rem;">
-        <div class="showcase-item" style="width:200px; height:200px;">
-          <img src="https://kanaris-beans.com/speen/1.png" alt="Spin 1" />
+    <!-- ================= MAIN CONTENT ================= -->
+    <main
+      style="
+        min-height: 80vh;
+        background-image: url('/speen/background.gif');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      "
+    >
+      <section class="showcase-section" style="padding-top: 6rem;">
+        <div style="text-align: center;">
+          <h1 class="section-title">SPEEEEEEN</h1>
+          <p class="section-subtitle">I like how these things speen</p>
         </div>
-        <div class="showcase-item" style="width:200px; height:200px;">
-          <img src="https://kanaris-beans.com/speen/2.png" alt="Spin 2" />
-        </div>
-        <div class="showcase-item" style="width:200px; height:200px;">
-          <img src="https://kanaris-beans.com/speen/3.png" alt="Spin 3" />
-        </div>
-        <div class="showcase-item" style="width:200px; height:200px;">
-          <img src="https://kanaris-beans.com/speen/4.png" alt="Spin 4" />
-        </div>
-      </div>
-    </section>
 
-    <!-- FOOTER (from kanaris-beans.com) -->
+        <!-- SPIN GALLERY (MATCHES HOMEPAGE GRID STYLE) -->
+        <div
+          class="showcase-grid-container"
+          style="justify-content: center; margin-top: 3rem;"
+        >
+          <div class="showcase-item">
+            <img src="/speen/1.png" alt="speen 1" />
+          </div>
+
+          <div class="showcase-item">
+            <img src="/speen/2.png" alt="speen 2" />
+          </div>
+
+          <div class="showcase-item">
+            <img src="/speen/3.png" alt="speen 3" />
+          </div>
+
+          <div class="showcase-item">
+            <img src="/speen/4.png" alt="speen 4" />
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- ================= END MAIN CONTENT ================= -->
+
+
+    <!-- ================= FOOTER (COPIED STRUCTURE FROM kanaris-beans.com) ================= -->
     <footer class="footer-root">
       <div class="footer-grid">
+
         <div class="footer-brand-column">
-          <a href="https://kanaris-beans.com/">
-            <div class="footer-logo-link"><span class="footer-logo-text">baloneys</span></div>
+          <a href="/">
+            <div class="footer-logo-link">
+              <span class="footer-logo-text">baloneys</span>
+            </div>
           </a>
+
           <p class="footer-brand-description section-content">
             Crafting highly immersive experiences, environments, and robust prefabs.
           </p>
+
           <div class="footer-social-links">
             <a
               href="https://discord.gg/gYWJsYhwXN"
               target="_blank"
               rel="noreferrer noopener"
             >
-              <div aria-label="Discord" class="footer-social-icon"></div>
+              <div class="footer-social-icon" aria-label="Discord"></div>
             </a>
+
             <a
               href="https://x.com/beilude"
               target="_blank"
               rel="noreferrer noopener"
             >
-              <div aria-label="Twitter" class="footer-social-icon"></div>
+              <div class="footer-social-icon" aria-label="Twitter"></div>
             </a>
+
             <a
               href="https://github.com/baloneys"
               target="_blank"
               rel="noreferrer noopener"
             >
-              <div aria-label="Instagram" class="footer-social-icon"></div>
+              <div class="footer-social-icon" aria-label="GitHub"></div>
             </a>
           </div>
         </div>
@@ -113,7 +159,7 @@
         <div class="footer-nav-column">
           <h3 class="footer-column-title">Navigation</h3>
           <nav class="footer-nav-list">
-            <a href="https://kanaris-beans.com/"><div class="footer-nav-link"><span>Home</span></div></a>
+            <a href="/"><div class="footer-nav-link"><span>Home</span></div></a>
             <a
               href="https://jinxxy.com/baloneys"
               target="_blank"
@@ -129,11 +175,13 @@
               <div class="footer-nav-link"><span>VRChat Worlds</span></div>
             </a>
             <a
-              href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html"
+              href="/dynabackend/vrc-dynamic-player-tags.html"
               target="_blank"
               rel="noreferrer noopener"
             >
-              <div class="footer-nav-link"><span>VRCDynamicPlayerTags</span></div>
+              <div class="footer-nav-link">
+                <span>VRCDynamicPlayerTags</span>
+              </div>
             </a>
           </nav>
         </div>
@@ -148,10 +196,10 @@
             >
               <div class="footer-nav-link"><span>Support Discord</span></div>
             </a>
-            <a href="https://kanaris-beans.com/terms" target="_blank" rel="noreferrer noopener">
+            <a href="/terms">
               <div class="footer-nav-link"><span>Terms of Service</span></div>
             </a>
-            <a href="https://kanaris-beans.com/privacy" target="_blank" rel="noreferrer noopener">
+            <a href="/privacy">
               <div class="footer-nav-link"><span>Privacy Policy</span></div>
             </a>
           </nav>
@@ -164,6 +212,7 @@
         </p>
       </div>
     </footer>
+    <!-- ================= END FOOTER ================= -->
 
   </body>
 </html>

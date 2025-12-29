@@ -1,102 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>kanaris beans | speen</title>
-    <link rel="shortcut icon" href="https://kanaris-beans.com/public/favicon.png" type="image/png" sizes="32x32" />
-    <link rel="stylesheet" href="https://kanaris-beans.com/style.css" />
-    <link rel="stylesheet" href="https://unpkg.com/animate.css@4.1.1/animate.css" />
-    <style>
-      .speen-section {
-        text-align: center;
-        padding: 6rem 1rem;
-      }
-      .speen-title {
-        font-size: 4rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-      }
-      .speen-subtitle {
-        font-size: 1.5rem;
-        color: #777;
-        margin-bottom: 3rem;
-      }
-      .spin-gallery {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 2rem;
-      }
-      .spin-gallery img {
-        width: 300px;
-        height: 300px;
-        object-fit: cover;
-        border-radius: 12px;
-        animation: spin 8s linear infinite;
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      @media (max-width: 768px) {
-        .spin-gallery img {
-          width: 80%;
-          height: auto;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Header from kanaris-beans.com -->
+<head>
+    <meta charset="UTF-8">
+    <title>SPEEEEEEN - Kanaris Beans</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/style.css"> <!-- main site CSS -->
+</head>
+<body>
+    <!-- Header copied exactly from kanaris-beans.com -->
     <header>
-      <div class="header-container">
-        <a href="https://kanaris-beans.com/">
-          <img src="https://kanaris-beans.com/public/logo.png" alt="Kanaris Beans Logo" class="header-logo"/>
-        </a>
-        <nav class="header-nav">
-          <a href="https://kanaris-beans.com/">Home</a>
-          <a href="https://kanaris-beans.com/worlds">Worlds</a>
-          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html">Tags</a>
-          <a href="https://kanaris-beans.com/speen">Speen</a>
-          <a href="https://discord.gg/gYWJsYhwXN" target="_blank">Discord</a>
-        </nav>
-      </div>
+        <div class="site-header">
+            <h1>baloneys</h1>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/worlds">Worlds</a>
+                <a href="/tagging">Tagging</a>
+                <a href="/speen">Speen</a>
+                <a href="/store">Store</a>
+                <a href="/contact">Contact Me</a>
+            </nav>
+        </div>
     </header>
 
-    <!-- SPEEEEEEN content -->
-    <section class="speen-section">
-      <h1 class="speen-title">SPEEEEEEN</h1>
-      <p class="speen-subtitle">I like how these things speen</p>
-      <div class="spin-gallery">
-        <img src="https://kanaris-beans.com/public/spin1.gif" alt="Spin 1" />
-        <img src="https://kanaris-beans.com/public/spin2.gif" alt="Spin 2" />
-        <img src="https://kanaris-beans.com/public/spin3.gif" alt="Spin 3" />
-        <img src="https://kanaris-beans.com/public/spin4.gif" alt="Spin 4" />
-      </div>
-    </section>
+    <!-- Page content -->
+    <main>
+        <section class="speen-section" style="text-align:center; padding: 4rem 0;">
+            <h2>SPEEEEEEN</h2>
+            <p>I like how these things speen</p>
+            
+            <div class="spin-gallery">
+                <!-- Insert your spin gallery gifs here, centered -->
+            </div>
+        </section>
+    </main>
 
-    <!-- Footer from kanaris-beans.com -->
+    <!-- Footer copied exactly from kanaris-beans.com -->
     <footer>
-      <div class="footer-container">
-        <div class="footer-logo">
-          <a href="https://kanaris-beans.com/">
-            <img src="https://kanaris-beans.com/public/logo.png" alt="Kanaris Beans Logo"/>
-          </a>
+        <div class="site-footer">
+            <nav>
+                <a href="/">Home</a>
+                <a href="/store">Jinxxy Store</a>
+                <a href="/worlds">VRChat Worlds</a>
+                <a href="/tags">VRCDynamicPlayerTags</a>
+            </nav>
+            <p>© 2025 baloneys. All rights reserved</p>
         </div>
-        <div class="footer-links">
-          <a href="https://kanaris-beans.com/">Home</a>
-          <a href="https://kanaris-beans.com/worlds">Worlds</a>
-          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html">Tags</a>
-          <a href="https://kanaris-beans.com/speen">Speen</a>
-        </div>
-        <div class="footer-social">
-          <a href="https://discord.gg/gYWJsYhwXN" target="_blank">
-            <img src="https://kanaris-beans.com/public/discord-icon.png" alt="Discord"/>
-          </a>
-        </div>
-        <p class="footer-text">© 2025 Kanaris Beans. All rights reserved.</p>
-      </div>
     </footer>
-  </body>
+</body>
 </html>

@@ -1,134 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>speen - Kanari's Beans</title>
-    <meta property="og:title" content="speen - Kanari's Beans" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta charset="utf-8" />
-    <meta property="twitter:card" content="summary_large_image" />
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speen | baloneys</title>
 
-    <style data-tag="reset-style-sheet">
-      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;  -webkit-font-smoothing: antialiased;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;  color: inherit;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}details {  display: block;  margin: 0;  padding: 0;}summary::-webkit-details-marker {  display: none;}[data-thq="accordion"] [data-thq="accordion-content"] {  max-height: 0;  overflow: hidden;  transition: max-height 0.3s ease-in-out;  padding: 0;}[data-thq="accordion"] details[data-thq="accordion-trigger"][open] + [data-thq="accordion-content"] {  max-height: 300vh;}details[data-thq="accordion-trigger"][open] summary [data-thq="accordion-icon"] {  transform: rotate(180deg);}html { scroll-behavior: smooth  }
-    </style>
-    <style data-tag="default-style-sheet">
-      html {
-        font-family: Inter;
-        font-size: 16px;
-      }
+<link rel="stylesheet" href="https://kanaris-beans.com/style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/animate.css@4.1.1/animate.min.css">
 
-      body {
-        font-weight: 400;
-        font-style:normal;
-        text-decoration: none;
-        text-transform: none;
-        letter-spacing: normal;
-        line-height: 1.15;
-        color: var(--dl-color-theme-neutral-dark);
-        background: var(--dl-color-theme-neutral-light);
+<style>
+  body { font-family: 'Inter', sans-serif; background: var(--color-surface); color: var(--color-on-surface); margin: 0; }
+  h1 { font-size: 3rem; text-align: center; margin: 2rem 0 1rem; }
+  p { text-align: center; font-size: 1.25rem; margin-bottom: 2rem; }
+  .btn-primary { display:inline-block; padding:0.75rem 1.5rem; background-color:#854FEA; color:white; border-radius:0.5rem; font-weight:600; text-decoration:none; transition: transform 0.2s; }
+  .btn-primary:hover { transform: scale(1.05); }
 
-        fill: var(--dl-color-theme-neutral-dark);
-      }
-    </style>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/animate.css@4.1.1/animate.css"
-    />
-    <link
-      rel="shortcut icon"
-      href="public/favicon.png"
-      type="icon/png"
-      sizes="32x32"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css"
-    />
-  </head>
-  <body>
-    <link rel="stylesheet" href="./style.css" />
-    <div>
-      <link href="./speen.css" rel="stylesheet" />
+  .giphy-spin { display:inline-block; animation: spin 5s linear infinite; max-width:300px; width:100%; margin:auto; }
 
-      <div class="speen-container1">
-        <h1 class="speen-text1">Spinning things</h1>
-        <span class="speen-text2">I like how these things spin</span>
-        <gallery21-wrapper
-          class="gallery21-wrapper"
-          rootclassname="gallery21undefined"
-        >
-          <!--Gallery21 component-->
-          <div
-            class="gallery21-gallery3 thq-section-padding gallery21root-class-name"
-          >
-            <div class="gallery21-max-width thq-section-max-width">
-              <div class="gallery21-content">
-                <div class="gallery21-container1">
-                  <img
-                    src="public/spinning-duck-200h.gif"
-                    alt="image"
-                    class="gallery21-image1"
-                  />
-                </div>
-                <div class="gallery21-container2">
-                  <img
-                    src="public/giphy-200h.webp"
-                    alt="image"
-                    class="gallery21-image2"
-                  />
-                </div>
-                <div class="gallery21-container3">
-                  <img
-                    src="public/giphy%20(2)-200h.webp"
-                    alt="image"
-                    class="gallery21-image3"
-                  />
-                </div>
-                <div class="gallery21-container4">
-                  <img
-                    src="public/giphy%20(1)-200h.webp"
-                    alt="image"
-                    class="gallery21-image4"
-                  />
-                </div>
-              </div>
-            </div>
+  @keyframes spin { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }
+
+  .spin-gallery { display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; margin-top:3rem; }
+  .spin-item { width:150px; height:150px; overflow:hidden; border-radius:0.75rem; display:flex; align-items:center; justify-content:center; animation: float 3s ease-in-out infinite alternate; }
+  .spin-item img { width:100%; height:100%; object-fit:contain; }
+
+  @keyframes float { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+
+  /* Mobile nav overlay */
+  .mobile-menu { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); flex-direction:column; align-items:center; justify-content:center; z-index:1000; }
+  .mobile-menu a { color:white; font-size:2rem; margin:1rem 0; text-decoration:none; }
+  .menu-toggle { display:none; cursor:pointer; }
+  @media(max-width:768px) { .navigation-desktop-menu { display:none; } .menu-toggle { display:block; } }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="navigation-wrapper">
+    <div class="navigation-container">
+      <a href="index.html"><div class="navigation-logo"><span class="section-title">baloneys</span></div></a>
+      <div class="navigation-desktop-menu">
+        <a href="index.html"><div class="navigation-link"><span>Home</span></div></a>
+        <a href="speen"><div class="navigation-link"><span>Speen</span></div></a>
+        <a href="https://jinxxy.com/baloneys"><div class="navigation-link"><span>Store</span></div></a>
+        <a href="https://discord.gg/gYWJsYhwXN"><div class="btn-sm btn-primary btn"><span>Contact Me</span></div></a>
+      </div>
+      <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </div>
+  </nav>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="speen">Speen</a>
+  <a href="https://jinxxy.com/baloneys">Store</a>
+  <a href="https://discord.gg/gYWJsYhwXN">Contact Me</a>
+</div>
+
+<main class="container">
+  <h1>Speen</h1>
+  <p>Enjoy spinning things endlessly. Here's a featured spinning Giphy:</p>
+
+  <div class="giphy-spin">
+    <iframe src="https://giphy.com/embed/3o7aD2saalBwwftBIY" width="300" height="300" frameBorder="0" allowFullScreen></iframe>
+  </div>
+
+  <p>Spin gallery:</p>
+  <div class="spin-gallery" id="spinGallery"></div>
+</main>
+
+<footer-wrapper class="footer-wrapper">
+  <div class="footer-container1">
+    <footer class="footer-root">
+      <div class="footer-container">
+        <div class="footer-grid">
+          <div class="footer-brand-column">
+            <a href="index.html"><div class="footer-logo-link"><span class="footer-logo-text">baloneys</span></div></a>
+            <p class="footer-brand-description section-content">
+              Crafting highly immersive experiences, environments, and robust prefabs.
+            </p>
           </div>
-        </gallery21-wrapper>
-        <div class="speen-container2">
-          <div class="speen-container3">
-            <iframe
-              width="560"
-              height="315"
-              src="https://www.youtube.com/embed/JltWsTrTK6s?si=880BtHn6beI2KnOR"
-              title="YouTube video player"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen=""
-            ></iframe>
-          </div>
-        </div>
-        <div class="speen-container4">
-          <a href="https://kanaris-beans.com/" class="speen-link button">
-            Go Home
-          </a>
         </div>
       </div>
-    </div>
-  </body>
+    </footer>
+  </div>
+</footer-wrapper>
+
+<script>
+  const mobileMenu = document.getElementById('mobileMenu');
+  function toggleMenu() { mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex'; }
+
+  // Spin gallery GIFs
+  const spinGifs = [
+    "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif",
+    "https://media.giphy.com/media/l0Exk8EUzSLsrErEQ/giphy.gif",
+    "https://media.giphy.com/media/xT0GqFv34xJoqF3uBG/giphy.gif",
+    "https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif",
+    "https://media.giphy.com/media/l0HlQ7LRal9GhXUpO/giphy.gif"
+  ];
+
+  const gallery = document.getElementById('spinGallery');
+
+  spinGifs.sort(() => Math.random() - 0.5); // shuffle
+  spinGifs.forEach(url => {
+    const div = document.createElement('div');
+    div.classList.add('spin-item');
+    const img = document.createElement('img');
+    img.src = url;
+    div.appendChild(img);
+    gallery.appendChild(div);
+  });
+</script>
+</body>
 </html>

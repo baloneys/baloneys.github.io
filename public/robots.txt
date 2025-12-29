@@ -4,4 +4,4 @@ Disallow: /nogooglebot/
 User-agent: *
 Allow: /
 
-Sitemap: https://genuine-peaceful-elk-hohcwo.teleporthq.app/sitemap.xml
+Sitemap: https://kanaris-beans.com/public/sitemap.xml

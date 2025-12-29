@@ -1,103 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Speen | baloneys</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Speen | Kanari's Beans</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="https://kanaris-beans.com/style.css" />
 
-<link rel="icon" href="/favicon.ico" type="image/x-icon">
-<link rel="stylesheet" href="https://kanaris-beans.com/style.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+    <style>
+      body {
+        background: var(--color-surface);
+        color: var(--color-on-surface);
+        font-family: Inter, sans-serif;
+      }
+      .speen-header {
+        text-align: center;
+        margin-top: 4rem;
+        margin-bottom: 2rem;
+      }
+      .speen-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+      }
+      .speen-header p {
+        font-size: 1.25rem;
+        margin-top: 0.5rem;
+      }
+      .spin-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto 4rem auto;
+        justify-items: center;
+      }
+      .spin-gallery img {
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
+        animation: spin 5s linear infinite;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
 
-<style>
-  body { font-family: 'Inter', sans-serif; background: var(--color-surface); color: var(--color-on-surface); margin: 0; }
-  .container { max-width:1200px; margin:auto; padding:2rem; text-align:center; }
-  
-  h1.page-title { font-size:4rem; margin:1rem 0 0.5rem; font-weight:700; }
-  h2.page-subtitle { font-size:1.5rem; margin-bottom:3rem; font-weight:400; color:var(--color-on-surface-secondary); }
-
-  .spin-gallery { display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; margin-top:3rem; }
-  .spin-item { width:150px; height:150px; overflow:hidden; border-radius:0.75rem; display:flex; align-items:center; justify-content:center; animation: float 3s ease-in-out infinite alternate; }
-  .spin-item img { width:100%; height:100%; object-fit:contain; }
-
-  @keyframes float { from { transform: translateY(0); } to { transform: translateY(-10px); } }
-</style>
-</head>
-<body>
-
-<header>
-  <!-- Full site header from kanaris-beans.com -->
-  <nav class="navigation-wrapper">
-    <div class="navigation-container">
-      <a href="index.html"><div class="navigation-logo"><span class="section-title">baloneys</span></div></a>
-      <div class="navigation-desktop-menu">
-        <a href="index.html"><div class="navigation-link"><span>Home</span></div></a>
-        <a href="speen"><div class="navigation-link"><span>Speen</span></div></a>
-        <a href="https://jinxxy.com/baloneys"><div class="navigation-link"><span>Store</span></div></a>
-        <a href="https://discord.gg/gYWJsYhwXN"><div class="btn-sm btn-primary btn"><span>Contact Me</span></div></a>
+  <body>
+    <!-- Header -->
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="https://kanaris-beans.com" class="logo">
+          <img src="https://kanaris-beans.com/favicon.ico" alt="Kanari's Beans" />
+        </a>
+        <nav class="site-nav">
+          <a href="https://kanaris-beans.com">Home</a>
+          <a href="https://kanaris-beans.com/speen" class="active">Speen</a>
+          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html">VRCDPT</a>
+        </nav>
       </div>
-      <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="speen-header">
+      <h1>SPEEEEEEN</h1>
+      <p>I like how these things speen</p>
     </div>
-  </nav>
-</header>
 
-<div class="mobile-menu" id="mobileMenu">
-  <a href="index.html">Home</a>
-  <a href="speen">Speen</a>
-  <a href="https://jinxxy.com/baloneys">Store</a>
-  <a href="https://discord.gg/gYWJsYhwXN">Contact Me</a>
-</div>
+    <!-- Spin Gallery -->
+    <section class="spin-gallery">
+      <img src="https://media.giphy.com/media/3o7qE1YN7aBOFPRw8E/giphy.gif" alt="Spinning thing 1">
+      <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Spinning thing 2">
+      <img src="https://media.giphy.com/media/26n6WywJyh39n1pBu/giphy.gif" alt="Spinning thing 3">
+      <img src="https://media.giphy.com/media/3oKIPwoeGErMmaI43C/giphy.gif" alt="Spinning thing 4">
+    </section>
 
-<main class="container">
-  <!-- Page header -->
-  <img src="/favicon.ico" alt="baloneys favicon" width="80" height="80" style="margin-bottom:1rem;">
-  <h1 class="page-title">SPEEEEEEN</h1>
-  <h2 class="page-subtitle">I like how these things speen</h2>
-
-  <!-- Spin gallery -->
-  <div class="spin-gallery" id="spinGallery"></div>
-</main>
-
-<footer-wrapper class="footer-wrapper">
-  <div class="footer-container1">
-    <footer class="footer-root">
-      <div class="footer-container">
-        <div class="footer-grid">
-          <div class="footer-brand-column">
-            <a href="index.html"><div class="footer-logo-link"><span class="footer-logo-text">baloneys</span></div></a>
-            <p class="footer-brand-description section-content">
-              Crafting highly immersive experiences, environments, and robust prefabs.
-            </p>
-          </div>
-        </div>
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <p>© 2025 Kanari's Beans. All rights reserved.</p>
       </div>
     </footer>
-  </div>
-</footer-wrapper>
-
-<script>
-  const mobileMenu = document.getElementById('mobileMenu');
-  function toggleMenu() { mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex'; }
-
-  // Spin gallery GIFs
-  const spinGifs = [
-    "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif",
-    "https://media.giphy.com/media/l0Exk8EUzSLsrErEQ/giphy.gif",
-    "https://media.giphy.com/media/xT0GqFv34xJoqF3uBG/giphy.gif",
-    "https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif",
-    "https://media.giphy.com/media/l0HlQ7LRal9GhXUpO/giphy.gif"
-  ];
-
-  const gallery = document.getElementById('spinGallery');
-  spinGifs.sort(() => Math.random() - 0.5); // shuffle
-  spinGifs.forEach(url => {
-    const div = document.createElement('div');
-    div.classList.add('spin-item');
-    const img = document.createElement('img');
-    img.src = url;
-    div.appendChild(img);
-    gallery.appendChild(div);
-  });
-</script>
-</body>
+  </body>
 </html>

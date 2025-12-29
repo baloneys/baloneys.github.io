@@ -1,85 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Speen | Kanari's Beans</title>
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>kanaris beans | speen</title>
+    <link rel="shortcut icon" href="https://kanaris-beans.com/public/favicon.png" type="image/png" sizes="32x32" />
     <link rel="stylesheet" href="https://kanaris-beans.com/style.css" />
-
+    <link rel="stylesheet" href="https://unpkg.com/animate.css@4.1.1/animate.css" />
     <style>
-      body {
-        background: var(--color-surface);
-        color: var(--color-on-surface);
-        font-family: Inter, sans-serif;
-      }
-      .speen-header {
+      .speen-section {
         text-align: center;
-        margin-top: 4rem;
-        margin-bottom: 2rem;
+        padding: 6rem 1rem;
       }
-      .speen-header h1 {
-        font-size: 3rem;
-        font-weight: 700;
+      .speen-title {
+        font-size: 4rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
       }
-      .speen-header p {
-        font-size: 1.25rem;
-        margin-top: 0.5rem;
+      .speen-subtitle {
+        font-size: 1.5rem;
+        color: #777;
+        margin-bottom: 3rem;
       }
       .spin-gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 2rem;
-        max-width: 1200px;
-        margin: 0 auto 4rem auto;
-        justify-items: center;
       }
       .spin-gallery img {
-        width: 200px;
-        height: 200px;
-        object-fit: contain;
-        animation: spin 5s linear infinite;
+        width: 300px;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 12px;
+        animation: spin 8s linear infinite;
       }
       @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @media (max-width: 768px) {
+        .spin-gallery img {
+          width: 80%;
+          height: auto;
+        }
       }
     </style>
   </head>
-
   <body>
-    <!-- Header -->
-    <header class="site-header">
-      <div class="header-inner">
-        <a href="https://kanaris-beans.com" class="logo">
-          <img src="https://kanaris-beans.com/favicon.ico" alt="Kanari's Beans" />
+    <!-- Header from kanaris-beans.com -->
+    <header>
+      <div class="header-container">
+        <a href="https://kanaris-beans.com/">
+          <img src="https://kanaris-beans.com/public/logo.png" alt="Kanaris Beans Logo" class="header-logo"/>
         </a>
-        <nav class="site-nav">
-          <a href="https://kanaris-beans.com">Home</a>
-          <a href="https://kanaris-beans.com/speen" class="active">Speen</a>
-          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html">VRCDPT</a>
+        <nav class="header-nav">
+          <a href="https://kanaris-beans.com/">Home</a>
+          <a href="https://kanaris-beans.com/worlds">Worlds</a>
+          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html">Tags</a>
+          <a href="https://kanaris-beans.com/speen">Speen</a>
+          <a href="https://discord.gg/gYWJsYhwXN" target="_blank">Discord</a>
         </nav>
       </div>
     </header>
 
-    <!-- Page Header -->
-    <div class="speen-header">
-      <h1>SPEEEEEEN</h1>
-      <p>I like how these things speen</p>
-    </div>
-
-    <!-- Spin Gallery -->
-    <section class="spin-gallery">
-      <img src="https://media.giphy.com/media/3o7qE1YN7aBOFPRw8E/giphy.gif" alt="Spinning thing 1">
-      <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Spinning thing 2">
-      <img src="https://media.giphy.com/media/26n6WywJyh39n1pBu/giphy.gif" alt="Spinning thing 3">
-      <img src="https://media.giphy.com/media/3oKIPwoeGErMmaI43C/giphy.gif" alt="Spinning thing 4">
+    <!-- SPEEEEEEN content -->
+    <section class="speen-section">
+      <h1 class="speen-title">SPEEEEEEN</h1>
+      <p class="speen-subtitle">I like how these things speen</p>
+      <div class="spin-gallery">
+        <img src="https://kanaris-beans.com/public/spin1.gif" alt="Spin 1" />
+        <img src="https://kanaris-beans.com/public/spin2.gif" alt="Spin 2" />
+        <img src="https://kanaris-beans.com/public/spin3.gif" alt="Spin 3" />
+        <img src="https://kanaris-beans.com/public/spin4.gif" alt="Spin 4" />
+      </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <p>© 2025 Kanari's Beans. All rights reserved.</p>
+    <!-- Footer from kanaris-beans.com -->
+    <footer>
+      <div class="footer-container">
+        <div class="footer-logo">
+          <a href="https://kanaris-beans.com/">
+            <img src="https://kanaris-beans.com/public/logo.png" alt="Kanaris Beans Logo"/>
+          </a>
+        </div>
+        <div class="footer-links">
+          <a href="https://kanaris-beans.com/">Home</a>
+          <a href="https://kanaris-beans.com/worlds">Worlds</a>
+          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html">Tags</a>
+          <a href="https://kanaris-beans.com/speen">Speen</a>
+        </div>
+        <div class="footer-social">
+          <a href="https://discord.gg/gYWJsYhwXN" target="_blank">
+            <img src="https://kanaris-beans.com/public/discord-icon.png" alt="Discord"/>
+          </a>
+        </div>
+        <p class="footer-text">© 2025 Kanaris Beans. All rights reserved.</p>
       </div>
     </footer>
   </body>

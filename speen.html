@@ -1,155 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>SPEEN | kanaris-beans</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <title>speen | kanaris beans</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Site CSS (exact same as index) -->
-  <link rel="stylesheet" href="https://kanaris-beans.com/style.css" />
-  <link rel="stylesheet" href="https://kanaris-beans.com/index.css" />
+    <!-- GLOBAL SITE CSS -->
+    <link rel="stylesheet" href="https://kanaris-beans.com/style.css" />
+    <link rel="stylesheet" href="https://kanaris-beans.com/index.css" />
 
-  <!-- Fonts (same stack as main site) -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap"/>
+    <!-- FONTS (same as site) -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap"
+    />
+  </head>
 
-  <!-- Favicon (site favicon, not custom) -->
-  <link rel="icon" href="/favicon.ico" />
+  <body>
+    <!-- ================= HEADER (UNCHANGED) ================= -->
+    <nav class="navigation-wrapper">
+      <div class="navigation-container">
+        <a href="/">
+          <div class="navigation-logo">
+            <span class="section-title">baloneys</span>
+          </div>
+        </a>
 
-  <style>
-    /* page-specific only */
-    .speen-section {
-      position: relative;
-      min-height: 100vh;
-      padding: 8rem 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      background: url("REPLACE_WITH_BACKGROUND_GIF.gif") center / cover no-repeat;
-    }
-
-    .speen-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 0;
-    }
-
-    .speen-content {
-      position: relative;
-      z-index: 1;
-      max-width: 1100px;
-      width: 100%;
-    }
-
-    .speen-title {
-      font-size: clamp(3rem, 6vw, 5rem);
-      font-weight: 800;
-      margin-bottom: 1rem;
-    }
-
-    .speen-subtitle {
-      font-size: 1.25rem;
-      opacity: 0.85;
-      margin-bottom: 4rem;
-    }
-
-    .speen-gifs {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 4rem;
-    }
-
-    .speen-gifs img {
-      width: 100%;
-      border-radius: 12px;
-    }
-
-    .speen-video-wrapper {
-      position: relative;
-      width: 100%;
-      padding-top: 56.25%;
-      overflow: hidden;
-      border-radius: 16px;
-    }
-
-    .speen-video-wrapper iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-  </style>
-</head>
-
-<body>
-
-<!-- ================= HEADER (COPIED FROM kanaris-beans.com) ================= -->
-<nav class="navigation-wrapper">
-  <div class="navigation-container">
-    <a href="/">
-      <div class="navigation-logo">
-        <span class="section-title">baloneys</span>
+        <div class="navigation-desktop-menu">
+          <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank">
+            <div class="navigation-link"><span>Worlds</span></div>
+          </a>
+          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html" target="_blank">
+            <div class="navigation-link"><span>Tagging</span></div>
+          </a>
+          <a href="/speen">
+            <div class="navigation-link"><span>speen</span></div>
+          </a>
+          <a href="https://jinxxy.com/baloneys" target="_blank">
+            <div class="navigation-link"><span>Store</span></div>
+          </a>
+        </div>
       </div>
-    </a>
+    </nav>
 
-    <div class="navigation-desktop-menu">
-      <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank">
-        <div class="navigation-link"><span>Worlds</span></div>
-      </a>
-      <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html" target="_blank">
-        <div class="navigation-link"><span>Tagging</span></div>
-      </a>
-      <a href="/speen">
-        <div class="navigation-link"><span>speen</span></div>
-      </a>
-      <a href="https://jinxxy.com/baloneys" target="_blank">
-        <div class="navigation-link"><span>Store</span></div>
-      </a>
-      <a href="https://discord.gg/gYWJsYhwXN" target="_blank">
-        <div class="btn-sm btn-primary btn"><span>Contact Me</span></div>
-      </a>
-    </div>
-  </div>
-</nav>
-<!-- ================= END HEADER ================= -->
+    <!-- ================= SPEEN SECTION ================= -->
+    <section
+      style="
+        position: relative;
+        min-height: 100vh;
+        background: url('REPLACE_WITH_BACKGROUND_GIF.gif') center / cover no-repeat;
+      "
+    >
+      <!-- dark overlay -->
+      <div
+        style="
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.55);
+          z-index: 1;
+        "
+      ></div>
 
+      <div
+        style="
+          position: relative;
+          z-index: 2;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 6rem 2rem;
+          text-align: center;
+        "
+      >
+        <h1 class="section-title">SPEEN</h1>
+        <p class="section-subtitle">
+          I like how these things speen
+        </p>
 
-<!-- ================= SPEEN CONTENT ================= -->
-<section class="speen-section">
-  <div class="speen-overlay"></div>
+        <!-- GIF GALLERY -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+          "
+        >
+          <img src="GIF_1.gif" alt="speen 1" />
+          <img src="GIF_2.gif" alt="speen 2" />
+          <img src="GIF_3.gif" alt="speen 3" />
+          <img src="GIF_4.gif" alt="speen 4" />
+          <img src="GIF_5.gif" alt="speen 5" />
+        </div>
 
-  <div class="speen-content">
-    <h1 class="speen-title">SPEEN</h1>
-    <p class="speen-subtitle">I like how these things speen</p>
+        <!-- YOUTUBE EMBED -->
+        <div
+          style="
+            position: relative;
+            padding-top: 56.25%;
+            margin-top: 4rem;
+            border-radius: 12px;
+            overflow: hidden;
+          "
+        >
+          <iframe
+            src="https://www.youtube.com/embed/VIDEO_ID"
+            title="speen video"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            style="
+              position: absolute;
+              inset: 0;
+              width: 100%;
+              height: 100%;
+              filter: brightness(0.85);
+            "
+          ></iframe>
+        </div>
+      </div>
+    </section>
 
-    <!-- 5 GIFS – replace src links -->
-    <div class="speen-gifs">
-      <img src="GIF_1_URL.gif" alt="speen gif 1" />
-      <img src="GIF_2_URL.gif" alt="speen gif 2" />
-      <img src="GIF_3_URL.gif" alt="speen gif 3" />
-      <img src="GIF_4_URL.gif" alt="speen gif 4" />
-      <img src="GIF_5_URL.gif" alt="speen gif 5" />
-    </div>
-
-    <!-- YouTube embed -->
-    <div class="speen-video-wrapper">
-      <iframe
-        src="https://www.youtube.com/embed/VIDEO_ID_HERE"
-        title="speen video"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-      </iframe>
-    </div>
-  </div>
-</section>
-<!-- ================= END SPEEN CONTENT ================= -->
-
-
-<!-- ================= FOOTER (MATCHES SITE) ================= -->
+    <!-- ================= FOOTER SPACING ================= -->
 <footer class="footer">
   <div class="footer-container">
     <span class="footer-text">© baloneys</span>

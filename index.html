@@ -1,43 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script>
-/**
- * Kanaris Beans – Update Tracking
- * Tracks when users receive new site versions
- */
-
-const UPDATE_VERSION = "2025.01.07"; // CHANGE THIS ON EVERY DEPLOY
-const UPDATE_NAME = "UI + Analytics Dashboard";
-
-const STORAGE_KEY = "kb_last_seen_version";
-const API_ENDPOINT = "https://api.kanaris-beans.com/update";
-
-/* Detect first time seeing this update */
-(function trackUpdate() {
-  const lastSeen = localStorage.getItem(STORAGE_KEY);
-
-  if (lastSeen !== UPDATE_VERSION) {
-    sendUpdateEvent(lastSeen === null ? "first_install" : "updated");
-    localStorage.setItem(STORAGE_KEY, UPDATE_VERSION);
-  }
-})();
-
-function sendUpdateEvent(type) {
-  fetch(API_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      version: UPDATE_VERSION,
-      name: UPDATE_NAME,
-      type,
-      url: location.pathname,
-      userAgent: navigator.userAgent,
-      timestamp: new Date().toISOString()
-    })
-  }).catch(() => {});
-}
-</script>
+    <script defer src="https://analytics.baloneys.studio/script.js" data-website-id="03418d76-12f0-4a2b-94ba-24dff73a6f6b"></script>
     <title>baloneys | dumbass world creator</title>
     <meta property="og:title" content="baloneys | dumbass world creator" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

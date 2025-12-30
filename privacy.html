@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - baloneys</title>
+    <link rel="shortcut icon" href="../public/pw64s5dmavz539gvjm065tw71xp1.png" type="icon/png" sizes="32x32">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap">
+    <style>
+        /* Navigation Styles */
+        .navigation-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navigation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navigation-logo {
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .navigation-logo:hover {
+            opacity: 0.8;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+
+        .navigation-desktop-menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .navigation-link {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .navigation-link:hover {
+            color: #ffffff;
+        }
+
+        .navigation-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .navigation-mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 10, 0.98);
+            z-index: 2000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .navigation-mobile-overlay.is-open {
+            transform: translateX(0);
+        }
+
+        .navigation-mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navigation-mobile-content {
+            padding: 2rem;
+        }
+
+        .navigation-mobile-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .navigation-mobile-link {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0.5rem 0;
+        }
+
+        .navigation-mobile-link:hover {
+            color: #ffffff;
+            transform: translateX(0.5rem);
+        }
+
+        .navigation-mobile-actions {
+            margin-top: 2rem;
+        }
+
+        /* Footer Styles */
+        .footer-root {
+            width: 100%;
+            background: #1a1a1a;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 4rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-brand-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .footer-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+
+        .footer-brand-description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 300px;
+        }
+
+        .section-content {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .footer-social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .footer-social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .footer-social-icon:hover {
+            background: rgba(99, 102, 241, 0.3);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .footer-nav-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-subtitle,
+        .footer-column-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .footer-nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-nav-link {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .footer-nav-link:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .footer-bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-copyright {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Page Specific Styles */
+        :root {
+            --color-surface: #0a0a0a;
+            --color-surface-elevated: #1a1a1a;
+            --color-primary: #6366f1;
+            --color-primary-hover: #4f46e5;
+            --color-text: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --color-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-surface);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            padding-top: 100px;
+            min-height: calc(100vh - 400px);
+        }
+
+        header.page-header {
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .last-updated {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .content-section {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+
+        h2:first-child {
+            margin-top: 0;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #a5b4fc;
+            margin-bottom: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        p {
+            color: var(--color-text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            color: var(--color-text-secondary);
+            margin-bottom: 0.5rem;
+            line-height: 1.8;
+        }
+
+        a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: #818cf8;
+            text-decoration: underline;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            text-decoration: none;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 6px;
+        }
+
+        .highlight-box {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 3px solid #6366f1;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .footer-brand-column {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .navigation-desktop-menu {
+                display: none;
+            }
+
+            .navigation-toggle {
+                display: block;
+            }
+
+            .navigation-container {
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+                padding-top: 80px;
+            }
+
+            .content-section {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-brand-column {
+                text-align: center;
+                align-items: center;
+            }
+            
+            .footer-social-links {
+                justify-content: center;
+            }
+            
+            .footer-brand-description {
+                max-width: 100%;
+            }
+            
+            .footer-bottom-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .footer-nav-column {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <navigation-wrapper class="navigation-wrapper">
+        <div class="navigation-container1">
+            <nav class="navigation-wrapper">
+                <div class="navigation-container">
+                    <a href="index.html">
+                        <div class="navigation-logo">
+                            <span class="section-title">baloneys</span>
+                        </div>
+                    </a>
+                    <div class="navigation-desktop-menu">
+                        <a href="index.html">
+                            <div class="navigation-link"><span>Home</span></div>
+                        </a>
+                        <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener">
+                            <div class="navigation-link"><span>Worlds</span></div>
+                        </a>
+                        <a href="dynabackend/vrc-dynamic-player-tags.html">
+                            <div class="navigation-link"><span>Tagging</span></div>
+                        </a>
+                        <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener">
+                            <div class="navigation-link"><span>Store</span></div>
+                        </a>
+                        <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener">
+                            <div class="btn-sm btn-primary btn"><span>Contact Me</span></div>
+                        </a>
+                    </div>
+                    <button id="navToggle" aria-label="Open Menu" aria-expanded="false" class="navigation-toggle">
+                        <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                            <path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+            <div id="mobileOverlay" class="navigation-mobile-overlay">
+                <div class="navigation-mobile-header">
+                    <a href="index.html">
+                        <div class="navigation-logo">
+                            <span class="section-title">baloneys</span>
+                        </div>
+                    </a>
+                    <button id="navClose" aria-label="Close Menu" class="navigation-toggle">
+                        <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                            <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="navigation-mobile-content">
+                    <div class="navigation-mobile-links">
+                        <a href="index.html"><div class="navigation-mobile-link"><span>Home</span></div></a>
+                        <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener">
+                            <div class="navigation-mobile-link"><span>Worlds</span></div>
+                        </a>
+                        <a href="dynabackend/vrc-dynamic-player-tags.html"><div class="navigation-mobile-link"><span>Tagging</span></div></a>
+                        <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener">
+                            <div class="navigation-mobile-link"><span>Store</span></div>
+                        </a>
+                    </div>
+                    <div class="navigation-mobile-actions">
+                        <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener">
+                            <div class="btn-primary btn-lg btn"><span>Contact Me</span></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </navigation-wrapper>
+
+    <div class="main-content">
+        <header class="page-header">
+            <h1>Privacy Policy</h1>
+            <p class="page-subtitle">How we handle your data (spoiler: we barely do)</p>
+            <p class="last-updated">Last updated: December 30, 2025</p>
+        </header>
+
+        <div class="content-section">
+            <h2>Hey there 👋</h2>
+            <p>Welcome to my privacy policy. I know these are usually boring legal docs, but I'll try to keep this straightforward and honest about what's actually happening with your data when you visit my site.</p>
+
+            <div class="highlight-box">
+                <p><strong>TL;DR:</strong> I don't collect or store your personal information. I use basic analytics to see where visitors are coming from geographically, but I don't track individual users or handle IP addresses directly.</p>
+            </div>
+
+            <h2>What I Don't Collect</h2>
+            <p>Let's start with the good news - here's what I'm <strong>not</strong> doing:</p>
+            <ul>
+                <li><strong>No personal information:</strong> I don't ask for, collect, or store your name, email, phone number, or any other identifying details.</li>
+                <li><strong>No account data:</strong> There are no user accounts on this site, so there's nothing to sign up for or log into.</li>
+                <li><strong>No IP addresses:</strong> I don't directly collect or store your IP address.</li>
+                <li><strong>No tracking cookies:</strong> I don't use cookies to track you across the internet or build a profile of your browsing habits.</li>
+                <li><strong>No selling data:</strong> There's nothing to sell because I'm not collecting anything worth selling.</li>
+            </ul>
+
+            <h2>What I Do Track</h2>
+            <p>I use basic analytics to understand how people use my site. This helps me know if anyone's actually visiting and where they're coming from. Here's what gets tracked:</p>
+            
+            <h3>Analytics Data</h3>
+            <ul>
+                <li><strong>Location data:</strong> General geographic information (like country or region) to see where visitors are from.</li>
+                <li><strong>Page views:</strong> Which pages get visited and how often.</li>
+                <li><strong>Referral sources:</strong> Where traffic comes from (like if you clicked a link from Discord or Twitter).</li>
+                <li><strong>Device type:</strong> Whether you're on mobile, desktop, etc. - just for making sure the site works well on different devices.</li>
+            </ul>
+
+            <p>This data is aggregated and anonymized. I can't identify individual users, and I don't want to. I just want to know if people are finding my stuff useful.</p>
+
+            <h3>Third-Party Services</h3>
+            <p>The analytics I use are handled by third-party services (like Google Analytics or similar platforms). These services may process data according to their own privacy policies. They handle the technical side of analytics, including any IP-related processing, but they don't give me access to personal information about you.</p>
+
+            <h2>External Links</h2>
+            <p>My site links to external places like:</p>
+            <ul>
+                <li>My Jinxxy store</li>
+                <li>My VRChat profile</li>
+                <li>My Discord server</li>
+                <li>GitHub repositories</li>
+            </ul>
+            <p>When you click these links, you're leaving my site and entering someone else's domain. Those sites have their own privacy policies, and I don't control what they do. Make sure to check out their policies if you're concerned about how they handle your data.</p>
+
+            <h2>Children's Privacy</h2>
+            <p>My site isn't specifically designed for kids, but there's nothing age-restricted here either. Since I don't collect personal information from anyone, I don't knowingly collect information from children under 13.</p>
+
+            <h2>Data Security</h2>
+            <p>Since I'm not storing your personal data, there's not much to secure on my end. The site uses standard HTTPS encryption, which means your connection to the site is secure. But honestly, there's no sensitive data being transmitted in the first place.</p>
+
+            <h2>Your Rights</h2>
+            <p>Because I don't collect personal data about you, there's nothing to:</p>
+            <ul>
+                <li>Request access to</li>
+                <li>Request deletion of</li>
+                <li>Request correction of</li>
+                <li>Opt out of</li>
+            </ul>
+            <p>You're already opted out of everything by default!</p>
+
+            <h2>Changes to This Policy</h2>
+            <p>If I ever change how I handle data (which would probably only happen if I add some kind of new feature), I'll update this page and change the "Last updated" date at the top.</p>
+
+            <p>I'm not going to email you about changes because, well, I don't have your email. Just check back here if you're curious.</p>
+
+            <h2>Contact</h2>
+            <p>If you have questions about this privacy policy or how I handle data, feel free to reach out:</p>
+            <ul>
+                <li><strong>Discord:</strong> Join my server at <a href="https://discord.gg/gYWJsYhwXN" target="_blank">https://discord.gg/gYWJsYhwXN</a></li>
+                <li><strong>VRChat:</strong> You can find me at <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank">my VRChat profile</a></li>
+            </ul>
+
+            <h2>Bottom Line</h2>
+            <p>I built this site to share my VRChat worlds and tools with the community. I'm not interested in building user profiles or collecting data beyond basic analytics that help me understand if people are finding the site useful.</p>
+
+            <p>If you have concerns about the third-party analytics providers, you can use browser extensions that block analytics scripts, and the site will still work fine.</p>
+
+            <p>Thanks for reading, and happy world-building!</p>
+
+            <p style="margin-top: 2rem; color: rgba(255, 255, 255, 0.5); font-style: italic;">- bal</p>
+        </div>
+    </div>
+
+    <footer-wrapper class="footer-wrapper">
+        <div class="footer-container1">
+            <footer class="footer-root">
+                <div class="footer-container">
+                    <div class="footer-grid">
+                        <div class="footer-brand-column">
+                            <a href="index.html">
+                                <div class="footer-logo-link">
+                                    <span class="footer-logo-text">baloneys</span>
+                                </div>
+                            </a>
+                            <p class="footer-brand-description section-content">
+                                <span>Crafting highly immersive experiences,</span><br />
+                                <span>environments, and robust prefabs.</span>
+                            </p>
+                            <div class="footer-social-links">
+                                <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener">
+                                    <div aria-label="Discord" class="footer-social-icon">
+                                        <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M8 12a1 1 0 1 0 2 0a1 1 0 0 0-2 0m6 0a1 1 0 1 0 2 0a1 1 0 0 0-2 0"></path>
+                                                <path d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833-1.667 3.5-3c.667-1.667.5-5.833-1.5-11.5c-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.9 11.9 0 0 0-4.053 0L9 4c-1.5.16-3.043.485-4.5 1.5c-2 5.667-2.167 9.833-1.5 11.5c.667 1.333 2 3 3.5 3c.5 0 2-2 2-3"></path>
+                                                <path d="M7 16.5c3.5 1 6.5 1 10 0"></path>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </a>
+                                <a href="https://x.com/beilude" target="_blank" rel="noreferrer noopener">
+                                    <div aria-label="Twitter" class="footer-social-icon">
+                                        <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                                            <path d="M22 4.01c-1 .49-1.98.689-3 .99c-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4c0 0-4.182 7.433 4 11c-1.872 1.247-3.739 2.088-6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58-1.04 6.522-3.723 7.651-7.742a13.8 13.8 0 0 0 .497-3.753c0-.249 1.51-2.772 1.818-4.013z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                    </div>
+                                </a>
+                                <a href="https://github.com/baloneys" target="_blank" rel="noreferrer noopener">
+                                    <div aria-label="GitHub" class="footer-social-icon">
+                                        <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5c.08-1.25-.27-2.48-1-3.5c.28-1.15.28-2.35 0-3.5c0 0-1 0-3 1.5c-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5c-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"></path>
+                                                <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="footer-nav-column">
+                            <h3 class="section-subtitle footer-column-title">Navigation</h3>
+                            <nav class="footer-nav-list">
+                                <a href="index.html"><div class="footer-nav-link"><span>Home</span></div></a>
+                                <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener">
+                                    <div class="footer-nav-link"><span>Jinxxy Store</span></div>
+                                </a>
+                                <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener">
+                                    <div class="footer-nav-link"><span>VRChat Worlds</span></div>
+                                </a>
+                                <a href="dynabackend/vrc-dynamic-player-tags.html">
+                                    <div class="footer-nav-link"><span>VRCDynamicPlayerTags</span></div>
+                                </a>
+                            </nav>
+                        </div>
+                        <div class="footer-nav-column">
+                            <h3 class="section-subtitle footer-column-title">Resources</h3>
+                            <nav class="footer-nav-list">
+                                <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener">
+                                    <div class="footer-nav-link"><span>Support Discord</span></div>
+                                </a>
+                                <a href="terms.html">
+                                    <div class="footer-nav-link"><span>Terms of Service</span></div>
+                                </a>
+                                <a href="privacy.html">
+                                    <div class="footer-nav-link"><span>Privacy Policy</span></div>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="footer-bottom">
+                        <div class="footer-bottom-content">
+                            <p class="footer-copyright section-content">© 2025 baloneys. All rights reserved</p>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </footer-wrapper>
+
+    <script>
+        // Navigation script
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.getElementById("navToggle");
+            const navClose = document.getElementById("navClose");
+            const mobileOverlay = document.getElementById("mobileOverlay");
+            const body = document.body;
+
+            function openMenu() {
+                mobileOverlay.classList.add("is-open");
+                navToggle.setAttribute("aria-expanded", "true");
+                body.style.overflow = "hidden";
+            }
+
+            function closeMenu() {
+                mobileOverlay.classList.remove("is-open");
+                navToggle.setAttribute("aria-expanded", "false");
+                body.style.overflow = "";
+            }
+
+            navToggle.addEventListener("click", openMenu);
+            navClose.addEventListener("click", closeMenu);
+
+            const mobileLinks = mobileOverlay.querySelectorAll(".navigation-mobile-link");
+            mobileLinks.forEach((link) => {
+                link.addEventListener("click", closeMenu);
+            });
+
+            window.addEventListener("resize", () => {
+                if (window.innerWidth > 767 && mobileOverlay.classList.contains("is-open")) {
+                    closeMenu();
+                }
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && mobileOverlay.classList.contains("is-open")) {
+                    closeMenu();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

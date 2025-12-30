@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - baloneys</title>
+    <link rel="shortcut icon" href="../public/pw64s5dmavz539gvjm065tw71xp1.png" type="icon/png" sizes="32x32">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap">
+    <style>
+        /* Navigation Styles */
+        .navigation-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navigation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navigation-logo {
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .navigation-logo:hover {
+            opacity: 0.8;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+
+        .navigation-desktop-menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .navigation-link {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .navigation-link:hover {
+            color: #ffffff;
+        }
+
+        .navigation-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .navigation-mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 10, 0.98);
+            z-index: 2000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .navigation-mobile-overlay.is-open {
+            transform: translateX(0);
+        }
+
+        .navigation-mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navigation-mobile-content {
+            padding: 2rem;
+        }
+
+        .navigation-mobile-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .navigation-mobile-link {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0.5rem 0;
+        }
+
+        .navigation-mobile-link:hover {
+            color: #ffffff;
+            transform: translateX(0.5rem);
+        }
+
+        .navigation-mobile-actions {
+            margin-top: 2rem;
+        }
+
+        /* Footer Styles */
+        .footer-root {
+            width: 100%;
+            background: #1a1a1a;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 4rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-brand-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .footer-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+
+        .footer-brand-description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 300px;
+        }
+
+        .section-content {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .footer-social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .footer-social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .footer-social-icon:hover {
+            background: rgba(99, 102, 241, 0.3);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .footer-nav-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-subtitle,
+        .footer-column-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .footer-nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-nav-link {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .footer-nav-link:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .footer-bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-copyright {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Page Specific Styles */
+        :root {
+            --color-surface: #0a0a0a;
+            --color-surface-elevated: #1a1a1a;
+            --color-primary: #6366f1;
+            --color-primary-hover: #4f46e5;
+            --color-text: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --color-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-surface);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            padding-top: 100px;
+            min-height: calc(100vh - 400px);
+        }
+
+        header.page-header {
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .last-updated {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .content-section {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+
+        h2:first-child {
+            margin-top: 0;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #a5b4fc;
+            margin-bottom: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        p {
+            color: var(--color-text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            color: var(--color-text-secondary);
+            margin-bottom: 0.5rem;
+            line-height: 1.8;
+        }
+
+        a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: #818cf8;
+            text-decoration: underline;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            text-decoration: none;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 6px;
+        }
+
+        .highlight-box {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 3px solid #6366f1;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        .warning-box {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+            color: #fca5a5;
+        }
+
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .success-box p {
+            margin-bottom: 0;
+            color: #6ee7b7;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .footer-brand-column {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .navigation-desktop-menu {
+                display: none;
+            }
+
+            .navigation-toggle {
+                display: block;
+            }
+
+            .navigation-container {
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+                padding-top: 80px;
+            }
+
+            .content-section {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-brand-column {
+                text-align: center;
+                align-items: center;
+            }
+            
+            .footer-social-links {
+                justify-content: center;
+            }
+            
+            .footer-brand-description {
+                max-width: 100%;
+            }
+            
+            .footer-bottom-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .footer-nav-column {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <navigation-wrapper class="navigation-wrapper">
+        <div class="navigation-container1">
+            <nav class="navigation-wrapper">
+                <div class="navigation-container">
+                    <a href="index.html">
+                        <div class="navigation-logo">
+                            <span class="section-title">baloneys</span>
+                        </div>
+                    </a>
+                    <div class="navigation-desktop-menu">
+                        <a href="index.html">
+                            <div class="navigation-link"><span>Home</span></div>
+                        </a>
+                        <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener">
+                            <div class="navigation-link"><span>Worlds</span></div>
+                        </a>
+                        <a href="dynabackend/vrc-dynamic-player-tags.html">
+                            <div class="navigation-link"><span>Tagging</span></div>
+                        </a>
+                        <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener">
+                            <div class="navigation-link"><span>Store</span></div>
+                        </a>
+                        <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener">
+                            <div class="btn-sm btn-primary btn"><span>Contact Me</span></div>
+                        </a>
+                    </div>
+                    <button id="navToggle" aria-label="Open Menu" aria-expanded="false" class="navigation-toggle">
+                        <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                            <path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+            <div id="mobileOverlay" class="navigation-mobile-overlay">
+                <div class="navigation-mobile-header">
+                    <a href="index.html">
+                        <div class="navigation-logo">
+                            <span class="section-title">baloneys</span>
+                        </div>
+                    </a>
+                    <button id="navClose" aria-label="Close Menu" class="navigation-toggle">
+                        <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                            <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="navigation-mobile-content">
+                    <div class="navigation-mobile-links">
+                        <a href="index.html"><div class="navigation-mobile-link"><span>Home</span></div></a>
+                        <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener">
+                            <div class="navigation-mobile-link"><span>Worlds</span></div>
+                        </a>
+                        <a href="dynabackend/vrc-dynamic-player-tags.html"><div class="navigation-mobile-link"><span>Tagging</span></div></a>
+                        <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener">
+                            <div class="navigation-mobile-link"><span>Store</span></div>
+                        </a>
+                    </div>
+                    <div class="navigation-mobile-actions">
+                        <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener">
+                            <div class="btn-primary btn-lg btn"><span>Contact Me</span></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </navigation-wrapper>
+
+    <div class="main-content">
+        <header class="page-header">
+            <h1>Terms of Service</h1>
+            <p class="page-subtitle">The rules for using my assets and stuff</p>
+            <p class="last-updated">Last updated: December 30, 2025</p>
+        </header>
+
+        <div class="content-section">
+            <h2>Welcome 👋</h2>
+            <p>Thanks for checking out my VRChat worlds, prefabs, and tools! These terms cover how you can (and can't) use the stuff I create. I've tried to keep this straightforward while still covering all the important legal bits.</p>
+
+            <div class="highlight-box">
+                <p><strong>Quick Summary:</strong> Buy it, use it in your worlds, modify it for yourself, give me credit. Don't resell it, don't redistribute it, don't claim it as yours. Pretty standard stuff for VRChat assets.</p>
+            </div>
+
+            <h2>What These Terms Cover</h2>
+            <p>These terms apply to everything I create and distribute, including:</p>
+            <ul>
+                <li>VRChat world prefabs and assets</li>
+                <li>Unity packages and tools</li>
+                <li>Scripts and UdonSharp code</li>
+                <li>Prefabs sold on my Jinxxy store</li>
+                <li>Free assets and tools available on my website</li>
+                <li>Documentation and guides</li>
+            </ul>
+
+            <h2>License & Usage Rights</h2>
+            <p>When you purchase or download my assets, here's what you're getting:</p>
+
+            <h3>✅ What You CAN Do</h3>
+            <ul>
+                <li><strong>Personal Use:</strong> Use the assets in your own VRChat worlds, both public and private.</li>
+                <li><strong>Modifications:</strong> Edit, modify, and customize the assets to fit your needs. Go wild with it.</li>
+                <li><strong>Commercial Worlds:</strong> Use the assets in worlds where you might earn money (through donations, commissions, etc.).</li>
+                <li><strong>Multiple Worlds:</strong> Use purchased assets across as many of your own worlds as you want.</li>
+                <li><strong>Backup Copies:</strong> Make backup copies for your own archival purposes.</li>
+                <li><strong>Collaboration:</strong> Work with other creators on worlds that use my assets, as long as they follow these terms too.</li>
+            </ul>
+
+            <h3>❌ What You CAN'T Do</h3>
+            <ul>
+                <li><strong>No Reselling:</strong> Don't sell, rent, lease, or sublicense my assets. Even modified versions.</li>
+                <li><strong>No Redistribution:</strong> Don't share, upload to other platforms, or give away the asset files to others.</li>
+                <li><strong>No Claiming as Yours:</strong> Don't remove my credits or claim you created the assets.</li>
+                <li><strong>No Public Unity Packages:</strong> Don't repackage my assets into Unity packages and share them publicly.</li>
+                <li><strong>No Reuploading:</strong> Don't upload the assets to VRChat under your own account (your worlds that use them are fine, just not the raw assets).</li>
+                <li><strong>No Bypassing Purchase:</strong> Don't share purchase links, account details, or find other ways to let people skip buying it themselves.</li>
+            </ul>
+
+            <div class="warning-box">
+                <p><strong>Important:</strong> If someone else wants to use these assets, they need to purchase their own copy. This helps me keep making cool stuff for the community!</p>
+            </div>
+
+            <h2>Credit & Attribution</h2>
+            <p>I'd really appreciate it if you give credit when using my assets! Here's how:</p>
+            <ul>
+                <li><strong>In Your World:</strong> Include my name (baloneys) somewhere players can see it - world description, a credits board, wherever makes sense.</li>
+                <li><strong>On Social Media:</strong> If you're showing off a world that uses my prefabs, a mention or tag would be awesome.</li>
+                <li><strong>Format:</strong> Something like "Assets by baloneys" or "Using [Asset Name] by baloneys" works great.</li>
+            </ul>
+            <p>This isn't technically required for personal worlds, but it helps other people discover my work and supports what I do. Much appreciated!</p>
+
+            <h2>Refunds & Returns</h2>
+            <p>Here's my refund policy for purchased assets:</p>
+
+            <h3>When I'll Issue Refunds</h3>
+            <ul>
+                <li><strong>Asset Doesn't Work:</strong> If the asset is legitimately broken and I can't fix it, you'll get a refund.</li>
+                <li><strong>Missing Files:</strong> If essential files are missing from the package and I can't provide them.</li>
+                <li><strong>Incompatibility Issues:</strong> If the asset doesn't work with the advertised Unity/VRChat SDK versions and can't be made to work.</li>
+            </ul>
+
+            <h3>When I Won't Issue Refunds</h3>
+            <ul>
+                <li><strong>Buyer's Remorse:</strong> Changed your mind? Sorry, digital products can't be returned once downloaded.</li>
+                <li><strong>User Error:</strong> If the asset works but you're having trouble implementing it (though I'm happy to help troubleshoot!).</li>
+                <li><strong>After Extended Use:</strong> If you've been using the asset for weeks/months and then ask for a refund.</li>
+                <li><strong>Project Changes:</strong> You decided to change your world concept and don't need it anymore.</li>
+            </ul>
+
+            <p>If you're having issues, hit me up on Discord first. Most problems can be solved with some troubleshooting, and I genuinely want to help you get things working.</p>
+
+            <h2>Updates & Support</h2>
+            
+            <h3>Updates</h3>
+            <ul>
+                <li>I'll do my best to keep assets updated for new Unity and VRChat SDK versions.</li>
+                <li>Updates are free if you've purchased the asset.</li>
+                <li>I can't guarantee updates will happen immediately when VRChat updates, but I'll try to get them out reasonably quickly.</li>
+                <li>Some older assets might not get updates if they're deprecated or replaced by newer versions.</li>
+            </ul>
+
+            <h3>Support</h3>
+            <ul>
+                <li><strong>Discord:</strong> Best place to get help is my Discord server. I'm pretty active there.</li>
+                <li><strong>Response Time:</strong> I'll try to respond within 24-48 hours, but keep in mind this is a side project and I have a day job.</li>
+                <li><strong>What I'll Help With:</strong> Installation issues, bugs, basic implementation questions.</li>
+                <li><strong>What I Won't Do:</strong> Build your entire world for you, provide 1-on-1 lessons, or debug your custom code.</li>
+            </ul>
+
+            <h2>Asset Quality & Warranties</h2>
+            <p>Real talk time about what I can and can't promise:</p>
+
+            <h3>What I Guarantee</h3>
+            <ul>
+                <li>The assets will function as described in the product listing.</li>
+                <li>Files will be complete and not corrupted.</li>
+                <li>Assets are compatible with the Unity/SDK versions listed on the product page.</li>
+            </ul>
+
+            <h3>What I Don't Guarantee</h3>
+            <ul>
+                <li><strong>Perfect Code:</strong> My code works, but it's not military-grade. There might be edge cases or minor bugs.</li>
+                <li><strong>Performance:</strong> Asset performance depends on how you use it, your world optimization, and user hardware.</li>
+                <li><strong>Future Compatibility:</strong> VRChat updates break things sometimes. I'll fix what I can, but can't promise instant fixes.</li>
+                <li><strong>Support Forever:</strong> I plan to stick around, but life happens. No guarantees of eternal support.</li>
+            </ul>
+
+            <p>Basically: I make quality stuff and stand behind it, but I'm an independent creator, not a corporation. I'll do my best to help you succeed.</p>
+
+            <h2>Liability & Disclaimer</h2>
+            <p>Here's the legal CYA stuff (but explained like a human):</p>
+
+            <div class="warning-box">
+                <p><strong>Use at Your Own Risk:</strong> My assets are provided "as is." I'm not responsible for any problems that arise from using them, including world crashes, data loss, or issues with your VRChat account.</p>
+            </div>
+
+            <p>This includes but isn't limited to:</p>
+            <ul>
+                <li>World corruption or data loss</li>
+                <li>VRChat terms of service violations (use responsibly!)</li>
+                <li>Performance issues or crashes</li>
+                <li>Conflicts with other assets or scripts</li>
+                <li>Loss of time or opportunity costs</li>
+            </ul>
+
+            <p>Make backups of your Unity projects before importing my assets. Seriously, backup everything always - it's just good practice.</p>
+
+            <h2>Intellectual Property</h2>
+            <p>Let's be clear about who owns what:</p>
+            <ul>
+                <li><strong>My Assets:</strong> I retain all rights to my original assets, prefabs, scripts, and documentation.</li>
+                <li><strong>Your Modifications:</strong> Any modifications you make to my assets are yours, but you still can't redistribute the original assets.</li>
+                <li><strong>Your Worlds:</strong> Your worlds are yours. Using my assets in them doesn't give me any rights to your world.</li>
+                <li><strong>Third-Party Assets:</strong> Some of my packages might use third-party assets. Those are covered by their respective licenses.</li>
+            </ul>
+
+            <h2>VRChat-Specific Terms</h2>
+            <p>Some important stuff about using these in VRChat:</p>
+            <ul>
+                <li><strong>VRChat ToS:</strong> You're responsible for following VRChat's Terms of Service. If you use my assets in a way that violates their rules, that's on you.</li>
+                <li><strong>SDK Compliance:</strong> My assets follow VRChat SDK guidelines, but you need to ensure your final world does too.</li>
+                <li><strong>Performance Ranks:</strong> I try to make efficient assets, but final performance depends on your entire world. Optimize appropriately.</li>
+                <li><strong>Quest Compatibility:</strong> If an asset is marked as Quest-compatible, it meets basic requirements, but you still need to test and optimize.</li>
+            </ul>
+
+            <h2>DMCA & Copyright Issues</h2>
+            <p>If you see someone redistributing or selling my assets without permission:</p>
+            <ul>
+                <li><strong>Let Me Know:</strong> Message me on Discord with details and evidence.</li>
+                <li><strong>Don't Engage:</strong> Don't harass them or start drama. I'll handle it.</li>
+                <li><strong>DMCA Process:</strong> For serious cases, I'll file DMCA takedowns with the platforms.</li>
+            </ul>
+
+            <p>Conversely, if you believe I'm infringing on your copyright, please contact me directly before taking action. I take IP rights seriously and will work with you to resolve any legitimate concerns.</p>
+
+            <h2>Account Termination</h2>
+            <p>I reserve the right to revoke your license if you:</p>
+            <ul>
+                <li>Violate these terms (especially redistribution or resale)</li>
+                <li>Use my assets for illegal activities</li>
+                <li>Harass me or other community members</li>
+                <li>Engage in chargebacks or payment fraud</li>
+            </ul>
+
+            <p>If your license is revoked, you must stop using the assets and delete all copies. I'm pretty chill, so you'd have to really mess up for this to happen.</p>
+
+            <h2>Changes to These Terms</h2>
+            <p>I might update these terms occasionally. When I do:</p>
+            <ul>
+                <li>I'll update the "Last updated" date at the top</li>
+                <li>Major changes will be announced on my Discord</li>
+                <li>Continued use of assets means you accept the new terms</li>
+                <li>Existing purchases are grandfathered under the terms at time of purchase (unless the changes are legally required)</li>
+            </ul>
+
+            <h2>Jurisdiction & Disputes</h2>
+            <p>If we have a dispute:</p>
+            <ul>
+                <li><strong>Talk First:</strong> Seriously, just message me on Discord. Most issues can be worked out.</li>
+                <li><strong>Informal Resolution:</strong> I'm big on resolving things like adults without lawyers.</li>
+                <li><strong>Formal Process:</strong> If we can't work it out and legal action is necessary, these terms are governed by the laws of [Your State/Country].</li>
+            </ul>
+
+            <h2>Severability</h2>
+            <p>If any part of these terms is found to be unenforceable, the rest still applies. Basically, one bad clause doesn't invalidate everything.</p>
+
+            <h2>Contact & Questions</h2>
+            <p>Got questions about these terms? Need clarification on what you can do with an asset?</p>
+            <ul>
+                <li><strong>Discord:</strong> <a href="https://discord.gg/gYWJsYhwXN" target="_blank">https://discord.gg/gYWJsYhwXN</a> (best option)</li>
+                <li><strong>VRChat:</strong> Hit me up in-game</li>
+                <li><strong>Jinxxy:</strong> Message me through my store</li>
+            </ul>
+
+            <p>I'm pretty approachable and happy to answer questions. Don't be shy!</p>
+
+            <h2>Final Thoughts</h2>
+            <p>Look, I wrote all this legal stuff because I have to, but here's the real deal: I make these assets because I love VRChat and want to help other creators make cool worlds. If you use my stuff, use it responsibly, don't be a jerk about redistribution, and we'll all have a good time.</p>
+
+            <p>These terms exist to protect both of us - they let me keep creating knowing my work won't be stolen, and they give you clear guidelines on how to use what you purchase.</p>
+
+            <div class="success-box">
+                <p><strong>Thanks for supporting independent VRChat creators!</strong> Every purchase helps me dedicate more time to making better tools and prefabs for the community.</p>
+            </div>
+
+            <p>Now go make something awesome with these assets!</p>
+
+            <p style="margin-top: 2rem; color: rgba(255, 255, 255, 0.5); font-style: italic;">- bal</p>
+        </div>
+    </div>
+
+    <footer-wrapper class="footer-wrapper">
+        <div class="footer-container1">
+            <footer class="footer-root">
+                <div class="footer-container">
+                    <div class="footer-grid">
+                        <div class="footer-brand-column">
+                            <a href="index.html">
+                                <div class="footer-logo-link">
+                                    <span class="footer-logo-text">baloneys</span>
+                                </div>
+                            </a>
+                            <p class="footer-brand-description section-content">
+                                <span>Crafting highly immersive experiences,</span><br />
+                                <span>environments, and robust prefabs.</span>
+                            </p>
+                            <div class="footer-social-links">
+                                <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener">
+                                    <div aria-label="Discord" class="footer-social-icon">
+                                        <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M8 12a1 1 0 1 0 2 0a1 1 0 0 0-2 0m6 0a1 1 0 1 0 2 0a1 1 0 0 0-2 0"></path>
+                                                <path d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833-1.667 3.5-3c.667-1.667.5-5.833-1.5-11.5c-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.9 11.9 0 0 0-4.053 0L9 4c-1.5.16-3.043.485-4.5 1.5c-2 5.667-2.167 9.833-1.5 11.5c.667 1.333 2 3 3.5 3c.5 0 2-2 2-3"></path>
+                                                <path d="M7 16.5c3.5 1 6.5 1 10 0"></path>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </a>
+                                <a href="https://x.com/beilude" target="_blank" rel="noreferrer noopener">
+                                    <div aria-label="Twitter" class="footer-social-icon">
+                                        <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                                            <path d="M22 4.01c-1 .49-1.98.689-3 .99c-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4c0 0-4.182 7.433 4 11c-1.872 1.247-3.739 2.088-6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58-1.04 6.522-3.723 7.651-7.742a13.8 13.8 0 0 0 .497-3.753c0-.249 1.51-2.772 1.818-4.013z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                    </div>
+                                </a>
+                                <a href="https://github.com/baloneys" target="_blank" rel="noreferrer noopener">
+                                    <div aria-label="GitHub" class="footer-social-icon">
+                                        <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5c.08-1.25-.27-2.48-1-3.5c.28-1.15.28-2.35 0-3.5c0 0-1 0-3 1.5c-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5c-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"></path>
+                                                <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="footer-nav-column">
+                            <h3 class="section-subtitle footer-column-title">Navigation</h3>
+                            <nav class="footer-nav-list">
+                                <a href="index.html"><div class="footer-nav-link"><span>Home</span></div></a>
+                                <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener">
+                                    <div class="footer-nav-link"><span>Jinxxy Store</span></div>
+                                </a>
+                                <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener">
+                                    <div class="footer-nav-link"><span>VRChat Worlds</span></div>
+                                </a>
+                                <a href="dynabackend/vrc-dynamic-player-tags.html">
+                                    <div class="footer-nav-link"><span>VRCDynamicPlayerTags</span></div>
+                                </a>
+                            </nav>
+                        </div>
+                        <div class="footer-nav-column">
+                            <h3 class="section-subtitle footer-column-title">Resources</h3>
+                            <nav class="footer-nav-list">
+                                <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener">
+                                    <div class="footer-nav-link"><span>Support Discord</span></div>
+                                </a>
+                                <a href="terms.html">
+                                    <div class="footer-nav-link"><span>Terms of Service</span></div>
+                                </a>
+                                <a href="privacy.html">
+                                    <div class="footer-nav-link"><span>Privacy Policy</span></div>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="footer-bottom">
+                        <div class="footer-bottom-content">
+                            <p class="footer-copyright section-content">© 2025 baloneys. All rights reserved</p>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </footer-wrapper>
+
+    <script>
+        // Navigation script
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.getElementById("navToggle");
+            const navClose = document.getElementById("navClose");
+            const mobileOverlay = document.getElementById("mobileOverlay");
+            const body = document.body;
+
+            function openMenu() {
+                mobileOverlay.classList.add("is-open");
+                navToggle.setAttribute("aria-expanded", "true");
+                body.style.overflow = "hidden";
+            }
+
+            function closeMenu() {
+                mobileOverlay.classList.remove("is-open");
+                navToggle.setAttribute("aria-expanded", "false");
+                body.style.overflow = "";
+            }
+
+            navToggle.addEventListener("click", openMenu);
+            navClose.addEventListener("click", closeMenu);
+
+            const mobileLinks = mobileOverlay.querySelectorAll(".navigation-mobile-link");
+            mobileLinks.forEach((link) => {
+                link.addEventListener("click", closeMenu);
+            });
+
+            window.addEventListener("resize", () => {
+                if (window.innerWidth > 767 && mobileOverlay.classList.contains("is-open")) {
+                    closeMenu();
+                }
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && mobileOverlay.classList.contains("is-open")) {
+                    closeMenu();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

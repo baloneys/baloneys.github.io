@@ -548,6 +548,22 @@
                     <button onclick="cancelLobby()" style="background: #ff4444; margin-top: 15px;">Cancel</button>
                 </div>
 
+                <div id="readyScreen" class="hidden">
+                    <div class="status waiting">
+                        <h2 style="color: #6366f1; margin-bottom: 20px;">Get Ready!</h2>
+                        <div style="margin-bottom: 20px;">
+                            <p id="player1Ready" style="margin: 10px 0;">
+                                <span style="color: #6366f1;">●</span> Player 1: <span id="p1ReadyStatus">Not Ready</span>
+                            </p>
+                            <p id="player2Ready" style="margin: 10px 0;">
+                                <span style="color: #6366f1;">●</span> Player 2: <span id="p2ReadyStatus">Not Ready</span>
+                            </p>
+                        </div>
+                        <button id="readyButton" onclick="toggleReady()">Ready Up!</button>
+                        <button onclick="cancelLobby()" style="background: #ff4444; margin-top: 15px;">Cancel</button>
+                    </div>
+                </div>
+
                 <div id="statusMessage" class="status hidden"></div>
 
                 <div id="gameArea" class="hidden">
@@ -664,6 +680,9 @@
         let conn = null;
         let isHost = false;
         let lobbyCode = null;
+        let player1Ready = false;
+        let player2Ready = false;
+        let myReady = false;
 
         const paddleWidth = 15;
         const paddleHeight = 100;
@@ -775,14 +794,29 @@
             conn.on('open', () => {
                 showStatus('Connected to opponent!', 'connected');
                 setTimeout(() => {
-                    if (!isHost) {
-                        startOnlineGame();
-                    }
+                    // Show ready screen instead of starting immediately
+                    document.getElementById('lobbyWaiting').classList.add('hidden');
+                    document.getElementById('readyScreen').classList.remove('hidden');
+                    hideStatus();
                 }, 1000);
             });
 
             conn.on('data', (data) => {
-                if (data.type === 'gameState') {
+                if (data.type === 'ready') {
+                    // Update opponent's ready state
+                    if (isHost) {
+                        player2Ready = data.ready;
+                        document.getElementById('p2ReadyStatus').textContent = player2Ready ? 'Ready!' : 'Not Ready';
+                        document.getElementById('p2ReadyStatus').style.color = player2Ready ? '#10b981' : '#e0e0e0';
+                    } else {
+                        player1Ready = data.ready;
+                        document.getElementById('p1ReadyStatus').textContent = player1Ready ? 'Ready!' : 'Not Ready';
+                        document.getElementById('p1ReadyStatus').style.color = player1Ready ? '#10b981' : '#e0e0e0';
+                    }
+                    
+                    // Check if both players are ready
+                    checkBothReady();
+                } else if (data.type === 'gameState') {
                     if (isHost) {
                         paddle2.y = data.paddleY;
                     } else {
@@ -807,10 +841,48 @@
             });
         }
 
+        function toggleReady() {
+            myReady = !myReady;
+            
+            // Update my ready state
+            if (isHost) {
+                player1Ready = myReady;
+                document.getElementById('p1ReadyStatus').textContent = player1Ready ? 'Ready!' : 'Not Ready';
+                document.getElementById('p1ReadyStatus').style.color = player1Ready ? '#10b981' : '#e0e0e0';
+            } else {
+                player2Ready = myReady;
+                document.getElementById('p2ReadyStatus').textContent = player2Ready ? 'Ready!' : 'Not Ready';
+                document.getElementById('p2ReadyStatus').style.color = player2Ready ? '#10b981' : '#e0e0e0';
+            }
+            
+            // Update button text
+            const readyButton = document.getElementById('readyButton');
+            readyButton.textContent = myReady ? 'Cancel Ready' : 'Ready Up!';
+            readyButton.style.background = myReady ? '#10b981' : '#6366f1';
+            
+            // Send ready state to opponent
+            if (conn && conn.open) {
+                conn.send({ type: 'ready', ready: myReady });
+            }
+            
+            // Check if both players are ready
+            checkBothReady();
+        }
+
+        function checkBothReady() {
+            if (player1Ready && player2Ready) {
+                showStatus('Both players ready! Starting game...', 'connected');
+                setTimeout(() => {
+                    startOnlineGame();
+                }, 1500);
+            }
+        }
+
         function startOnlineGame() {
             gameMode = 'online';
             document.getElementById('onlineMenu').classList.add('hidden');
             document.getElementById('lobbyWaiting').classList.add('hidden');
+            document.getElementById('readyScreen').classList.add('hidden');
             document.getElementById('gameArea').classList.remove('hidden');
             document.getElementById('localControls').classList.add('hidden');
             document.getElementById('onlineControls').classList.remove('hidden');
@@ -823,6 +895,10 @@
         function cancelLobby() {
             if (peer) peer.destroy();
             document.getElementById('lobbyWaiting').classList.add('hidden');
+            document.getElementById('readyScreen').classList.add('hidden');
+            player1Ready = false;
+            player2Ready = false;
+            myReady = false;
             backToMainMenu();
         }
 
@@ -997,7 +1073,11 @@
             if (peer) peer.destroy();
             
             document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('readyScreen').classList.add('hidden');
             document.getElementById('menu').classList.remove('hidden');
+            player1Ready = false;
+            player2Ready = false;
+            myReady = false;
             hideStatus();
         }
     </script>

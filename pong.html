@@ -759,7 +759,6 @@
             peer.on('connection', (connection) => {
                 conn = connection;
                 setupConnection();
-                startOnlineGame();
             });
 
             peer.on('error', (err) => {
@@ -795,6 +794,19 @@
             conn.on('open', () => {
                 showStatus('Connected to opponent!', 'connected');
                 setTimeout(() => {
+                    // Reset ready states
+                    player1Ready = false;
+                    player2Ready = false;
+                    myReady = false;
+                    
+                    // Initialize ready screen UI
+                    document.getElementById('p1ReadyStatus').textContent = 'Not Ready';
+                    document.getElementById('p1ReadyStatus').style.color = '#e0e0e0';
+                    document.getElementById('p2ReadyStatus').textContent = 'Not Ready';
+                    document.getElementById('p2ReadyStatus').style.color = '#e0e0e0';
+                    document.getElementById('readyButton').textContent = 'Ready Up!';
+                    document.getElementById('readyButton').style.background = '#6366f1';
+                    
                     // Show ready screen instead of starting immediately
                     document.getElementById('lobbyWaiting').classList.add('hidden');
                     document.getElementById('readyScreen').classList.remove('hidden');

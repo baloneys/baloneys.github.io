@@ -832,63 +832,68 @@
         });
         document.addEventListener('keyup', (e) => { keys[e.key] = false; });
 
-        // Ball skin functions
-        function initBallSkins() {
-            // Preload all ball skin images
-            for (let i = 1; i <= 9; i++) {
-                const img = document.createElement('img');
+// Ball skin functions
+function initBallSkins() {
+    // Preload all ball skin images (png first, gif fallback)
+    for (let i = 1; i <= 9; i++) {
+        const img = new Image();
 
-const pngSrc = `https://kanaris-beans.com/ball${i}.png`;
-const gifSrc = `https://kanaris-beans.com/ball${i}.gif`;
+        const pngSrc = `https://kanaris-beans.com/ball${i}.png`;
+        const gifSrc = `https://kanaris-beans.com/ball${i}.gif`;
 
-img.onerror = () => {
-    img.onerror = null;
-    img.src = gifSrc;
-};
+        img.onerror = () => {
+            img.onerror = null; // prevent infinite loop
+            img.src = gifSrc;
+        };
 
-img.src = pngSrc;
-img.alt = `Ball Skin ${skinIndex}`;
-skinButton.appendChild(img);
+        img.src = pngSrc;
+        ballSkinImages[i] = img;
+    }
 
-            }
-            
-            // Populate skin carousel
-            updateSkinCarousel();
+    updateSkinCarousel();
+}
+
+function updateSkinCarousel() {
+    const skinOptions = document.getElementById('skinOptions');
+    skinOptions.innerHTML = '';
+
+    for (let i = 0; i < skinsToShow; i++) {
+        const skinIndex = currentSkinOffset + i;
+        if (skinIndex >= totalSkins) break;
+
+        const skinButton = document.createElement('div');
+        skinButton.className = 'skin-option';
+        if (skinIndex === selectedSkin) {
+            skinButton.classList.add('selected');
         }
 
-        function updateSkinCarousel() {
-            const skinOptions = document.getElementById('skinOptions');
-            skinOptions.innerHTML = '';
-            
-            for (let i = 0; i < skinsToShow; i++) {
-                const skinIndex = currentSkinOffset + i;
-                if (skinIndex >= totalSkins) break;
-                
-                const skinButton = document.createElement('div');
-                skinButton.className = 'skin-option';
-                if (skinIndex === selectedSkin) {
-                    skinButton.classList.add('selected');
-                }
-                
-                if (skinIndex === 0) {
-                    // Default skin (solid ball)
-                    skinButton.classList.add('default');
-                } else {
-                    // Custom skin
-                    const img = document.createElement('img');
-                    img.src = `https://kanaris-beans.com/ball${skinIndex}.png`;
-                    img.alt = `Ball Skin ${skinIndex}`;
-                    skinButton.appendChild(img);
-                }
-                
-                skinButton.onclick = () => selectSkin(skinIndex);
-                skinOptions.appendChild(skinButton);
-            }
-            
-            // Update arrow button states
-            document.getElementById('prevSkin').disabled = currentSkinOffset === 0;
-            document.getElementById('nextSkin').disabled = currentSkinOffset + skinsToShow >= totalSkins;
+        if (skinIndex === 0) {
+            // Default skin
+            skinButton.classList.add('default');
+        } else {
+            const img = document.createElement('img');
+
+            const pngSrc = `https://kanaris-beans.com/ball${skinIndex}.png`;
+            const gifSrc = `https://kanaris-beans.com/ball${skinIndex}.gif`;
+
+            img.onerror = () => {
+                img.onerror = null;
+                img.src = gifSrc;
+            };
+
+            img.src = pngSrc;
+            img.alt = `Ball Skin ${skinIndex}`;
+            skinButton.appendChild(img);
         }
+
+        skinButton.onclick = () => selectSkin(skinIndex);
+        skinOptions.appendChild(skinButton);
+    }
+
+    document.getElementById('prevSkin').disabled = currentSkinOffset === 0;
+    document.getElementById('nextSkin').disabled = currentSkinOffset + skinsToShow >= totalSkins;
+}
+
 
         function scrollSkins(direction) {
             const newOffset = currentSkinOffset + direction;

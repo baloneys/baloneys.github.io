@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .navigation-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navigation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navigation-logo {
+            text-decoration: none;
+            color: #6366f1;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .navigation-desktop-menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .navigation-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .navigation-link:hover {
+            color: #ffffff;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .navigation-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .navigation-mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 10, 0.98);
+            z-index: 2000;
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+        }
+
+        .navigation-mobile-overlay.is-open {
+            transform: translateX(0);
+        }
+
+        .navigation-mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navigation-mobile-content {
+            padding: 2rem;
+        }
+
+        .navigation-mobile-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .navigation-mobile-link {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+        }
+
+        /* Main Content - This grows to fill space */
+        .main-wrapper {
+            flex: 1 0 auto;
+            padding-top: 80px;
+            padding-bottom: 100px;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        /* Game Container */
+        .game-container {
+            background: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-width: 1200px;
+            margin: 0 auto 100px auto;
+        }
+
+        .menu {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .menu h2 {
+            color: #6366f1;
+            margin-bottom: 30px;
+        }
+
+        .menu-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .lobby-input {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            padding: 10px 15px;
+            font-size: 1em;
+            border-radius: 8px;
+            margin: 0 10px;
+            min-width: 200px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+        }
+
+        .lobby-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+        }
+
+        #gameCanvas {
+            display: block;
+            margin: 0 auto;
+            background: #0a0a0a;
+            border: 3px solid #6366f1;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #6366f1;
+            text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+
+        .controls {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .controls h3 {
+            color: #6366f1;
+            margin-bottom: 10px;
+        }
+
+        .controls p {
+            margin: 5px 0;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .status.waiting {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+            border: 1px solid #ffa500;
+        }
+
+        .status.connected {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .status.error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+            border: 1px solid #ff4444;
+        }
+
+        .lobby-code-display {
+            font-size: 1.5em;
+            color: #6366f1;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 3px;
+            margin: 10px 0;
+            padding: 15px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+            border: 2px dashed #6366f1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Footer - This stays at bottom */
+        .footer-root {
+            flex-shrink: 0;
+            width: 100%;
+            background: #1a1a1a;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-brand-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .footer-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+
+        .footer-brand-description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 300px;
+        }
+
+        .footer-social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .footer-social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+
+        .footer-social-icon:hover {
+            background: rgba(99, 102, 241, 0.3);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .footer-nav-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-column-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .footer-nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-nav-link {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.2s;
+            text-decoration: none;
+        }
+
+        .footer-nav-link:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-copyright {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @media(max-width: 767px) {
+            .navigation-desktop-menu {
+                display: none;
+            }
+            
+            .navigation-toggle {
+                display: flex;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navigation-wrapper">
+        <div class="navigation-container">
+            <a href="../index.html" class="navigation-logo">baloneys</a>
+            <div class="navigation-desktop-menu">
+                <a href="../index.html" class="navigation-link">Home</a>
+                <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" class="navigation-link">Worlds</a>
+                <a href="vrc-dynamic-player-tags.html" class="navigation-link">Tagging</a>
+                <a href="https://jinxxy.com/baloneys" target="_blank" class="navigation-link">Store</a>
+                <a href="https://discord.gg/gYWJsYhwXN" target="_blank" class="btn-sm btn-primary btn">Contact Me</a>
+            </div>
+            <button id="navToggle" aria-label="Open Menu" class="navigation-toggle">
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <div id="mobileOverlay" class="navigation-mobile-overlay">
+        <div class="navigation-mobile-header">
+            <a href="../index.html" class="navigation-logo">baloneys</a>
+            <button id="navClose" aria-label="Close Menu" class="navigation-toggle">
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="navigation-mobile-content">
+            <div class="navigation-mobile-links">
+                <a href="../index.html" class="navigation-mobile-link">Home</a>
+                <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" class="navigation-mobile-link">Worlds</a>
+                <a href="vrc-dynamic-player-tags.html" class="navigation-mobile-link">Tagging</a>
+                <a href="https://jinxxy.com/baloneys" target="_blank" class="navigation-mobile-link">Store</a>
+                <a href="https://discord.gg/gYWJsYhwXN" target="_blank" class="btn-primary btn">Contact Me</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Wrapper - This grows to push footer down -->
+    <div class="main-wrapper">
+        <div class="main-content">
+            <header class="page-header">
+                <h1>🏓 Pong</h1>
+                <p class="page-subtitle">i dont know what to put here lol</p>
+            </header>
+
+            <div class="game-container">
+                <div id="menu" class="menu">
+                    <h2>Select Game Mode</h2>
+                    <div class="menu-buttons">
+                        <button onclick="startLocalGame()">🎮 Local Multiplayer</button>
+                        <button onclick="showOnlineMenu()">🌐 Online Multiplayer</button>
+                    </div>
+                </div>
+
+                <div id="onlineMenu" class="menu hidden">
+                    <h2>Online Multiplayer</h2>
+                    <div class="menu-buttons">
+                        <button onclick="createLobby()">➕ Create Lobby</button>
+                    </div>
+                    <div style="margin: 20px 0;">
+                        <input type="text" id="joinCode" class="lobby-input" placeholder="Enter Lobby Code" maxlength="6">
+                        <button onclick="joinLobby()">🚪 Join Lobby</button>
+                    </div>
+                    <p style="font-size: 0.85em; color: rgba(255, 255, 255, 0.5); margin: 15px 0; text-align: center;">
+                        <em>Note: If multiplayer doesn't work, it may be due to WebRTC incompatibility with your network or browser.</em>
+                    </p>
+                    <button onclick="backToMainMenu()" style="background: #555; margin-top: 10px;">← Back</button>
+                </div>
+
+                <div id="lobbyWaiting" class="hidden">
+                    <div class="status waiting">
+                        <p>Waiting for opponent to join...</p>
+                        <p class="lobby-code-display">Lobby Code: <span id="lobbyCodeDisplay"></span></p>
+                        <p style="font-size: 0.9em; margin-top: 10px;">Share this code with your opponent!</p>
+                    </div>
+                    <button onclick="cancelLobby()" style="background: #ff4444; margin-top: 15px;">Cancel</button>
+                </div>
+
+                <div id="statusMessage" class="status hidden"></div>
+
+                <div id="gameArea" class="hidden">
+                    <div class="score-display">
+                        <span id="player1Score">0</span> : <span id="player2Score">0</span>
+                    </div>
+                    <canvas id="gameCanvas" width="800" height="600"></canvas>
+                    <div class="controls">
+                        <h3>Controls</h3>
+                        <div id="localControls">
+                            <p><strong>Player 1 (Left):</strong> W (Up) / S (Down)</p>
+                            <p><strong>Player 2 (Right):</strong> ↑ (Up) / ↓ (Down)</p>
+                        </div>
+                        <div id="onlineControls" class="hidden">
+                            <p><strong>Controls:</strong> W (Up) / S (Down) or ↑ (Up) / ↓ (Down)</p>
+                        </div>
+                        <p style="margin-top: 10px;"><em>Play until you're done!</em></p>
+                    </div>
+                    <button onclick="endGame()" style="margin-top: 15px; background: #ff4444;">End Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer - This stays at bottom -->
+    <footer class="footer-root">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand-column">
+                    <a href="../index.html">
+                        <span class="footer-logo-text">baloneys</span>
+                    </a>
+                    <p class="footer-brand-description">
+                        Crafting highly immersive experiences,<br>
+                        environments, and robust prefabs.
+                    </p>
+                    <div class="footer-social-links">
+                        <a href="https://discord.gg/gYWJsYhwXN" target="_blank">
+                            <div class="footer-social-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24">
+                                    <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M8 12a1 1 0 1 0 2 0a1 1 0 0 0-2 0m6 0a1 1 0 1 0 2 0a1 1 0 0 0-2 0"></path>
+                                        <path d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833-1.667 3.5-3c.667-1.667.5-5.833-1.5-11.5c-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.9 11.9 0 0 0-4.053 0L9 4c-1.5.16-3.043.485-4.5 1.5c-2 5.667-2.167 9.833-1.5 11.5c.667 1.333 2 3 3.5 3c.5 0 2-2 2-3"></path>
+                                        <path d="M7 16.5c3.5 1 6.5 1 10 0"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                        </a>
+                        <a href="https://x.com/beilude" target="_blank">
+                            <div class="footer-social-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24">
+                                    <path d="M22 4.01c-1 .49-1.98.689-3 .99c-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4c0 0-4.182 7.433 4 11c-1.872 1.247-3.739 2.088-6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58-1.04 6.522-3.723 7.651-7.742a13.8 13.8 0 0 0 .497-3.753c0-.249 1.51-2.772 1.818-4.013z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </div>
+                        </a>
+                        <a href="https://github.com/baloneys" target="_blank">
+                            <div class="footer-social-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24">
+                                    <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5c.08-1.25-.27-2.48-1-3.5c.28-1.15.28-2.35 0-3.5c0 0-1 0-3 1.5c-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5c-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"></path>
+                                        <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-nav-column">
+                    <h3 class="footer-column-title">Navigation</h3>
+                    <nav class="footer-nav-list">
+                        <a href="../index.html" class="footer-nav-link">Home</a>
+                        <a href="https://jinxxy.com/baloneys" target="_blank" class="footer-nav-link">Jinxxy Store</a>
+                        <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" class="footer-nav-link">VRChat Worlds</a>
+                        <a href="vrc-dynamic-player-tags.html" class="footer-nav-link">VRCDynamicPlayerTags</a>
+                    </nav>
+                </div>
+                <div class="footer-nav-column">
+                    <h3 class="footer-column-title">Resources</h3>
+                    <nav class="footer-nav-list">
+                        <a href="https://discord.gg/gYWJsYhwXN" target="_blank" class="footer-nav-link">Support Discord</a>
+                        <a href="https://kanaris-beans.com/terms" target="_blank" class="footer-nav-link">Terms of Service</a>
+                        <a href="https://kanaris-beans.com/privacy" target="_blank" class="footer-nav-link">Privacy Policy</a>
+                    </nav>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2025 baloneys. All rights reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation
+        const navToggle = document.getElementById('navToggle');
+        const navClose = document.getElementById('navClose');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+
+        navToggle?.addEventListener('click', () => {
+            mobileOverlay.classList.add('is-open');
+        });
+
+        navClose?.addEventListener('click', () => {
+            mobileOverlay.classList.remove('is-open');
+        });
+
+        // Game code
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let gameMode = null;
+        let gameRunning = false;
+        let animationId = null;
+        let peer = null;
+        let conn = null;
+        let isHost = false;
+        let lobbyCode = null;
+
+        const paddleWidth = 15;
+        const paddleHeight = 100;
+        const paddleSpeed = 6;
+
+        let paddle1 = { x: 20, y: canvas.height / 2 - paddleHeight / 2, dy: 0 };
+        let paddle2 = { x: canvas.width - 20 - paddleWidth, y: canvas.height / 2 - paddleHeight / 2, dy: 0 };
+        let ball = { x: canvas.width / 2, y: canvas.height / 2, dx: 3, dy: 2, radius: 8, speed: 3 };
+        let score1 = 0;
+        let score2 = 0;
+        let rallies = 0;
+        const speedIncrease = 0.05;
+        let showNice = false;
+        let niceMessageTimer = null;
+        const keys = {};
+
+        document.addEventListener('keydown', (e) => { keys[e.key] = true; });
+        document.addEventListener('keyup', (e) => { keys[e.key] = false; });
+
+        function generateLobbyCode() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        function showStatus(message, type = 'waiting') {
+            const status = document.getElementById('statusMessage');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.classList.remove('hidden');
+        }
+
+        function hideStatus() {
+            document.getElementById('statusMessage').classList.add('hidden');
+        }
+
+        function startLocalGame() {
+            gameMode = 'local';
+            document.getElementById('menu').classList.add('hidden');
+            document.getElementById('gameArea').classList.remove('hidden');
+            document.getElementById('localControls').classList.remove('hidden');
+            document.getElementById('onlineControls').classList.add('hidden');
+            resetGame();
+            gameRunning = true;
+            gameLoop();
+        }
+
+        function showOnlineMenu() {
+            document.getElementById('menu').classList.add('hidden');
+            document.getElementById('onlineMenu').classList.remove('hidden');
+        }
+
+        function backToMainMenu() {
+            document.getElementById('onlineMenu').classList.add('hidden');
+            document.getElementById('menu').classList.remove('hidden');
+        }
+
+        function createLobby() {
+            lobbyCode = generateLobbyCode();
+            isHost = true;
+            peer = new Peer(lobbyCode);
+            
+            peer.on('open', (id) => {
+                document.getElementById('onlineMenu').classList.add('hidden');
+                document.getElementById('lobbyWaiting').classList.remove('hidden');
+                document.getElementById('lobbyCodeDisplay').textContent = lobbyCode;
+            });
+
+            peer.on('connection', (connection) => {
+                conn = connection;
+                setupConnection();
+                startOnlineGame();
+            });
+
+            peer.on('error', (err) => {
+                showStatus('Error creating lobby: ' + err.message, 'error');
+                setTimeout(() => {
+                    backToMainMenu();
+                    hideStatus();
+                }, 3000);
+            });
+        }
+
+        function joinLobby() {
+            const code = document.getElementById('joinCode').value.toUpperCase().trim();
+            if (!code) {
+                showStatus('Please enter a lobby code', 'error');
+                return;
+            }
+
+            isHost = false;
+            peer = new Peer();
+
+            peer.on('open', () => {
+                conn = peer.connect(code);
+                setupConnection();
+            });
+
+            peer.on('error', (err) => {
+                showStatus('Error joining lobby: ' + err.message, 'error');
+            });
+        }
+
+        function setupConnection() {
+            conn.on('open', () => {
+                showStatus('Connected to opponent!', 'connected');
+                setTimeout(() => {
+                    if (!isHost) {
+                        startOnlineGame();
+                    }
+                }, 1000);
+            });
+
+            conn.on('data', (data) => {
+                if (data.type === 'gameState') {
+                    if (isHost) {
+                        paddle2.y = data.paddleY;
+                    } else {
+                        paddle1.y = data.paddleY;
+                    }
+                } else if (data.type === 'score') {
+                    score1 = data.score1;
+                    score2 = data.score2;
+                    updateScoreDisplay();
+                } else if (data.type === 'ballSync' && !isHost) {
+                    ball.x = data.x;
+                    ball.y = data.y;
+                    ball.dx = data.dx;
+                    ball.dy = data.dy;
+                }
+            });
+
+            conn.on('close', () => {
+                showStatus('Opponent disconnected', 'error');
+                gameRunning = false;
+                setTimeout(endGame, 2000);
+            });
+        }
+
+        function startOnlineGame() {
+            gameMode = 'online';
+            document.getElementById('onlineMenu').classList.add('hidden');
+            document.getElementById('lobbyWaiting').classList.add('hidden');
+            document.getElementById('gameArea').classList.remove('hidden');
+            document.getElementById('localControls').classList.add('hidden');
+            document.getElementById('onlineControls').classList.remove('hidden');
+            hideStatus();
+            resetGame();
+            gameRunning = true;
+            gameLoop();
+        }
+
+        function cancelLobby() {
+            if (peer) peer.destroy();
+            document.getElementById('lobbyWaiting').classList.add('hidden');
+            backToMainMenu();
+        }
+
+        function resetGame() {
+            paddle1.y = canvas.height / 2 - paddleHeight / 2;
+            paddle2.y = canvas.height / 2 - paddleHeight / 2;
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.dx = (Math.random() > 0.5 ? 1 : -1) * 3;
+            ball.dy = (Math.random() - 0.5) * 4;
+            ball.speed = 3;
+            score1 = 0;
+            score2 = 0;
+            rallies = 0;
+            updateScoreDisplay();
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('player1Score').textContent = score1;
+            document.getElementById('player2Score').textContent = score2;
+        }
+
+        function showNiceMessage() {
+            showNice = true;
+            if (niceMessageTimer) clearTimeout(niceMessageTimer);
+            niceMessageTimer = setTimeout(() => {
+                showNice = false;
+            }, 3000);
+        }
+
+        function update() {
+            if (!gameRunning) return;
+
+            if (gameMode === 'local') {
+                if (keys['w'] || keys['W']) paddle1.dy = -paddleSpeed;
+                else if (keys['s'] || keys['S']) paddle1.dy = paddleSpeed;
+                else paddle1.dy = 0;
+
+                if (keys['ArrowUp']) paddle2.dy = -paddleSpeed;
+                else if (keys['ArrowDown']) paddle2.dy = paddleSpeed;
+                else paddle2.dy = 0;
+
+                paddle1.y += paddle1.dy;
+                paddle2.y += paddle2.dy;
+            } else if (gameMode === 'online') {
+                let myPaddle = isHost ? paddle1 : paddle2;
+                if (keys['w'] || keys['W'] || keys['ArrowUp']) myPaddle.dy = -paddleSpeed;
+                else if (keys['s'] || keys['S'] || keys['ArrowDown']) myPaddle.dy = paddleSpeed;
+                else myPaddle.dy = 0;
+
+                myPaddle.y += myPaddle.dy;
+
+                if (conn && conn.open) {
+                    conn.send({ type: 'gameState', paddleY: myPaddle.y });
+                }
+            }
+
+            paddle1.y = Math.max(0, Math.min(canvas.height - paddleHeight, paddle1.y));
+            paddle2.y = Math.max(0, Math.min(canvas.height - paddleHeight, paddle2.y));
+
+            if (gameMode === 'local' || (gameMode === 'online' && isHost)) {
+                ball.x += ball.dx;
+                ball.y += ball.dy;
+
+                if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+                    ball.dy *= -1;
+                }
+
+                if (ball.x - ball.radius < paddle1.x + paddleWidth &&
+                    ball.y > paddle1.y && ball.y < paddle1.y + paddleHeight) {
+                    ball.dx = Math.abs(ball.dx);
+                    ball.dy += paddle1.dy * 0.3;
+                    rallies++;
+                    ball.speed += speedIncrease;
+                    ball.dx = ball.dx > 0 ? ball.speed : -ball.speed;
+                    if (rallies === 69) showNiceMessage();
+                }
+
+                if (ball.x + ball.radius > paddle2.x &&
+                    ball.y > paddle2.y && ball.y < paddle2.y + paddleHeight) {
+                    ball.dx = -Math.abs(ball.dx);
+                    ball.dy += paddle2.dy * 0.3;
+                    rallies++;
+                    ball.speed += speedIncrease;
+                    ball.dx = ball.dx > 0 ? ball.speed : -ball.speed;
+                    if (rallies === 69) showNiceMessage();
+                }
+
+                if (ball.x - ball.radius < 0) {
+                    score2++;
+                    updateScoreDisplay();
+                    resetBall();
+                    if (gameMode === 'online' && conn && conn.open) {
+                        conn.send({ type: 'score', score1, score2 });
+                    }
+                } else if (ball.x + ball.radius > canvas.width) {
+                    score1++;
+                    updateScoreDisplay();
+                    resetBall();
+                    if (gameMode === 'online' && conn && conn.open) {
+                        conn.send({ type: 'score', score1, score2 });
+                    }
+                }
+
+                if (gameMode === 'online' && isHost && conn && conn.open) {
+                    conn.send({
+                        type: 'ballSync',
+                        x: ball.x,
+                        y: ball.y,
+                        dx: ball.dx,
+                        dy: ball.dy
+                    });
+                }
+            }
+        }
+
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.dx = (Math.random() > 0.5 ? 1 : -1) * ball.speed;
+            ball.dy = (Math.random() - 0.5) * ball.speed;
+        }
+
+        function draw() {
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([10, 10]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#6366f1';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#6366f1';
+            ctx.fillRect(paddle1.x, paddle1.y, paddleWidth, paddleHeight);
+            ctx.fillRect(paddle2.x, paddle2.y, paddleWidth, paddleHeight);
+
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            if (showNice) {
+                ctx.save();
+                ctx.font = 'bold 80px sans-serif';
+                ctx.fillStyle = '#6366f1';
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#6366f1';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('nice', canvas.width / 2, canvas.height / 2);
+                ctx.restore();
+            }
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+            update();
+            draw();
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        function endGame() {
+            gameRunning = false;
+            if (animationId) cancelAnimationFrame(animationId);
+            if (conn) conn.close();
+            if (peer) peer.destroy();
+            
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('menu').classList.remove('hidden');
+            hideStatus();
+        }
+    </script>
+</body>
+</html>

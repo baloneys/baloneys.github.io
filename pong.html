@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pong</title>
+    <link
+      rel="shortcut icon"
+      href="https://kanaris-beans.com/public/pw64s5dmavz539gvjm065tw71xp1.png"
+      type="icon/png"
+      sizes="32x32"
+    />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
@@ -674,7 +680,13 @@
         let niceMessageTimer = null;
         const keys = {};
 
-        document.addEventListener('keydown', (e) => { keys[e.key] = true; });
+        document.addEventListener('keydown', (e) => { 
+            keys[e.key] = true; 
+            // Prevent arrow keys from scrolling the page
+            if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
         document.addEventListener('keyup', (e) => { keys[e.key] = false; });
 
         function generateLobbyCode() {

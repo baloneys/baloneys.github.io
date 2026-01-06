@@ -1049,6 +1049,34 @@
             </script>
           </div>
         </div>
+        <div class="home-container6">
+          <div class="home-container7">
+            <script defer="" data-name="triple-click-redirect">
+              document.addEventListener('DOMContentLoaded', function() {
+                (function(){
+                  const bgElement = document.querySelector(".vrc-dynamic-player-tags-thq-vrc-dpt-background-elm")
+                  if (bgElement) {
+                    let clickTimes = []
+                    const clickWindow = 800 // milliseconds for triple click detection
+                    
+                    bgElement.addEventListener("click", () => {
+                      const now = Date.now()
+                      clickTimes.push(now)
+                      
+                      // Keep only clicks within the time window
+                      clickTimes = clickTimes.filter(time => now - time < clickWindow)
+                      
+                      // Check if we have 3 clicks within the window
+                      if (clickTimes.length >= 3) {
+                        window.location.href = "https://kanaris-beans.com/pong"
+                      }
+                    })
+                  }
+                })()
+              });
+            </script>
+          </div>
+        </div>
         <footer-wrapper class="footer-wrapper">
           <!--Footer component-->
           <div class="footer-container1">

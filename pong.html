@@ -449,6 +449,106 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
+        /* Ball Skin Selector */
+        .ball-skin-selector {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .ball-skin-selector h3 {
+            color: #6366f1;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .skin-carousel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .carousel-arrow {
+            background: #6366f1;
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 1.2rem;
+            padding: 0;
+        }
+
+        .carousel-arrow:hover {
+            background: #4f46e5;
+            transform: scale(1.1);
+        }
+
+        .carousel-arrow:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .skin-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .skin-option {
+            width: 80px;
+            height: 80px;
+            border: 3px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #1a1a1a;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .skin-option:hover {
+            border-color: #6366f1;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .skin-option.selected {
+            border-color: #10b981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+
+        .skin-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .skin-option.default {
+            position: relative;
+        }
+
+        .skin-option.default::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #6366f1;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #6366f1;
+        }
+
         @media(max-width: 767px) {
             .navigation-desktop-menu {
                 display: none;
@@ -464,6 +564,11 @@
 
             .main-content {
                 padding: 1rem;
+            }
+
+            .skin-option {
+                width: 60px;
+                height: 60px;
             }
         }
     </style>
@@ -572,6 +677,18 @@
                         <span id="player1Score">0</span> : <span id="player2Score">0</span>
                     </div>
                     <canvas id="gameCanvas" width="800" height="600"></canvas>
+                    
+                    <div class="ball-skin-selector">
+                        <h3>Ball Skin</h3>
+                        <div class="skin-carousel">
+                            <button class="carousel-arrow" id="prevSkin" onclick="scrollSkins(-1)">‹</button>
+                            <div class="skin-options" id="skinOptions">
+                                <!-- Skins will be populated by JavaScript -->
+                            </div>
+                            <button class="carousel-arrow" id="nextSkin" onclick="scrollSkins(1)">›</button>
+                        </div>
+                    </div>
+                    
                     <div class="controls">
                         <h3>Controls</h3>
                         <div id="localControls">
@@ -684,6 +801,13 @@
         let player1Ready = false;
         let player2Ready = false;
         let myReady = false;
+        
+        // Ball skin variables
+        let selectedSkin = 0; // 0 = default, 1-9 = custom skins
+        let currentSkinOffset = 0; // For carousel scrolling
+        const totalSkins = 10; // 0 (default) + 9 custom skins
+        const skinsToShow = 3;
+        let ballSkinImages = [];
 
         const paddleWidth = 15;
         const paddleHeight = 100;
@@ -709,6 +833,71 @@
         });
         document.addEventListener('keyup', (e) => { keys[e.key] = false; });
 
+        // Ball skin functions
+        function initBallSkins() {
+            // Preload all ball skin images
+            for (let i = 1; i <= 9; i++) {
+                const img = new Image();
+                img.src = `https://kanaris-beans.com/ball${i}.png`;
+                ballSkinImages[i] = img;
+            }
+            
+            // Populate skin carousel
+            updateSkinCarousel();
+        }
+
+        function updateSkinCarousel() {
+            const skinOptions = document.getElementById('skinOptions');
+            skinOptions.innerHTML = '';
+            
+            for (let i = 0; i < skinsToShow; i++) {
+                const skinIndex = currentSkinOffset + i;
+                if (skinIndex >= totalSkins) break;
+                
+                const skinButton = document.createElement('div');
+                skinButton.className = 'skin-option';
+                if (skinIndex === selectedSkin) {
+                    skinButton.classList.add('selected');
+                }
+                
+                if (skinIndex === 0) {
+                    // Default skin (solid ball)
+                    skinButton.classList.add('default');
+                } else {
+                    // Custom skin
+                    const img = document.createElement('img');
+                    img.src = `https://kanaris-beans.com/ball${skinIndex}.png`;
+                    img.alt = `Ball Skin ${skinIndex}`;
+                    skinButton.appendChild(img);
+                }
+                
+                skinButton.onclick = () => selectSkin(skinIndex);
+                skinOptions.appendChild(skinButton);
+            }
+            
+            // Update arrow button states
+            document.getElementById('prevSkin').disabled = currentSkinOffset === 0;
+            document.getElementById('nextSkin').disabled = currentSkinOffset + skinsToShow >= totalSkins;
+        }
+
+        function scrollSkins(direction) {
+            const newOffset = currentSkinOffset + direction;
+            if (newOffset >= 0 && newOffset + skinsToShow <= totalSkins) {
+                currentSkinOffset = newOffset;
+                updateSkinCarousel();
+            }
+        }
+
+        function selectSkin(skinIndex) {
+            selectedSkin = skinIndex;
+            updateSkinCarousel();
+            
+            // Sync skin selection with opponent in online mode
+            if (gameMode === 'online' && conn && conn.open) {
+                conn.send({ type: 'skinChange', skin: selectedSkin });
+            }
+        }
+
         function generateLobbyCode() {
             return Math.random().toString(36).substring(2, 8).toUpperCase();
         }
@@ -730,6 +919,7 @@
             document.getElementById('gameArea').classList.remove('hidden');
             document.getElementById('localControls').classList.remove('hidden');
             document.getElementById('onlineControls').classList.add('hidden');
+            initBallSkins();
             resetGame();
             gameRunning = true;
             gameLoop();
@@ -829,6 +1019,10 @@
                     
                     // Check if both players are ready
                     checkBothReady();
+                } else if (data.type === 'skinChange') {
+                    // Sync ball skin with opponent
+                    selectedSkin = data.skin;
+                    updateSkinCarousel();
                 } else if (data.type === 'gameState') {
                     if (isHost) {
                         paddle2.y = data.paddleY;
@@ -900,6 +1094,7 @@
             document.getElementById('localControls').classList.add('hidden');
             document.getElementById('onlineControls').classList.remove('hidden');
             hideStatus();
+            initBallSkins();
             resetGame();
             gameRunning = true;
             gameLoop();
@@ -1054,9 +1249,26 @@
             ctx.fillRect(paddle1.x, paddle1.y, paddleWidth, paddleHeight);
             ctx.fillRect(paddle2.x, paddle2.y, paddleWidth, paddleHeight);
 
-            ctx.beginPath();
-            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-            ctx.fill();
+            // Draw ball with selected skin
+            if (selectedSkin === 0) {
+                // Default solid ball
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                // Custom skin image
+                const skinImg = ballSkinImages[selectedSkin];
+                if (skinImg && skinImg.complete) {
+                    ctx.shadowBlur = 10;
+                    const size = ball.radius * 2;
+                    ctx.drawImage(skinImg, ball.x - ball.radius, ball.y - ball.radius, size, size);
+                } else {
+                    // Fallback to default if image not loaded
+                    ctx.beginPath();
+                    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
             ctx.shadowBlur = 0;
 
             if (showNice) {

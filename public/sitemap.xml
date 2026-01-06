@@ -23,4 +23,11 @@
 <changefreq>weekly</changefreq>
 <priority>0.8</priority>
 </url>
+</url>
+<url>
+<loc>https://kanaris-beans.com/pong</loc>
+<lastmod>2026-01-06</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
 </urlset>

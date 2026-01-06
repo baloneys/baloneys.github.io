@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script defer src="https://analytics.baloneys.studio/script.js" data-website-id="03418d76-12f0-4a2b-94ba-24dff73a6f6b"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pong</title>
@@ -835,21 +834,22 @@
 
         // Ball skin functions
         function initBallSkins() {
-    for (let i = 1; i <= 9; i++) {
-        const img = new Image();
+            // Preload all ball skin images
+            for (let i = 1; i <= 9; i++) {
+                const img = document.createElement('img');
 
-        const pngSrc = `https://kanaris-beans.com/ball${i}.png`;
-        const gifSrc = `https://kanaris-beans.com/ball${i}.gif`;
+const pngSrc = `https://kanaris-beans.com/ball${i}.png`;
+const gifSrc = `https://kanaris-beans.com/ball${i}.gif`;
 
-        // Try PNG first, fall back to GIF
-        img.onerror = () => {
-            img.onerror = null; // prevent infinite loop
-            img.src = gifSrc;
-        };
+img.onerror = () => {
+    img.onerror = null;
+    img.src = gifSrc;
+};
 
-        img.src = pngSrc;
-        ballSkinImages[i] = img;
-    }
+img.src = pngSrc;
+img.alt = `Ball Skin ${skinIndex}`;
+skinButton.appendChild(img);
+
             }
             
             // Populate skin carousel

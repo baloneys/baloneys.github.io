@@ -835,11 +835,21 @@
 
         // Ball skin functions
         function initBallSkins() {
-            // Preload all ball skin images
-            for (let i = 1; i <= 9; i++) {
-                const img = new Image();
-                img.src = `https://kanaris-beans.com/ball${i}.png`;
-                ballSkinImages[i] = img;
+    for (let i = 1; i <= 9; i++) {
+        const img = new Image();
+
+        const pngSrc = `https://kanaris-beans.com/ball${i}.png`;
+        const gifSrc = `https://kanaris-beans.com/ball${i}.gif`;
+
+        // Try PNG first, fall back to GIF
+        img.onerror = () => {
+            img.onerror = null; // prevent infinite loop
+            img.src = gifSrc;
+        };
+
+        img.src = pngSrc;
+        ballSkinImages[i] = img;
+    }
             }
             
             // Populate skin carousel

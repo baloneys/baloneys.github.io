@@ -4,7 +4,7 @@
     <script defer src="https://analytics.baloneys.studio/script.js" data-website-id="03418d76-12f0-4a2b-94ba-24dff73a6f6b"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tetris</title>
+    <title>Tetris - baloneys</title>
     <link rel="shortcut icon" href="https://kanaris-beans.com/public/pw64s5dmavz539gvjm065tw71xp1.png" type="icon/png" sizes="32x32">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap">
@@ -613,7 +613,7 @@
         <div class="main-content">
             <header class="page-header">
                 <h1>🎮 Tetris</h1>
-                <p class="page-subtitle">don't do this in a moving truck</p>
+                <p class="page-subtitle">falling blocks killed my family</p>
             </header>
 
             <div class="game-container">
@@ -706,10 +706,6 @@
                                     <strong>Score</strong>
                                     <span id="score1">0</span>
                                 </div>
-                                <div class="player-score">
-                                    <strong>Lines</strong>
-                                    <span id="lines1">0</span>
-                                </div>
                                 <div class="player-score losses-display">
                                     <strong>Losses</strong>
                                     <span id="losses1">0</span>
@@ -738,10 +734,6 @@
                                 <div class="player-score">
                                     <strong>Score</strong>
                                     <span id="score2">0</span>
-                                </div>
-                                <div class="player-score">
-                                    <strong>Lines</strong>
-                                    <span id="lines2">0</span>
                                 </div>
                                 <div class="player-score losses-display">
                                     <strong>Losses</strong>
@@ -970,7 +962,6 @@
                 piece: null,
                 nextPieces: [],
                 score: 0,
-                lines: 0,
                 losses: 0,
                 dropCounter: 0,
                 dropInterval: 1000,
@@ -985,7 +976,6 @@
                 piece: null,
                 nextPieces: [],
                 score: 0,
-                lines: 0,
                 losses: 0,
                 dropCounter: 0,
                 dropInterval: 1000,
@@ -1133,14 +1123,22 @@
                 player.board.splice(y, 1);
                 player.board.unshift(Array(COLS).fill(0));
                 linesCleared++;
-                y++;
+                y++; // Check this row again since we shifted
             }
 
             if (linesCleared > 0) {
-                player.lines += linesCleared;
-                // Points per line: 1 line = 100, 2 lines = 300, 3 lines = 500, 4 lines (Tetris) = 800
-                const pointsTable = [0, 100, 300, 500, 800];
-                player.score += pointsTable[linesCleared] || (linesCleared * 100);
+                // SNES Tetris scoring
+                const points = {
+                    1: 40,    // Single
+                    2: 100,   // Double
+                    3: 300,   // Triple
+                    4: 1200   // Tetris!
+                };
+                player.score += points[linesCleared] || 0;
+                
+                // Update the display immediately
+                const playerNum = player === players[1] ? 1 : 2;
+                updateScore(playerNum);
             }
             return linesCleared;
         }
@@ -1152,6 +1150,8 @@
         }
 
         function rotate(player) {
+            if (!player || !player.piece) return;
+            
             const piece = player.piece;
             const rotated = [];
             for (let y = 0; y < piece.shape.length; y++) {
@@ -1165,21 +1165,43 @@
             piece.shape = rotated;
 
             let offset = 0;
-            while (collide(player, piece, offset, 0)) {
+            let attempts = 0;
+            while (collide(player, piece, offset, 0) && attempts < 10) {
                 offset = offset > 0 ? -(offset + 1) : -offset;
                 if (Math.abs(offset) > piece.shape[0].length) {
                     piece.shape = oldShape;
                     return;
                 }
+                attempts++;
             }
+            
+            if (attempts >= 10) {
+                piece.shape = oldShape;
+                return;
+            }
+            
             piece.x += offset;
         }
 
-        function drop(player) {
+        function drop(player, isSoftDrop = false) {
+            if (!player || !player.piece) {
+                console.error('Invalid player or piece in drop');
+                return false;
+            }
+            
             if (!collide(player, player.piece, 0, 1)) {
                 player.piece.y++;
+                
+                // Award 1 point for soft drop (when player presses down)
+                if (isSoftDrop) {
+                    player.score += 1;
+                    const playerNum = player === players[1] ? 1 : 2;
+                    updateScore(playerNum);
+                }
+                
                 return true;
             } else {
+                // Piece has landed
                 merge(player);
                 clearLines(player);
                 player.piece = getNextPiece(player);
@@ -1192,10 +1214,14 @@
         }
 
         function hardDrop(player) {
-            while (!collide(player, player.piece, 0, 1)) {
+            if (!player || !player.piece) return;
+            
+            let maxDrops = 20; // Safety limit
+            while (!collide(player, player.piece, 0, 1) && maxDrops > 0) {
                 player.piece.y++;
+                maxDrops--;
             }
-            drop(player);
+            drop(player, false);
         }
 
         function handlePlayerLoss(player) {
@@ -1389,7 +1415,6 @@
         function updateScore(playerNum) {
             const p = players[playerNum];
             document.getElementById(`score${playerNum}`).textContent = p.score;
-            document.getElementById(`lines${playerNum}`).textContent = p.lines;
             document.getElementById(`losses${playerNum}`).textContent = p.losses;
         }
 
@@ -1402,38 +1427,45 @@
                 return;
             }
 
-            if (gameMode === 'local') {
-                // Update Player 1
-                const deltaTime1 = time - players[1].lastTime;
-                players[1].lastTime = time;
-                players[1].dropCounter += deltaTime1;
-
-                if (players[1].dropCounter > players[1].dropInterval) {
-                    drop(players[1]);
-                    players[1].dropCounter = 0;
-                }
-
-                // Update Player 2
-                const deltaTime2 = time - players[2].lastTime;
-                players[2].lastTime = time;
-                players[2].dropCounter += deltaTime2;
-
-                if (players[2].dropCounter > players[2].dropInterval) {
-                    drop(players[2]);
-                    players[2].dropCounter = 0;
-                }
-            }
-
-            // Always draw both boards
             try {
-                draw(1);
-                draw(2);
+                if (gameMode === 'local') {
+                    // Update Player 1
+                    if (players[1] && players[1].piece) {
+                        const deltaTime1 = time - players[1].lastTime;
+                        players[1].lastTime = time;
+                        players[1].dropCounter += deltaTime1;
+
+                        if (players[1].dropCounter > players[1].dropInterval) {
+                            drop(players[1], false); // Automatic drop - no points
+                            players[1].dropCounter = 0;
+                        }
+                    }
+
+                    // Update Player 2
+                    if (players[2] && players[2].piece) {
+                        const deltaTime2 = time - players[2].lastTime;
+                        players[2].lastTime = time;
+                        players[2].dropCounter += deltaTime2;
+
+                        if (players[2].dropCounter > players[2].dropInterval) {
+                            drop(players[2], false); // Automatic drop - no points
+                            players[2].dropCounter = 0;
+                        }
+                    }
+                }
+
+                // Always draw both boards
+                if (players[1] && players[1].canvas) draw(1);
+                if (players[2] && players[2].canvas) draw(2);
             } catch (e) {
-                console.error('Draw error:', e);
+                console.error('Update error:', e);
+                gameRunning = false;
             }
 
             // Continue animation loop
-            animationId = requestAnimationFrame(update);
+            if (gameRunning) {
+                animationId = requestAnimationFrame(update);
+            }
         }
 
         // Keyboard controls for local mode
@@ -1446,7 +1478,7 @@
             } else if (e.key.toLowerCase() === 'd') {
                 move(players[1], 1);
             } else if (e.key.toLowerCase() === 's') {
-                drop(players[1]);
+                drop(players[1], true); // Soft drop - award points
             } else if (e.key.toLowerCase() === 'w') {
                 rotate(players[1]);
             } else if (e.key.toLowerCase() === 'q') {
@@ -1459,7 +1491,7 @@
             } else if (e.key === 'ArrowRight') {
                 move(players[2], 1);
             } else if (e.key === 'ArrowDown') {
-                drop(players[2]);
+                drop(players[2], true); // Soft drop - award points
             } else if (e.key === 'ArrowUp') {
                 rotate(players[2]);
             } else if (e.key === ' ') {
@@ -1530,13 +1562,11 @@
             players[2].piece = getNextPiece(players[2]);
             
             players[1].score = 0;
-            players[1].lines = 0;
             players[1].losses = 0;
             players[1].dropCounter = 0;
             players[1].lastTime = 0;
 
             players[2].score = 0;
-            players[2].lines = 0;
             players[2].losses = 0;
             players[2].dropCounter = 0;
             players[2].lastTime = 0;

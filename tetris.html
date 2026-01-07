@@ -263,7 +263,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
         
         #gameArea {
@@ -297,8 +297,8 @@
             gap: 6px;
         }
         
-        .game-area.online-mode .next-pieces-panel {
-            display: none;
+        #gameArea.online-mode .next-pieces-panel {
+            display: none !important;
         }
         
         .next-piece-bottom {
@@ -307,7 +307,7 @@
             text-align: center;
         }
         
-        .game-area.online-mode .next-piece-bottom {
+        #gameArea.online-mode .next-piece-bottom {
             display: block;
         }
 
@@ -630,7 +630,7 @@
     <div class="main-wrapper">
         <div class="main-content">
             <header class="page-header">
-                <h1>🎮 Tetris</h1>
+                <h1>Tetris</h1>
                 <p class="page-subtitle">falling blocks killed my family</p>
             </header>
 
@@ -1869,8 +1869,15 @@
             players[1].peerId = 'local1';
             players[2].peerId = 'local2';
             
+            // Deactivate players 3 and 4 (local only supports 2)
+            players[3].active = false;
+            players[4].active = false;
+            
             document.getElementById('settingsMenu').classList.add('hidden');
             document.getElementById('gameArea').classList.remove('hidden');
+            
+            // Hide boards 3 and 4 in local mode
+            updateBoardVisibility();
             
             // Update player name displays
             document.getElementById('playerName1').textContent = player1Name;
@@ -2477,24 +2484,29 @@
         }
         
         function updateBoardVisibility() {
-            // Show/hide player 3 and 4 boards based on active players
-            // Always show players 1 and 2
             const player3Area = document.querySelector('.player-area-3');
             const player4Area = document.querySelector('.player-area-4');
             
-            if (player3Area) {
-                if (players[3].active) {
-                    player3Area.classList.remove('hidden');
-                } else {
-                    player3Area.classList.add('hidden');
+            if (gameMode === 'local') {
+                // Local mode: ALWAYS hide players 3 and 4
+                if (player3Area) player3Area.classList.add('hidden');
+                if (player4Area) player4Area.classList.add('hidden');
+            } else if (gameMode === 'online') {
+                // Online mode: Show/hide based on active players
+                if (player3Area) {
+                    if (players[3].active) {
+                        player3Area.classList.remove('hidden');
+                    } else {
+                        player3Area.classList.add('hidden');
+                    }
                 }
-            }
-            
-            if (player4Area) {
-                if (players[4].active) {
-                    player4Area.classList.remove('hidden');
-                } else {
-                    player4Area.classList.add('hidden');
+                
+                if (player4Area) {
+                    if (players[4].active) {
+                        player4Area.classList.remove('hidden');
+                    } else {
+                        player4Area.classList.add('hidden');
+                    }
                 }
             }
         }

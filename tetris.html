@@ -653,6 +653,9 @@
 
                 <div id="onlineMenu" class="menu hidden">
                     <h2>Online Multiplayer</h2>
+                    <p style="font-size: 0.9em; color: rgba(255, 255, 255, 0.7); margin-bottom: 20px;">
+                        Play with 2-4 players online!
+                    </p>
                     <div style="margin: 20px 0;">
                         <label style="display: block; margin-bottom: 10px; color: rgba(255, 255, 255, 0.9);">Your Name:</label>
                         <input type="text" id="onlinePlayerName" class="lobby-input" placeholder="Enter Your Name" maxlength="15" style="display: block; margin: 10px auto;">
@@ -683,11 +686,11 @@
                     <div class="status waiting">
                         <h2 style="color: #6366f1; margin-bottom: 20px;">Get Ready!</h2>
                         <div style="margin-bottom: 20px;">
-                            <p id="player1Ready" style="margin: 10px 0;">
-                                <span style="color: #6366f1;">●</span> Player 1: <span id="p1ReadyStatus">Not Ready</span>
+                            <p id="p1ReadyStatus" style="margin: 10px 0; font-size: 1.2rem;">
+                                0/0 players ready
                             </p>
-                            <p id="player2Ready" style="margin: 10px 0;">
-                                <span style="color: #6366f1;">●</span> Player 2: <span id="p2ReadyStatus">Not Ready</span>
+                            <p id="p2ReadyStatus" style="margin: 10px 0; font-size: 0.9rem; color: rgba(255, 255, 255, 0.6);">
+                                Waiting for all players to ready up...
                             </p>
                         </div>
                         <button id="readyButton" onclick="toggleReady()">Ready Up!</button>
@@ -940,6 +943,7 @@
         ];
 
         // Game variables
+        // Player limits: Local = 2 players only, Online = 2-4 players
         let gameMode = null;
         let gameRunning = false;
         let animationId = null;
@@ -954,7 +958,7 @@
         let player1Name = 'Player 1';
         let player2Name = 'Player 2';
         let connectedPlayers = 0;
-        let maxPlayers = 4;
+        let maxPlayers = 4; // Maximum for online multiplayer only
 
         const players = {
             1: {
@@ -1620,6 +1624,7 @@
 
         // Menu functions
         function startLocalGame() {
+            gameMode = 'local';
             document.getElementById('menu').classList.add('hidden');
             document.getElementById('settingsMenu').classList.remove('hidden');
         }
@@ -1782,22 +1787,35 @@
 
             peer.on('open', (id) => {
                 myPlayerId = id;
-                const conn = peer.connect(code);
-                connections.push(conn);
                 
                 // Store my name
                 playerNames[myPlayerId] = myName;
+                
+                // Show connecting status
+                document.getElementById('onlineMenu').classList.add('hidden');
+                document.getElementById('lobbyWaiting').classList.remove('hidden');
+                document.getElementById('lobbyCodeDisplay').textContent = code;
+                document.getElementById('lobbyStatus').textContent = 'Connecting to lobby...';
+                
+                const conn = peer.connect(code);
+                connections.push(conn);
                 
                 setupConnection(conn);
             });
 
             peer.on('error', (err) => {
                 alert('Error joining lobby: ' + err.message);
+                backToMainMenuFromOnline();
             });
         }
 
         function setupConnection(conn) {
             conn.on('open', () => {
+                // Update status for joiners
+                if (!isHost) {
+                    document.getElementById('lobbyStatus').textContent = 'Connected! Waiting for game to start...';
+                }
+                
                 // Send my info to the other player
                 conn.send({
                     type: 'playerInfo',
@@ -1818,6 +1836,11 @@
                     console.error('Error handling message:', e);
                 }
             });
+            
+            conn.on('error', (err) => {
+                console.error('Connection error:', err);
+                alert('Connection error: ' + err.message);
+            });
 
             conn.on('close', () => {
                 // Remove this connection
@@ -1826,7 +1849,7 @@
                     connections.splice(index, 1);
                 }
                 
-                if (gameMode === 'online') {
+                if (gameMode === 'online' && gameRunning) {
                     alert('A player disconnected');
                     endGame();
                 }
@@ -1841,19 +1864,30 @@
                     
                     if (isHost) {
                         // Assign this player a slot
+                        let assigned = false;
                         for (let i = 2; i <= 4; i++) {
                             if (!players[i].active) {
                                 players[i].peerId = data.peerId;
                                 players[i].active = true;
+                                assigned = true;
+                                connectedPlayers++;
                                 break;
                             }
+                        }
+                        
+                        if (!assigned) {
+                            // Lobby full
+                            conn.send({ type: 'lobbyFull' });
+                            conn.close();
+                            return;
                         }
                         
                         // Send current game state to new player
                         conn.send({
                             type: 'gameStateSync',
                             players: getActivePlayers(),
-                            playerNames: playerNames
+                            playerNames: playerNames,
+                            connectedPlayers: connectedPlayers
                         });
                         
                         // Broadcast to all that a new player joined
@@ -1862,11 +1896,13 @@
                             peerId: data.peerId,
                             name: data.name
                         });
-                    }
-                    
-                    // Show ready screen if enough players
-                    if (connectedPlayers >= 2) {
-                        showReadyScreen();
+                        
+                        updateLobbyStatus();
+                        
+                        // Show ready screen if enough players
+                        if (connectedPlayers >= 2) {
+                            showReadyScreen();
+                        }
                     }
                     break;
                     
@@ -1877,13 +1913,21 @@
                         players[num].active = playerData.active;
                     });
                     Object.assign(playerNames, data.playerNames);
+                    connectedPlayers = data.connectedPlayers || 0;
                     
-                    // Find my player number
-                    for (let i = 1; i <= 4; i++) {
-                        if (players[i].peerId === myPlayerId) {
-                            break;
-                        }
-                    }
+                    // Transition to ready screen
+                    document.getElementById('lobbyWaiting').classList.add('hidden');
+                    showReadyScreen();
+                    break;
+                    
+                case 'lobbyFull':
+                    alert('Lobby is full (4 players maximum)');
+                    endGame();
+                    break;
+                    
+                case 'playerJoined':
+                    playerNames[data.peerId] = data.name;
+                    updateLobbyStatus();
                     break;
                     
                 case 'ready':
@@ -1951,8 +1995,6 @@
         }
 
         function updateReadyDisplay() {
-            // For now, just show basic ready status
-            // We can enhance this later to show individual player status
             let readyCount = 0;
             let totalPlayers = 0;
             
@@ -1962,7 +2004,14 @@
             }
             
             document.getElementById('p1ReadyStatus').textContent = `${readyCount}/${totalPlayers} players ready`;
-            document.getElementById('p2ReadyStatus').textContent = '';
+            
+            if (readyCount === totalPlayers && totalPlayers >= 2) {
+                document.getElementById('p2ReadyStatus').textContent = 'All players ready! Starting soon...';
+                document.getElementById('p2ReadyStatus').style.color = '#10b981';
+            } else {
+                document.getElementById('p2ReadyStatus').textContent = 'Waiting for all players to ready up...';
+                document.getElementById('p2ReadyStatus').style.color = 'rgba(255, 255, 255, 0.6)';
+            }
         }
 
         function checkAllReady() {

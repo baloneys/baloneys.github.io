@@ -1709,18 +1709,24 @@
         }
 
         function createLobby() {
+            console.log('createLobby called');
+            
             // Get player name
             player1Name = document.getElementById('onlinePlayerName').value.trim();
             if (!player1Name) {
                 alert('Please enter your name');
+                console.log('No name provided');
                 return;
             }
+            console.log('Host name:', player1Name);
             
             lobbyCode = Math.random().toString(36).substring(2, 8).toUpperCase();
             isHost = true;
             peer = new Peer(lobbyCode);
+            console.log('Creating peer with lobby code:', lobbyCode);
             
             peer.on('open', (id) => {
+                console.log('Host peer opened with ID:', id);
                 myPlayerId = id;
                 connectedPlayers = 1;
                 
@@ -1728,28 +1734,34 @@
                 players[1].peerId = myPlayerId;
                 players[1].active = true;
                 playerNames[myPlayerId] = player1Name;
+                console.log('Host set as player 1');
                 
                 document.getElementById('onlineMenu').classList.add('hidden');
                 document.getElementById('lobbyWaiting').classList.remove('hidden');
                 document.getElementById('lobbyCodeDisplay').textContent = lobbyCode;
                 
                 updateLobbyStatus();
+                console.log('Lobby waiting screen shown');
             });
 
             peer.on('connection', (connection) => {
+                console.log('Incoming connection from peer:', connection.peer);
                 if (connectedPlayers >= maxPlayers) {
+                    console.log('Lobby full, rejecting connection');
                     connection.close();
                     return;
                 }
                 
                 connections.push(connection);
                 connectedPlayers++;
+                console.log('Connection accepted, total players:', connectedPlayers);
                 
                 setupConnection(connection);
                 updateLobbyStatus();
             });
 
             peer.on('error', (err) => {
+                console.error('Host peer error:', err);
                 alert('Error creating lobby: ' + err.message);
                 backToMainMenuFromOnline();
             });
@@ -1769,54 +1781,77 @@
         }
 
         function joinLobby() {
+            console.log('joinLobby called');
+            
             // Get player name
             const myName = document.getElementById('onlinePlayerName').value.trim();
             if (!myName) {
                 alert('Please enter your name');
+                console.log('No name provided');
                 return;
             }
+            console.log('Name:', myName);
             
             const code = document.getElementById('joinCode').value.toUpperCase().trim();
             if (!code) {
                 alert('Please enter a lobby code');
+                console.log('No code provided');
                 return;
             }
+            console.log('Code:', code);
 
             isHost = false;
             peer = new Peer();
+            console.log('Peer created');
 
             peer.on('open', (id) => {
+                console.log('Peer opened with ID:', id);
                 myPlayerId = id;
-                
-                // Store my name
                 playerNames[myPlayerId] = myName;
                 
-                // Show connecting status
+                // Show connecting UI immediately
+                console.log('Hiding online menu, showing lobby waiting');
                 document.getElementById('onlineMenu').classList.add('hidden');
                 document.getElementById('lobbyWaiting').classList.remove('hidden');
                 document.getElementById('lobbyCodeDisplay').textContent = code;
-                document.getElementById('lobbyStatus').textContent = 'Connecting to lobby...';
+                const statusEl = document.getElementById('lobbyStatus');
+                if (statusEl) {
+                    statusEl.textContent = 'Connecting to lobby...';
+                }
                 
+                // Connect to host
+                console.log('Attempting to connect to host:', code);
                 const conn = peer.connect(code);
+                console.log('Connection object created:', conn);
                 connections.push(conn);
                 
                 setupConnection(conn);
             });
 
             peer.on('error', (err) => {
+                console.error('Peer error:', err);
                 alert('Error joining lobby: ' + err.message);
                 backToMainMenuFromOnline();
             });
         }
 
         function setupConnection(conn) {
+            console.log('setupConnection called for connection:', conn);
+            
             conn.on('open', () => {
+                console.log('Connection opened! isHost:', isHost);
+                
                 // Update status for joiners
                 if (!isHost) {
-                    document.getElementById('lobbyStatus').textContent = 'Connected! Waiting for game to start...';
+                    const statusEl = document.getElementById('lobbyStatus');
+                    if (statusEl) {
+                        statusEl.textContent = 'Connected! Waiting for game to start...';
+                        console.log('Updated status to connected');
+                    }
                 }
                 
                 // Send my info to the other player
+                console.log('Sending playerInfo:', myPlayerId, playerNames[myPlayerId]);
                 conn.send({
                     type: 'playerInfo',
                     peerId: myPlayerId,
@@ -1825,11 +1860,13 @@
                 
                 // If I'm not host, ask for game state
                 if (!isHost) {
+                    console.log('Requesting game state from host');
                     conn.send({ type: 'requestGameState' });
                 }
             });
 
             conn.on('data', (data) => {
+                console.log('Received data:', data);
                 try {
                     handleMessage(data, conn);
                 } catch (e) {
@@ -1843,6 +1880,7 @@
             });
 
             conn.on('close', () => {
+                console.log('Connection closed');
                 // Remove this connection
                 const index = connections.indexOf(conn);
                 if (index > -1) {
@@ -1857,12 +1895,16 @@
         }
 
         function handleMessage(data, conn) {
+            console.log('handleMessage received:', data.type, data);
+            
             switch (data.type) {
                 case 'playerInfo':
+                    console.log('Processing playerInfo');
                     // Store player info
                     playerNames[data.peerId] = data.name;
                     
                     if (isHost) {
+                        console.log('Host processing new player');
                         // Assign this player a slot
                         let assigned = false;
                         for (let i = 2; i <= 4; i++) {
@@ -1871,11 +1913,13 @@
                                 players[i].active = true;
                                 assigned = true;
                                 connectedPlayers++;
+                                console.log('Assigned player to slot', i, 'Total players:', connectedPlayers);
                                 break;
                             }
                         }
                         
                         if (!assigned) {
+                            console.log('Lobby full, rejecting player');
                             // Lobby full
                             conn.send({ type: 'lobbyFull' });
                             conn.close();
@@ -1883,6 +1927,7 @@
                         }
                         
                         // Send current game state to new player
+                        console.log('Sending gameStateSync to new player');
                         conn.send({
                             type: 'gameStateSync',
                             players: getActivePlayers(),
@@ -1901,21 +1946,26 @@
                         
                         // Show ready screen if enough players
                         if (connectedPlayers >= 2) {
+                            console.log('Showing ready screen for host');
                             showReadyScreen();
                         }
                     }
                     break;
                     
                 case 'gameStateSync':
+                    console.log('Received gameStateSync');
                     // Received full game state from host
                     Object.entries(data.players).forEach(([num, playerData]) => {
                         players[num].peerId = playerData.peerId;
                         players[num].active = playerData.active;
+                        console.log('Synced player', num, playerData);
                     });
                     Object.assign(playerNames, data.playerNames);
                     connectedPlayers = data.connectedPlayers || 0;
+                    console.log('Total connected players:', connectedPlayers);
                     
                     // Transition to ready screen
+                    console.log('Transitioning to ready screen');
                     document.getElementById('lobbyWaiting').classList.add('hidden');
                     showReadyScreen();
                     break;

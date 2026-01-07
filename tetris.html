@@ -415,6 +415,12 @@
                 box-shadow: 0 0 40px rgba(255, 68, 68, 0.8);
             }
         }
+        
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
 
         .player-info {
             text-align: center;
@@ -722,6 +728,10 @@
                     <div id="spectatorCounter" style="position: absolute; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); display: none;">
                         <span style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">👁️ Spectators: </span>
                         <span id="spectatorCount" style="color: #6366f1; font-weight: 700; font-size: 1rem;">0</span>
+                    </div>
+                    <div id="tetrisAnnouncement" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 30px 50px; border-radius: 16px; border: 3px solid #fff; box-shadow: 0 0 30px rgba(99, 102, 241, 0.8); display: none; z-index: 1000; animation: pulse 0.5s ease-in-out;">
+                        <div style="font-size: 2.5rem; font-weight: 900; color: #fff; text-align: center; text-shadow: 0 0 10px rgba(0,0,0,0.5);">🎉 TETRIS! 🎉</div>
+                        <div id="tetrisPlayerName" style="font-size: 1.5rem; font-weight: 700; color: #fbbf24; text-align: center; margin-top: 10px;"></div>
                     </div>
                     <div class="tetris-arena">
                         <div class="player-area">
@@ -1296,6 +1306,15 @@
             }
 
             if (linesCleared > 0) {
+                // Find which player number this is
+                let playerNum = null;
+                for (let i = 1; i <= 4; i++) {
+                    if (players[i] === player) {
+                        playerNum = i;
+                        break;
+                    }
+                }
+                
                 // SNES Tetris scoring
                 const points = {
                     1: 40,    // Single
@@ -1305,9 +1324,21 @@
                 };
                 player.score += points[linesCleared] || 0;
                 
+                // Announce Tetris!
+                if (linesCleared === 4 && playerNum && gameMode === 'online') {
+                    const name = playerNames[player.peerId] || `Player ${playerNum}`;
+                    showTetrisAnnouncement(name);
+                    // Broadcast tetris announcement
+                    broadcastToAll({
+                        type: 'tetrisAnnouncement',
+                        playerName: name
+                    });
+                }
+                
                 // Update the display immediately
-                const playerNum = player === players[1] ? 1 : 2;
-                updateScore(playerNum);
+                if (playerNum) {
+                    updateScore(playerNum);
+                }
             }
             return linesCleared;
         }
@@ -2154,18 +2185,31 @@
                 
                 // Broadcast disconnect
                 if (isHost && (disconnectedPlayerNum || wasSpectator)) {
+                    // Remove disconnected player from readyPlayers
+                    if (disconnectedPlayerNum) {
+                        const disconnectedPeerId = Object.keys(playerNames).find(peerId => 
+                            playerNames[peerId] === disconnectedName
+                        );
+                        if (disconnectedPeerId && readyPlayers[disconnectedPeerId] !== undefined) {
+                            delete readyPlayers[disconnectedPeerId];
+                            console.log('Removed disconnected player from readyPlayers');
+                        }
+                    }
+                    
                     broadcastToAll({
                         type: 'playerDisconnected',
                         playerNum: disconnectedPlayerNum,
                         name: disconnectedName,
                         spectatorCount: spectators.length,
-                        wasSpectator: wasSpectator
+                        wasSpectator: wasSpectator,
+                        readyPlayers: readyPlayers  // Include updated readyPlayers
                     });
                     
                     if (wasSpectator) {
                         updateSpectatorCount(spectators.length);
                     } else {
                         updateBoardVisibility();
+                        updateReadyDisplay();  // Update ready count
                     }
                 }
                 
@@ -2212,30 +2256,83 @@
                             });
                         }
                         
-                        // Send current game state to new player/spectator
+                        // Check if ready screen is already shown
+                        const readyScreenShown = document.getElementById('readyScreen').classList.contains('hidden') === false;
+                        
+                        // Add new player to readyPlayers if ready screen is shown
+                        if (readyScreenShown && assigned) {
+                            readyPlayers[data.peerId] = false;
+                            console.log('Added new player to readyPlayers');
+                        }
+                        
+                        // Send current game state to new player/spectator (now includes them in readyPlayers)
                         console.log('Sending gameStateSync to new player/spectator');
                         conn.send({
                             type: 'gameStateSync',
                             players: getActivePlayers(),
                             playerNames: playerNames,
                             connectedPlayers: connectedPlayers,
-                            spectatorCount: spectators.length
+                            spectatorCount: spectators.length,
+                            readyPlayers: readyPlayers,
+                            gameRunning: gameRunning  // Tell joiner if game is already running
                         });
                         
-                        // Broadcast to all that a new player/spectator joined
+                        // If game is already running and player was assigned, initialize them immediately
+                        if (gameRunning && assigned) {
+                            // Find which slot they were assigned to
+                            let assignedSlot = null;
+                            for (let i = 2; i <= 4; i++) {
+                                if (players[i].peerId === data.peerId) {
+                                    assignedSlot = i;
+                                    break;
+                                }
+                            }
+                            
+                            if (assignedSlot) {
+                                // Initialize the new player's board
+                                if (!players[assignedSlot].canvas) {
+                                    players[assignedSlot].canvas = document.getElementById(`canvas${assignedSlot}`);
+                                    players[assignedSlot].ctx = players[assignedSlot].canvas.getContext('2d');
+                                }
+                                players[assignedSlot].board = createBoard();
+                                players[assignedSlot].nextPieces = [];
+                                fillNextPiecesQueue(players[assignedSlot]);
+                                players[assignedSlot].piece = getNextPiece(players[assignedSlot]);
+                                players[assignedSlot].score = 0;
+                                players[assignedSlot].losses = 0;
+                                players[assignedSlot].dropCounter = 0;
+                                players[assignedSlot].lastTime = performance.now();
+                                updateScore(assignedSlot);
+                                updateSkinPreview(assignedSlot);
+                                
+                                // Update board visibility for all players
+                                updateBoardVisibility();
+                                
+                                // Broadcast board visibility update
+                                broadcastToAll({
+                                    type: 'updateVisibility'
+                                });
+                            }
+                        }
+                        
+                        // Broadcast to all OTHER players that a new player/spectator joined
                         broadcastToAll({
                             type: assigned ? 'playerJoined' : 'spectatorJoined',
                             peerId: data.peerId,
                             name: data.name,
-                            spectatorCount: spectators.length
+                            spectatorCount: spectators.length,
+                            readyPlayers: readyPlayers  // Include updated readyPlayers so everyone syncs
                         });
                         
                         updateLobbyStatus();
                         
-                        // Show ready screen if enough players
-                        if (connectedPlayers >= 2) {
+                        // Show ready screen if enough players and not already shown
+                        if (connectedPlayers >= 2 && !readyScreenShown) {
                             console.log('Showing ready screen for host');
                             showReadyScreen();
+                        } else if (readyScreenShown && assigned) {
+                            // Update display with new player count
+                            updateReadyDisplay();
                         }
                     }
                     break;
@@ -2261,10 +2358,61 @@
                         updateSpectatorCount(data.spectatorCount);
                     }
                     
-                    // Transition to ready screen
-                    console.log('Transitioning to ready screen');
-                    document.getElementById('lobbyWaiting').classList.add('hidden');
-                    showReadyScreen();
+                    // Sync ready state
+                    if (data.readyPlayers) {
+                        readyPlayers = data.readyPlayers;
+                    }
+                    
+                    // Check if game is already running (late join)
+                    if (data.gameRunning) {
+                        console.log('Late joining - game already running');
+                        // Hide lobby/ready screens, show game
+                        document.getElementById('lobbyWaiting').classList.add('hidden');
+                        document.getElementById('readyScreen').classList.add('hidden');
+                        const gameArea = document.getElementById('gameArea');
+                        gameArea.classList.remove('hidden');
+                        gameArea.classList.add('online-mode');
+                        
+                        // Update board visibility
+                        updateBoardVisibility();
+                        
+                        // Start game for this client
+                        gameMode = 'online';
+                        gameRunning = true;
+                        
+                        // Initialize my player
+                        const myPlayerNum = getMyPlayerNum();
+                        if (myPlayerNum && players[myPlayerNum].active) {
+                            if (!players[myPlayerNum].canvas) {
+                                players[myPlayerNum].canvas = document.getElementById(`canvas${myPlayerNum}`);
+                                players[myPlayerNum].ctx = players[myPlayerNum].canvas.getContext('2d');
+                            }
+                            players[myPlayerNum].board = createBoard();
+                            players[myPlayerNum].nextPieces = [];
+                            fillNextPiecesQueue(players[myPlayerNum]);
+                            players[myPlayerNum].piece = getNextPiece(players[myPlayerNum]);
+                            players[myPlayerNum].score = 0;
+                            players[myPlayerNum].losses = 0;
+                            players[myPlayerNum].dropCounter = 0;
+                            players[myPlayerNum].lastTime = performance.now();
+                            updateScore(myPlayerNum);
+                            updateSkinPreview(myPlayerNum);
+                            
+                            const name = playerNames[players[myPlayerNum].peerId] || `Player ${myPlayerNum}`;
+                            document.getElementById(`playerName${myPlayerNum}`).textContent = name;
+                        }
+                        
+                        // Update spectator count
+                        updateSpectatorCount(data.spectatorCount || 0);
+                        
+                        // Start the game loop
+                        animationId = requestAnimationFrame(update);
+                    } else {
+                        // Normal join - transition to ready screen
+                        console.log('Transitioning to ready screen');
+                        document.getElementById('lobbyWaiting').classList.add('hidden');
+                        showReadyScreen();
+                    }
                     break;
                     
                 case 'lobbyFull':
@@ -2274,6 +2422,22 @@
                     
                 case 'playerJoined':
                     playerNames[data.peerId] = data.name;
+                    
+                    // Sync readyPlayers from host (includes new player)
+                    if (data.readyPlayers) {
+                        readyPlayers = data.readyPlayers;
+                        
+                        // Update my button state
+                        const readyButton = document.getElementById('readyButton');
+                        if (readyButton && myPlayerId) {
+                            const isReady = readyPlayers[myPlayerId] || false;
+                            readyButton.textContent = isReady ? 'Cancel Ready' : 'Ready Up!';
+                            readyButton.style.background = isReady ? '#10b981' : '#6366f1';
+                        }
+                        
+                        updateReadyDisplay();
+                    }
+                    
                     updateLobbyStatus();
                     break;
                     
@@ -2290,6 +2454,12 @@
                     
                 case 'playerDisconnected':
                     console.log('Player disconnected:', data.name);
+                    
+                    // Sync readyPlayers from host
+                    if (data.readyPlayers) {
+                        readyPlayers = data.readyPlayers;
+                    }
+                    
                     if (data.wasSpectator) {
                         updateSpectatorCount(data.spectatorCount);
                     } else if (data.playerNum) {
@@ -2298,6 +2468,7 @@
                         players[data.playerNum].peerId = null;
                         connectedPlayers--;
                         updateBoardVisibility();
+                        updateReadyDisplay();
                     }
                     break;
                     
@@ -2305,6 +2476,21 @@
                     readyPlayers[data.peerId] = data.ready;
                     updateReadyDisplay();
                     checkAllReady();
+                    break;
+                    
+                case 'syncReadyState':
+                    // Host is syncing the ready state for all players
+                    readyPlayers = data.readyPlayers;
+                    
+                    // Update my ready button state
+                    const readyButton = document.getElementById('readyButton');
+                    if (readyButton && myPlayerId) {
+                        const isReady = readyPlayers[myPlayerId] || false;
+                        readyButton.textContent = isReady ? 'Cancel Ready' : 'Ready Up!';
+                        readyButton.style.background = isReady ? '#10b981' : '#6366f1';
+                    }
+                    
+                    updateReadyDisplay();
                     break;
                     
                 case 'startGame':
@@ -2329,6 +2515,14 @@
                         players[data.playerNum].skinIndex = data.skinIndex;
                         updateSkinPreview(data.playerNum);
                     }
+                    break;
+                    
+                case 'tetrisAnnouncement':
+                    showTetrisAnnouncement(data.playerName);
+                    break;
+                    
+                case 'updateVisibility':
+                    updateBoardVisibility();
                     break;
             }
         }
@@ -2363,12 +2557,29 @@
             document.getElementById('lobbyWaiting').classList.add('hidden');
             document.getElementById('readyScreen').classList.remove('hidden');
             
-            // Initialize ready states
-            readyPlayers = {};
-            for (let i = 1; i <= 4; i++) {
-                if (players[i].active) {
-                    readyPlayers[players[i].peerId] = false;
+            if (isHost) {
+                // Host initializes ready states for all active players
+                readyPlayers = {};
+                for (let i = 1; i <= 4; i++) {
+                    if (players[i].active) {
+                        readyPlayers[players[i].peerId] = false;
+                    }
                 }
+                
+                // Broadcast ready state to all clients
+                broadcastToAll({
+                    type: 'syncReadyState',
+                    readyPlayers: readyPlayers
+                });
+            }
+            // Non-hosts already have readyPlayers from gameStateSync or syncReadyState
+            
+            // Reset my ready button to default state
+            const readyButton = document.getElementById('readyButton');
+            if (readyButton && myPlayerId) {
+                const isReady = readyPlayers[myPlayerId] || false;
+                readyButton.textContent = isReady ? 'Cancel Ready' : 'Ready Up!';
+                readyButton.style.background = isReady ? '#10b981' : '#6366f1';
             }
             
             updateReadyDisplay();
@@ -2524,6 +2735,19 @@
             document.getElementById('lobbyWaiting').classList.add('hidden');
             document.getElementById('readyScreen').classList.add('hidden');
             backToMainMenuFromOnline();
+        }
+
+        function showTetrisAnnouncement(playerName) {
+            const announcement = document.getElementById('tetrisAnnouncement');
+            const nameEl = document.getElementById('tetrisPlayerName');
+            if (announcement && nameEl) {
+                nameEl.textContent = playerName;
+                announcement.style.display = 'block';
+                // Hide after 2 seconds
+                setTimeout(() => {
+                    announcement.style.display = 'none';
+                }, 2000);
+            }
         }
 
         function endGame() {

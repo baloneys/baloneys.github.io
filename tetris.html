@@ -265,6 +265,10 @@
         .hidden {
             display: none;
         }
+        
+        #gameArea {
+            position: relative;
+        }
 
         .tetris-arena {
             display: flex;
@@ -291,6 +295,20 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
+        }
+        
+        .game-area.online-mode .next-pieces-panel {
+            display: none;
+        }
+        
+        .next-piece-bottom {
+            display: none;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .game-area.online-mode .next-piece-bottom {
+            display: block;
         }
 
         .next-pieces-title {
@@ -701,6 +719,10 @@
                 <div id="statusMessage" class="status hidden"></div>
 
                 <div id="gameArea" class="hidden">
+                    <div id="spectatorCounter" style="position: absolute; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); display: none;">
+                        <span style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">👁️ Spectators: </span>
+                        <span id="spectatorCount" style="color: #6366f1; font-weight: 700; font-size: 1rem;">0</span>
+                    </div>
                     <div class="tetris-arena">
                         <div class="player-area">
                             <div class="player-info">
@@ -729,6 +751,10 @@
                                 <button class="skin-arrow" onclick="changeSkin(1, -1)">‹</button>
                                 <div class="skin-preview" id="skinPreview1" onclick="showSkinSelector(1)"></div>
                                 <button class="skin-arrow" onclick="changeSkin(1, 1)">›</button>
+                            </div>
+                            <div class="next-piece-bottom">
+                                <div style="font-size: 0.75rem; color: #6366f1; font-weight: 600; margin-bottom: 5px;">NEXT</div>
+                                <canvas id="nextBottom1" width="50" height="50" style="border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 4px; background: #000;"></canvas>
                             </div>
                         </div>
                         <div class="player-area">
@@ -759,6 +785,10 @@
                                 <div class="skin-preview" id="skinPreview2" onclick="showSkinSelector(2)"></div>
                                 <button class="skin-arrow" onclick="changeSkin(2, 1)">›</button>
                             </div>
+                            <div class="next-piece-bottom">
+                                <div style="font-size: 0.75rem; color: #6366f1; font-weight: 600; margin-bottom: 5px;">NEXT</div>
+                                <canvas id="nextBottom2" width="50" height="50" style="border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 4px; background: #000;"></canvas>
+                            </div>
                         </div>
                         <div class="player-area player-area-3 hidden">
                             <div class="player-info">
@@ -788,6 +818,10 @@
                                 <div class="skin-preview" id="skinPreview3" onclick="showSkinSelector(3)"></div>
                                 <button class="skin-arrow" onclick="changeSkin(3, 1)">›</button>
                             </div>
+                            <div class="next-piece-bottom">
+                                <div style="font-size: 0.75rem; color: #6366f1; font-weight: 600; margin-bottom: 5px;">NEXT</div>
+                                <canvas id="nextBottom3" width="50" height="50" style="border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 4px; background: #000;"></canvas>
+                            </div>
                         </div>
                         <div class="player-area player-area-4 hidden">
                             <div class="player-info">
@@ -816,6 +850,10 @@
                                 <button class="skin-arrow" onclick="changeSkin(4, -1)">‹</button>
                                 <div class="skin-preview" id="skinPreview4" onclick="showSkinSelector(4)"></div>
                                 <button class="skin-arrow" onclick="changeSkin(4, 1)">›</button>
+                            </div>
+                            <div class="next-piece-bottom">
+                                <div style="font-size: 0.75rem; color: #6366f1; font-weight: 600; margin-bottom: 5px;">NEXT</div>
+                                <canvas id="nextBottom4" width="50" height="50" style="border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 4px; background: #000;"></canvas>
                             </div>
                         </div>
                     </div>
@@ -1028,6 +1066,7 @@
         let player2Name = 'Player 2';
         let connectedPlayers = 0;
         let maxPlayers = 4; // Maximum for online multiplayer
+        let spectators = []; // Array of spectator objects {peerId, name}
 
         const players = {
             1: {
@@ -1533,24 +1572,23 @@
         function drawNextPieces(playerNum) {
             const p = players[playerNum];
             
-            for (let i = 0; i < 5; i++) {
-                const canvas = document.getElementById(`next${playerNum}-${i}`);
-                if (!canvas) continue;
-                
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#000';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                if (p.nextPieces[i]) {
-                    const piece = p.nextPieces[i];
-                    const blockSize = 10; // Smaller blocks for 50x50 canvas
+            // In online mode, draw only the first next piece to the bottom canvas
+            if (gameMode === 'online') {
+                const canvas = document.getElementById(`nextBottom${playerNum}`);
+                if (canvas && p.nextPieces[0]) {
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    const piece = p.nextPieces[0];
+                    const blockSize = 10;
                     const offsetX = (canvas.width - piece.shape[0].length * blockSize) / 2;
                     const offsetY = (canvas.height - piece.shape.length * blockSize) / 2;
                     
                     piece.shape.forEach((row, y) => {
                         row.forEach((value, x) => {
                             if (value > 0) {
-                                const color = getBlockColor(p, value, 10); // Middle gradient
+                                const color = getBlockColor(p, value, 10);
                                 
                                 ctx.shadowBlur = 8;
                                 ctx.shadowColor = color;
@@ -1575,6 +1613,52 @@
                     });
                     
                     ctx.shadowBlur = 0;
+                }
+            } else {
+                // Local mode: draw all 5 next pieces on the side
+                for (let i = 0; i < 5; i++) {
+                    const canvas = document.getElementById(`next${playerNum}-${i}`);
+                    if (!canvas) continue;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    if (p.nextPieces[i]) {
+                        const piece = p.nextPieces[i];
+                        const blockSize = 10;
+                        const offsetX = (canvas.width - piece.shape[0].length * blockSize) / 2;
+                        const offsetY = (canvas.height - piece.shape.length * blockSize) / 2;
+                        
+                        piece.shape.forEach((row, y) => {
+                            row.forEach((value, x) => {
+                                if (value > 0) {
+                                    const color = getBlockColor(p, value, 10);
+                                    
+                                    ctx.shadowBlur = 8;
+                                    ctx.shadowColor = color;
+                                    ctx.fillStyle = color;
+                                    ctx.fillRect(
+                                        offsetX + x * blockSize,
+                                        offsetY + y * blockSize,
+                                        blockSize,
+                                        blockSize
+                                    );
+                                    
+                                    ctx.shadowBlur = 0;
+                                    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                                    ctx.fillRect(
+                                        offsetX + x * blockSize + 1,
+                                        offsetY + y * blockSize + 1,
+                                        blockSize - 2,
+                                        blockSize - 2
+                                    );
+                                }
+                            });
+                        });
+                        
+                        ctx.shadowBlur = 0;
+                    }
                 }
             }
         }
@@ -1867,22 +1951,12 @@
 
             peer.on('connection', (connection) => {
                 console.log('Incoming connection from peer:', connection.peer);
-                if (connectedPlayers >= maxPlayers) {
-                    console.log('Lobby full, rejecting connection');
-                    // Send rejection message before closing
-                    connection.on('open', () => {
-                        connection.send({ type: 'lobbyFull' });
-                        setTimeout(() => connection.close(), 100);
-                    });
-                    return;
-                }
                 
+                // Accept connection but don't increment counter yet (will do in playerInfo handler)
                 connections.push(connection);
-                connectedPlayers++;
-                console.log('Connection accepted, total players:', connectedPlayers);
+                console.log('Connection accepted, total connections:', connections.length);
                 
                 setupConnection(connection);
-                updateLobbyStatus();
             });
 
             peer.on('error', (err) => {
@@ -1908,6 +1982,20 @@
             // Auto-show ready screen when we have enough players (minimum 2)
             if (connectedPlayers >= 2 && document.getElementById('lobbyWaiting').classList.contains('hidden') === false) {
                 showReadyScreen();
+            }
+        }
+
+        function updateSpectatorCount(count) {
+            const counterEl = document.getElementById('spectatorCount');
+            const containerEl = document.getElementById('spectatorCounter');
+            if (counterEl && containerEl) {
+                counterEl.textContent = count;
+                // Show/hide based on count
+                if (count > 0) {
+                    containerEl.style.display = 'block';
+                } else {
+                    containerEl.style.display = 'none';
+                }
             }
         }
 
@@ -2011,16 +2099,73 @@
             });
 
             conn.on('close', () => {
-                console.log('Connection closed');
+                console.log('Connection closed for peer');
+                
                 // Remove this connection
                 const index = connections.indexOf(conn);
                 if (index > -1) {
                     connections.splice(index, 1);
                 }
                 
-                if (gameMode === 'online' && gameRunning) {
-                    alert('A player disconnected');
-                    endGame();
+                // Find which player/spectator disconnected
+                let disconnectedPlayerNum = null;
+                let disconnectedName = '';
+                let wasSpectator = false;
+                
+                // Check if it was a player
+                for (let i = 1; i <= 4; i++) {
+                    if (players[i].active && players[i].peerId && connections.some(c => c.peer === players[i].peerId)) {
+                        // This player's connection is still in connections, continue
+                    } else if (players[i].active && players[i].peerId) {
+                        // This player's connection is NOT in connections - they disconnected
+                        const peerId = players[i].peerId;
+                        if (playerNames[peerId]) {
+                            disconnectedPlayerNum = i;
+                            disconnectedName = playerNames[peerId];
+                            // Deactivate player
+                            players[i].active = false;
+                            players[i].peerId = null;
+                            connectedPlayers--;
+                            console.log(`Player ${i} (${disconnectedName}) disconnected`);
+                            break;
+                        }
+                    }
+                }
+                
+                // Check if it was a spectator
+                if (!disconnectedPlayerNum) {
+                    for (let i = spectators.length - 1; i >= 0; i--) {
+                        if (!connections.some(c => c.peer === spectators[i].peerId)) {
+                            disconnectedName = spectators[i].name;
+                            spectators.splice(i, 1);
+                            wasSpectator = true;
+                            console.log(`Spectator ${disconnectedName} disconnected`);
+                            break;
+                        }
+                    }
+                }
+                
+                // Broadcast disconnect
+                if (isHost && (disconnectedPlayerNum || wasSpectator)) {
+                    broadcastToAll({
+                        type: 'playerDisconnected',
+                        playerNum: disconnectedPlayerNum,
+                        name: disconnectedName,
+                        spectatorCount: spectators.length,
+                        wasSpectator: wasSpectator
+                    });
+                    
+                    if (wasSpectator) {
+                        updateSpectatorCount(spectators.length);
+                    } else {
+                        updateBoardVisibility();
+                    }
+                }
+                
+                // End game if a player disconnected during active game
+                if (gameMode === 'online' && gameRunning && disconnectedPlayerNum) {
+                    alert(`${disconnectedName} disconnected`);
+                    // Don't auto-end game, let remaining players continue
                 }
             });
         }
@@ -2036,7 +2181,7 @@
                     
                     if (isHost) {
                         console.log('Host processing new player');
-                        // Assign this player a slot
+                        // Try to assign this player a slot (2-4)
                         let assigned = false;
                         for (let i = 2; i <= 4; i++) {
                             if (!players[i].active) {
@@ -2050,27 +2195,32 @@
                         }
                         
                         if (!assigned) {
-                            console.log('Lobby full, rejecting player');
-                            // Lobby full
-                            conn.send({ type: 'lobbyFull' });
-                            conn.close();
-                            return;
+                            // All player slots full - make them a spectator
+                            console.log('All slots full, making spectator');
+                            spectators.push({ peerId: data.peerId, name: data.name });
+                            
+                            conn.send({
+                                type: 'spectatorAssigned',
+                                message: 'All player slots full. You are now spectating.'
+                            });
                         }
                         
-                        // Send current game state to new player
-                        console.log('Sending gameStateSync to new player');
+                        // Send current game state to new player/spectator
+                        console.log('Sending gameStateSync to new player/spectator');
                         conn.send({
                             type: 'gameStateSync',
                             players: getActivePlayers(),
                             playerNames: playerNames,
-                            connectedPlayers: connectedPlayers
+                            connectedPlayers: connectedPlayers,
+                            spectatorCount: spectators.length
                         });
                         
-                        // Broadcast to all that a new player joined
+                        // Broadcast to all that a new player/spectator joined
                         broadcastToAll({
-                            type: 'playerJoined',
+                            type: assigned ? 'playerJoined' : 'spectatorJoined',
                             peerId: data.peerId,
-                            name: data.name
+                            name: data.name,
+                            spectatorCount: spectators.length
                         });
                         
                         updateLobbyStatus();
@@ -2099,6 +2249,11 @@
                     connectedPlayers = data.connectedPlayers || 0;
                     console.log('Total connected players:', connectedPlayers);
                     
+                    // Sync spectator count
+                    if (data.spectatorCount !== undefined) {
+                        updateSpectatorCount(data.spectatorCount);
+                    }
+                    
                     // Transition to ready screen
                     console.log('Transitioning to ready screen');
                     document.getElementById('lobbyWaiting').classList.add('hidden');
@@ -2113,6 +2268,30 @@
                 case 'playerJoined':
                     playerNames[data.peerId] = data.name;
                     updateLobbyStatus();
+                    break;
+                    
+                case 'spectatorJoined':
+                    playerNames[data.peerId] = data.name;
+                    updateSpectatorCount(data.spectatorCount);
+                    break;
+                    
+                case 'spectatorAssigned':
+                    // I am now a spectator
+                    alert(data.message);
+                    // Transition to spectator view (still show lobby/ready/game but can't interact)
+                    break;
+                    
+                case 'playerDisconnected':
+                    console.log('Player disconnected:', data.name);
+                    if (data.wasSpectator) {
+                        updateSpectatorCount(data.spectatorCount);
+                    } else if (data.playerNum) {
+                        // Deactivate the disconnected player
+                        players[data.playerNum].active = false;
+                        players[data.playerNum].peerId = null;
+                        connectedPlayers--;
+                        updateBoardVisibility();
+                    }
                     break;
                     
                 case 'ready':
@@ -2251,7 +2430,9 @@
             gameRunning = true;
             
             document.getElementById('readyScreen').classList.add('hidden');
-            document.getElementById('gameArea').classList.remove('hidden');
+            const gameArea = document.getElementById('gameArea');
+            gameArea.classList.remove('hidden');
+            gameArea.classList.add('online-mode');  // Add class to switch to bottom next pieces
             
             // Show/hide player boards based on how many are active
             updateBoardVisibility();
@@ -2266,6 +2447,9 @@
                     document.getElementById(`playerName${i}`).textContent = name;
                 }
             }
+            
+            // Update spectator count
+            updateSpectatorCount(spectators.length);
             
             // Update controls text for online mode
             const controlsText = document.getElementById('controlsText');
@@ -2350,6 +2534,7 @@
             player2Name = 'Player 2';
             connectedPlayers = 0;
             myPlayerId = null;
+            spectators = [];  // Clear spectators
             
             // Deactivate all players
             for (let i = 1; i <= 4; i++) {
@@ -2363,11 +2548,16 @@
             document.getElementById('onlinePlayerName').value = '';
             document.getElementById('joinCode').value = '';
             
-            document.getElementById('gameArea').classList.add('hidden');
+            const gameArea = document.getElementById('gameArea');
+            gameArea.classList.add('hidden');
+            gameArea.classList.remove('online-mode');  // Remove online-mode class
             document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('readyScreen').classList.add('hidden');
             document.getElementById('lobbyWaiting').classList.add('hidden');
             document.getElementById('menu').classList.remove('hidden');
+            
+            // Hide spectator counter
+            updateSpectatorCount(0);
         }
     </script>
 </body>

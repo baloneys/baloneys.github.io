@@ -672,9 +672,9 @@
 
                 <div id="lobbyWaiting" class="hidden">
                     <div class="status waiting">
-                        <p>Waiting for opponent to join...</p>
+                        <p>Waiting for players to join...</p>
                         <p class="lobby-code-display">Lobby Code: <span id="lobbyCodeDisplay"></span></p>
-                        <p style="font-size: 0.9em; margin-top: 10px;">Share this code with your opponent!</p>
+                        <p style="font-size: 0.9em; margin-top: 10px;" id="lobbyStatus">Waiting for players... (2-4 players)</p>
                     </div>
                     <button onclick="cancelLobby()" style="background: #ff4444; margin-top: 15px;">Cancel</button>
                 </div>
@@ -944,15 +944,17 @@
         let gameRunning = false;
         let animationId = null;
         let peer = null;
-        let conn = null;
+        let connections = []; // Array of all peer connections
         let isHost = false;
         let lobbyCode = null;
-        let player1Ready = false;
-        let player2Ready = false;
-        let myReady = false;
+        let readyPlayers = {}; // Track which players are ready
+        let myPlayerId = null;
+        let playerNames = {}; // Map player IDs to names
         let maxLosses = 3;
         let player1Name = 'Player 1';
         let player2Name = 'Player 2';
+        let connectedPlayers = 0;
+        let maxPlayers = 4;
 
         const players = {
             1: {
@@ -967,7 +969,9 @@
                 dropInterval: 1000,
                 lastTime: 0,
                 skinIndex: 0,
-                flipped: false // Normal gradient (bottom to top)
+                flipped: false,
+                peerId: null,
+                active: false
             },
             2: {
                 canvas: null,
@@ -981,7 +985,41 @@
                 dropInterval: 1000,
                 lastTime: 0,
                 skinIndex: 0,
-                flipped: true // Flipped gradient (top to bottom)
+                flipped: true,
+                peerId: null,
+                active: false
+            },
+            3: {
+                canvas: null,
+                ctx: null,
+                board: null,
+                piece: null,
+                nextPieces: [],
+                score: 0,
+                losses: 0,
+                dropCounter: 0,
+                dropInterval: 1000,
+                lastTime: 0,
+                skinIndex: 0,
+                flipped: false,
+                peerId: null,
+                active: false
+            },
+            4: {
+                canvas: null,
+                ctx: null,
+                board: null,
+                piece: null,
+                nextPieces: [],
+                score: 0,
+                losses: 0,
+                dropCounter: 0,
+                dropInterval: 1000,
+                lastTime: 0,
+                skinIndex: 0,
+                flipped: true,
+                peerId: null,
+                active: false
             }
         };
 
@@ -1429,34 +1467,52 @@
 
             try {
                 if (gameMode === 'local') {
-                    // Update Player 1
-                    if (players[1] && players[1].piece) {
+                    // Update both players in local mode
+                    if (players[1] && players[1].piece && players[1].active) {
                         const deltaTime1 = time - players[1].lastTime;
                         players[1].lastTime = time;
                         players[1].dropCounter += deltaTime1;
 
                         if (players[1].dropCounter > players[1].dropInterval) {
-                            drop(players[1], false); // Automatic drop - no points
+                            drop(players[1], false);
                             players[1].dropCounter = 0;
                         }
                     }
 
-                    // Update Player 2
-                    if (players[2] && players[2].piece) {
+                    if (players[2] && players[2].piece && players[2].active) {
                         const deltaTime2 = time - players[2].lastTime;
                         players[2].lastTime = time;
                         players[2].dropCounter += deltaTime2;
 
                         if (players[2].dropCounter > players[2].dropInterval) {
-                            drop(players[2], false); // Automatic drop - no points
+                            drop(players[2], false);
                             players[2].dropCounter = 0;
                         }
                     }
+                } else if (gameMode === 'online') {
+                    // In online mode, only update MY board
+                    const myPlayer = getMyPlayer();
+                    if (myPlayer && myPlayer.piece) {
+                        const deltaTime = time - myPlayer.lastTime;
+                        myPlayer.lastTime = time;
+                        myPlayer.dropCounter += deltaTime;
+
+                        if (myPlayer.dropCounter > myPlayer.dropInterval) {
+                            drop(myPlayer, false);
+                            myPlayer.dropCounter = 0;
+                        }
+                        
+                        // Send my state to all other players
+                        broadcastMyState();
+                    }
                 }
 
-                // Always draw both boards
-                if (players[1] && players[1].canvas) draw(1);
-                if (players[2] && players[2].canvas) draw(2);
+                // Draw all active boards
+                for (let i = 1; i <= 4; i++) {
+                    if (players[i] && players[i].canvas && players[i].active) {
+                        draw(i);
+                    }
+                }
             } catch (e) {
                 console.error('Update error:', e);
                 gameRunning = false;
@@ -1468,34 +1524,97 @@
             }
         }
 
-        // Keyboard controls for local mode
-        document.addEventListener('keydown', (e) => {
-            if (!gameRunning || gameMode !== 'local') return;
-
-            // Player 1 controls: WASD
-            if (e.key.toLowerCase() === 'a') {
-                move(players[1], -1);
-            } else if (e.key.toLowerCase() === 'd') {
-                move(players[1], 1);
-            } else if (e.key.toLowerCase() === 's') {
-                drop(players[1], true); // Soft drop - award points
-            } else if (e.key.toLowerCase() === 'w') {
-                rotate(players[1]);
-            } else if (e.key.toLowerCase() === 'q') {
-                hardDrop(players[1]);
+        function getMyPlayer() {
+            for (let i = 1; i <= 4; i++) {
+                if (players[i].peerId === myPlayerId) {
+                    return players[i];
+                }
             }
+            return null;
+        }
+
+        function getMyPlayerNum() {
+            for (let i = 1; i <= 4; i++) {
+                if (players[i].peerId === myPlayerId) {
+                    return i;
+                }
+            }
+            return null;
+        }
+
+        function broadcastMyState() {
+            const myPlayer = getMyPlayer();
+            if (!myPlayer || connections.length === 0) return;
             
-            // Player 2 controls: Arrow keys
-            if (e.key === 'ArrowLeft') {
-                move(players[2], -1);
-            } else if (e.key === 'ArrowRight') {
-                move(players[2], 1);
-            } else if (e.key === 'ArrowDown') {
-                drop(players[2], true); // Soft drop - award points
-            } else if (e.key === 'ArrowUp') {
-                rotate(players[2]);
-            } else if (e.key === ' ') {
-                hardDrop(players[2]);
+            const myPlayerNum = getMyPlayerNum();
+            const state = {
+                type: 'gameState',
+                playerNum: myPlayerNum,
+                board: myPlayer.board,
+                piece: myPlayer.piece,
+                score: myPlayer.score,
+                losses: myPlayer.losses,
+                nextPieces: myPlayer.nextPieces
+            };
+            
+            connections.forEach(conn => {
+                if (conn && conn.open) {
+                    try {
+                        conn.send(state);
+                    } catch (e) {
+                        console.error('Error sending state:', e);
+                    }
+                }
+            });
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning) return;
+
+            if (gameMode === 'local') {
+                // Player 1 controls: WASD
+                if (e.key.toLowerCase() === 'a') {
+                    move(players[1], -1);
+                } else if (e.key.toLowerCase() === 'd') {
+                    move(players[1], 1);
+                } else if (e.key.toLowerCase() === 's') {
+                    drop(players[1], true);
+                } else if (e.key.toLowerCase() === 'w') {
+                    rotate(players[1]);
+                } else if (e.key.toLowerCase() === 'q') {
+                    hardDrop(players[1]);
+                }
+                
+                // Player 2 controls: Arrow keys
+                if (e.key === 'ArrowLeft') {
+                    move(players[2], -1);
+                } else if (e.key === 'ArrowRight') {
+                    move(players[2], 1);
+                } else if (e.key === 'ArrowDown') {
+                    drop(players[2], true);
+                } else if (e.key === 'ArrowUp') {
+                    rotate(players[2]);
+                } else if (e.key === ' ') {
+                    hardDrop(players[2]);
+                }
+            } else if (gameMode === 'online') {
+                // In online mode, only control my own player
+                const myPlayer = getMyPlayer();
+                if (!myPlayer) return;
+                
+                if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+                    move(myPlayer, -1);
+                } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+                    move(myPlayer, 1);
+                } else if (e.key === 'ArrowDown' || e.key.toLowerCase() === 's') {
+                    drop(myPlayer, true);
+                } else if (e.key === 'ArrowUp' || e.key.toLowerCase() === 'w') {
+                    rotate(myPlayer);
+                } else if (e.key === ' ' || e.key.toLowerCase() === 'q') {
+                    e.preventDefault();
+                    hardDrop(myPlayer);
+                }
             }
         });
 
@@ -1529,6 +1648,13 @@
             player2Name = document.getElementById('player2NameInput').value.trim() || 'Player 2';
             
             gameMode = 'local';
+            
+            // Activate both local players
+            players[1].active = true;
+            players[2].active = true;
+            players[1].peerId = 'local1';
+            players[2].peerId = 'local2';
+            
             document.getElementById('settingsMenu').classList.add('hidden');
             document.getElementById('gameArea').classList.remove('hidden');
             
@@ -1590,14 +1716,32 @@
             peer = new Peer(lobbyCode);
             
             peer.on('open', (id) => {
+                myPlayerId = id;
+                connectedPlayers = 1;
+                
+                // Host is always player 1
+                players[1].peerId = myPlayerId;
+                players[1].active = true;
+                playerNames[myPlayerId] = player1Name;
+                
                 document.getElementById('onlineMenu').classList.add('hidden');
                 document.getElementById('lobbyWaiting').classList.remove('hidden');
                 document.getElementById('lobbyCodeDisplay').textContent = lobbyCode;
+                
+                updateLobbyStatus();
             });
 
             peer.on('connection', (connection) => {
-                conn = connection;
-                setupConnection();
+                if (connectedPlayers >= maxPlayers) {
+                    connection.close();
+                    return;
+                }
+                
+                connections.push(connection);
+                connectedPlayers++;
+                
+                setupConnection(connection);
+                updateLobbyStatus();
             });
 
             peer.on('error', (err) => {
@@ -1606,10 +1750,23 @@
             });
         }
 
+        function updateLobbyStatus() {
+            const statusEl = document.getElementById('lobbyStatus');
+            if (statusEl) {
+                const minNeeded = Math.max(2 - connectedPlayers, 0);
+                statusEl.textContent = `${connectedPlayers}/${maxPlayers} players connected. ${minNeeded > 0 ? `Need ${minNeeded} more to start.` : 'Minimum met! Waiting for ready...'}`;
+            }
+            
+            // Auto-show ready screen when we have enough players
+            if (connectedPlayers >= 2 && document.getElementById('lobbyWaiting').classList.contains('hidden') === false) {
+                showReadyScreen();
+            }
+        }
+
         function joinLobby() {
             // Get player name
-            player2Name = document.getElementById('onlinePlayerName').value.trim();
-            if (!player2Name) {
+            const myName = document.getElementById('onlinePlayerName').value.trim();
+            if (!myName) {
                 alert('Please enter your name');
                 return;
             }
@@ -1623,9 +1780,15 @@
             isHost = false;
             peer = new Peer();
 
-            peer.on('open', () => {
-                conn = peer.connect(code);
-                setupConnection();
+            peer.on('open', (id) => {
+                myPlayerId = id;
+                const conn = peer.connect(code);
+                connections.push(conn);
+                
+                // Store my name
+                playerNames[myPlayerId] = myName;
+                
+                setupConnection(conn);
             });
 
             peer.on('error', (err) => {
@@ -1633,101 +1796,248 @@
             });
         }
 
-        function setupConnection() {
+        function setupConnection(conn) {
             conn.on('open', () => {
-                player1Ready = false;
-                player2Ready = false;
-                myReady = false;
+                // Send my info to the other player
+                conn.send({
+                    type: 'playerInfo',
+                    peerId: myPlayerId,
+                    name: playerNames[myPlayerId]
+                });
                 
-                // Exchange names
-                if (isHost) {
-                    conn.send({ type: 'name', name: player1Name });
-                } else {
-                    conn.send({ type: 'name', name: player2Name });
+                // If I'm not host, ask for game state
+                if (!isHost) {
+                    conn.send({ type: 'requestGameState' });
                 }
-                
-                document.getElementById('p1ReadyStatus').textContent = 'Not Ready';
-                document.getElementById('p1ReadyStatus').style.color = '#e0e0e0';
-                document.getElementById('p2ReadyStatus').textContent = 'Not Ready';
-                document.getElementById('p2ReadyStatus').style.color = '#e0e0e0';
-                document.getElementById('readyButton').textContent = 'Ready Up!';
-                document.getElementById('readyButton').style.background = '#6366f1';
-                
-                document.getElementById('lobbyWaiting').classList.add('hidden');
-                document.getElementById('readyScreen').classList.remove('hidden');
             });
 
             conn.on('data', (data) => {
-                if (data.type === 'name') {
-                    if (isHost) {
-                        player2Name = data.name;
-                    } else {
-                        player1Name = data.name;
-                    }
-                } else if (data.type === 'ready') {
-                    if (isHost) {
-                        player2Ready = data.ready;
-                        document.getElementById('p2ReadyStatus').textContent = player2Ready ? 'Ready!' : 'Not Ready';
-                        document.getElementById('p2ReadyStatus').style.color = player2Ready ? '#10b981' : '#e0e0e0';
-                    } else {
-                        player1Ready = data.ready;
-                        document.getElementById('p1ReadyStatus').textContent = player1Ready ? 'Ready!' : 'Not Ready';
-                        document.getElementById('p1ReadyStatus').style.color = player1Ready ? '#10b981' : '#e0e0e0';
-                    }
-                    
-                    if (player1Ready && player2Ready) {
-                        setTimeout(() => {
-                            document.getElementById('readyScreen').classList.add('hidden');
-                            document.getElementById('gameArea').classList.remove('hidden');
-                            
-                            // Update player name displays
-                            document.getElementById('playerName1').textContent = player1Name;
-                            document.getElementById('playerName2').textContent = player2Name;
-                            
-                            initGame();
-                            gameMode = 'online';
-                            gameRunning = true;
-                            animationId = requestAnimationFrame(update);
-                        }, 1500);
-                    }
+                try {
+                    handleMessage(data, conn);
+                } catch (e) {
+                    console.error('Error handling message:', e);
                 }
             });
 
             conn.on('close', () => {
-                gameRunning = false;
-                alert('Opponent disconnected');
-                endGame();
+                // Remove this connection
+                const index = connections.indexOf(conn);
+                if (index > -1) {
+                    connections.splice(index, 1);
+                }
+                
+                if (gameMode === 'online') {
+                    alert('A player disconnected');
+                    endGame();
+                }
             });
         }
 
+        function handleMessage(data, conn) {
+            switch (data.type) {
+                case 'playerInfo':
+                    // Store player info
+                    playerNames[data.peerId] = data.name;
+                    
+                    if (isHost) {
+                        // Assign this player a slot
+                        for (let i = 2; i <= 4; i++) {
+                            if (!players[i].active) {
+                                players[i].peerId = data.peerId;
+                                players[i].active = true;
+                                break;
+                            }
+                        }
+                        
+                        // Send current game state to new player
+                        conn.send({
+                            type: 'gameStateSync',
+                            players: getActivePlayers(),
+                            playerNames: playerNames
+                        });
+                        
+                        // Broadcast to all that a new player joined
+                        broadcastToAll({
+                            type: 'playerJoined',
+                            peerId: data.peerId,
+                            name: data.name
+                        });
+                    }
+                    
+                    // Show ready screen if enough players
+                    if (connectedPlayers >= 2) {
+                        showReadyScreen();
+                    }
+                    break;
+                    
+                case 'gameStateSync':
+                    // Received full game state from host
+                    Object.entries(data.players).forEach(([num, playerData]) => {
+                        players[num].peerId = playerData.peerId;
+                        players[num].active = playerData.active;
+                    });
+                    Object.assign(playerNames, data.playerNames);
+                    
+                    // Find my player number
+                    for (let i = 1; i <= 4; i++) {
+                        if (players[i].peerId === myPlayerId) {
+                            break;
+                        }
+                    }
+                    break;
+                    
+                case 'ready':
+                    readyPlayers[data.peerId] = data.ready;
+                    updateReadyDisplay();
+                    checkAllReady();
+                    break;
+                    
+                case 'startGame':
+                    startOnlineGame();
+                    break;
+                    
+                case 'gameState':
+                    // Update remote player's state
+                    if (data.playerNum && players[data.playerNum]) {
+                        players[data.playerNum].board = data.board;
+                        players[data.playerNum].piece = data.piece;
+                        players[data.playerNum].score = data.score;
+                        players[data.playerNum].losses = data.losses;
+                        players[data.playerNum].nextPieces = data.nextPieces;
+                        updateScore(data.playerNum);
+                    }
+                    break;
+            }
+        }
+
+        function getActivePlayers() {
+            const active = {};
+            for (let i = 1; i <= 4; i++) {
+                if (players[i].active) {
+                    active[i] = {
+                        peerId: players[i].peerId,
+                        active: players[i].active
+                    };
+                }
+            }
+            return active;
+        }
+
+        function broadcastToAll(message) {
+            connections.forEach(conn => {
+                if (conn && conn.open) {
+                    try {
+                        conn.send(message);
+                    } catch (e) {
+                        console.error('Error broadcasting:', e);
+                    }
+                }
+            });
+        }
+
+        function showReadyScreen() {
+            document.getElementById('lobbyWaiting').classList.add('hidden');
+            document.getElementById('readyScreen').classList.remove('hidden');
+            
+            // Initialize ready states
+            readyPlayers = {};
+            for (let i = 1; i <= 4; i++) {
+                if (players[i].active) {
+                    readyPlayers[players[i].peerId] = false;
+                }
+            }
+            
+            updateReadyDisplay();
+        }
+
+        function updateReadyDisplay() {
+            // For now, just show basic ready status
+            // We can enhance this later to show individual player status
+            let readyCount = 0;
+            let totalPlayers = 0;
+            
+            for (let peerId in readyPlayers) {
+                totalPlayers++;
+                if (readyPlayers[peerId]) readyCount++;
+            }
+            
+            document.getElementById('p1ReadyStatus').textContent = `${readyCount}/${totalPlayers} players ready`;
+            document.getElementById('p2ReadyStatus').textContent = '';
+        }
+
+        function checkAllReady() {
+            let allReady = true;
+            let playerCount = 0;
+            
+            for (let peerId in readyPlayers) {
+                playerCount++;
+                if (!readyPlayers[peerId]) {
+                    allReady = false;
+                }
+            }
+            
+            if (allReady && playerCount >= 2 && isHost) {
+                // Host tells everyone to start
+                broadcastToAll({ type: 'startGame' });
+                setTimeout(() => startOnlineGame(), 500);
+            }
+        }
+
         function toggleReady() {
-            myReady = !myReady;
+            const currentlyReady = readyPlayers[myPlayerId] || false;
+            readyPlayers[myPlayerId] = !currentlyReady;
             
-            if (isHost) {
-                player1Ready = myReady;
-                document.getElementById('p1ReadyStatus').textContent = player1Ready ? 'Ready!' : 'Not Ready';
-                document.getElementById('p1ReadyStatus').style.color = player1Ready ? '#10b981' : '#e0e0e0';
-            } else {
-                player2Ready = myReady;
-                document.getElementById('p2ReadyStatus').textContent = player2Ready ? 'Ready!' : 'Not Ready';
-                document.getElementById('p2ReadyStatus').style.color = player2Ready ? '#10b981' : '#e0e0e0';
+            // Update button
+            const readyButton = document.getElementById('readyButton');
+            readyButton.textContent = readyPlayers[myPlayerId] ? 'Cancel Ready' : 'Ready Up!';
+            readyButton.style.background = readyPlayers[myPlayerId] ? '#10b981' : '#6366f1';
+            
+            // Broadcast my ready state
+            broadcastToAll({
+                type: 'ready',
+                peerId: myPlayerId,
+                ready: readyPlayers[myPlayerId]
+            });
+            
+            updateReadyDisplay();
+            checkAllReady();
+        }
+
+        function startOnlineGame() {
+            gameMode = 'online';
+            gameRunning = true;
+            
+            document.getElementById('readyScreen').classList.add('hidden');
+            document.getElementById('gameArea').classList.remove('hidden');
+            
+            // Set up only the canvases we need (for now just 1 and 2)
+            initGame();
+            
+            // Update player names
+            let playerIndex = 1;
+            for (let i = 1; i <= 4; i++) {
+                if (players[i].active && playerIndex <= 2) {
+                    const name = playerNames[players[i].peerId] || `Player ${i}`;
+                    document.getElementById(`playerName${playerIndex}`).textContent = name;
+                    playerIndex++;
+                }
             }
             
-            document.getElementById('readyButton').textContent = myReady ? 'Cancel Ready' : 'Ready Up!';
-            document.getElementById('readyButton').style.background = myReady ? '#10b981' : '#6366f1';
-            
-            if (conn && conn.open) {
-                conn.send({ type: 'ready', ready: myReady });
-            }
+            animationId = requestAnimationFrame(update);
         }
 
         function cancelLobby() {
             if (peer) peer.destroy();
+            connections.forEach(conn => {
+                if (conn) conn.close();
+            });
+            connections = [];
+            readyPlayers = {};
+            playerNames = {};
+            connectedPlayers = 0;
+            
             document.getElementById('lobbyWaiting').classList.add('hidden');
             document.getElementById('readyScreen').classList.add('hidden');
-            player1Ready = false;
-            player2Ready = false;
-            myReady = false;
             backToMainMenuFromOnline();
         }
 
@@ -1737,16 +2047,26 @@
                 cancelAnimationFrame(animationId);
                 animationId = null;
             }
-            if (conn) conn.close();
+            
+            connections.forEach(conn => {
+                if (conn) conn.close();
+            });
             if (peer) peer.destroy();
             
-            conn = null;
+            connections = [];
             peer = null;
-            player1Ready = false;
-            player2Ready = false;
-            myReady = false;
+            readyPlayers = {};
+            playerNames = {};
             player1Name = 'Player 1';
             player2Name = 'Player 2';
+            connectedPlayers = 0;
+            myPlayerId = null;
+            
+            // Deactivate all players
+            for (let i = 1; i <= 4; i++) {
+                players[i].active = false;
+                players[i].peerId = null;
+            }
             
             // Clear input fields
             document.getElementById('player1NameInput').value = '';

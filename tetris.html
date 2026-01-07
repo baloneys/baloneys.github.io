@@ -760,9 +760,67 @@
                                 <button class="skin-arrow" onclick="changeSkin(2, 1)">›</button>
                             </div>
                         </div>
+                        <div class="player-area player-area-3 hidden">
+                            <div class="player-info">
+                                <div class="player-name" id="playerName3">Player 3</div>
+                                <div class="player-score">
+                                    <strong>Score</strong>
+                                    <span id="score3">0</span>
+                                </div>
+                                <div class="player-score losses-display">
+                                    <strong>Losses</strong>
+                                    <span id="losses3">0</span>
+                                </div>
+                            </div>
+                            <div class="game-row">
+                                <div class="next-pieces-panel">
+                                    <div class="next-pieces-title">Next</div>
+                                    <canvas class="next-piece-preview" id="next3-0" width="50" height="50"></canvas>
+                                    <canvas class="next-piece-preview" id="next3-1" width="50" height="50"></canvas>
+                                    <canvas class="next-piece-preview" id="next3-2" width="50" height="50"></canvas>
+                                    <canvas class="next-piece-preview" id="next3-3" width="50" height="50"></canvas>
+                                    <canvas class="next-piece-preview" id="next3-4" width="50" height="50"></canvas>
+                                </div>
+                                <canvas id="canvas3" class="tetris-canvas" width="200" height="400"></canvas>
+                            </div>
+                            <div class="skin-carousel">
+                                <button class="skin-arrow" onclick="changeSkin(3, -1)">‹</button>
+                                <div class="skin-preview" id="skinPreview3" onclick="showSkinSelector(3)"></div>
+                                <button class="skin-arrow" onclick="changeSkin(3, 1)">›</button>
+                            </div>
+                        </div>
+                        <div class="player-area player-area-4 hidden">
+                            <div class="player-info">
+                                <div class="player-name" id="playerName4">Player 4</div>
+                                <div class="player-score">
+                                    <strong>Score</strong>
+                                    <span id="score4">0</span>
+                                </div>
+                                <div class="player-score losses-display">
+                                    <strong>Losses</strong>
+                                    <span id="losses4">0</span>
+                                </div>
+                            </div>
+                            <div class="game-row">
+                                <canvas id="canvas4" class="tetris-canvas" width="200" height="400"></canvas>
+                                <div class="next-pieces-panel">
+                                    <div class="next-pieces-title">Next</div>
+                                    <canvas class="next-piece-preview" id="next4-0" width="50" height="50"></canvas>
+                                    <canvas class="next-piece-preview" id="next4-1" width="50" height="50"></canvas>
+                                    <canvas class="next-piece-preview" id="next4-2" width="50" height="50"></canvas>
+                                    <canvas class="next-piece-preview" id="next4-3" width="50" height="50"></canvas>
+                                    <canvas class="next-piece-preview" id="next4-4" width="50" height="50"></canvas>
+                                </div>
+                            </div>
+                            <div class="skin-carousel">
+                                <button class="skin-arrow" onclick="changeSkin(4, -1)">‹</button>
+                                <div class="skin-preview" id="skinPreview4" onclick="showSkinSelector(4)"></div>
+                                <button class="skin-arrow" onclick="changeSkin(4, 1)">›</button>
+                            </div>
+                        </div>
                     </div>
                     <div style="text-align: center; margin-top: 20px;">
-                        <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;">
+                        <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;" id="controlsText">
                             <strong>Player 1:</strong> WASD (W=rotate, A=left, S=soft drop, D=right, Q=hard drop)<br>
                             <strong>Player 2:</strong> Arrow keys (↑=rotate, ←=left, ↓=soft drop, →=right, Space=hard drop)
                         </p>
@@ -849,6 +907,17 @@
     </footer>
 
     <script>
+        console.log('=== TETRIS SCRIPT LOADING ===');
+        console.log('PeerJS available:', typeof Peer !== 'undefined');
+        
+        // Test if functions can be called
+        window.addEventListener('load', () => {
+            console.log('Page loaded');
+            console.log('joinLobby function exists:', typeof joinLobby === 'function');
+            console.log('createLobby function exists:', typeof createLobby === 'function');
+            console.log('startLocalGame function exists:', typeof startLocalGame === 'function');
+        });
+        
         // Navigation
         const navToggle = document.getElementById('navToggle');
         navToggle?.addEventListener('click', () => {
@@ -958,7 +1027,7 @@
         let player1Name = 'Player 1';
         let player2Name = 'Player 2';
         let connectedPlayers = 0;
-        let maxPlayers = 4; // Maximum for online multiplayer only
+        let maxPlayers = 4; // Maximum for online multiplayer
 
         const players = {
             1: {
@@ -1093,9 +1162,28 @@
         }
 
         function changeSkin(playerNum, direction) {
+            // In online mode, only allow changing your own player's skin
+            if (gameMode === 'online') {
+                const myPlayerNum = getMyPlayerNum();
+                if (myPlayerNum && playerNum !== myPlayerNum) {
+                    console.log('Cannot change opponent skin in online mode');
+                    return;
+                }
+            }
+            
             const player = players[playerNum];
             player.skinIndex = (player.skinIndex + direction + COLOR_SCHEMES.length) % COLOR_SCHEMES.length;
             updateSkinPreview(playerNum);
+            
+            // Sync skin change in online mode
+            if (gameMode === 'online' && connections.length > 0) {
+                console.log('Broadcasting skin change:', playerNum, player.skinIndex);
+                broadcastToAll({
+                    type: 'skinChange',
+                    playerNum: playerNum,
+                    skinIndex: player.skinIndex
+                });
+            }
         }
 
         function updateSkinPreview(playerNum) {
@@ -1274,15 +1362,25 @@
             fillNextPiecesQueue(player);
             player.piece = getNextPiece(player);
             
-            const playerNum = player === players[1] ? 1 : 2;
-            updateScore(playerNum);
+            // Find which player number this is
+            let playerNum = null;
+            for (let i = 1; i <= 4; i++) {
+                if (players[i] === player) {
+                    playerNum = i;
+                    break;
+                }
+            }
             
-            showLossNotification(playerNum);
+            if (playerNum) {
+                updateScore(playerNum);
+                showLossNotification(playerNum);
+            }
+            
             checkGameOver();
         }
 
         function showLossNotification(playerNum) {
-            const playerName = playerNum === 1 ? player1Name : player2Name;
+            const playerName = playerNames[players[playerNum].peerId] || `Player ${playerNum}`;
             const lossOverlay = document.createElement('div');
             lossOverlay.className = 'loss-overlay';
             lossOverlay.textContent = `${playerName} Lost!`;
@@ -1296,22 +1394,49 @@
         function checkGameOver() {
             if (maxLosses === 'infinite') return;
             
-            if (players[1].losses >= maxLosses || players[2].losses >= maxLosses) {
-                let winner;
-                
-                if (players[1].losses >= maxLosses && players[2].losses >= maxLosses) {
-                    winner = players[1].score > players[2].score ? player1Name : 
-                             players[2].score > players[1].score ? player2Name : 'Draw';
-                } else if (players[1].losses >= maxLosses) {
-                    winner = player2Name;
-                } else {
-                    winner = player1Name;
+            // Count how many active players have reached max losses
+            let playersStillIn = [];
+            for (let i = 1; i <= 4; i++) {
+                if (players[i].active && players[i].losses < maxLosses) {
+                    playersStillIn.push(i);
                 }
+            }
+            
+            // Game ends when only 0 or 1 players remain under max losses
+            if (playersStillIn.length <= 1) {
+                let winner;
+                let finalScoreText = '';
+                
+                if (playersStillIn.length === 1) {
+                    // One winner
+                    const winnerNum = playersStillIn[0];
+                    winner = playerNames[players[winnerNum].peerId] || `Player ${winnerNum}`;
+                } else {
+                    // Everyone reached max losses - highest score wins
+                    let highestScore = -1;
+                    let winnerNum = null;
+                    for (let i = 1; i <= 4; i++) {
+                        if (players[i].active && players[i].score > highestScore) {
+                            highestScore = players[i].score;
+                            winnerNum = i;
+                        }
+                    }
+                    winner = winnerNum ? (playerNames[players[winnerNum].peerId] || `Player ${winnerNum}`) : 'Draw';
+                }
+                
+                // Build final scores text
+                const scoreLines = [];
+                for (let i = 1; i <= 4; i++) {
+                    if (players[i].active) {
+                        const name = playerNames[players[i].peerId] || `Player ${i}`;
+                        scoreLines.push(`${name}: ${players[i].score}`);
+                    }
+                }
+                finalScoreText = scoreLines.join(' | ');
                 
                 document.getElementById('winnerText').textContent = 
                     winner === 'Draw' ? 'Draw!' : `${winner} Wins!`;
-                document.getElementById('finalScores').textContent = 
-                    `${player1Name}: ${players[1].score} | ${player2Name}: ${players[2].score}`;
+                document.getElementById('finalScores').textContent = finalScoreText;
                 
                 gameRunning = false;
                 if (animationId) {
@@ -1667,45 +1792,41 @@
             document.getElementById('playerName1').textContent = player1Name;
             document.getElementById('playerName2').textContent = player2Name;
             
+            // Set controls text for local mode
+            const controlsText = document.getElementById('controlsText');
+            if (controlsText) {
+                controlsText.innerHTML = '<strong>Player 1:</strong> WASD (W=rotate, A=left, S=soft drop, D=right, Q=hard drop)<br><strong>Player 2:</strong> Arrow keys (↑=rotate, ←=left, ↓=soft drop, →=right, Space=hard drop)';
+            }
+            
             initGame();
             gameRunning = true;
             animationId = requestAnimationFrame(update);
         }
 
         function initGame() {
-            if (!players[1].canvas) {
-                players[1].canvas = document.getElementById('canvas1');
-                players[1].ctx = players[1].canvas.getContext('2d');
-                players[2].canvas = document.getElementById('canvas2');
-                players[2].ctx = players[2].canvas.getContext('2d');
+            // Initialize canvases for all active players
+            for (let i = 1; i <= 4; i++) {
+                if (players[i].active) {
+                    if (!players[i].canvas) {
+                        players[i].canvas = document.getElementById(`canvas${i}`);
+                        if (players[i].canvas) {
+                            players[i].ctx = players[i].canvas.getContext('2d');
+                        }
+                    }
+                    
+                    players[i].board = createBoard();
+                    players[i].nextPieces = [];
+                    fillNextPiecesQueue(players[i]);
+                    players[i].piece = getNextPiece(players[i]);
+                    players[i].score = 0;
+                    players[i].losses = 0;
+                    players[i].dropCounter = 0;
+                    players[i].lastTime = 0;
+                    
+                    updateScore(i);
+                    updateSkinPreview(i);
+                }
             }
-
-            players[1].board = createBoard();
-            players[2].board = createBoard();
-            
-            // Initialize next pieces queues
-            players[1].nextPieces = [];
-            players[2].nextPieces = [];
-            fillNextPiecesQueue(players[1]);
-            fillNextPiecesQueue(players[2]);
-            
-            players[1].piece = getNextPiece(players[1]);
-            players[2].piece = getNextPiece(players[2]);
-            
-            players[1].score = 0;
-            players[1].losses = 0;
-            players[1].dropCounter = 0;
-            players[1].lastTime = 0;
-
-            players[2].score = 0;
-            players[2].losses = 0;
-            players[2].dropCounter = 0;
-            players[2].lastTime = 0;
-
-            updateScore(1);
-            updateScore(2);
-            updateSkinPreview(1);
-            updateSkinPreview(2);
         }
 
         function createLobby() {
@@ -1748,7 +1869,11 @@
                 console.log('Incoming connection from peer:', connection.peer);
                 if (connectedPlayers >= maxPlayers) {
                     console.log('Lobby full, rejecting connection');
-                    connection.close();
+                    // Send rejection message before closing
+                    connection.on('open', () => {
+                        connection.send({ type: 'lobbyFull' });
+                        setTimeout(() => connection.close(), 100);
+                    });
                     return;
                 }
                 
@@ -1770,11 +1895,17 @@
         function updateLobbyStatus() {
             const statusEl = document.getElementById('lobbyStatus');
             if (statusEl) {
-                const minNeeded = Math.max(2 - connectedPlayers, 0);
-                statusEl.textContent = `${connectedPlayers}/${maxPlayers} players connected. ${minNeeded > 0 ? `Need ${minNeeded} more to start.` : 'Minimum met! Waiting for ready...'}`;
+                if (connectedPlayers >= maxPlayers) {
+                    statusEl.textContent = `Lobby full (${connectedPlayers}/${maxPlayers} players). Ready up to start!`;
+                } else if (connectedPlayers >= 2) {
+                    statusEl.textContent = `${connectedPlayers}/${maxPlayers} players connected. Ready to start! (or wait for more)`;
+                } else {
+                    const minNeeded = 2 - connectedPlayers;
+                    statusEl.textContent = `${connectedPlayers}/${maxPlayers} players connected. Need ${minNeeded} more to start.`;
+                }
             }
             
-            // Auto-show ready screen when we have enough players
+            // Auto-show ready screen when we have enough players (minimum 2)
             if (connectedPlayers >= 2 && document.getElementById('lobbyWaiting').classList.contains('hidden') === false) {
                 showReadyScreen();
             }
@@ -1958,6 +2089,10 @@
                     Object.entries(data.players).forEach(([num, playerData]) => {
                         players[num].peerId = playerData.peerId;
                         players[num].active = playerData.active;
+                        if (playerData.skinIndex !== undefined) {
+                            players[num].skinIndex = playerData.skinIndex;
+                            updateSkinPreview(num);
+                        }
                         console.log('Synced player', num, playerData);
                     });
                     Object.assign(playerNames, data.playerNames);
@@ -1971,7 +2106,7 @@
                     break;
                     
                 case 'lobbyFull':
-                    alert('Lobby is full (4 players maximum)');
+                    alert('Lobby is full (maximum 4 players)');
                     endGame();
                     break;
                     
@@ -2001,6 +2136,14 @@
                         updateScore(data.playerNum);
                     }
                     break;
+                    
+                case 'skinChange':
+                    console.log('Received skin change:', data.playerNum, data.skinIndex);
+                    if (data.playerNum && players[data.playerNum]) {
+                        players[data.playerNum].skinIndex = data.skinIndex;
+                        updateSkinPreview(data.playerNum);
+                    }
+                    break;
             }
         }
 
@@ -2010,7 +2153,8 @@
                 if (players[i].active) {
                     active[i] = {
                         peerId: players[i].peerId,
-                        active: players[i].active
+                        active: players[i].active,
+                        skinIndex: players[i].skinIndex
                     };
                 }
             }
@@ -2109,20 +2253,66 @@
             document.getElementById('readyScreen').classList.add('hidden');
             document.getElementById('gameArea').classList.remove('hidden');
             
-            // Set up only the canvases we need (for now just 1 and 2)
+            // Show/hide player boards based on how many are active
+            updateBoardVisibility();
+            
+            // Initialize all active players
             initGame();
             
-            // Update player names
-            let playerIndex = 1;
+            // Update player names for all active players
             for (let i = 1; i <= 4; i++) {
-                if (players[i].active && playerIndex <= 2) {
+                if (players[i].active) {
                     const name = playerNames[players[i].peerId] || `Player ${i}`;
-                    document.getElementById(`playerName${playerIndex}`).textContent = name;
-                    playerIndex++;
+                    document.getElementById(`playerName${i}`).textContent = name;
+                }
+            }
+            
+            // Update controls text for online mode
+            const controlsText = document.getElementById('controlsText');
+            if (controlsText) {
+                controlsText.innerHTML = '<strong>Online Mode:</strong> All players use WASD or Arrow keys (W/↑=rotate, A/←=left, S/↓=soft drop, D/→=right, Q/Space=hard drop)';
+            }
+            
+            // Disable all opponent's skin controls in online mode
+            const myPlayerNum = getMyPlayerNum();
+            if (myPlayerNum) {
+                for (let i = 1; i <= 4; i++) {
+                    if (i !== myPlayerNum && players[i].active) {
+                        // Disable this opponent's skin carousel
+                        const carouselButtons = document.querySelectorAll(`.player-area:nth-child(${i}) .skin-arrow`);
+                        carouselButtons.forEach(btn => {
+                            btn.disabled = true;
+                            btn.style.opacity = '0.3';
+                            btn.style.cursor = 'not-allowed';
+                        });
+                    }
                 }
             }
             
             animationId = requestAnimationFrame(update);
+        }
+        
+        function updateBoardVisibility() {
+            // Show/hide player 3 and 4 boards based on active players
+            // Always show players 1 and 2
+            const player3Area = document.querySelector('.player-area-3');
+            const player4Area = document.querySelector('.player-area-4');
+            
+            if (player3Area) {
+                if (players[3].active) {
+                    player3Area.classList.remove('hidden');
+                } else {
+                    player3Area.classList.add('hidden');
+                }
+            }
+            
+            if (player4Area) {
+                if (players[4].active) {
+                    player4Area.classList.remove('hidden');
+                } else {
+                    player4Area.classList.add('hidden');
+                }
+            }
         }
 
         function cancelLobby() {

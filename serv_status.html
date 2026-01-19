@@ -2591,7 +2591,6 @@
                 var obfuscated = btoa(JSON.stringify(data));
                 localStorage.setItem(CACHE_KEYS[key], obfuscated);
             } catch (e) {
-                console.error('Cache save error:', e);
             }
         }
         
@@ -2602,7 +2601,6 @@
                     return JSON.parse(atob(obfuscated));
                 }
             } catch (e) {
-                console.error('Cache load error:', e);
             }
             return null;
         }
@@ -2815,7 +2813,6 @@
                         }
                     })
                     .catch(function(error) {
-                        console.error('GIF search error:', error);
                         grid.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--accent-red);">Error loading GIFs. Try again.</div>';
                     });
             }, 500);
@@ -2910,8 +2907,25 @@
             roomState.name = roomName;
             roomState.users = [currentUser];
             
-            // Initialize PeerJS
-            peer = new Peer();
+            // Initialize PeerJS with free STUN/TURN servers
+            peer = new Peer({
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { 
+                            urls: 'turn:openrelay.metered.ca:80',
+                            username: 'openrelayproject',
+                            credential: 'openrelayproject'
+                        },
+                        { 
+                            urls: 'turn:openrelay.metered.ca:443',
+                            username: 'openrelayproject',
+                            credential: 'openrelayproject'
+                        }
+                    ]
+                }
+            });
             
             peer.on('open', function(id) {
                 currentRoomCode = generateRoomCode();
@@ -2950,7 +2964,6 @@
             });
             
             peer.on('error', function(err) {
-                console.error('Peer error:', err);
                 document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + err.type + '</div>';
             });
         }
@@ -2981,7 +2994,24 @@
                 profilePic: profilePic
             };
             
-            peer = new Peer();
+            peer = new Peer({
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { 
+                            urls: 'turn:openrelay.metered.ca:80',
+                            username: 'openrelayproject',
+                            credential: 'openrelayproject'
+                        },
+                        { 
+                            urls: 'turn:openrelay.metered.ca:443',
+                            username: 'openrelayproject',
+                            credential: 'openrelayproject'
+                        }
+                    ]
+                }
+            });
             
             peer.on('open', function(id) {
                 currentUser.peerId = id;
@@ -3018,13 +3048,11 @@
                 });
                 
                 hostConnection.on('error', function(err) {
-                    console.error('Connection error:', err);
                     document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Could not connect to room</div>';
                 });
             });
             
             peer.on('error', function(err) {
-                console.error('Peer error:', err);
                 document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + err.type + '</div>';
             });
         }
@@ -3322,7 +3350,6 @@
                 
                 // Debug scroll state
             } else {
-                console.error('Messages container NOT found!');
             }
             
         }

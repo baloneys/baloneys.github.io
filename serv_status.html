@@ -17,7 +17,7 @@
             --text-primary: #e8e8f0;
             --text-secondary: #9494a8;
             --accent-red: #ff4444;
-            --accent-red-glow: #ff444488;
+            --accent-red-glow: #ff444888;
             --border-color: #2a2a3a;
             --success: #44ff88;
             --warning: #ffaa44;
@@ -83,6 +83,11 @@
             position: relative;
         }
         
+        .status-indicator.active {
+            background: var(--success);
+            box-shadow: 0 0 20px rgba(68, 255, 136, 0.5), 0 0 40px rgba(68, 255, 136, 0.5);
+        }
+        
         .status-indicator::after {
             content: '';
             position: absolute;
@@ -126,7 +131,38 @@
             to { opacity: 1; }
         }
         
-        /* Status Page */
+        .hidden-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent-red);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
+            z-index: 1000;
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .hidden-indicator.visible {
+            display: block;
+        }
+        
+        .hidden-indicator:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.6);
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Status Page - identical to before */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -348,6 +384,8 @@
             margin-top: 4px;
             cursor: pointer;
             transition: all 0.2s ease;
+            font-size: 1.2rem;
+            letter-spacing: 0.2em;
         }
         
         .room-code-value:hover {
@@ -395,10 +433,15 @@
             margin-bottom: 4px;
             transition: background 0.2s ease;
             cursor: pointer;
+            position: relative;
         }
         
         .user-list-item:hover {
             background: var(--bg-tertiary);
+        }
+        
+        .user-list-item:hover .transfer-host-btn {
+            display: block;
         }
         
         .user-list-avatar {
@@ -411,6 +454,8 @@
             font-weight: 700;
             font-size: 0.8rem;
             flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
         }
         
         .user-list-name {
@@ -419,6 +464,25 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+        
+        .transfer-host-btn {
+            display: none;
+            position: absolute;
+            right: 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .transfer-host-btn:hover {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: white;
         }
         
         .user-info-section {
@@ -442,6 +506,14 @@
             justify-content: center;
             font-weight: 700;
             flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.1);
         }
         
         .user-details {
@@ -462,7 +534,7 @@
             font-size: 0.7rem;
         }
         
-        .leave-btn {
+        .leave-btn, .hide-btn {
             background: transparent;
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
@@ -472,13 +544,18 @@
             font-size: 0.7rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 12px;
+            margin-top: 8px;
             width: 100%;
         }
         
         .leave-btn:hover {
             border-color: var(--accent-red);
             color: var(--accent-red);
+        }
+        
+        .hide-btn:hover {
+            border-color: var(--success);
+            color: var(--success);
         }
         
         .chat-main {
@@ -491,11 +568,33 @@
             padding: 20px 24px;
             border-bottom: 1px solid var(--border-color);
             background: var(--bg-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .chat-header h2 {
             font-family: 'Syne', sans-serif;
             font-size: 1.3rem;
+        }
+        
+        .chat-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .emoji-manager-btn, .gif-search-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .emoji-manager-btn:hover, .gif-search-btn:hover {
+            border-color: var(--accent-red);
         }
         
         .messages-area {
@@ -526,6 +625,8 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            background-size: cover;
+            background-position: center;
         }
         
         .message-content {
@@ -561,6 +662,14 @@
             border-radius: 8px;
             margin-top: 8px;
             display: block;
+        }
+        
+        .custom-emoji {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 2px;
         }
         
         .mention {
@@ -722,6 +831,8 @@
             font-weight: 700;
             font-size: 0.75rem;
             flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
         }
         
         .message-input-wrapper {
@@ -792,13 +903,42 @@
             display: none;
             flex-wrap: wrap;
             gap: 8px;
-            max-width: 280px;
+            max-width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             z-index: 100;
         }
         
         .emoji-picker.visible {
             display: flex;
+        }
+        
+        .emoji-picker-header {
+            width: 100%;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .emoji-picker-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+        
+        .add-custom-emoji-btn {
+            background: var(--accent-red);
+            border: none;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: 700;
         }
         
         .emoji {
@@ -812,6 +952,21 @@
         .emoji:hover {
             background: var(--bg-tertiary);
             transform: scale(1.2);
+        }
+        
+        .custom-emoji-item {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            object-fit: contain;
+            padding: 4px;
+        }
+        
+        .custom-emoji-item:hover {
+            background: var(--bg-tertiary);
+            transform: scale(1.1);
         }
         
         /* Modal */
@@ -837,9 +992,15 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 32px;
-            max-width: 450px;
+            max-width: 500px;
             width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
             animation: modalSlide 0.3s ease-out;
+        }
+        
+        .modal-content.large {
+            max-width: 800px;
         }
         
         @keyframes modalSlide {
@@ -875,7 +1036,8 @@
         
         input[type="text"],
         input[type="password"],
-        input[type="color"] {
+        input[type="color"],
+        input[type="file"] {
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -897,6 +1059,25 @@
             height: 50px;
             cursor: pointer;
             padding: 6px;
+        }
+        
+        input[type="file"] {
+            cursor: pointer;
+        }
+        
+        .profile-pic-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
         }
         
         .modal-actions {
@@ -957,6 +1138,51 @@
         .connection-status.error {
             background: rgba(255, 68, 68, 0.2);
             color: var(--accent-red);
+        }
+        
+        /* GIF Search */
+        .gif-search-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .gif-search-input {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+        }
+        
+        .gif-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .gif-item {
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .gif-item:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-red);
+        }
+        
+        .gif-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
         }
         
         ::-webkit-scrollbar {
@@ -1020,6 +1246,12 @@
             
             .messages-area {
                 min-height: 400px;
+            }
+            
+            .chat-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
             }
         }
         
@@ -1095,13 +1327,21 @@
                 padding: 8px 12px;
                 font-size: 1rem;
             }
+            
+            .gif-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
         }
     </style>
 </head>
 <body>
+    <div class="hidden-indicator" id="hiddenIndicator" onclick="unhideChat()">
+        💬 Chat Active - Click to Show
+    </div>
+    
     <div class="container">
         <header>
-            <div class="status-indicator"></div>
+            <div class="status-indicator" id="statusIndicator"></div>
             <h1>status</h1>
         </header>
         
@@ -1210,12 +1450,13 @@
                     
                     <div class="user-info-section">
                         <div class="user-badge">
-                            <div class="user-avatar" id="currentUserAvatar">U</div>
+                            <div class="user-avatar" id="currentUserAvatar" onclick="changeProfilePicture()">U</div>
                             <div class="user-details">
                                 <div class="user-username" id="currentUsername">Username</div>
                                 <div class="user-status">Online</div>
                             </div>
                         </div>
+                        <button class="hide-btn" onclick="hideChat()">Hide Chat</button>
                         <button class="leave-btn" onclick="leaveRoom()">Leave Room</button>
                     </div>
                 </div>
@@ -1223,6 +1464,10 @@
                 <div class="chat-main">
                     <div class="chat-header">
                         <h2 id="chatRoomName">Room Name</h2>
+                        <div class="chat-header-actions">
+                            <button class="gif-search-btn" onclick="showGifSearch()">🎬 GIF</button>
+                            <button class="emoji-manager-btn" onclick="showEmojiManager()">➕ Emoji</button>
+                        </div>
                     </div>
                     
                     <div class="messages-area" id="messagesArea"></div>
@@ -1236,7 +1481,12 @@
                             <button class="reply-preview-close" onclick="cancelReply()">×</button>
                         </div>
                         <div class="mention-suggestions" id="mentionSuggestions"></div>
-                        <div class="emoji-picker" id="emojiPicker"></div>
+                        <div class="emoji-picker" id="emojiPicker">
+                            <div class="emoji-picker-header">
+                                <span class="emoji-picker-title">Emojis</span>
+                                <button class="add-custom-emoji-btn" onclick="addCustomEmoji()">+ Custom</button>
+                            </div>
+                        </div>
                         <div class="message-input-wrapper">
                             <input 
                                 type="text" 
@@ -1270,6 +1520,11 @@
                     <label>Your Color</label>
                     <input type="color" id="hostColor" value="#ff4444">
                 </div>
+                <div class="input-group">
+                    <label>Profile Picture (Optional)</label>
+                    <input type="file" id="hostProfilePic" accept="image/*">
+                    <div class="profile-pic-preview" id="hostProfilePreview"></div>
+                </div>
                 <div id="createConnectionStatus"></div>
                 <div class="modal-actions">
                     <button onclick="closeCreateRoomModal()">Cancel</button>
@@ -1285,8 +1540,8 @@
             <div class="modal-header">Join Room</div>
             <div class="modal-body">
                 <div class="input-group">
-                    <label>Room Code</label>
-                    <input type="text" id="joinRoomCode" placeholder="Enter room code">
+                    <label>Room Code (6 digits)</label>
+                    <input type="text" id="joinRoomCode" placeholder="Enter 6-digit code" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.3em;">
                 </div>
                 <div class="input-group">
                     <label>Your Username</label>
@@ -1295,6 +1550,11 @@
                 <div class="input-group">
                     <label>Your Color</label>
                     <input type="color" id="joinUserColor" value="#44ff88">
+                </div>
+                <div class="input-group">
+                    <label>Profile Picture (Optional)</label>
+                    <input type="file" id="joinProfilePic" accept="image/*">
+                    <div class="profile-pic-preview" id="joinProfilePreview"></div>
                 </div>
                 <div id="joinConnectionStatus"></div>
                 <div class="modal-actions">
@@ -1305,34 +1565,82 @@
         </div>
     </div>
     
+    <!-- GIF Search Modal -->
+    <div class="modal" id="gifSearchModal">
+        <div class="modal-content large">
+            <div class="modal-header">Search GIFs</div>
+            <div class="modal-body">
+                <div class="gif-search-container">
+                    <input type="text" class="gif-search-input" id="gifSearchInput" placeholder="Search Giphy..." onkeyup="searchGifs()">
+                    <div class="gif-grid" id="gifGrid"></div>
+                </div>
+                <div class="modal-actions">
+                    <button onclick="closeGifSearch()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transfer Host Modal -->
+    <div class="modal" id="transferHostModal">
+        <div class="modal-content">
+            <div class="modal-header">Transfer Host</div>
+            <div class="modal-body">
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">Are you sure you want to make <strong id="transferTargetUsername"></strong> the new host?</p>
+                <div id="transferConnectionStatus"></div>
+                <div class="modal-actions">
+                    <button onclick="closeTransferHostModal()">Cancel</button>
+                    <button class="primary" onclick="confirmTransferHost()">Transfer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <input type="file" id="customEmojiInput" accept="image/png" style="display: none;" multiple>
+    <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+    
     <script>
-        // WebRTC P2P Chat Implementation
-        // Host maintains authoritative state and syncs to all peers
+        // Giphy API key (free tier, replace with your own if needed)
+        var GIPHY_API_KEY = 'R7l2FxYa59BysFGNcGfGy7hXVKp7vEfF';
         
+        // WebRTC P2P Chat with Enhanced Features
         var peer = null;
         var isHost = false;
         var hostConnection = null;
         var guestConnections = {};
+        var roomCodeMap = {}; // Maps 6-digit codes to peer IDs
         
         var roomState = {
             name: '',
             messages: [],
-            users: []
+            users: [],
+            customEmojis: []
         };
         
         var currentUser = null;
+        var currentRoomCode = null;
         var replyingTo = null;
         var mentionQuery = '';
         var mentionStartPos = -1;
         var selectedMentionIndex = 0;
+        var transferTargetUser = null;
+        var isChatHidden = false;
         
         var emojis = ['😀', '😂', '😍', '🤔', '👍', '👎', '❤️', '🔥', '✨', '🎉', '😎', '🤗', '😱', '🙌', '💯', '🎮', '🎵', '🎨', '🚀', '⭐'];
+        
+        // Obfuscated cache keys (disguised as Microsoft Teams)
+        var CACHE_KEYS = {
+            rooms: 'ms_teams_sync_v2',
+            profile: 'ms_teams_profile_cache',
+            emojis: 'ms_teams_custom_reactions'
+        };
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             drawOutageGraph();
             populateEmojiPicker();
             setupEventListeners();
+            loadCustomEmojis();
         });
         
         function setupEventListeners() {
@@ -1349,6 +1657,14 @@
                 if (e.target === this) closeJoinRoomModal();
             });
             
+            document.getElementById('gifSearchModal').addEventListener('click', function(e) {
+                if (e.target === this) closeGifSearch();
+            });
+            
+            document.getElementById('transferHostModal').addEventListener('click', function(e) {
+                if (e.target === this) closeTransferHostModal();
+            });
+            
             document.addEventListener('click', function(e) {
                 var picker = document.getElementById('emojiPicker');
                 var emojiBtn = document.querySelector('.emoji-btn');
@@ -1356,6 +1672,23 @@
                     picker.classList.remove('visible');
                 }
             });
+            
+            // Profile pic upload handlers
+            document.getElementById('hostProfilePic').addEventListener('change', function(e) {
+                handleProfilePicUpload(e, 'hostProfilePreview');
+            });
+            
+            document.getElementById('joinProfilePic').addEventListener('change', function(e) {
+                handleProfilePicUpload(e, 'joinProfilePreview');
+            });
+            
+            document.getElementById('customEmojiInput').addEventListener('change', handleCustomEmojiUpload);
+            document.getElementById('profilePicInput').addEventListener('change', handleProfilePicChange);
+        }
+        
+        // Generate 6-digit room code
+        function generateRoomCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
         }
         
         // View Management
@@ -1373,9 +1706,26 @@
         
         function showChat() {
             switchView('chatView');
+            document.getElementById('statusIndicator').classList.add('active');
             updateChatUI();
             renderMessages();
         }
+        
+        function hideChat() {
+            isChatHidden = true;
+            switchView('statusView');
+            document.getElementById('hiddenIndicator').classList.add('visible');
+            // Keep connection alive, just hide UI
+        }
+        
+        function unhideChat() {
+            isChatHidden = false;
+            document.getElementById('hiddenIndicator').classList.remove('visible');
+            showChat();
+        }
+        
+        // Due to character limit, I need to continue this in the next message
+        // This file is getting very long. Let me create it as a complete working file.
         
         // Graph
         function drawOutageGraph() {
@@ -1431,11 +1781,119 @@
             }
         }
         
-        // Emoji
+        // Obfuscated Cache Management
+        function saveToCache(key, data) {
+            try {
+                var obfuscated = btoa(JSON.stringify(data));
+                localStorage.setItem(CACHE_KEYS[key], obfuscated);
+            } catch (e) {
+                console.error('Cache save error:', e);
+            }
+        }
+        
+        function loadFromCache(key) {
+            try {
+                var obfuscated = localStorage.getItem(CACHE_KEYS[key]);
+                if (obfuscated) {
+                    return JSON.parse(atob(obfuscated));
+                }
+            } catch (e) {
+                console.error('Cache load error:', e);
+            }
+            return null;
+        }
+        
+        // Profile Picture Management
+        function handleProfilePicUpload(e, previewId) {
+            var file = e.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var preview = document.getElementById(previewId);
+                    preview.style.backgroundImage = 'url(' + event.target.result + ')';
+                    preview.textContent = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function changeProfilePicture() {
+            document.getElementById('profilePicInput').click();
+        }
+        
+        function handleProfilePicChange(e) {
+            var file = e.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    currentUser.profilePic = event.target.result;
+                    saveToCache('profile', currentUser.profilePic);
+                    
+                    if (isHost) {
+                        broadcastState();
+                    } else if (hostConnection) {
+                        hostConnection.send({
+                            type: 'updateProfile',
+                            peerId: currentUser.peerId,
+                            profilePic: currentUser.profilePic
+                        });
+                    }
+                    
+                    updateChatUI();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Custom Emoji Management
+        function loadCustomEmojis() {
+            var saved = loadFromCache('emojis');
+            if (saved) {
+                roomState.customEmojis = saved;
+                renderEmojiPicker();
+            }
+        }
+        
+        function addCustomEmoji() {
+            document.getElementById('customEmojiInput').click();
+        }
+        
+        function handleCustomEmojiUpload(e) {
+            var files = e.target.files;
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (file.type === 'image/png') {
+                    var reader = new FileReader();
+                    reader.onload = (function(f) {
+                        return function(event) {
+                            roomState.customEmojis.push({
+                                name: f.name.split('.')[0],
+                                data: event.target.result
+                            });
+                            saveToCache('emojis', roomState.customEmojis);
+                            renderEmojiPicker();
+                        };
+                    })(file);
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+        
+        // Emoji Picker
         function populateEmojiPicker() {
+            renderEmojiPicker();
+        }
+        
+        function renderEmojiPicker() {
             var picker = document.getElementById('emojiPicker');
             if (!picker) return;
             
+            // Keep header
+            var header = picker.querySelector('.emoji-picker-header');
+            picker.innerHTML = '';
+            picker.appendChild(header);
+            
+            // Default emojis
             for (var i = 0; i < emojis.length; i++) {
                 var span = document.createElement('span');
                 span.className = 'emoji';
@@ -1444,6 +1902,18 @@
                     return function() { insertEmoji(emoji); };
                 })(emojis[i]);
                 picker.appendChild(span);
+            }
+            
+            // Custom emojis
+            for (var i = 0; i < roomState.customEmojis.length; i++) {
+                var img = document.createElement('img');
+                img.className = 'custom-emoji-item';
+                img.src = roomState.customEmojis[i].data;
+                img.alt = roomState.customEmojis[i].name;
+                img.onclick = (function(data) {
+                    return function() { insertCustomEmoji(data); };
+                })(roomState.customEmojis[i].data);
+                picker.appendChild(img);
             }
         }
         
@@ -1461,6 +1931,65 @@
             document.getElementById('emojiPicker').classList.remove('visible');
         }
         
+        function insertCustomEmoji(data) {
+            var input = document.getElementById('messageInput');
+            input.value += '[IMG:' + data + ']';
+            input.focus();
+            document.getElementById('emojiPicker').classList.remove('visible');
+        }
+        
+        // GIF Search (Giphy)
+        function showGifSearch() {
+            document.getElementById('gifSearchModal').classList.add('visible');
+            searchGifs(); // Show trending
+        }
+        
+        function closeGifSearch() {
+            document.getElementById('gifSearchModal').classList.remove('visible');
+        }
+        
+        var gifSearchTimeout = null;
+        function searchGifs() {
+            clearTimeout(gifSearchTimeout);
+            gifSearchTimeout = setTimeout(function() {
+                var query = document.getElementById('gifSearchInput').value.trim();
+                var url = query 
+                    ? 'https://api.giphy.com/v1/gifs/search?api_key=' + GIPHY_API_KEY + '&q=' + encodeURIComponent(query) + '&limit=20'
+                    : 'https://api.giphy.com/v1/gifs/trending?api_key=' + GIPHY_API_KEY + '&limit=20';
+                
+                fetch(url)
+                    .then(function(response) { return response.json(); })
+                    .then(function(data) {
+                        var grid = document.getElementById('gifGrid');
+                        grid.innerHTML = '';
+                        
+                        for (var i = 0; i < data.data.length; i++) {
+                            var gif = data.data[i];
+                            var div = document.createElement('div');
+                            div.className = 'gif-item';
+                            div.onclick = (function(url) {
+                                return function() { selectGif(url); };
+                            })(gif.images.fixed_height.url);
+                            
+                            var img = document.createElement('img');
+                            img.src = gif.images.fixed_height_small.url;
+                            div.appendChild(img);
+                            grid.appendChild(div);
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('GIF search error:', error);
+                    });
+            }, 500);
+        }
+        
+        function selectGif(url) {
+            var input = document.getElementById('messageInput');
+            input.value = url;
+            closeGifSearch();
+            sendMessage();
+        }
+        
         // Room Management
         function showCreateRoomModal() {
             document.getElementById('createRoomModal').classList.add('visible');
@@ -1468,6 +1997,13 @@
             document.getElementById('hostUsername').value = 'User' + Math.floor(Math.random() * 10000);
             document.getElementById('hostColor').value = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
             document.getElementById('createConnectionStatus').innerHTML = '';
+            
+            var preview = document.getElementById('hostProfilePreview');
+            preview.style.backgroundImage = '';
+            preview.textContent = document.getElementById('hostUsername').value.charAt(0).toUpperCase();
+            
+            // Check for cached room
+            checkCachedRoom();
         }
         
         function closeCreateRoomModal() {
@@ -1480,10 +2016,32 @@
             document.getElementById('joinUsername').value = 'User' + Math.floor(Math.random() * 10000);
             document.getElementById('joinUserColor').value = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
             document.getElementById('joinConnectionStatus').innerHTML = '';
+            
+            var preview = document.getElementById('joinProfilePreview');
+            preview.style.backgroundImage = '';
+            preview.textContent = document.getElementById('joinUsername').value.charAt(0).toUpperCase();
         }
         
         function closeJoinRoomModal() {
             document.getElementById('joinRoomModal').classList.remove('visible');
+        }
+        
+        function checkCachedRoom() {
+            var cached = loadFromCache('rooms');
+            if (cached) {
+                var roomName = document.getElementById('newRoomName').value;
+                var username = document.getElementById('hostUsername').value;
+                
+                for (var i = 0; i < cached.length; i++) {
+                    var room = cached[i];
+                    if (room.name === roomName && room.hostUsername === username) {
+                        if (confirm('Found cached history for this room. Restore it?')) {
+                            roomState = room.state;
+                        }
+                        break;
+                    }
+                }
+            }
         }
         
         function createRoom() {
@@ -1496,31 +2054,38 @@
                 return;
             }
             
-            document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status connecting">Connecting...</div>';
+            var profilePicPreview = document.getElementById('hostProfilePreview');
+            var profilePic = profilePicPreview.style.backgroundImage 
+                ? profilePicPreview.style.backgroundImage.slice(5, -2) 
+                : null;
+            
+            document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status connecting">Creating room...</div>';
             
             isHost = true;
             currentUser = {
                 username: username,
                 color: color,
-                isHost: true
+                isHost: true,
+                profilePic: profilePic
             };
             
-            roomState = {
-                name: roomName,
-                messages: [],
-                users: [currentUser]
-            };
+            roomState.name = roomName;
+            roomState.users = [currentUser];
             
             // Initialize PeerJS
             peer = new Peer();
             
             peer.on('open', function(id) {
-                console.log('Host peer ID:', id);
-                document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status connected">Room created! Code: ' + id + '</div>';
+                currentRoomCode = generateRoomCode();
+                roomCodeMap[currentRoomCode] = id;
+                
+                console.log('Host peer ID:', id, 'Room code:', currentRoomCode);
+                document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status connected">Room created! Code: ' + currentRoomCode + '</div>';
                 
                 setTimeout(function() {
                     closeCreateRoomModal();
                     showChat();
+                    saveRoomToCache();
                 }, 1500);
             });
             
@@ -1530,7 +2095,6 @@
                 conn.on('open', function() {
                     guestConnections[conn.peer] = conn;
                     
-                    // Send current room state to new guest
                     conn.send({
                         type: 'init',
                         state: roomState
@@ -1545,6 +2109,7 @@
                     console.log('Guest disconnected:', conn.peer);
                     removeUser(conn.peer);
                     delete guestConnections[conn.peer];
+                    checkEmptyRoom();
                     broadcastState();
                 });
             });
@@ -1560,35 +2125,45 @@
             var username = document.getElementById('joinUsername').value.trim();
             var color = document.getElementById('joinUserColor').value;
             
-            if (!roomCode || !username) {
-                alert('Please enter room code and username');
+            if (!roomCode || roomCode.length !== 6 || !username) {
+                alert('Please enter 6-digit room code and username');
                 return;
             }
+            
+            var profilePicPreview = document.getElementById('joinProfilePreview');
+            var profilePic = profilePicPreview.style.backgroundImage 
+                ? profilePicPreview.style.backgroundImage.slice(5, -2) 
+                : null;
             
             document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status connecting">Connecting...</div>';
             
             isHost = false;
+            currentRoomCode = roomCode;
             currentUser = {
                 username: username,
                 color: color,
-                isHost: false
+                isHost: false,
+                profilePic: profilePic
             };
             
-            // Initialize PeerJS
             peer = new Peer();
             
             peer.on('open', function(id) {
                 console.log('Guest peer ID:', id);
                 currentUser.peerId = id;
                 
-                // Connect to host
-                hostConnection = peer.connect(roomCode);
+                var hostPeerId = roomCodeMap[roomCode];
+                if (!hostPeerId) {
+                    // Try to connect with code as peer ID
+                    hostConnection = peer.connect(roomCode);
+                } else {
+                    hostConnection = peer.connect(hostPeerId);
+                }
                 
                 hostConnection.on('open', function() {
                     console.log('Connected to host');
                     document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status connected">Connected!</div>';
                     
-                    // Send join request
                     hostConnection.send({
                         type: 'join',
                         user: currentUser
@@ -1622,77 +2197,79 @@
             });
         }
         
-        // Host functions
-        function handleHostReceiveData(data, conn) {
-            if (data.type === 'join') {
-                // Add user to room
-                var newUser = data.user;
-                newUser.peerId = conn.peer;
-                roomState.users.push(newUser);
+        // Host Transfer
+        function showTransferHostModal(user) {
+            if (!isHost || user.isHost) return;
+            
+            transferTargetUser = user;
+            document.getElementById('transferTargetUsername').textContent = user.username;
+            document.getElementById('transferHostModal').classList.add('visible');
+        }
+        
+        function closeTransferHostModal() {
+            document.getElementById('transferHostModal').classList.remove('visible');
+            transferTargetUser = null;
+        }
+        
+        function confirmTransferHost() {
+            if (!transferTargetUser) return;
+            
+            document.getElementById('transferConnectionStatus').innerHTML = '<div class="connection-status connecting">Transferring host...</div>';
+            
+            // Send transfer command
+            var targetConn = guestConnections[transferTargetUser.peerId];
+            if (targetConn) {
+                targetConn.send({
+                    type: 'transferHost',
+                    roomCode: currentRoomCode,
+                    roomCodeMap: roomCodeMap
+                });
                 
-                broadcastState();
-            } else if (data.type === 'message') {
-                // Add message to room
-                roomState.messages.push(data.message);
-                broadcastState();
+                setTimeout(function() {
+                    // Become a guest
+                    isHost = false;
+                    currentUser.isHost = false;
+                    
+                    // Close all guest connections
+                    for (var peerId in guestConnections) {
+                        guestConnections[peerId].close();
+                    }
+                    guestConnections = {};
+                    
+                    // Connect to new host
+                    hostConnection = peer.connect(transferTargetUser.peerId);
+                    
+                    hostConnection.on('open', function() {
+                        hostConnection.send({
+                            type: 'join',
+                            user: currentUser
+                        });
+                    });
+                    
+                    hostConnection.on('data', function(data) {
+                        handleGuestReceiveData(data);
+                    });
+                    
+                    closeTransferHostModal();
+                    updateChatUI();
+                }, 1000);
             }
         }
         
-        function broadcastState() {
-            var stateUpdate = {
-                type: 'update',
-                state: roomState
-            };
-            
-            // Send to all guests
-            for (var peerId in guestConnections) {
-                if (guestConnections[peerId].open) {
-                    guestConnections[peerId].send(stateUpdate);
-                }
-            }
-            
-            // Update own UI
-            updateChatUI();
-            renderMessages();
-        }
-        
-        function removeUser(peerId) {
-            for (var i = 0; i < roomState.users.length; i++) {
-                if (roomState.users[i].peerId === peerId) {
-                    roomState.users.splice(i, 1);
-                    break;
-                }
-            }
-        }
-        
-        // Guest functions
-        function handleGuestReceiveData(data) {
-            if (data.type === 'init') {
-                // Initialize room state
-                roomState = data.state;
-                updateChatUI();
-                renderMessages();
-            } else if (data.type === 'update') {
-                // Update room state
-                roomState = data.state;
-                updateChatUI();
-                renderMessages();
-            }
-        }
-        
-        // Messages
+        // Messaging
         function sendMessage() {
             var input = document.getElementById('messageInput');
             var text = input.value.trim();
             
             if (!text || !currentUser) return;
             
-            var isImage = text.match(/\.(gif|png|jpg|jpeg|webp)$/i) || text.includes('giphy.com') || text.includes('tenor.com');
+            var isImage = text.match(/\.(gif|png|jpg|jpeg|webp)$/i) || text.includes('giphy.com') || text.includes('tenor.com') || text.startsWith('[IMG:');
             
             var message = {
                 id: Date.now() + '_' + Math.random(),
                 username: currentUser.username,
                 color: currentUser.color,
+                profilePic: currentUser.profilePic,
                 text: text,
                 isImage: isImage,
                 timestamp: new Date().toLocaleString('en-US', { 
@@ -1709,11 +2286,10 @@
             };
             
             if (isHost) {
-                // Host adds directly
                 roomState.messages.push(message);
                 broadcastState();
+                saveRoomToCache();
             } else {
-                // Guest sends to host
                 hostConnection.send({
                     type: 'message',
                     message: message
@@ -1737,11 +2313,19 @@
                 div.className = 'message';
                 div.setAttribute('data-message-id', msg.id);
                 
-                var initial = msg.username.charAt(0).toUpperCase();
+                var avatarDiv = document.createElement('div');
+                avatarDiv.className = 'message-avatar';
+                if (msg.profilePic) {
+                    avatarDiv.style.backgroundImage = 'url(' + msg.profilePic + ')';
+                } else {
+                    avatarDiv.style.background = msg.color;
+                    avatarDiv.textContent = msg.username.charAt(0).toUpperCase();
+                }
                 
                 var messageText = msg.text;
                 if (!msg.isImage) {
                     messageText = messageText.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
+                    messageText = messageText.replace(/\[IMG:(data:image[^\]]+)\]/g, '<img src="$1" class="custom-emoji">');
                 }
                 
                 var replyHtml = '';
@@ -1756,27 +2340,31 @@
                         '</div>';
                 }
                 
-                div.innerHTML = 
-                    '<div class="message-avatar" style="background: ' + msg.color + '">' + initial + '</div>' +
-                    '<div class="message-content">' +
+                var contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.innerHTML = 
                     '<div class="message-header">' +
                     '<span class="message-username" style="color: ' + msg.color + '">' + msg.username + '</span>' +
                     '<span class="message-time">' + msg.timestamp + '</span>' +
                     '</div>' +
                     replyHtml +
                     '<div class="message-text">' +
-                    (msg.isImage ? '<img src="' + messageText + '" alt="Image" onerror="this.style.display=\'none\'">' : messageText) +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="message-actions">' +
-                    '<button class="message-action-btn" data-msg-id="' + msg.id + '">↩️</button>' +
+                    (msg.isImage && !msg.text.startsWith('[IMG:') ? '<img src="' + messageText + '" alt="Image" onerror="this.style.display=\'none\'">' : messageText) +
                     '</div>';
                 
-                var replyBtn = div.querySelector('.message-action-btn');
+                var actionsDiv = document.createElement('div');
+                actionsDiv.className = 'message-actions';
+                var replyBtn = document.createElement('button');
+                replyBtn.className = 'message-action-btn';
+                replyBtn.textContent = '↩️';
                 replyBtn.onclick = (function(m) {
                     return function() { replyToMessage(m); };
                 })(msg);
+                actionsDiv.appendChild(replyBtn);
                 
+                div.appendChild(avatarDiv);
+                div.appendChild(contentDiv);
+                div.appendChild(actionsDiv);
                 container.appendChild(div);
             }
             
@@ -1818,6 +2406,114 @@
             }
         }
         
+        // Host functions
+        function handleHostReceiveData(data, conn) {
+            if (data.type === 'join') {
+                var newUser = data.user;
+                newUser.peerId = conn.peer;
+                roomState.users.push(newUser);
+                broadcastState();
+                saveRoomToCache();
+            } else if (data.type === 'message') {
+                roomState.messages.push(data.message);
+                broadcastState();
+                saveRoomToCache();
+            } else if (data.type === 'updateProfile') {
+                for (var i = 0; i < roomState.users.length; i++) {
+                    if (roomState.users[i].peerId === data.peerId) {
+                        roomState.users[i].profilePic = data.profilePic;
+                        break;
+                    }
+                }
+                broadcastState();
+            }
+        }
+        
+        function broadcastState() {
+            var stateUpdate = {
+                type: 'update',
+                state: roomState
+            };
+            
+            for (var peerId in guestConnections) {
+                if (guestConnections[peerId].open) {
+                    guestConnections[peerId].send(stateUpdate);
+                }
+            }
+            
+            updateChatUI();
+            renderMessages();
+        }
+        
+        function removeUser(peerId) {
+            for (var i = 0; i < roomState.users.length; i++) {
+                if (roomState.users[i].peerId === peerId) {
+                    roomState.users.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        
+        function checkEmptyRoom() {
+            if (isHost && roomState.users.length === 1) {
+                // Only host left, save and keep alive
+                saveRoomToCache();
+            }
+        }
+        
+        // Guest functions
+        function handleGuestReceiveData(data) {
+            if (data.type === 'init') {
+                roomState = data.state;
+                updateChatUI();
+                renderMessages();
+            } else if (data.type === 'update') {
+                roomState = data.state;
+                updateChatUI();
+                renderMessages();
+            } else if (data.type === 'transferHost') {
+                // Become new host
+                isHost = true;
+                currentUser.isHost = true;
+                currentRoomCode = data.roomCode;
+                roomCodeMap = data.roomCodeMap;
+                
+                // Close connection to old host
+                if (hostConnection) {
+                    hostConnection.close();
+                    hostConnection = null;
+                }
+                
+                // Start accepting new connections
+                peer.on('connection', function(conn) {
+                    console.log('Guest connected:', conn.peer);
+                    
+                    conn.on('open', function() {
+                        guestConnections[conn.peer] = conn;
+                        conn.send({
+                            type: 'init',
+                            state: roomState
+                        });
+                    });
+                    
+                    conn.on('data', function(data) {
+                        handleHostReceiveData(data, conn);
+                    });
+                    
+                    conn.on('close', function() {
+                        console.log('Guest disconnected:', conn.peer);
+                        removeUser(conn.peer);
+                        delete guestConnections[conn.peer];
+                        checkEmptyRoom();
+                        broadcastState();
+                    });
+                });
+                
+                updateChatUI();
+                alert('You are now the host!');
+            }
+        }
+        
         // Chat UI
         function updateChatUI() {
             if (!roomState || !currentUser) return;
@@ -1826,15 +2522,22 @@
             document.getElementById('chatRoomName').textContent = roomState.name;
             document.getElementById('roomUserCount').textContent = roomState.users.length + ' user' + (roomState.users.length !== 1 ? 's' : '') + ' online';
             
-            // Show host badge
             if (isHost) {
                 document.getElementById('hostBadgeContainer').innerHTML = '<div class="host-badge">HOST</div>';
-                document.getElementById('roomCodeContainer').innerHTML = 'Room Code: <span class="room-code-value" onclick="copyRoomCode()" title="Click to copy">' + peer.id + '</span>';
+                document.getElementById('roomCodeContainer').innerHTML = 'Room Code: <span class="room-code-value" onclick="copyRoomCode()" title="Click to copy">' + currentRoomCode + '</span>';
+            } else {
+                document.getElementById('hostBadgeContainer').innerHTML = '';
+                document.getElementById('roomCodeContainer').innerHTML = 'Room Code: <span class="room-code-value">' + currentRoomCode + '</span>';
             }
             
             var avatar = document.getElementById('currentUserAvatar');
-            avatar.textContent = currentUser.username.charAt(0).toUpperCase();
-            avatar.style.background = currentUser.color;
+            if (currentUser.profilePic) {
+                avatar.style.backgroundImage = 'url(' + currentUser.profilePic + ')';
+                avatar.textContent = '';
+            } else {
+                avatar.textContent = currentUser.username.charAt(0).toUpperCase();
+                avatar.style.background = currentUser.color;
+            }
             
             document.getElementById('currentUsername').textContent = currentUser.username;
             
@@ -1855,21 +2558,48 @@
                     return function() { mentionUser(u.username); };
                 })(user);
                 
-                var initial = user.username.charAt(0).toUpperCase();
+                var avatarDiv = document.createElement('div');
+                avatarDiv.className = 'user-list-avatar';
+                if (user.profilePic) {
+                    avatarDiv.style.backgroundImage = 'url(' + user.profilePic + ')';
+                } else {
+                    avatarDiv.style.background = user.color;
+                    avatarDiv.textContent = user.username.charAt(0).toUpperCase();
+                }
                 
-                div.innerHTML = 
-                    '<div class="user-list-avatar" style="background: ' + user.color + '">' + initial + '</div>' +
-                    '<div class="user-list-name">' + user.username + (user.isHost ? ' 👑' : '') + '</div>';
+                var nameDiv = document.createElement('div');
+                nameDiv.className = 'user-list-name';
+                nameDiv.textContent = user.username + (user.isHost ? ' 👑' : '');
+                
+                div.appendChild(avatarDiv);
+                div.appendChild(nameDiv);
+                
+                // Add transfer button for host
+                if (isHost && !user.isHost) {
+                    var transferBtn = document.createElement('button');
+                    transferBtn.className = 'transfer-host-btn';
+                    transferBtn.textContent = 'Make Host';
+                    transferBtn.onclick = (function(u) {
+                        return function(e) {
+                            e.stopPropagation();
+                            showTransferHostModal(u);
+                        };
+                    })(user);
+                    div.appendChild(transferBtn);
+                }
                 
                 usersList.appendChild(div);
             }
         }
         
         function copyRoomCode() {
-            var code = peer.id;
-            navigator.clipboard.writeText(code).then(function() {
-                alert('Room code copied: ' + code);
-            });
+            if (currentRoomCode) {
+                navigator.clipboard.writeText(currentRoomCode).then(function() {
+                    alert('Room code copied: ' + currentRoomCode);
+                }).catch(function() {
+                    prompt('Copy this room code:', currentRoomCode);
+                });
+            }
         }
         
         function mentionUser(username) {
@@ -1938,12 +2668,21 @@
                     div.classList.add('selected');
                 }
                 
-                var initial = user.username.charAt(0).toUpperCase();
+                var avatarDiv = document.createElement('div');
+                avatarDiv.className = 'mention-suggestion-avatar';
+                if (user.profilePic) {
+                    avatarDiv.style.backgroundImage = 'url(' + user.profilePic + ')';
+                } else {
+                    avatarDiv.style.background = user.color;
+                    avatarDiv.textContent = user.username.charAt(0).toUpperCase();
+                }
                 
-                div.innerHTML = 
-                    '<div class="mention-suggestion-avatar" style="background: ' + user.color + '">' + initial + '</div>' +
-                    '<div class="mention-suggestion-name">' + user.username + '</div>';
+                var nameDiv = document.createElement('div');
+                nameDiv.className = 'mention-suggestion-name';
+                nameDiv.textContent = user.username;
                 
+                div.appendChild(avatarDiv);
+                div.appendChild(nameDiv);
                 div.onclick = (function(u) {
                     return function() { selectMention(u.username); };
                 })(user);
@@ -2005,6 +2744,33 @@
             }
         }
         
+        // Room cache management
+        function saveRoomToCache() {
+            if (!isHost) return;
+            
+            var cached = loadFromCache('rooms') || [];
+            var roomData = {
+                name: roomState.name,
+                hostUsername: currentUser.username,
+                state: roomState,
+                lastUpdated: Date.now()
+            };
+            
+            // Remove old entry if exists
+            cached = cached.filter(function(r) {
+                return !(r.name === roomData.name && r.hostUsername === roomData.hostUsername);
+            });
+            
+            cached.push(roomData);
+            
+            // Keep only last 5 rooms
+            if (cached.length > 5) {
+                cached = cached.slice(-5);
+            }
+            
+            saveToCache('rooms', cached);
+        }
+        
         // Leave room
         function leaveRoom() {
             if (peer) {
@@ -2023,11 +2789,21 @@
             isHost = false;
             hostConnection = null;
             guestConnections = {};
-            roomState = { name: '', messages: [], users: [] };
+            roomState = { name: '', messages: [], users: [], customEmojis: [] };
             currentUser = null;
+            currentRoomCode = null;
+            isChatHidden = false;
+            
+            document.getElementById('statusIndicator').classList.remove('active');
+            document.getElementById('hiddenIndicator').classList.remove('visible');
             
             switchView('roomChoiceView');
         }
+        
+        function showEmojiManager() {
+            // Just show the emoji picker with add button visible
+            toggleEmojiPicker();
+        }
     </script>
 </body>
-                        </html>
+</html>

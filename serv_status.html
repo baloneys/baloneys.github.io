@@ -2215,13 +2215,14 @@
         };
         
         // Check if Firebase loaded (may be blocked by firewall)
-        var firebaseAvailable = typeof firebase !== 'undefined';
+        var firebaseAvailable = false;
         var database = null;
         
-        if (firebaseAvailable) {
-            try {
+        try {
+            if (typeof firebase !== 'undefined') {
                 firebase.initializeApp(firebaseConfig);
                 database = firebase.database();
+                firebaseAvailable = true;
                 
                 // Test Firebase connection
                 database.ref('.info/connected').on('value', function(snapshot) {
@@ -2231,9 +2232,10 @@
                         document.getElementById('statusIndicator').title = 'Firebase connection lost';
                     }
                 });
-            } catch(e) {
-                firebaseAvailable = false;
             }
+        } catch(e) {
+            firebaseAvailable = false;
+            database = null;
         }
         
         var roomRef = null;
@@ -2347,10 +2349,6 @@
             // Initialize message virtualization
             initializeMessageSystem();
             
-            // Try to fetch live data (will fallback to existing chart if fails)
-            fetchHistoryData();
-            fetchLiveStatus();
-            
             // Add backup event listeners for room choice buttons
             setTimeout(function() {
                 var createBtn = document.querySelector('.room-choice-btn[onclick*="showCreateRoomModal"]');
@@ -2376,13 +2374,6 @@
                     });
                 }
             }, 100);
-            
-            // Update status every 60 seconds if on status view
-            statusUpdateInterval = setInterval(function() {
-                if (document.getElementById('statusView').classList.contains('active')) {
-                    fetchLiveStatus();
-                }
-            }, 60000);
         });
         
         function setupEventListeners() {
@@ -2483,6 +2474,11 @@
         // Load status data from Firebase (downdetector API data)
         // Falls back to placeholder HTML if no data available
         function loadStatusData() {
+            // If Firebase not available, keep placeholder data
+            if (!firebaseAvailable || !database) {
+                return;
+            }
+            
             // Try to get cached downdetector data from Firebase
             database.ref('downdetector/services').once('value').then(function(snapshot) {
                 if (snapshot.exists()) {
@@ -3019,6 +3015,12 @@
             roomState.name = roomName;
             roomState.users = [currentUser];
             
+            // Check if Firebase is available
+            if (!firebaseAvailable || !database) {
+                document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status error">Chat unavailable: Firebase blocked by network</div>';
+                return;
+            }
+            
             // Use Firebase for all messaging (no WebRTC - works on enterprise networks)
             currentRoomCode = generateRoomCode();
             roomRef = database.ref('rooms/' + currentRoomCode);
@@ -3092,6 +3094,12 @@
                 isHost: false,
                 profilePic: profilePic
             };
+            
+            // Check if Firebase is available
+            if (!firebaseAvailable || !database) {
+                document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Chat unavailable: Firebase blocked by network</div>';
+                return;
+            }
             
             // Use Firebase to join room (works on all networks)
             roomRef = database.ref('rooms/' + roomCode);

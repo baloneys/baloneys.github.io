@@ -21,6 +21,19 @@
             --border-color: #2a2a3a;
             --success: #44ff88;
             --warning: #ffaa44;
+
+            // Add time labels
+            ctx.fillStyle = '#9494a8';
+            ctx.font = '10px JetBrains Mono';
+            ctx.textAlign = 'center';
+            var now = new Date();
+            for (var i = 0; i < days; i++) {
+                var date = new Date(now);
+                date.setDate(date.getDate() - (days - 1 - i));
+                var label = (date.getMonth() + 1) + '/' + date.getDate();
+                var x = (width / days) * i + (width / days) / 2;
+                ctx.fillText(label, x, height - 5);
+            }
         }
         
         * {
@@ -74,6 +87,7 @@
         }
         
         .status-indicator {
+            cursor: pointer;
             width: 16px;
             height: 16px;
             background: var(--accent-red);
@@ -111,6 +125,8 @@
         }
         
         h1 {
+            cursor: pointer;
+            user-select: none;
             font-family: 'Syne', sans-serif;
             font-size: 2.5rem;
             font-weight: 700;
@@ -131,34 +147,7 @@
             to { opacity: 1; }
         }
         
-        .hidden-indicator {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--accent-red);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
-            z-index: 1000;
-            display: none;
-            animation: slideUp 0.3s ease-out;
-        }
         
-        .hidden-indicator.visible {
-            display: block;
-        }
-        
-        .hidden-indicator:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.6);
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
@@ -1222,6 +1211,8 @@
             }
             
             h1 {
+            cursor: pointer;
+            user-select: none;
                 font-size: 2rem;
             }
             
@@ -1256,6 +1247,35 @@
         }
         
         @media (max-width: 640px) {
+            .message-input,
+            .emoji-btn,
+            .send-btn,
+            .message-action-btn,
+            .user-list-item {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .chat-header-actions button {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .room-code-value {
+                padding: 12px 16px;
+                font-size: 1.1rem;
+            }
+            
+            .message {
+                padding: 8px 0;
+            }
+            
+            input[type="text"],
+            input[type="password"],
+            button {
+                font-size: 16px !important;
+            }
+
             .container {
                 padding: 20px 12px;
             }
@@ -1265,6 +1285,8 @@
             }
             
             h1 {
+            cursor: pointer;
+            user-select: none;
                 font-size: 1.75rem;
             }
             
@@ -1335,9 +1357,7 @@
     </style>
 </head>
 <body>
-    <div class="hidden-indicator" id="hiddenIndicator" onclick="unhideChat()">
-        💬 Chat Active - Click to Show
-    </div>
+    
     
     <div class="container">
         <header>
@@ -1601,9 +1621,44 @@
     
     <script>
         // Giphy API key (free tier, replace with your own if needed)
-        var GIPHY_API_KEY = 'R7l2FxYa59BysFGNcGfGy7hXVKp7vEfF';
+        var GIPHY_API_KEY = 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65';
         
         // WebRTC P2P Chat with Enhanced Features
+
+        // Triple-click detection for view toggle
+        var clickCount = 0;
+        var clickTimer = null;
+        var lastClickTime = 0;
+        
+        document.addEventListener('click', function() {
+            var now = Date.now();
+            if (now - lastClickTime > 500) {
+                clickCount = 0;
+            }
+            
+            clickCount++;
+            lastClickTime = now;
+            
+            if (clickCount === 3) {
+                clickCount = 0;
+                toggleViewRapid();
+            }
+        });
+        
+        function toggleViewRapid() {
+            if (document.getElementById('statusView').classList.contains('active')) {
+                if (currentUser && peer) {
+                    showChat();
+                } else {
+                    showRoomChoice();
+                }
+            } else if (document.getElementById('chatView').classList.contains('active')) {
+                hideChat();
+            } else {
+                switchView('statusView');
+            }
+        }
+
         var peer = null;
         var isHost = false;
         var hostConnection = null;
@@ -1714,15 +1769,11 @@
         function hideChat() {
             isChatHidden = true;
             switchView('statusView');
-            document.getElementById('hiddenIndicator').classList.add('visible');
+            // Hidden indicator removed - use triple-click to return
             // Keep connection alive, just hide UI
         }
         
-        function unhideChat() {
-            isChatHidden = false;
-            document.getElementById('hiddenIndicator').classList.remove('visible');
-            showChat();
-        }
+        
         
         // Due to character limit, I need to continue this in the next message
         // This file is getting very long. Let me create it as a complete working file.
@@ -1751,16 +1802,25 @@
                 var x = (width / 6) * i;
                 ctx.beginPath();
                 ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
+                ctx.lineTo(x, height - 20);
                 ctx.stroke();
             }
             
             var days = 7;
+            var now = new Date();
             var dataPoints = [];
+            
+            // Generate data based on day of week (more issues on weekdays)
             for (var i = 0; i < days; i++) {
+                var date = new Date(now);
+                date.setDate(date.getDate() - (days - 1 - i));
+                var dayOfWeek = date.getDay();
+                var isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                
                 dataPoints.push({
-                    outages: Math.floor(Math.random() * 5),
-                    degraded: Math.floor(Math.random() * 8)
+                    outages: Math.floor(Math.random() * (isWeekend ? 3 : 5)),
+                    degraded: Math.floor(Math.random() * (isWeekend ? 5 : 8)),
+                    date: date
                 });
             }
             
@@ -1771,13 +1831,24 @@
                 var data = dataPoints[i];
                 var x = (width / days) * i + barWidth / 2;
                 
-                var outageHeight = (data.outages / maxValue) * height * 0.8;
-                ctx.fillStyle = '#ff4444';
-                ctx.fillRect(x, height - outageHeight, barWidth * 0.8, outageHeight);
+                var outageHeight = (data.outages / maxValue) * (height - 25) * 0.8;
+                ctx.fillStyle = '#a855f7';
+                ctx.fillRect(x, height - outageHeight - 20, barWidth * 0.8, outageHeight);
                 
-                var degradedHeight = (data.degraded / maxValue) * height * 0.8;
-                ctx.fillStyle = '#ffaa44';
-                ctx.fillRect(x + barWidth * 0.9, height - degradedHeight, barWidth * 0.8, degradedHeight);
+                var degradedHeight = (data.degraded / maxValue) * (height - 25) * 0.8;
+                ctx.fillStyle = '#c084fc';
+                ctx.fillRect(x + barWidth * 0.9, height - degradedHeight - 20, barWidth * 0.8, degradedHeight);
+            }
+            
+            // Add time labels
+            ctx.fillStyle = '#9494a8';
+            ctx.font = '11px JetBrains Mono';
+            ctx.textAlign = 'center';
+            for (var i = 0; i < days; i++) {
+                var date = dataPoints[i].date;
+                var label = (date.getMonth() + 1) + '/' + date.getDate();
+                var x = (width / days) * i + (width / days) / 2;
+                ctx.fillText(label, x, height - 5);
             }
         }
         
@@ -1954,14 +2025,24 @@
             gifSearchTimeout = setTimeout(function() {
                 var query = document.getElementById('gifSearchInput').value.trim();
                 var url = query 
-                    ? 'https://api.giphy.com/v1/gifs/search?api_key=' + GIPHY_API_KEY + '&q=' + encodeURIComponent(query) + '&limit=20'
-                    : 'https://api.giphy.com/v1/gifs/trending?api_key=' + GIPHY_API_KEY + '&limit=20';
+                    ? 'https://api.giphy.com/v1/gifs/search?api_key=' + GIPHY_API_KEY + '&q=' + encodeURIComponent(query) + '&limit=20&rating=g'
+                    : 'https://api.giphy.com/v1/gifs/trending?api_key=' + GIPHY_API_KEY + '&limit=20&rating=g';
+                
+                var grid = document.getElementById('gifGrid');
+                grid.innerHTML = '<div style="text-align: center; padding: 20px; color: #9494a8;">Loading...</div>';
                 
                 fetch(url)
-                    .then(function(response) { return response.json(); })
+                    .then(function(response) { 
+                        if (!response.ok) throw new Error('API error');
+                        return response.json(); 
+                    })
                     .then(function(data) {
-                        var grid = document.getElementById('gifGrid');
                         grid.innerHTML = '';
+                        
+                        if (!data.data || data.data.length === 0) {
+                            grid.innerHTML = '<div style="text-align: center; padding: 20px; color: #9494a8;">No GIFs found</div>';
+                            return;
+                        }
                         
                         for (var i = 0; i < data.data.length; i++) {
                             var gif = data.data[i];
@@ -1973,12 +2054,14 @@
                             
                             var img = document.createElement('img');
                             img.src = gif.images.fixed_height_small.url;
+                            img.onerror = function() { this.parentElement.style.display = 'none'; };
                             div.appendChild(img);
                             grid.appendChild(div);
                         }
                     })
                     .catch(function(error) {
                         console.error('GIF search error:', error);
+                        grid.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--accent-red);">Error loading GIFs. Try again.</div>';
                     });
             }, 500);
         }
@@ -2315,8 +2398,10 @@
                 
                 var avatarDiv = document.createElement('div');
                 avatarDiv.className = 'message-avatar';
+                avatarDiv.style.backgroundImage = '';
                 if (msg.profilePic) {
                     avatarDiv.style.backgroundImage = 'url(' + msg.profilePic + ')';
+                    avatarDiv.style.backgroundColor = 'transparent';
                 } else {
                     avatarDiv.style.background = msg.color;
                     avatarDiv.textContent = msg.username.charAt(0).toUpperCase();

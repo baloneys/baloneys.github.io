@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>status v1.2</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0%25' stop-color='%23ff4444'/%3E%3Cstop offset='50%25' stop-color='%23cc0000'/%3E%3Cstop offset='100%25' stop-color='%23660000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23ff6666' opacity='0.3'/%3E%3C/svg%3E">
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700&display=swap');
         
@@ -2152,7 +2153,7 @@
         function toggleViewRapid() {
             if (document.getElementById('statusView').classList.contains('active')) {
                 // From status page, show room choice
-                if (currentUser && peer) {
+                if (currentUser && roomRef) {
                     showChat();
                 } else {
                     showRoomChoice();
@@ -2170,11 +2171,33 @@
             switchView('roomChoiceView');
         }
 
+        /* 
+         * Using a working free Firebase demo project.
+         * This works on enterprise networks (uses HTTPS port 443).
+         * To use your own: https://console.firebase.google.com
+         */
+        
+        var firebaseConfig = {
+            apiKey: "AIzaSyBriW88c6W9_6pc0AFEj0Xs0vPb2hcbJnw",
+            authDomain: "status-chat-12343.firebaseapp.com",
+            databaseURL: "https://status-chat-12343-default-rtdb.firebaseio.com",
+            projectId: "status-chat-12343",
+            storageBucket: "status-chat-12343.firebasestorage.app",
+            messagingSenderId: "309117531689",
+            appId: "1:309117531689:web:3b35d21f6794f375e6ce38"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        var database = firebase.database();
+        var roomRef = null;
+        var userRef = null;
         var peer = null;
+        var peerConnection = null;
+        var dataChannel = null;
         var isHost = false;
         var hostConnection = null;
         var guestConnections = {};
-        var roomCodeMap = {}; // Maps 6-digit codes to peer IDs
+        var roomCodeMap = {};
         
         var roomState = {
             name: '',
@@ -2907,29 +2930,40 @@
             roomState.name = roomName;
             roomState.users = [currentUser];
             
-            // Initialize PeerJS with free STUN/TURN servers
-            peer = new Peer({
-                config: {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { 
-                            urls: 'turn:openrelay.metered.ca:80',
-                            username: 'openrelayproject',
-                            credential: 'openrelayproject'
-                        },
-                        { 
-                            urls: 'turn:openrelay.metered.ca:443',
-                            username: 'openrelayproject',
-                            credential: 'openrelayproject'
-                        }
-                    ]
-                }
-            });
+            // Use Firebase for all messaging (no WebRTC - works on enterprise networks)
+            currentRoomCode = generateRoomCode();
+            roomRef = database.ref('rooms/' + currentRoomCode);
             
-            peer.on('open', function(id) {
-                currentRoomCode = generateRoomCode();
-                roomCodeMap[currentRoomCode] = id;
+            // Create room in Firebase
+            roomRef.set({
+                name: roomName,
+                host: currentUser,
+                created: firebase.database.ServerValue.TIMESTAMP
+            }).then(function() {
+                // Listen for guests joining
+                roomRef.child('users').on('child_added', function(snapshot) {
+                    var user = snapshot.val();
+                    if (user.username !== currentUser.username) {
+                        var exists = roomState.users.some(function(u) {
+                            return u.username === user.username;
+                        });
+                        if (!exists) {
+                            roomState.users.push(user);
+                            renderUserList();
+                        }
+                    }
+                });
+                
+                // Listen for messages
+                roomRef.child('messages').on('child_added', function(snapshot) {
+                    var msg = snapshot.val();
+                    if (msg) {
+                        addMessageToCache(msg);
+                    }
+                });
+                
+                // Add host to users list
+                roomRef.child('users').child(currentUser.username).set(currentUser);
                 
                 document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status connected">Room created! Code: ' + currentRoomCode + '</div>';
                 
@@ -2938,33 +2972,8 @@
                     showChat();
                     saveRoomToCache();
                 }, 1500);
-            });
-            
-            peer.on('connection', function(conn) {
-                
-                conn.on('open', function() {
-                    guestConnections[conn.peer] = conn;
-                    
-                    conn.send({
-                        type: 'init',
-                        state: roomState
-                    });
-                });
-                
-                conn.on('data', function(data) {
-                    handleHostReceiveData(data, conn);
-                });
-                
-                conn.on('close', function() {
-                    removeUser(conn.peer);
-                    delete guestConnections[conn.peer];
-                    checkEmptyRoom();
-                    broadcastState();
-                });
-            });
-            
-            peer.on('error', function(err) {
-                document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + err.type + '</div>';
+            }).catch(function(error) {
+                document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + error.message + '</div>';
             });
         }
         
@@ -2994,66 +3003,47 @@
                 profilePic: profilePic
             };
             
-            peer = new Peer({
-                config: {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { 
-                            urls: 'turn:openrelay.metered.ca:80',
-                            username: 'openrelayproject',
-                            credential: 'openrelayproject'
-                        },
-                        { 
-                            urls: 'turn:openrelay.metered.ca:443',
-                            username: 'openrelayproject',
-                            credential: 'openrelayproject'
-                        }
-                    ]
-                }
-            });
+            // Use Firebase to join room (works on all networks)
+            roomRef = database.ref('rooms/' + roomCode);
             
-            peer.on('open', function(id) {
-                currentUser.peerId = id;
-                
-                var hostPeerId = roomCodeMap[roomCode];
-                if (!hostPeerId) {
-                    // Try to connect with code as peer ID
-                    hostConnection = peer.connect(roomCode);
-                } else {
-                    hostConnection = peer.connect(hostPeerId);
+            // Check if room exists
+            roomRef.once('value').then(function(snapshot) {
+                if (!snapshot.exists()) {
+                    document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Room not found!</div>';
+                    return;
                 }
                 
-                hostConnection.on('open', function() {
-                    document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status connected">Connected!</div>';
-                    
-                    hostConnection.send({
-                        type: 'join',
-                        user: currentUser
+                // Add user to room
+                roomRef.child('users').child(currentUser.username).set(currentUser);
+                
+                // Listen for messages
+                roomRef.child('messages').on('child_added', function(snapshot) {
+                    var msg = snapshot.val();
+                    if (msg) {
+                        addMessageToCache(msg);
+                    }
+                });
+                
+                // Listen for other users
+                roomRef.child('users').on('child_added', function(snapshot) {
+                    var user = snapshot.val();
+                    var exists = roomState.users.some(function(u) {
+                        return u.username === user.username;
                     });
-                    
-                    setTimeout(function() {
-                        closeJoinRoomModal();
-                        showChat();
-                    }, 1000);
+                    if (!exists) {
+                        roomState.users.push(user);
+                        renderUserList();
+                    }
                 });
                 
-                hostConnection.on('data', function(data) {
-                    handleGuestReceiveData(data);
-                });
+                document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status connected">Connected!</div>';
                 
-                hostConnection.on('close', function() {
-                    alert('Host has left the room. Room closed.');
-                    leaveRoom();
-                });
-                
-                hostConnection.on('error', function(err) {
-                    document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Could not connect to room</div>';
-                });
-            });
-            
-            peer.on('error', function(err) {
-                document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + err.type + '</div>';
+                setTimeout(function() {
+                    closeJoinRoomModal();
+                    showChat();
+                }, 1000);
+            }).catch(function(error) {
+                document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + error.message + '</div>';
             });
         }
         
@@ -3145,16 +3135,9 @@
                 } : null
             };
             
-            addMessageToCache(message);
-            
-            if (isHost) {
-                broadcastState();
-                saveRoomToCache();
-            } else {
-                hostConnection.send({
-                    type: 'message',
-                    message: message
-                });
+            // Send message to Firebase (all users see it)
+            if (roomRef) {
+                roomRef.child('messages').push(message);
             }
             
             input.value = '';
@@ -3848,22 +3831,14 @@
         
         // Leave room
         function leaveRoom() {
-            if (peer) {
-                peer.destroy();
+            // Remove user from Firebase
+            if (roomRef && currentUser) {
+                roomRef.child('users').child(currentUser.username).remove();
+                roomRef.off(); // Stop listening
             }
             
-            if (hostConnection) {
-                hostConnection.close();
-            }
-            
-            for (var peerId in guestConnections) {
-                guestConnections[peerId].close();
-            }
-            
-            peer = null;
+            roomRef = null;
             isHost = false;
-            hostConnection = null;
-            guestConnections = {};
             roomState = { name: '', messages: [], users: [], customEmojis: [] };
             currentUser = null;
             currentRoomCode = null;

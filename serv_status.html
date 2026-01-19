@@ -2172,9 +2172,36 @@
         }
 
         /* 
-         * Using a working free Firebase demo project.
+         * FIREBASE REALTIME DATABASE SETUP:
+         * 
+         * If you get "Room not found" or "Check database rules" errors:
+         * 
+         * 1. Go to Firebase Console: https://console.firebase.google.com
+         * 2. Click "Realtime Database" (NOT Firestore!)
+         * 3. Click "Rules" tab
+         * 4. Set rules to:
+         *    {
+         *      "rules": {
+         *        ".read": true,
+         *        ".write": true
+         *      }
+         *    }
+         * 5. Click "Publish"
+         * 
+         * TO ADD DOWNDETECTOR DATA:
+         * 1. Go to "Data" tab in Realtime Database
+         * 2. Click the "+" next to your database root
+         * 3. Add this structure:
+         *    Name: downdetector
+         *    Value: {
+         *      "services": [
+         *        {"name": "Google", "status": "operational", "info": "All systems running"},
+         *        {"name": "Discord", "status": "outage", "info": "Major issues reported"}
+         *      ]
+         *    }
+         * 4. The status page will now use this data instead of placeholders
+         * 
          * This works on enterprise networks (uses HTTPS port 443).
-         * To use your own: https://console.firebase.google.com
          */
         
         var firebaseConfig = {
@@ -2187,8 +2214,28 @@
             appId: "1:309117531689:web:3b35d21f6794f375e6ce38"
         };
         
-        firebase.initializeApp(firebaseConfig);
-        var database = firebase.database();
+        // Check if Firebase loaded (may be blocked by firewall)
+        var firebaseAvailable = typeof firebase !== 'undefined';
+        var database = null;
+        
+        if (firebaseAvailable) {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                
+                // Test Firebase connection
+                database.ref('.info/connected').on('value', function(snapshot) {
+                    if (snapshot.val() === true) {
+                        document.getElementById('statusIndicator').title = 'Connected to Firebase';
+                    } else {
+                        document.getElementById('statusIndicator').title = 'Firebase connection lost';
+                    }
+                });
+            } catch(e) {
+                firebaseAvailable = false;
+            }
+        }
+        
         var roomRef = null;
         var userRef = null;
         var peer = null;
@@ -2235,6 +2282,9 @@
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            
+            // Try to load real status data from Firebase, fallback to placeholder
+            loadStatusData();
             
             drawOutageGraph(); // Always draw chart initially
             populateEmojiPicker();
@@ -2430,6 +2480,85 @@
         
         
         // Due to character limit, I need to continue this in the next message
+        // Load status data from Firebase (downdetector API data)
+        // Falls back to placeholder HTML if no data available
+        function loadStatusData() {
+            // Try to get cached downdetector data from Firebase
+            database.ref('downdetector/services').once('value').then(function(snapshot) {
+                if (snapshot.exists()) {
+                    var services = snapshot.val();
+                    updateServiceCards(services);
+                } else {
+                    // No cached data - fetch fresh from downdetector API
+                    fetchDowndetectorData();
+                }
+            }).catch(function(error) {
+                // Firebase error - try to fetch from API anyway
+                fetchDowndetectorData();
+            });
+            
+            // Also try to load history for graph
+            database.ref('downdetector/history').once('value').then(function(snapshot) {
+                if (snapshot.exists()) {
+                    var history = snapshot.val();
+                    drawOutageGraphWithData(history);
+                }
+                // If no data, random graph is already drawn
+            }).catch(function(error) {
+                // Firebase error - keep random graph
+            });
+        }
+        
+        // Fetch live data from downdetector API and cache in Firebase
+        function fetchDowndetectorData() {
+            // Note: This requires a backend proxy since downdetector doesn't support CORS
+            // For now, this will fail silently and use placeholder data
+            // To make this work, you'd need a server that fetches downdetector and stores in Firebase
+            
+            // Example: fetch('/your-backend/downdetector-proxy')
+            //   .then(response => response.json())
+            //   .then(data => {
+            //       database.ref('downdetector/services').set(data.services);
+            //       updateServiceCards(data.services);
+            //   })
+            //   .catch(() => {
+            //       // Use placeholder data (already in HTML)
+            //   });
+        }
+        
+        // Update service cards with real data from Firebase
+        function updateServiceCards(services) {
+            var serviceCards = document.querySelectorAll('.service-card');
+            
+            // Services can be array or object
+            var serviceArray = Array.isArray(services) ? services : Object.values(services);
+            
+            serviceCards.forEach(function(card, index) {
+                if (serviceArray[index]) {
+                    var data = serviceArray[index];
+                    
+                    // Update service name
+                    var nameEl = card.querySelector('.service-name');
+                    if (nameEl && data.name) {
+                        nameEl.textContent = data.name;
+                    }
+                    
+                    // Update status badge
+                    var statusBadge = card.querySelector('.service-status');
+                    if (statusBadge && data.status) {
+                        statusBadge.className = 'service-status ' + data.status.toLowerCase();
+                        statusBadge.textContent = data.status;
+                    }
+                    
+                    // Update info text
+                    var infoText = card.querySelector('.service-info');
+                    if (infoText && data.info) {
+                        infoText.textContent = data.info;
+                    }
+                }
+            });
+        }
+        
         // This file is getting very long. Let me create it as a complete working file.
         
         // Graph
@@ -2511,46 +2640,6 @@
         }
         
 
-        function fetchLiveStatus() {
-            fetch(SERVER_URL + '/api/status')
-                .then(function(response) { return response.json(); })
-                .then(function(data) {
-                    updateStatusCards(data.services);
-                })
-                .catch(function(error) {
-                    // Keep existing fake data
-                });
-        }
-        
-        function updateStatusCards(services) {
-            // Update service cards with real data
-            var cards = document.querySelectorAll('.service-card');
-            services.forEach(function(service, index) {
-                if (cards[index]) {
-                    var nameEl = cards[index].querySelector('.service-name');
-                    var statusEl = cards[index].querySelector('.service-status');
-                    var infoEl = cards[index].querySelector('.service-info');
-                    
-                    if (nameEl) nameEl.textContent = service.name;
-                    if (statusEl) {
-                        statusEl.className = 'service-status ' + service.status;
-                        statusEl.textContent = service.status.toUpperCase();
-                    }
-                    if (infoEl) infoEl.textContent = service.info;
-                }
-            });
-        }
-        
-                function fetchHistoryData() {
-            fetch(SERVER_URL + '/api/history')
-                .then(function(response) { return response.json(); })
-                .then(function(data) {
-                    drawOutageGraphWithData(data.history);
-                })
-                .catch(function(error) {
-                    // Chart already drawn on load, don't redraw
-                });
-        }
         
         function drawOutageGraphWithData(historyData) {
             var canvas = document.getElementById('outageGraph');
@@ -2937,8 +3026,11 @@
             // Create room in Firebase
             roomRef.set({
                 name: roomName,
-                host: currentUser,
+                host: currentUser.username,
                 created: firebase.database.ServerValue.TIMESTAMP
+            }).then(function() {
+                // Add host to users list first
+                return roomRef.child('users').child(currentUser.username).set(currentUser);
             }).then(function() {
                 // Listen for guests joining
                 roomRef.child('users').on('child_added', function(snapshot) {
@@ -2962,9 +3054,6 @@
                     }
                 });
                 
-                // Add host to users list
-                roomRef.child('users').child(currentUser.username).set(currentUser);
-                
                 document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status connected">Room created! Code: ' + currentRoomCode + '</div>';
                 
                 setTimeout(function() {
@@ -2973,7 +3062,8 @@
                     saveRoomToCache();
                 }, 1500);
             }).catch(function(error) {
-                document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + error.message + '</div>';
+                document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + error.message + '<br>Check database rules</div>';
+                roomRef = null;
             });
         }
         
@@ -3009,12 +3099,20 @@
             // Check if room exists
             roomRef.once('value').then(function(snapshot) {
                 if (!snapshot.exists()) {
-                    document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Room not found!</div>';
+                    document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Room not found! Check code: ' + roomCode + '</div>';
+                    roomRef = null;
                     return;
                 }
                 
+                var roomData = snapshot.val();
+                if (roomData) {
+                    roomState.name = roomData.name || 'Chat Room';
+                }
+                
                 // Add user to room
-                roomRef.child('users').child(currentUser.username).set(currentUser);
+                return roomRef.child('users').child(currentUser.username).set(currentUser);
+            }).then(function() {
+                if (!roomRef) return; // Room wasn't found
                 
                 // Listen for messages
                 roomRef.child('messages').on('child_added', function(snapshot) {
@@ -3043,7 +3141,8 @@
                     showChat();
                 }, 1000);
             }).catch(function(error) {
-                document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + error.message + '</div>';
+                document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + error.message + '<br>Check database rules</div>';
+                roomRef = null;
             });
         }
         

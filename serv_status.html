@@ -1217,6 +1217,7 @@
             display: none;
         }
 
+        
         @media (max-width: 968px) {
             /* Better mobile spacing */
             .container {
@@ -1253,7 +1254,7 @@
             
             #outageGraph {
                 margin-top: 20px;
-                min-height: 250px;
+                min-height: 200px;
             }
             
             .room-choice-container {
@@ -1269,13 +1270,11 @@
             }
             
             .room-choice-btn {
-                padding: 32px 24px;
-                min-height: 120px;
-                font-size: 1rem;
-                -webkit-tap-highlight-color: rgba(255, 68, 68, 0.2);
-                touch-action: manipulation;
+                padding: 28px 20px;
+                min-height: 100px;
             }
 
+            /* Mobile chat - Discord style with slide-out sidebar */
             .chat-layout {
                 grid-template-columns: 1fr;
                 height: 100vh;
@@ -1289,7 +1288,7 @@
             .chat-sidebar {
                 position: fixed;
                 top: 0;
-                left: -100%;
+                left: -280px;
                 height: 100vh;
                 width: 280px;
                 z-index: 200;
@@ -1297,7 +1296,6 @@
                 border-right: 1px solid var(--border-color);
                 border-radius: 0;
                 max-height: 100vh;
-                transform: translateX(0);
             }
             
             .chat-sidebar.mobile-open {
@@ -1305,7 +1303,7 @@
                 box-shadow: 4px 0 16px rgba(0, 0, 0, 0.6);
             }
             
-            /* Overlay when sidebar is open - initially hidden */
+            /* Overlay when sidebar is open */
             .mobile-sidebar-overlay {
                 position: fixed;
                 top: 0;
@@ -1314,16 +1312,14 @@
                 height: 100%;
                 background: rgba(0, 0, 0, 0.7);
                 z-index: 199;
-                display: none !important;
+                display: none;
                 opacity: 0;
                 transition: opacity 0.3s ease;
-                pointer-events: none;
             }
             
             .mobile-sidebar-overlay.active {
-                display: block !important;
+                display: block;
                 opacity: 1;
-                pointer-events: auto;
             }
             
             /* Mobile header - Discord style */
@@ -1375,12 +1371,7 @@
                 border-radius: 4px;
             }
             
-            /* Messages area - Discord spacing */
-            .chat-main-area {
-                width: 100%;
-                max-width: 100%;
-            }
-            
+            /* Messages area - optimized for 18:9 */
             .messages-area {
                 padding: 8px 12px;
                 gap: 8px;
@@ -1395,64 +1386,64 @@
             }
             
             .message-avatar {
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
+                width: 36px;
+                height: 36px;
+                font-size: 0.95rem;
             }
             
             .message-username {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
                 font-weight: 600;
             }
             
             .message-time {
-                font-size: 0.7rem;
+                font-size: 0.65rem;
             }
             
             .message-text {
-                font-size: 0.95rem;
-                line-height: 1.375;
+                font-size: 0.9rem;
+                line-height: 1.35;
             }
             
-            /* Input area - Discord style */
+            /* Input area - Discord style optimized for 18:9 */
             .message-input-area {
-                padding: 8px 16px 8px 16px;
+                padding: 6px 12px;
                 background: var(--bg-secondary);
                 position: sticky;
                 bottom: 0;
                 border-top: 1px solid var(--border-color);
-                padding-bottom: max(8px, env(safe-area-inset-bottom));
+                padding-bottom: max(6px, env(safe-area-inset-bottom));
             }
             
             .message-input-wrapper {
-                gap: 8px;
+                gap: 6px;
             }
             
             .message-input {
                 font-size: 16px !important;
-                padding: 11px 16px;
+                padding: 10px 14px;
                 border-radius: 8px;
-                min-height: 44px;
+                min-height: 40px;
             }
             
             .emoji-btn {
-                width: 40px;
-                height: 40px;
-                min-width: 40px;
+                width: 36px;
+                height: 36px;
+                min-width: 36px;
                 padding: 0;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 20px;
+                font-size: 18px;
                 border-radius: 8px;
             }
             
             .send-btn {
-                height: 40px;
-                padding: 0 20px;
+                height: 36px;
+                padding: 0 16px;
                 border-radius: 8px;
-                font-size: 0.85rem;
-                min-width: 70px;
+                font-size: 0.8rem;
+                min-width: 60px;
             }
             
             /* Users list */
@@ -1464,12 +1455,12 @@
             
             .user-list-item {
                 padding: 10px 12px;
-                min-height: 48px;
+                min-height: 44px;
             }
             
             .user-list-avatar {
-                width: 32px;
-                height: 32px;
+                width: 30px;
+                height: 30px;
             }
             
             /* Message actions - always visible on mobile */
@@ -1487,9 +1478,9 @@
             .message-action-btn {
                 background: var(--bg-tertiary);
                 border: 1px solid var(--border-color);
-                padding: 8px 14px;
-                font-size: 0.85rem;
-                min-height: 36px;
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                min-height: 32px;
             }
             
             /* Reply preview */
@@ -1520,7 +1511,58 @@
             
             .room-choice-btn {
                 max-width: 100%;
-                min-height: 100px;
+            }
+            
+            /* Modals - full screen on mobile */
+            .modal-content {
+                width: 100%;
+                max-width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+                padding: 20px;
+                overflow-y: auto;
+            }
+            
+            .modal-header {
+                font-size: 1.4rem;
+            }
+            
+            input[type="text"],
+            input[type="password"] {
+                font-size: 16px !important;
+                padding: 12px 14px;
+                min-height: 44px;
+            }
+            
+            .modal-actions button {
+                min-height: 44px;
+                font-size: 0.9rem;
+            }
+            
+            /* Emoji picker */
+            .emoji-picker {
+                bottom: 50px;
+                left: 12px;
+                right: 12px;
+                max-width: none;
+                max-height: 50vh;
+                border-radius: 12px;
+            }
+            
+            .emoji {
+                font-size: 1.6rem;
+                padding: 6px;
+            }
+            
+            /* GIF search */
+            .gif-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .gif-item img {
+                height: 120px;
             }
         }
         

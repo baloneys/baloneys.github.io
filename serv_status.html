@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>status v2.4</title>
+    <title>status v2.5</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0%25' stop-color='%23ff4444'/%3E%3Cstop offset='50%25' stop-color='%23cc0000'/%3E%3Cstop offset='100%25' stop-color='%23660000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23ff6666' opacity='0.3'/%3E%3C/svg%3E">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
@@ -1209,6 +1209,75 @@
         }
         
                 
+        
+        /* Message virtualization UI */
+        .load-more-messages {
+            text-align: center;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .load-more-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+        
+        .load-more-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent-red);
+            color: var(--text-primary);
+        }
+        
+        .jump-to-bottom {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .jump-to-bottom:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(255, 68, 68, 0.4);
+        }
+        
+        .jump-to-bottom.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .unread-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: white;
+            color: var(--accent-red);
+            border-radius: 12px;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+        }
+
         .mobile-menu-btn {
             display: none;
         }
@@ -1683,7 +1752,7 @@
         <header>
             <div class="status-indicator" id="statusIndicator" title="Triple-click anywhere for options"></div>
             <h1>status</h1>
-            <span style="font-size: 0.7rem; color: #9494a8; margin-left: 8px;">v2.4</span>
+            <span style="font-size: 0.7rem; color: #9494a8; margin-left: 8px;">v2.5</span>
         </header>
         
         <!-- Status Page View -->
@@ -1810,6 +1879,10 @@
                         </div>
                     </div>
                     
+                                        <button id="jumpToBottom" class="jump-to-bottom hidden" onclick="scrollToBottom()">
+                        ↓
+                        <span id="unreadBadge" class="unread-badge" style="display: none;">0</span>
+                    </button>
                     <div class="messages-area" id="messagesArea"></div>
                     
                     <div class="message-input-area">
@@ -1940,7 +2013,7 @@
     <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
     
     <script>
-        console.log('🚀 Status Chat v2.4 - MOBILE UI FIXED!');
+        console.log('🚀 Status Chat v2.5 - MESSAGE VIRTUALIZATION!');
         console.log('Triple-tap/click anywhere to access chat');
         
         // Giphy API key (free tier, replace with your own if needed)
@@ -1992,6 +2065,15 @@
             users: [],
             customEmojis: []
         };
+        
+        // Message virtualization variables
+        var allMessages = []; // Cache of all messages (max 500)
+        var displayedMessages = []; // Currently displayed messages (max 50)
+        var messageStartIndex = 0; // Index of first displayed message in allMessages
+        var maxCachedMessages = 500;
+        var maxDisplayedMessages = 50;
+        var isAtBottom = true;
+        var unreadCount = 0;
         
         var currentUser = null;
         var currentRoomCode = null;
@@ -2075,6 +2157,9 @@
             });
             console.log('✅ Touch handler attached');
             console.log('👆 Ready! Triple-tap/click anywhere to access chat');
+            
+            // Initialize message virtualization
+            initializeMessageSystem();
             
             // Try to fetch live data (will fallback to existing chart if fails)
             fetchHistoryData();
@@ -2190,6 +2275,18 @@
             switchView('chatView');
             document.getElementById('statusIndicator').classList.add('active');
             updateChatUI();
+            
+            // Initialize message display from cache
+            if (allMessages.length === 0 && roomState.messages.length > 0) {
+                allMessages = roomState.messages.slice();
+            }
+            
+            // Show last 50 messages
+            messageStartIndex = Math.max(0, allMessages.length - maxDisplayedMessages);
+            displayedMessages = allMessages.slice(messageStartIndex);
+            isAtBottom = true;
+            unreadCount = 0;
+            
             renderMessages();
         }
         
@@ -2904,8 +3001,9 @@
                 } : null
             };
             
+            addMessageToCache(message);
+            
             if (isHost) {
-                roomState.messages.push(message);
                 broadcastState();
                 saveRoomToCache();
             } else {
@@ -2924,10 +3022,26 @@
             var container = document.getElementById('messagesArea');
             if (!container) return;
             
+            var wasAtBottom = isAtBottom;
+            
+            // Clear existing messages
             container.innerHTML = '';
             
-            for (var i = 0; i < roomState.messages.length; i++) {
-                var msg = roomState.messages[i];
+            // Add "Load More" button if there are more messages to load
+            if (messageStartIndex > 0) {
+                var loadMoreDiv = document.createElement('div');
+                loadMoreDiv.className = 'load-more-messages';
+                var loadBtn = document.createElement('button');
+                loadBtn.className = 'load-more-btn';
+                loadBtn.textContent = 'Load More Messages (' + messageStartIndex + ' older)';
+                loadBtn.onclick = loadMoreMessages;
+                loadMoreDiv.appendChild(loadBtn);
+                container.appendChild(loadMoreDiv);
+            }
+            
+            // Render displayed messages
+            for (var i = 0; i < displayedMessages.length; i++) {
+                var msg = displayedMessages[i];
                 var div = document.createElement('div');
                 div.className = 'message';
                 div.setAttribute('data-message-id', msg.id);
@@ -2989,7 +3103,113 @@
                 container.appendChild(div);
             }
             
+            // Restore scroll position or scroll to bottom
+            if (wasAtBottom) {
+                container.scrollTop = container.scrollHeight;
+            }
+            
+            updateJumpToBottomButton();
+        }
+        
+        function loadMoreMessages() {
+            console.log('Loading more messages...');
+            
+            var loadCount = Math.min(maxDisplayedMessages, messageStartIndex);
+            
+            if (loadCount > 0) {
+                messageStartIndex -= loadCount;
+                var endIndex = messageStartIndex + maxDisplayedMessages;
+                displayedMessages = allMessages.slice(messageStartIndex, endIndex);
+                
+                console.log('Loaded ' + loadCount + ' more messages. Start index now: ' + messageStartIndex);
+                renderMessages();
+            }
+        }
+        
+        function scrollToBottom() {
+            var container = document.getElementById('messagesArea');
+            if (!container) return;
+            
+            if (messageStartIndex + displayedMessages.length < allMessages.length) {
+                messageStartIndex = Math.max(0, allMessages.length - maxDisplayedMessages);
+                displayedMessages = allMessages.slice(messageStartIndex);
+                renderMessages();
+            }
+            
             container.scrollTop = container.scrollHeight;
+            isAtBottom = true;
+            unreadCount = 0;
+            updateJumpToBottomButton();
+        }
+        
+        function updateJumpToBottomButton() {
+            var container = document.getElementById('messagesArea');
+            var button = document.getElementById('jumpToBottom');
+            var badge = document.getElementById('unreadBadge');
+            
+            if (!container || !button || !badge) return;
+            
+            var scrollTop = container.scrollTop;
+            var scrollHeight = container.scrollHeight;
+            var clientHeight = container.clientHeight;
+            
+            isAtBottom = (scrollHeight - scrollTop - clientHeight) < 100;
+            
+            if (isAtBottom) {
+                button.classList.add('hidden');
+                unreadCount = 0;
+            } else {
+                button.classList.remove('hidden');
+            }
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        function addMessageToCache(message) {
+            console.log('Adding message to cache. Current cache size:', allMessages.length);
+            
+            allMessages.push(message);
+            
+            if (allMessages.length > maxCachedMessages) {
+                console.log('Cache exceeded 500 messages, removing oldest');
+                allMessages.shift();
+                
+                if (messageStartIndex > 0) {
+                    messageStartIndex--;
+                }
+            }
+            
+            roomState.messages = allMessages.slice();
+            
+            if (isAtBottom || (messageStartIndex + displayedMessages.length >= allMessages.length - 1)) {
+                displayedMessages.push(message);
+                
+                if (displayedMessages.length > maxDisplayedMessages) {
+                    displayedMessages.shift();
+                    messageStartIndex++;
+                }
+            } else {
+                unreadCount++;
+            }
+            
+            renderMessages();
+        }
+        
+        function initializeMessageSystem() {
+            var container = document.getElementById('messagesArea');
+            if (container) {
+                container.addEventListener('scroll', function() {
+                    updateJumpToBottomButton();
+                });
+            }
+            
+            console.log('Message virtualization system initialized');
+            console.log('Max cached:', maxCachedMessages, 'Max displayed:', maxDisplayedMessages);
         }
         
         function replyToMessage(message) {
@@ -3036,7 +3256,7 @@
                 broadcastState();
                 saveRoomToCache();
             } else if (data.type === 'message') {
-                roomState.messages.push(data.message);
+                addMessageToCache(data.message);
                 broadcastState();
                 saveRoomToCache();
             } else if (data.type === 'updateProfile') {
@@ -3090,6 +3310,21 @@
                 renderMessages();
             } else if (data.type === 'update') {
                 roomState = data.state;
+                
+                // Sync allMessages with received state
+                if (roomState.messages.length > allMessages.length) {
+                    // New messages received
+                    var newMessages = roomState.messages.slice(allMessages.length);
+                    for (var i = 0; i < newMessages.length; i++) {
+                        addMessageToCache(newMessages[i]);
+                    }
+                } else {
+                    // Full sync
+                    allMessages = roomState.messages.slice();
+                    messageStartIndex = Math.max(0, allMessages.length - maxDisplayedMessages);
+                    displayedMessages = allMessages.slice(messageStartIndex);
+                }
+                
                 updateChatUI();
                 renderMessages();
             } else if (data.type === 'transferHost') {

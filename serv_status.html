@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>status v3.1</title>
+    <title>status v1.2</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0%25' stop-color='%23ff4444'/%3E%3Cstop offset='50%25' stop-color='%23cc0000'/%3E%3Cstop offset='100%25' stop-color='%23660000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23ff6666' opacity='0.3'/%3E%3C/svg%3E">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
@@ -18,6 +18,8 @@
             --text-secondary: #9494a8;
             --accent-red: #a855f7;
             --accent-red-glow: #a855f788;
+            --status-red: #ff4444;
+            --status-red-glow: #ff444888;
             --border-color: #2a2a3a;
             --success: #44ff88;
             --warning: #ffaa44;
@@ -77,9 +79,9 @@
             cursor: pointer;
             width: 16px;
             height: 16px;
-            background: var(--accent-red);
+            background: var(--status-red);
             border-radius: 50%;
-            box-shadow: 0 0 20px var(--accent-red-glow), 0 0 40px var(--accent-red-glow);
+            box-shadow: 0 0 20px var(--status-red-glow), 0 0 40px var(--status-red-glow);
             animation: pulse 2s ease-in-out infinite;
             position: relative;
         }
@@ -142,7 +144,7 @@
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 40px;
             margin-bottom: 40px;
         }
         
@@ -152,6 +154,19 @@
             border-radius: 12px;
             padding: 24px;
             transition: all 0.3s ease;
+            animation: slideUp 0.6s ease-out backwards;
+        }
+        
+        .service-card:nth-child(1) { animation-delay: 0.1s; }
+        .service-card:nth-child(2) { animation-delay: 0.2s; }
+        .service-card:nth-child(3) { animation-delay: 0.3s; }
+        .service-card:nth-child(4) { animation-delay: 0.4s; }
+        .service-card:nth-child(5) { animation-delay: 0.5s; }
+        .service-card:nth-child(6) { animation-delay: 0.6s; }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .service-card:hover {
@@ -208,6 +223,7 @@
             border-radius: 12px;
             padding: 32px;
             margin-bottom: 40px;
+            animation: slideUp 0.8s ease-out 0.4s backwards;
         }
         
         .graph-header h2 {
@@ -1374,14 +1390,8 @@
                 margin-bottom: 24px;
             }
             
-            .services-grid {
-                gap: 16px;
-                margin-bottom: 24px;
-            }
-            
             .service-card {
                 padding: 20px;
-                margin-bottom: 0;
             }
             
             .graph-section {
@@ -1865,7 +1875,7 @@
         <header>
             <div class="status-indicator" id="statusIndicator" title="Triple-click anywhere for options"></div>
             <h1>status</h1>
-            <span style="font-size: 0.7rem; color: #9494a8; margin-left: 8px;">v3.1</span>
+            <span style="font-size: 0.7rem; color: #9494a8; margin-left: 8px;">v1.2</span>
         </header>
         
         <!-- Status Page View -->
@@ -2126,8 +2136,6 @@
     <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
     
     <script>
-        console.log('🚀 Status Chat v3.1 - EMOJI & OVERLAY FIXED!');
-        console.log('Triple-tap/click anywhere to access chat');
         
         // Giphy API key (free tier, replace with your own if needed)
         var GIPHY_API_KEY = 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65';
@@ -2208,7 +2216,6 @@
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📱 DOM Content Loaded - Setting up event listeners...');
             
             drawOutageGraph(); // Always draw chart initially
             populateEmojiPicker();
@@ -2225,7 +2232,6 @@
                     e.target.tagName === 'INPUT' || 
                     e.target.tagName === 'A' ||
                     e.target.closest('button')) {
-                    console.log('Click on interactive element, ignoring for triple-tap');
                     return;
                 }
                 
@@ -2237,10 +2243,8 @@
                 clickCount++;
                 lastClickTime = now;
                 
-                console.log('Tap/click detected! Count:', clickCount);
                 
                 if (clickCount === 3) {
-                    console.log('✅ Triple-tap detected! Toggling view...');
                     clickCount = 0;
                     toggleViewRapid();
                 }
@@ -2248,7 +2252,6 @@
             
             // Triple-click for desktop
             document.addEventListener('click', handleInteraction);
-            console.log('✅ Click handler attached');
             
             // Triple-tap for mobile
             document.addEventListener('touchend', function(e) {
@@ -2271,8 +2274,6 @@
                 
                 handleInteraction(e);
             });
-            console.log('✅ Touch handler attached');
-            console.log('👆 Ready! Triple-tap/click anywhere to access chat');
             
             // Initialize message virtualization
             initializeMessageSystem();
@@ -2287,26 +2288,20 @@
                 var joinBtn = document.querySelector('.room-choice-btn[onclick*="showJoinRoomModal"]');
                 
                 if (createBtn) {
-                    console.log('✅ Create Room button found, adding event listeners');
                     createBtn.addEventListener('click', function(e) {
-                        console.log('Create button clicked via event listener');
                         showCreateRoomModal();
                     });
                     createBtn.addEventListener('touchend', function(e) {
-                        console.log('Create button touched via event listener');
                         e.stopPropagation();
                         showCreateRoomModal();
                     });
                 }
                 
                 if (joinBtn) {
-                    console.log('✅ Join Room button found, adding event listeners');
                     joinBtn.addEventListener('click', function(e) {
-                        console.log('Join button clicked via event listener');
                         showJoinRoomModal();
                     });
                     joinBtn.addEventListener('touchend', function(e) {
-                        console.log('Join button touched via event listener');
                         e.stopPropagation();
                         showJoinRoomModal();
                     });
@@ -2422,11 +2417,9 @@
         function drawOutageGraph() {
             var canvas = document.getElementById('outageGraph');
             if (!canvas) {
-                console.log('Canvas element not found!');
                 return;
             }
             
-            console.log('Drawing chart...');
             
             var ctx = canvas.getContext('2d');
             var dpr = window.devicePixelRatio || 1;
@@ -2438,7 +2431,6 @@
             var width = canvas.offsetWidth;
             var height = canvas.offsetHeight;
             
-            console.log('Canvas dimensions:', width, 'x', height);
             
             ctx.fillStyle = '#1f1f2e';
             ctx.fillRect(0, 0, width, height);
@@ -2507,7 +2499,6 @@
                     updateStatusCards(data.services);
                 })
                 .catch(function(error) {
-                    console.log('Using fallback status data');
                     // Keep existing fake data
                 });
         }
@@ -2538,7 +2529,6 @@
                     drawOutageGraphWithData(data.history);
                 })
                 .catch(function(error) {
-                    console.log('Using fallback chart data - chart already drawn');
                     // Chart already drawn on load, don't redraw
                 });
         }
@@ -2844,7 +2834,6 @@
         
         // Room Management
         function showCreateRoomModal() {
-            console.log('🚀 Create Room button clicked!');
             document.getElementById('createRoomModal').classList.add('visible');
             document.getElementById('newRoomName').value = 'General';
             document.getElementById('hostUsername').value = 'User' + Math.floor(Math.random() * 10000);
@@ -2864,7 +2853,6 @@
         }
         
         function showJoinRoomModal() {
-            console.log('🔗 Join Room button clicked!');
             document.getElementById('joinRoomModal').classList.add('visible');
             document.getElementById('joinRoomCode').value = '';
             document.getElementById('joinUsername').value = 'User' + Math.floor(Math.random() * 10000);
@@ -2933,7 +2921,6 @@
                 currentRoomCode = generateRoomCode();
                 roomCodeMap[currentRoomCode] = id;
                 
-                console.log('Host peer ID:', id, 'Room code:', currentRoomCode);
                 document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status connected">Room created! Code: ' + currentRoomCode + '</div>';
                 
                 setTimeout(function() {
@@ -2944,7 +2931,6 @@
             });
             
             peer.on('connection', function(conn) {
-                console.log('Guest connected:', conn.peer);
                 
                 conn.on('open', function() {
                     guestConnections[conn.peer] = conn;
@@ -2960,7 +2946,6 @@
                 });
                 
                 conn.on('close', function() {
-                    console.log('Guest disconnected:', conn.peer);
                     removeUser(conn.peer);
                     delete guestConnections[conn.peer];
                     checkEmptyRoom();
@@ -3003,7 +2988,6 @@
             peer = new Peer();
             
             peer.on('open', function(id) {
-                console.log('Guest peer ID:', id);
                 currentUser.peerId = id;
                 
                 var hostPeerId = roomCodeMap[roomCode];
@@ -3015,7 +2999,6 @@
                 }
                 
                 hostConnection.on('open', function() {
-                    console.log('Connected to host');
                     document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status connected">Connected!</div>';
                     
                     hostConnection.send({
@@ -3034,7 +3017,6 @@
                 });
                 
                 hostConnection.on('close', function() {
-                    console.log('Host disconnected');
                     alert('Host has left the room. Room closed.');
                     leaveRoom();
                 });
@@ -3251,7 +3233,6 @@
         }
         
         function loadMoreMessages() {
-            console.log('Loading more messages...');
             
             var loadCount = Math.min(maxDisplayedMessages, messageStartIndex);
             
@@ -3260,7 +3241,6 @@
                 var endIndex = messageStartIndex + maxDisplayedMessages;
                 displayedMessages = allMessages.slice(messageStartIndex, endIndex);
                 
-                console.log('Loaded ' + loadCount + ' more messages. Start index now: ' + messageStartIndex);
                 renderMessages();
             }
         }
@@ -3310,12 +3290,10 @@
         }
         
         function addMessageToCache(message) {
-            console.log('Adding message to cache. Current cache size:', allMessages.length);
             
             allMessages.push(message);
             
             if (allMessages.length > maxCachedMessages) {
-                console.log('Cache exceeded 500 messages, removing oldest');
                 allMessages.shift();
                 
                 if (messageStartIndex > 0) {
@@ -3347,16 +3325,10 @@
                 });
                 
                 // Debug scroll state
-                console.log('Messages container found');
-                console.log('Container height:', container.clientHeight);
-                console.log('Container scroll height:', container.scrollHeight);
-                console.log('Overflow-y:', window.getComputedStyle(container).overflowY);
             } else {
                 console.error('Messages container NOT found!');
             }
             
-            console.log('Message virtualization system initialized');
-            console.log('Max cached:', maxCachedMessages, 'Max displayed:', maxDisplayedMessages);
         }
         
         function replyToMessage(message) {
@@ -3489,7 +3461,6 @@
                 
                 // Start accepting new connections
                 peer.on('connection', function(conn) {
-                    console.log('Guest connected:', conn.peer);
                     
                     conn.on('open', function() {
                         guestConnections[conn.peer] = conn;
@@ -3504,7 +3475,6 @@
                     });
                     
                     conn.on('close', function() {
-                        console.log('Guest disconnected:', conn.peer);
                         removeUser(conn.peer);
                         delete guestConnections[conn.peer];
                         checkEmptyRoom();
@@ -3607,7 +3577,6 @@
             
             // Only add on mobile
             if (window.innerWidth <= 968) {
-                console.log('📱 Mobile view detected, setting up mobile menu');
                 
                 // Ensure sidebar starts hidden
                 if (sidebar) {
@@ -3624,7 +3593,6 @@
                     
                     // Insert as first child
                     chatHeader.insertBefore(menuBtn, chatHeader.firstChild);
-                    console.log('✅ Mobile menu button added');
                 }
                 
                 // Create overlay if it doesn't exist
@@ -3635,13 +3603,11 @@
                     overlay.className = 'mobile-sidebar-overlay';
                     overlay.onclick = closeMobileSidebar;
                     document.body.appendChild(overlay);
-                    console.log('✅ Mobile overlay created');
                 }
                 
                 // Ensure overlay starts hidden
                 overlay.classList.remove('active');
             } else {
-                console.log('💻 Desktop view detected');
                 // Remove mobile menu on desktop
                 if (existingBtn) existingBtn.remove();
                 var overlay = document.getElementById('mobileSidebarOverlay');
@@ -3651,26 +3617,21 @@
         }
         
         function toggleMobileSidebar() {
-            console.log('🔄 Toggle mobile sidebar');
             var sidebar = document.querySelector('.chat-sidebar');
             var overlay = document.getElementById('mobileSidebarOverlay');
             
             if (sidebar && overlay) {
                 if (sidebar.classList.contains('mobile-open')) {
-                    console.log('Closing sidebar');
                     closeMobileSidebar();
                 } else {
-                    console.log('Opening sidebar');
                     sidebar.classList.add('mobile-open');
                     overlay.classList.add('active');
                 }
             } else {
-                console.log('❌ Sidebar or overlay not found');
             }
         }
         
         function closeMobileSidebar() {
-            console.log('❌ Closing mobile sidebar');
             var sidebar = document.querySelector('.chat-sidebar');
             var overlay = document.getElementById('mobileSidebarOverlay');
             

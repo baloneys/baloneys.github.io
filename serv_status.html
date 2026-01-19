@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>status v3.0</title>
+    <title>status v3.1</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0%25' stop-color='%23ff4444'/%3E%3Cstop offset='50%25' stop-color='%23cc0000'/%3E%3Cstop offset='100%25' stop-color='%23660000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23ff6666' opacity='0.3'/%3E%3C/svg%3E">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
@@ -1456,16 +1456,18 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0, 0, 0, 0.7);
+                background: transparent;
                 z-index: 199;
                 display: none;
                 opacity: 0;
                 transition: opacity 0.3s ease;
+                pointer-events: none;
             }
             
             .mobile-sidebar-overlay.active {
                 display: block;
                 opacity: 1;
+                pointer-events: auto;
             }
             
             /* Mobile header - Discord style */
@@ -1863,7 +1865,7 @@
         <header>
             <div class="status-indicator" id="statusIndicator" title="Triple-click anywhere for options"></div>
             <h1>status</h1>
-            <span style="font-size: 0.7rem; color: #9494a8; margin-left: 8px;">v3.0</span>
+            <span style="font-size: 0.7rem; color: #9494a8; margin-left: 8px;">v3.1</span>
         </header>
         
         <!-- Status Page View -->
@@ -2124,7 +2126,7 @@
     <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
     
     <script>
-        console.log('🚀 Status Chat v3.0 - FINAL COLORS!');
+        console.log('🚀 Status Chat v3.1 - EMOJI & OVERLAY FIXED!');
         console.log('Triple-tap/click anywhere to access chat');
         
         // Giphy API key (free tier, replace with your own if needed)
@@ -3196,8 +3198,9 @@
                 var messageText = msg.text;
                 if (!msg.isImage) {
                     messageText = messageText.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
-                    messageText = messageText.replace(/\[IMG:(data:image[^\]]+)\]/g, '<img src="$1" class="custom-emoji">');
                 }
+                // Always process custom emoji IMG tags
+                messageText = messageText.replace(/\[IMG:(data:image[^\]]+)\]/g, '<img src="$1" class="custom-emoji">');
                 
                 var replyHtml = '';
                 if (msg.replyTo) {

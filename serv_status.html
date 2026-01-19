@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>status</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0%25' stop-color='%23ff4444'/%3E%3Cstop offset='50%25' stop-color='%23cc0000'/%3E%3Cstop offset='100%25' stop-color='%23660000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23ff6666' opacity='0.3'/%3E%3C/svg%3E">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700&display=swap');
         
@@ -16,7 +17,7 @@
             --text-primary: #e8e8f0;
             --text-secondary: #9494a8;
             --accent-red: #ff4444;
-            --accent-red-glow: #ff444888;
+            --accent-red-glow: #ff444488;
             --border-color: #2a2a3a;
             --success: #44ff88;
             --warning: #ffaa44;
@@ -241,85 +242,62 @@
             box-shadow: 0 8px 24px rgba(255, 68, 68, 0.5);
         }
         
-        /* Room List */
-        .room-list-container {
-            max-width: 900px;
+        /* Room Choice */
+        .room-choice-container {
+            max-width: 600px;
             margin: 0 auto;
+            text-align: center;
         }
         
-        .room-list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-        
-        .room-list-header h2 {
+        .room-choice-container h2 {
             font-family: 'Syne', sans-serif;
             font-size: 2rem;
+            margin-bottom: 16px;
         }
         
-        .new-room-btn {
-            background: var(--accent-red);
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .room-choice-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+            font-size: 0.95rem;
         }
         
-        .new-room-btn:hover {
-            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
-            transform: translateY(-2px);
-        }
-        
-        .room-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        .room-choice-buttons {
+            display: flex;
             gap: 20px;
+            justify-content: center;
         }
         
-        .room-card {
+        .room-choice-btn {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 24px;
+            padding: 40px 32px;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
+            flex: 1;
+            max-width: 250px;
         }
         
-        .room-card:hover {
+        .room-choice-btn:hover {
             border-color: var(--accent-red);
-            transform: translateX(4px);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(255, 68, 68, 0.3);
         }
         
-        .room-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
+        .room-choice-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
         }
         
-        .room-card-name {
-            font-size: 1.2rem;
+        .room-choice-title {
+            font-size: 1.3rem;
             font-weight: 700;
+            margin-bottom: 8px;
         }
         
-        .room-card-lock {
-            font-size: 1.2rem;
-            opacity: 0.6;
-        }
-        
-        .room-card-info {
+        .room-choice-desc {
             color: var(--text-secondary);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
         
         /* Chat Layout */
@@ -354,9 +332,43 @@
             margin-bottom: 4px;
         }
         
+        .room-code {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+        
+        .room-code-value {
+            background: var(--bg-tertiary);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            color: var(--accent-red);
+            display: inline-block;
+            margin-top: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .room-code-value:hover {
+            background: var(--bg-hover);
+        }
+        
         .room-users-count {
             color: var(--text-secondary);
             font-size: 0.75rem;
+        }
+        
+        .host-badge {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--accent-red);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-top: 4px;
         }
         
         .users-list-section {
@@ -924,6 +936,29 @@
             transform: translateY(-2px);
         }
         
+        .connection-status {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        
+        .connection-status.connecting {
+            background: rgba(255, 170, 68, 0.2);
+            color: var(--warning);
+        }
+        
+        .connection-status.connected {
+            background: rgba(68, 255, 136, 0.2);
+            color: var(--success);
+        }
+        
+        .connection-status.error {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+        
         ::-webkit-scrollbar {
             width: 10px;
             height: 10px;
@@ -964,18 +999,16 @@
                 font-size: 2rem;
             }
             
-            .services-grid, .room-grid {
+            .services-grid {
                 grid-template-columns: 1fr;
             }
             
-            .room-list-header {
+            .room-choice-buttons {
                 flex-direction: column;
-                gap: 16px;
-                align-items: stretch;
             }
             
-            .new-room-btn {
-                width: 100%;
+            .room-choice-btn {
+                max-width: 100%;
             }
             
             .message-actions {
@@ -1052,10 +1085,6 @@
             input[type="color"] {
                 padding: 14px 16px;
                 font-size: 1rem;
-            }
-            
-            .room-card {
-                padding: 20px;
             }
             
             .user-list-item {
@@ -1137,18 +1166,29 @@
             </div>
             
             <div class="check-btn-container">
-                <button class="check-btn" onclick="showRoomList()">Check</button>
+                <button class="check-btn" onclick="showRoomChoice()">Check</button>
             </div>
         </div>
         
-        <!-- Room List View -->
-        <div id="roomListView" class="view">
-            <div class="room-list-container">
-                <div class="room-list-header">
-                    <h2>Chat Rooms</h2>
-                    <button class="new-room-btn" onclick="showCreateRoomModal()">+ New Room</button>
+        <!-- Room Choice View -->
+        <div id="roomChoiceView" class="view">
+            <div class="room-choice-container">
+                <h2>Choose an Option</h2>
+                <p class="room-choice-subtitle">Create a new room or join an existing one</p>
+                
+                <div class="room-choice-buttons">
+                    <div class="room-choice-btn" onclick="showCreateRoomModal()">
+                        <div class="room-choice-icon">🚀</div>
+                        <div class="room-choice-title">Create Room</div>
+                        <div class="room-choice-desc">Start a new chat room as host</div>
+                    </div>
+                    
+                    <div class="room-choice-btn" onclick="showJoinRoomModal()">
+                        <div class="room-choice-icon">🔗</div>
+                        <div class="room-choice-title">Join Room</div>
+                        <div class="room-choice-desc">Connect to an existing room</div>
+                    </div>
                 </div>
-                <div class="room-grid" id="roomGrid"></div>
             </div>
         </div>
         
@@ -1159,6 +1199,8 @@
                     <div class="chat-sidebar-header">
                         <h3 id="sidebarRoomName">Room Name</h3>
                         <div class="room-users-count" id="roomUserCount">0 users online</div>
+                        <div id="hostBadgeContainer"></div>
+                        <div id="roomCodeContainer" class="room-code"></div>
                     </div>
                     
                     <div class="users-list-section">
@@ -1211,19 +1253,24 @@
         </div>
     </div>
     
-    <!-- Create Room Modal -->
+    <!-- Create/Host Room Modal -->
     <div class="modal" id="createRoomModal">
         <div class="modal-content">
             <div class="modal-header">Create Room</div>
             <div class="modal-body">
                 <div class="input-group">
                     <label>Room Name</label>
-                    <input type="text" id="newRoomName" placeholder="Enter room name">
+                    <input type="text" id="newRoomName" placeholder="Enter room name" value="General">
                 </div>
                 <div class="input-group">
-                    <label>Password (optional)</label>
-                    <input type="password" id="newRoomPassword" placeholder="Leave empty for public room">
+                    <label>Your Username</label>
+                    <input type="text" id="hostUsername" placeholder="Enter your username">
                 </div>
+                <div class="input-group">
+                    <label>Your Color</label>
+                    <input type="color" id="hostColor" value="#ff4444">
+                </div>
+                <div id="createConnectionStatus"></div>
                 <div class="modal-actions">
                     <button onclick="closeCreateRoomModal()">Cancel</button>
                     <button class="primary" onclick="createRoom()">Create</button>
@@ -1238,54 +1285,53 @@
             <div class="modal-header">Join Room</div>
             <div class="modal-body">
                 <div class="input-group">
-                    <label>Username</label>
+                    <label>Room Code</label>
+                    <input type="text" id="joinRoomCode" placeholder="Enter room code">
+                </div>
+                <div class="input-group">
+                    <label>Your Username</label>
                     <input type="text" id="joinUsername" placeholder="Enter your username">
                 </div>
                 <div class="input-group">
-                    <label>Color</label>
-                    <input type="color" id="joinUserColor" value="#ff4444">
+                    <label>Your Color</label>
+                    <input type="color" id="joinUserColor" value="#44ff88">
                 </div>
-                <div class="input-group" id="passwordGroup" style="display: none;">
-                    <label>Room Password</label>
-                    <input type="password" id="joinRoomPassword" placeholder="Enter password">
-                </div>
+                <div id="joinConnectionStatus"></div>
                 <div class="modal-actions">
                     <button onclick="closeJoinRoomModal()">Cancel</button>
-                    <button class="primary" onclick="attemptJoinRoom()">Join</button>
+                    <button class="primary" onclick="joinRoom()">Join</button>
                 </div>
             </div>
         </div>
     </div>
     
     <script>
-        // State
-        var emojis = ['😀', '😂', '😍', '🤔', '👍', '👎', '❤️', '🔥', '✨', '🎉', '😎', '🤗', '😱', '🙌', '💯', '🎮', '🎵', '🎨', '🚀', '⭐'];
-        var rooms = [];
-        var currentRoom = null;
+        // WebRTC P2P Chat Implementation
+        // Host maintains authoritative state and syncs to all peers
+        
+        var peer = null;
+        var isHost = false;
+        var hostConnection = null;
+        var guestConnections = {};
+        
+        var roomState = {
+            name: '',
+            messages: [],
+            users: []
+        };
+        
         var currentUser = null;
-        var pendingRoomJoin = null;
         var replyingTo = null;
         var mentionQuery = '';
         var mentionStartPos = -1;
         var selectedMentionIndex = 0;
         
+        var emojis = ['😀', '😂', '😍', '🤔', '👍', '👎', '❤️', '🔥', '✨', '🎉', '😎', '🤗', '😱', '🙌', '💯', '🎮', '🎵', '🎨', '🚀', '⭐'];
+        
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             drawOutageGraph();
             populateEmojiPicker();
-            loadFromStorage();
-            
-            if (rooms.length === 0) {
-                rooms.push({
-                    id: 'default',
-                    name: 'General',
-                    password: null,
-                    messages: [],
-                    users: []
-                });
-                saveToStorage();
-            }
-            
             setupEventListeners();
         });
         
@@ -1321,9 +1367,8 @@
             document.getElementById(viewId).classList.add('active');
         }
         
-        function showRoomList() {
-            switchView('roomListView');
-            renderRoomGrid();
+        function showRoomChoice() {
+            switchView('roomChoiceView');
         }
         
         function showChat() {
@@ -1416,196 +1461,223 @@
             document.getElementById('emojiPicker').classList.remove('visible');
         }
         
-        // Rooms
-        function renderRoomGrid() {
-            var grid = document.getElementById('roomGrid');
-            if (!grid) return;
-            
-            grid.innerHTML = '';
-            
-            for (var i = 0; i < rooms.length; i++) {
-                var room = rooms[i];
-                var card = document.createElement('div');
-                card.className = 'room-card';
-                card.onclick = (function(r) {
-                    return function() { selectRoom(r); };
-                })(room);
-                
-                card.innerHTML = 
-                    '<div class="room-card-header">' +
-                    '<div class="room-card-name">' + room.name + '</div>' +
-                    (room.password ? '<div class="room-card-lock">🔒</div>' : '') +
-                    '</div>' +
-                    '<div class="room-card-info">' + room.users.length + ' user' + (room.users.length !== 1 ? 's' : '') + ' • ' + room.messages.length + ' messages</div>';
-                
-                grid.appendChild(card);
-            }
-        }
-        
+        // Room Management
         function showCreateRoomModal() {
             document.getElementById('createRoomModal').classList.add('visible');
-            document.getElementById('newRoomName').value = '';
-            document.getElementById('newRoomPassword').value = '';
+            document.getElementById('newRoomName').value = 'General';
+            document.getElementById('hostUsername').value = 'User' + Math.floor(Math.random() * 10000);
+            document.getElementById('hostColor').value = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            document.getElementById('createConnectionStatus').innerHTML = '';
         }
         
         function closeCreateRoomModal() {
             document.getElementById('createRoomModal').classList.remove('visible');
         }
         
-        function createRoom() {
-            var name = document.getElementById('newRoomName').value.trim();
-            var password = document.getElementById('newRoomPassword').value;
-            
-            if (!name) {
-                alert('Please enter a room name');
-                return;
-            }
-            
-            var room = {
-                id: 'room_' + Date.now(),
-                name: name,
-                password: password || null,
-                messages: [],
-                users: []
-            };
-            
-            rooms.push(room);
-            closeCreateRoomModal();
-            saveToStorage();
-            selectRoom(room);
-        }
-        
-        function selectRoom(room) {
-            pendingRoomJoin = room;
-            
-            var passwordGroup = document.getElementById('passwordGroup');
-            if (room.password) {
-                passwordGroup.style.display = 'flex';
-            } else {
-                passwordGroup.style.display = 'none';
-            }
-            
+        function showJoinRoomModal() {
+            document.getElementById('joinRoomModal').classList.add('visible');
+            document.getElementById('joinRoomCode').value = '';
             document.getElementById('joinUsername').value = 'User' + Math.floor(Math.random() * 10000);
             document.getElementById('joinUserColor').value = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-            
-            document.getElementById('joinRoomModal').classList.add('visible');
+            document.getElementById('joinConnectionStatus').innerHTML = '';
         }
         
         function closeJoinRoomModal() {
             document.getElementById('joinRoomModal').classList.remove('visible');
-            pendingRoomJoin = null;
         }
         
-        function attemptJoinRoom() {
-            var username = document.getElementById('joinUsername').value.trim();
-            var color = document.getElementById('joinUserColor').value;
-            var password = document.getElementById('joinRoomPassword').value;
+        function createRoom() {
+            var roomName = document.getElementById('newRoomName').value.trim();
+            var username = document.getElementById('hostUsername').value.trim();
+            var color = document.getElementById('hostColor').value;
             
-            if (!username) {
-                alert('Please enter a username');
+            if (!roomName || !username) {
+                alert('Please enter room name and username');
                 return;
             }
             
-            if (pendingRoomJoin.password && password !== pendingRoomJoin.password) {
-                alert('Incorrect password');
-                return;
-            }
+            document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status connecting">Connecting...</div>';
             
+            isHost = true;
             currentUser = {
                 username: username,
-                color: color
+                color: color,
+                isHost: true
             };
             
-            currentRoom = pendingRoomJoin;
+            roomState = {
+                name: roomName,
+                messages: [],
+                users: [currentUser]
+            };
             
-            var userExists = false;
-            for (var i = 0; i < currentRoom.users.length; i++) {
-                if (currentRoom.users[i].username === username) {
-                    userExists = true;
+            // Initialize PeerJS
+            peer = new Peer();
+            
+            peer.on('open', function(id) {
+                console.log('Host peer ID:', id);
+                document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status connected">Room created! Code: ' + id + '</div>';
+                
+                setTimeout(function() {
+                    closeCreateRoomModal();
+                    showChat();
+                }, 1500);
+            });
+            
+            peer.on('connection', function(conn) {
+                console.log('Guest connected:', conn.peer);
+                
+                conn.on('open', function() {
+                    guestConnections[conn.peer] = conn;
+                    
+                    // Send current room state to new guest
+                    conn.send({
+                        type: 'init',
+                        state: roomState
+                    });
+                });
+                
+                conn.on('data', function(data) {
+                    handleHostReceiveData(data, conn);
+                });
+                
+                conn.on('close', function() {
+                    console.log('Guest disconnected:', conn.peer);
+                    removeUser(conn.peer);
+                    delete guestConnections[conn.peer];
+                    broadcastState();
+                });
+            });
+            
+            peer.on('error', function(err) {
+                console.error('Peer error:', err);
+                document.getElementById('createConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + err.type + '</div>';
+            });
+        }
+        
+        function joinRoom() {
+            var roomCode = document.getElementById('joinRoomCode').value.trim();
+            var username = document.getElementById('joinUsername').value.trim();
+            var color = document.getElementById('joinUserColor').value;
+            
+            if (!roomCode || !username) {
+                alert('Please enter room code and username');
+                return;
+            }
+            
+            document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status connecting">Connecting...</div>';
+            
+            isHost = false;
+            currentUser = {
+                username: username,
+                color: color,
+                isHost: false
+            };
+            
+            // Initialize PeerJS
+            peer = new Peer();
+            
+            peer.on('open', function(id) {
+                console.log('Guest peer ID:', id);
+                currentUser.peerId = id;
+                
+                // Connect to host
+                hostConnection = peer.connect(roomCode);
+                
+                hostConnection.on('open', function() {
+                    console.log('Connected to host');
+                    document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status connected">Connected!</div>';
+                    
+                    // Send join request
+                    hostConnection.send({
+                        type: 'join',
+                        user: currentUser
+                    });
+                    
+                    setTimeout(function() {
+                        closeJoinRoomModal();
+                        showChat();
+                    }, 1000);
+                });
+                
+                hostConnection.on('data', function(data) {
+                    handleGuestReceiveData(data);
+                });
+                
+                hostConnection.on('close', function() {
+                    console.log('Host disconnected');
+                    alert('Host has left the room. Room closed.');
+                    leaveRoom();
+                });
+                
+                hostConnection.on('error', function(err) {
+                    console.error('Connection error:', err);
+                    document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Could not connect to room</div>';
+                });
+            });
+            
+            peer.on('error', function(err) {
+                console.error('Peer error:', err);
+                document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status error">Error: ' + err.type + '</div>';
+            });
+        }
+        
+        // Host functions
+        function handleHostReceiveData(data, conn) {
+            if (data.type === 'join') {
+                // Add user to room
+                var newUser = data.user;
+                newUser.peerId = conn.peer;
+                roomState.users.push(newUser);
+                
+                broadcastState();
+            } else if (data.type === 'message') {
+                // Add message to room
+                roomState.messages.push(data.message);
+                broadcastState();
+            }
+        }
+        
+        function broadcastState() {
+            var stateUpdate = {
+                type: 'update',
+                state: roomState
+            };
+            
+            // Send to all guests
+            for (var peerId in guestConnections) {
+                if (guestConnections[peerId].open) {
+                    guestConnections[peerId].send(stateUpdate);
+                }
+            }
+            
+            // Update own UI
+            updateChatUI();
+            renderMessages();
+        }
+        
+        function removeUser(peerId) {
+            for (var i = 0; i < roomState.users.length; i++) {
+                if (roomState.users[i].peerId === peerId) {
+                    roomState.users.splice(i, 1);
                     break;
                 }
             }
-            
-            if (!userExists) {
-                currentRoom.users.push(currentUser);
-            }
-            
-            closeJoinRoomModal();
-            saveToStorage();
-            showChat();
         }
         
-        function leaveRoom() {
-            if (currentRoom && currentUser) {
-                for (var i = 0; i < currentRoom.users.length; i++) {
-                    if (currentRoom.users[i].username === currentUser.username) {
-                        currentRoom.users.splice(i, 1);
-                        break;
-                    }
-                }
+        // Guest functions
+        function handleGuestReceiveData(data) {
+            if (data.type === 'init') {
+                // Initialize room state
+                roomState = data.state;
+                updateChatUI();
+                renderMessages();
+            } else if (data.type === 'update') {
+                // Update room state
+                roomState = data.state;
+                updateChatUI();
+                renderMessages();
             }
-            
-            currentRoom = null;
-            currentUser = null;
-            replyingTo = null;
-            cancelReply();
-            saveToStorage();
-            showRoomList();
-        }
-        
-        // Chat
-        function updateChatUI() {
-            if (!currentRoom || !currentUser) return;
-            
-            document.getElementById('sidebarRoomName').textContent = currentRoom.name;
-            document.getElementById('chatRoomName').textContent = currentRoom.name;
-            document.getElementById('roomUserCount').textContent = currentRoom.users.length + ' user' + (currentRoom.users.length !== 1 ? 's' : '') + ' online';
-            
-            var avatar = document.getElementById('currentUserAvatar');
-            avatar.textContent = currentUser.username.charAt(0).toUpperCase();
-            avatar.style.background = currentUser.color;
-            
-            document.getElementById('currentUsername').textContent = currentUser.username;
-            
-            renderUserList();
-        }
-        
-        function renderUserList() {
-            if (!currentRoom) return;
-            
-            var usersList = document.getElementById('usersList');
-            usersList.innerHTML = '';
-            
-            for (var i = 0; i < currentRoom.users.length; i++) {
-                var user = currentRoom.users[i];
-                var div = document.createElement('div');
-                div.className = 'user-list-item';
-                div.onclick = (function(u) {
-                    return function() { mentionUser(u.username); };
-                })(user);
-                
-                var initial = user.username.charAt(0).toUpperCase();
-                
-                div.innerHTML = 
-                    '<div class="user-list-avatar" style="background: ' + user.color + '">' + initial + '</div>' +
-                    '<div class="user-list-name">' + user.username + '</div>';
-                
-                usersList.appendChild(div);
-            }
-        }
-        
-        function mentionUser(username) {
-            var input = document.getElementById('messageInput');
-            var currentValue = input.value;
-            
-            if (mentionStartPos !== -1) {
-                input.value = currentValue.substring(0, mentionStartPos) + '@' + username + ' ';
-            } else {
-                input.value = currentValue + '@' + username + ' ';
-            }
-            
-            input.focus();
-            hideMentionSuggestions();
         }
         
         // Messages
@@ -1613,12 +1685,12 @@
             var input = document.getElementById('messageInput');
             var text = input.value.trim();
             
-            if (!text || !currentRoom || !currentUser) return;
+            if (!text || !currentUser) return;
             
             var isImage = text.match(/\.(gif|png|jpg|jpeg|webp)$/i) || text.includes('giphy.com') || text.includes('tenor.com');
             
             var message = {
-                id: Date.now(),
+                id: Date.now() + '_' + Math.random(),
                 username: currentUser.username,
                 color: currentUser.color,
                 text: text,
@@ -1636,22 +1708,31 @@
                 } : null
             };
             
-            currentRoom.messages.push(message);
+            if (isHost) {
+                // Host adds directly
+                roomState.messages.push(message);
+                broadcastState();
+            } else {
+                // Guest sends to host
+                hostConnection.send({
+                    type: 'message',
+                    message: message
+                });
+            }
+            
             input.value = '';
             replyingTo = null;
             document.getElementById('replyPreview').classList.remove('active');
-            saveToStorage();
-            renderMessages();
         }
         
         function renderMessages() {
-            if (!currentRoom) return;
-            
             var container = document.getElementById('messagesArea');
+            if (!container) return;
+            
             container.innerHTML = '';
             
-            for (var i = 0; i < currentRoom.messages.length; i++) {
-                var msg = currentRoom.messages[i];
+            for (var i = 0; i < roomState.messages.length; i++) {
+                var msg = roomState.messages[i];
                 var div = document.createElement('div');
                 div.className = 'message';
                 div.setAttribute('data-message-id', msg.id);
@@ -1669,7 +1750,7 @@
                     if (replyText.length > 60) {
                         replyText = replyText.substring(0, 60) + '...';
                     }
-                    replyHtml = '<div class="message-reply" style="border-color: ' + msg.color + '" onclick="scrollToMessage(' + msg.replyTo.id + ')">' +
+                    replyHtml = '<div class="message-reply" style="border-color: ' + msg.color + '" onclick="scrollToMessage(\'' + msg.replyTo.id + '\')">' +
                         '<div class="message-reply-user">' + msg.replyTo.username + '</div>' +
                         '<div class="message-reply-text">' + replyText + '</div>' +
                         '</div>';
@@ -1737,6 +1818,74 @@
             }
         }
         
+        // Chat UI
+        function updateChatUI() {
+            if (!roomState || !currentUser) return;
+            
+            document.getElementById('sidebarRoomName').textContent = roomState.name;
+            document.getElementById('chatRoomName').textContent = roomState.name;
+            document.getElementById('roomUserCount').textContent = roomState.users.length + ' user' + (roomState.users.length !== 1 ? 's' : '') + ' online';
+            
+            // Show host badge
+            if (isHost) {
+                document.getElementById('hostBadgeContainer').innerHTML = '<div class="host-badge">HOST</div>';
+                document.getElementById('roomCodeContainer').innerHTML = 'Room Code: <span class="room-code-value" onclick="copyRoomCode()" title="Click to copy">' + peer.id + '</span>';
+            }
+            
+            var avatar = document.getElementById('currentUserAvatar');
+            avatar.textContent = currentUser.username.charAt(0).toUpperCase();
+            avatar.style.background = currentUser.color;
+            
+            document.getElementById('currentUsername').textContent = currentUser.username;
+            
+            renderUserList();
+        }
+        
+        function renderUserList() {
+            var usersList = document.getElementById('usersList');
+            if (!usersList) return;
+            
+            usersList.innerHTML = '';
+            
+            for (var i = 0; i < roomState.users.length; i++) {
+                var user = roomState.users[i];
+                var div = document.createElement('div');
+                div.className = 'user-list-item';
+                div.onclick = (function(u) {
+                    return function() { mentionUser(u.username); };
+                })(user);
+                
+                var initial = user.username.charAt(0).toUpperCase();
+                
+                div.innerHTML = 
+                    '<div class="user-list-avatar" style="background: ' + user.color + '">' + initial + '</div>' +
+                    '<div class="user-list-name">' + user.username + (user.isHost ? ' 👑' : '') + '</div>';
+                
+                usersList.appendChild(div);
+            }
+        }
+        
+        function copyRoomCode() {
+            var code = peer.id;
+            navigator.clipboard.writeText(code).then(function() {
+                alert('Room code copied: ' + code);
+            });
+        }
+        
+        function mentionUser(username) {
+            var input = document.getElementById('messageInput');
+            var currentValue = input.value;
+            
+            if (mentionStartPos !== -1) {
+                input.value = currentValue.substring(0, mentionStartPos) + '@' + username + ' ';
+            } else {
+                input.value = currentValue + '@' + username + ' ';
+            }
+            
+            input.focus();
+            hideMentionSuggestions();
+        }
+        
         // Mentions
         function handleMentionInput(e) {
             var input = e.target;
@@ -1764,12 +1913,12 @@
         }
         
         function showMentionSuggestions() {
-            if (!currentRoom) return;
+            if (!roomState.users) return;
             
             var suggestions = [];
-            for (var i = 0; i < currentRoom.users.length; i++) {
-                if (currentRoom.users[i].username.toLowerCase().includes(mentionQuery)) {
-                    suggestions.push(currentRoom.users[i]);
+            for (var i = 0; i < roomState.users.length; i++) {
+                if (roomState.users[i].username.toLowerCase().includes(mentionQuery)) {
+                    suggestions.push(roomState.users[i]);
                 }
             }
             
@@ -1856,26 +2005,29 @@
             }
         }
         
-        // Storage
-        function saveToStorage() {
-            try {
-                localStorage.setItem('chatRooms', JSON.stringify(rooms));
-            } catch (e) {
-                console.error('Storage error:', e);
+        // Leave room
+        function leaveRoom() {
+            if (peer) {
+                peer.destroy();
             }
-        }
-        
-        function loadFromStorage() {
-            try {
-                var savedRooms = localStorage.getItem('chatRooms');
-                if (savedRooms) {
-                    rooms = JSON.parse(savedRooms);
-                }
-            } catch (e) {
-                console.error('Storage error:', e);
-                rooms = [];
+            
+            if (hostConnection) {
+                hostConnection.close();
             }
+            
+            for (var peerId in guestConnections) {
+                guestConnections[peerId].close();
+            }
+            
+            peer = null;
+            isHost = false;
+            hostConnection = null;
+            guestConnections = {};
+            roomState = { name: '', messages: [], users: [] };
+            currentUser = null;
+            
+            switchView('roomChoiceView');
         }
     </script>
 </body>
-</html>
+                        </html>

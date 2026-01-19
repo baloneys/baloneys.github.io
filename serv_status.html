@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>status</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0%25' stop-color='%23ff4444'/%3E%3Cstop offset='50%25' stop-color='%23cc0000'/%3E%3Cstop offset='100%25' stop-color='%23660000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23ff6666' opacity='0.3'/%3E%3C/svg%3E">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700&display=swap');
+        
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #15151f;
+            --bg-tertiary: #1f1f2e;
+            --bg-hover: #252535;
+            --text-primary: #e8e8f0;
+            --text-secondary: #9494a8;
+            --accent-red: #ff4444;
+            --accent-red-glow: #ff444888;
+            --border-color: #2a2a3a;
+            --success: #44ff88;
+            --warning: #ffaa44;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 68, 68, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(68, 255, 136, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .status-indicator {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--accent-red-glow), 0 0 40px var(--accent-red-glow);
+            animation: pulse 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .status-indicator::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: radial-gradient(circle, var(--accent-red-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulseRing 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        @keyframes pulseRing {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 0; }
+        }
+        
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        
+        .view {
+            display: none;
+        }
+        
+        .view.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Status Page */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .service-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover {
+            border-color: var(--accent-red);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .service-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .service-status {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .service-status.operational {
+            background: rgba(68, 255, 136, 0.2);
+            color: var(--success);
+        }
+        
+        .service-status.degraded {
+            background: rgba(255, 170, 68, 0.2);
+            color: var(--warning);
+        }
+        
+        .service-status.outage {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+        
+        .service-info {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        
+        .graph-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+        
+        .graph-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .graph-subtext {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+        }
+        
+        #outageGraph {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+        }
+        
+        .check-btn-container {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .check-btn {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.3);
+        }
+        
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 68, 68, 0.5);
+        }
+        
+        /* Room List */
+        .room-list-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .room-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .room-list-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+        }
+        
+        .new-room-btn {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .new-room-btn:hover {
+            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        
+        .room-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .room-card:hover {
+            border-color: var(--accent-red);
+            transform: translateX(4px);
+        }
+        
+        .room-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .room-card-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .room-card-lock {
+            font-size: 1.2rem;
+            opacity: 0.6;
+        }
+        
+        .room-card-info {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        
+        /* Chat Layout */
+        .chat-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 0;
+            height: 80vh;
+            min-height: 600px;
+            max-height: 900px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .chat-sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .chat-sidebar-header h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        
+        .room-users-count {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+        
+        .users-list-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        
+        .users-list-header {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .user-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            transition: background 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .user-list-item:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .user-list-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        
+        .user-list-name {
+            flex: 1;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-info-section {
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-username {
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-status {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+        }
+        
+        .leave-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+            width: 100%;
+        }
+        
+        .leave-btn:hover {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+        
+        .chat-main {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-tertiary);
+        }
+        
+        .chat-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+        
+        .chat-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+        }
+        
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .message {
+            display: flex;
+            gap: 12px;
+            position: relative;
+        }
+        
+        .message:hover .message-actions {
+            opacity: 1;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        
+        .message-username {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+        
+        .message-text {
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        
+        .message-text img {
+            max-width: 400px;
+            max-height: 400px;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: block;
+        }
+        
+        .mention {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--accent-red);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+        
+        .message-reply {
+            background: var(--bg-secondary);
+            border-left: 3px solid;
+            padding: 6px 10px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .message-reply:hover {
+            background: var(--bg-hover);
+        }
+        
+        .message-reply-user {
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        
+        .message-reply-text {
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-actions {
+            position: absolute;
+            top: -8px;
+            right: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 4px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .message-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .message-action-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .message-input-area {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            position: relative;
+        }
+        
+        .reply-preview {
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--accent-red);
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .reply-preview.active {
+            display: flex;
+        }
+        
+        .reply-preview-content {
+            flex: 1;
+        }
+        
+        .reply-preview-user {
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        
+        .reply-preview-text {
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .reply-preview-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+        
+        .reply-preview-close:hover {
+            color: var(--text-primary);
+        }
+        
+        .mention-suggestions {
+            position: absolute;
+            bottom: 100%;
+            left: 24px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 8px;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+            min-width: 200px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            z-index: 50;
+        }
+        
+        .mention-suggestions.visible {
+            display: block;
+        }
+        
+        .mention-suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .mention-suggestion-item:hover,
+        .mention-suggestion-item.selected {
+            background: var(--bg-tertiary);
+        }
+        
+        .mention-suggestion-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+        
+        .message-input-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .message-input {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2);
+        }
+        
+        .emoji-btn, .send-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .emoji-btn {
+            font-size: 1.2rem;
+        }
+        
+        .send-btn {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .emoji-btn:hover, .send-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .send-btn:hover {
+            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
+        }
+        
+        .emoji-picker {
+            position: absolute;
+            bottom: 80px;
+            right: 24px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: none;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 280px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+        
+        .emoji-picker.visible {
+            display: flex;
+        }
+        
+        .emoji {
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .emoji:hover {
+            background: var(--bg-tertiary);
+            transform: scale(1.2);
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal.visible {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 450px;
+            width: 90%;
+            animation: modalSlide 0.3s ease-out;
+        }
+        
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+        }
+        
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .input-group label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+        
+        input[type="text"],
+        input[type="password"],
+        input[type="color"] {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2);
+        }
+        
+        input[type="color"] {
+            height: 50px;
+            cursor: pointer;
+            padding: 6px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        
+        .modal-actions button {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .modal-actions button:hover {
+            border-color: var(--accent-red);
+        }
+        
+        .modal-actions button.primary {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: white;
+        }
+        
+        .modal-actions button.primary:hover {
+            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-red);
+        }
+        
+        @media (max-width: 968px) {
+            .chat-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+                min-height: 70vh;
+                max-height: none;
+            }
+            
+            .chat-sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                max-height: 300px;
+            }
+            
+            .users-list-section {
+                max-height: 150px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .services-grid, .room-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .room-list-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+            
+            .new-room-btn {
+                width: 100%;
+            }
+            
+            .message-actions {
+                position: static;
+                opacity: 1;
+                margin-top: 8px;
+                justify-content: flex-end;
+            }
+            
+            .messages-area {
+                min-height: 400px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px 12px;
+            }
+            
+            header {
+                margin-bottom: 24px;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .service-card, .graph-section {
+                padding: 20px;
+            }
+            
+            .modal-content {
+                padding: 24px;
+            }
+            
+            .chat-header, .chat-sidebar-header {
+                padding: 16px;
+            }
+            
+            .messages-area {
+                padding: 16px;
+            }
+            
+            .message-input-area {
+                padding: 16px;
+            }
+            
+            .message-avatar {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .message-text img {
+                max-width: 100%;
+            }
+            
+            .check-btn {
+                padding: 14px 36px;
+                font-size: 0.9rem;
+            }
+            
+            .emoji-btn, .send-btn {
+                padding: 14px 16px;
+                font-size: 1rem;
+            }
+            
+            .message-input {
+                padding: 14px 16px;
+                font-size: 1rem;
+            }
+            
+            input[type="text"],
+            input[type="password"],
+            input[type="color"] {
+                padding: 14px 16px;
+                font-size: 1rem;
+            }
+            
+            .room-card {
+                padding: 20px;
+            }
+            
+            .user-list-item {
+                padding: 10px;
+            }
+            
+            .message-action-btn {
+                padding: 8px 12px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="status-indicator"></div>
+            <h1>status</h1>
+        </header>
+        
+        <!-- Status Page View -->
+        <div id="statusView" class="view active">
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-name">Google</div>
+                        <div class="service-status operational">Operational</div>
+                    </div>
+                    <div class="service-info">All systems operational. Search, Gmail, and Drive running normally.</div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-name">Microsoft</div>
+                        <div class="service-status degraded">Degraded</div>
+                    </div>
+                    <div class="service-info">Minor issues affecting Azure in EU regions. Teams experiencing latency.</div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-name">Amazon AWS</div>
+                        <div class="service-status operational">Operational</div>
+                    </div>
+                    <div class="service-info">All services running as expected across all regions.</div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-name">Discord</div>
+                        <div class="service-status outage">Outage</div>
+                    </div>
+                    <div class="service-info">Major outage affecting message delivery. Voice channels impacted.</div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-name">GitHub</div>
+                        <div class="service-status operational">Operational</div>
+                    </div>
+                    <div class="service-info">Git operations and Actions running smoothly.</div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-name">Cloudflare</div>
+                        <div class="service-status operational">Operational</div>
+                    </div>
+                    <div class="service-info">CDN and security services performing optimally worldwide.</div>
+                </div>
+            </div>
+            
+            <div class="graph-section">
+                <div class="graph-header">
+                    <h2>Incident History (Last 7 Days)</h2>
+                    <div class="graph-subtext">Tracking outages and degraded performance across monitored services</div>
+                </div>
+                <canvas id="outageGraph"></canvas>
+            </div>
+            
+            <div class="check-btn-container">
+                <button class="check-btn" onclick="showRoomList()">Check</button>
+            </div>
+        </div>
+        
+        <!-- Room List View -->
+        <div id="roomListView" class="view">
+            <div class="room-list-container">
+                <div class="room-list-header">
+                    <h2>Chat Rooms</h2>
+                    <button class="new-room-btn" onclick="showCreateRoomModal()">+ New Room</button>
+                </div>
+                <div class="room-grid" id="roomGrid"></div>
+            </div>
+        </div>
+        
+        <!-- Chat View -->
+        <div id="chatView" class="view">
+            <div class="chat-layout">
+                <div class="chat-sidebar">
+                    <div class="chat-sidebar-header">
+                        <h3 id="sidebarRoomName">Room Name</h3>
+                        <div class="room-users-count" id="roomUserCount">0 users online</div>
+                    </div>
+                    
+                    <div class="users-list-section">
+                        <div class="users-list-header">Connected Users</div>
+                        <div id="usersList"></div>
+                    </div>
+                    
+                    <div class="user-info-section">
+                        <div class="user-badge">
+                            <div class="user-avatar" id="currentUserAvatar">U</div>
+                            <div class="user-details">
+                                <div class="user-username" id="currentUsername">Username</div>
+                                <div class="user-status">Online</div>
+                            </div>
+                        </div>
+                        <button class="leave-btn" onclick="leaveRoom()">Leave Room</button>
+                    </div>
+                </div>
+                
+                <div class="chat-main">
+                    <div class="chat-header">
+                        <h2 id="chatRoomName">Room Name</h2>
+                    </div>
+                    
+                    <div class="messages-area" id="messagesArea"></div>
+                    
+                    <div class="message-input-area">
+                        <div id="replyPreview" class="reply-preview">
+                            <div class="reply-preview-content">
+                                <div class="reply-preview-user" id="replyPreviewUser"></div>
+                                <div class="reply-preview-text" id="replyPreviewText"></div>
+                            </div>
+                            <button class="reply-preview-close" onclick="cancelReply()">×</button>
+                        </div>
+                        <div class="mention-suggestions" id="mentionSuggestions"></div>
+                        <div class="emoji-picker" id="emojiPicker"></div>
+                        <div class="message-input-wrapper">
+                            <input 
+                                type="text" 
+                                class="message-input" 
+                                id="messageInput" 
+                                placeholder="Type a message..." 
+                                autocomplete="off">
+                            <button class="emoji-btn" onclick="toggleEmojiPicker()">😀</button>
+                            <button class="send-btn" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Room Modal -->
+    <div class="modal" id="createRoomModal">
+        <div class="modal-content">
+            <div class="modal-header">Create Room</div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Room Name</label>
+                    <input type="text" id="newRoomName" placeholder="Enter room name">
+                </div>
+                <div class="input-group">
+                    <label>Password (optional)</label>
+                    <input type="password" id="newRoomPassword" placeholder="Leave empty for public room">
+                </div>
+                <div class="modal-actions">
+                    <button onclick="closeCreateRoomModal()">Cancel</button>
+                    <button class="primary" onclick="createRoom()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Join Room Modal -->
+    <div class="modal" id="joinRoomModal">
+        <div class="modal-content">
+            <div class="modal-header">Join Room</div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="joinUsername" placeholder="Enter your username">
+                </div>
+                <div class="input-group">
+                    <label>Color</label>
+                    <input type="color" id="joinUserColor" value="#ff4444">
+                </div>
+                <div class="input-group" id="passwordGroup" style="display: none;">
+                    <label>Room Password</label>
+                    <input type="password" id="joinRoomPassword" placeholder="Enter password">
+                </div>
+                <div class="modal-actions">
+                    <button onclick="closeJoinRoomModal()">Cancel</button>
+                    <button class="primary" onclick="attemptJoinRoom()">Join</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // State
+        var emojis = ['😀', '😂', '😍', '🤔', '👍', '👎', '❤️', '🔥', '✨', '🎉', '😎', '🤗', '😱', '🙌', '💯', '🎮', '🎵', '🎨', '🚀', '⭐'];
+        var rooms = [];
+        var currentRoom = null;
+        var currentUser = null;
+        var pendingRoomJoin = null;
+        var replyingTo = null;
+        var mentionQuery = '';
+        var mentionStartPos = -1;
+        var selectedMentionIndex = 0;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            drawOutageGraph();
+            populateEmojiPicker();
+            loadFromStorage();
+            
+            if (rooms.length === 0) {
+                rooms.push({
+                    id: 'default',
+                    name: 'General',
+                    password: null,
+                    messages: [],
+                    users: []
+                });
+                saveToStorage();
+            }
+            
+            setupEventListeners();
+        });
+        
+        function setupEventListeners() {
+            var input = document.getElementById('messageInput');
+            
+            input.addEventListener('input', handleMentionInput);
+            input.addEventListener('keydown', handleMessageKeydown);
+            
+            document.getElementById('createRoomModal').addEventListener('click', function(e) {
+                if (e.target === this) closeCreateRoomModal();
+            });
+            
+            document.getElementById('joinRoomModal').addEventListener('click', function(e) {
+                if (e.target === this) closeJoinRoomModal();
+            });
+            
+            document.addEventListener('click', function(e) {
+                var picker = document.getElementById('emojiPicker');
+                var emojiBtn = document.querySelector('.emoji-btn');
+                if (picker && !picker.contains(e.target) && e.target !== emojiBtn) {
+                    picker.classList.remove('visible');
+                }
+            });
+        }
+        
+        // View Management
+        function switchView(viewId) {
+            var views = document.querySelectorAll('.view');
+            for (var i = 0; i < views.length; i++) {
+                views[i].classList.remove('active');
+            }
+            document.getElementById(viewId).classList.add('active');
+        }
+        
+        function showRoomList() {
+            switchView('roomListView');
+            renderRoomGrid();
+        }
+        
+        function showChat() {
+            switchView('chatView');
+            updateChatUI();
+            renderMessages();
+        }
+        
+        // Graph
+        function drawOutageGraph() {
+            var canvas = document.getElementById('outageGraph');
+            if (!canvas) return;
+            
+            var ctx = canvas.getContext('2d');
+            var dpr = window.devicePixelRatio || 1;
+            
+            canvas.width = canvas.offsetWidth * dpr;
+            canvas.height = canvas.offsetHeight * dpr;
+            ctx.scale(dpr, dpr);
+            
+            var width = canvas.offsetWidth;
+            var height = canvas.offsetHeight;
+            
+            ctx.fillStyle = '#1f1f2e';
+            ctx.fillRect(0, 0, width, height);
+            
+            ctx.strokeStyle = '#2a2a3a';
+            ctx.lineWidth = 1;
+            for (var i = 0; i <= 6; i++) {
+                var x = (width / 6) * i;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            
+            var days = 7;
+            var dataPoints = [];
+            for (var i = 0; i < days; i++) {
+                dataPoints.push({
+                    outages: Math.floor(Math.random() * 5),
+                    degraded: Math.floor(Math.random() * 8)
+                });
+            }
+            
+            var barWidth = width / (days * 2.5);
+            var maxValue = 10;
+            
+            for (var i = 0; i < dataPoints.length; i++) {
+                var data = dataPoints[i];
+                var x = (width / days) * i + barWidth / 2;
+                
+                var outageHeight = (data.outages / maxValue) * height * 0.8;
+                ctx.fillStyle = '#ff4444';
+                ctx.fillRect(x, height - outageHeight, barWidth * 0.8, outageHeight);
+                
+                var degradedHeight = (data.degraded / maxValue) * height * 0.8;
+                ctx.fillStyle = '#ffaa44';
+                ctx.fillRect(x + barWidth * 0.9, height - degradedHeight, barWidth * 0.8, degradedHeight);
+            }
+        }
+        
+        // Emoji
+        function populateEmojiPicker() {
+            var picker = document.getElementById('emojiPicker');
+            if (!picker) return;
+            
+            for (var i = 0; i < emojis.length; i++) {
+                var span = document.createElement('span');
+                span.className = 'emoji';
+                span.textContent = emojis[i];
+                span.onclick = (function(emoji) {
+                    return function() { insertEmoji(emoji); };
+                })(emojis[i]);
+                picker.appendChild(span);
+            }
+        }
+        
+        function toggleEmojiPicker() {
+            var picker = document.getElementById('emojiPicker');
+            if (picker) {
+                picker.classList.toggle('visible');
+            }
+        }
+        
+        function insertEmoji(emoji) {
+            var input = document.getElementById('messageInput');
+            input.value += emoji;
+            input.focus();
+            document.getElementById('emojiPicker').classList.remove('visible');
+        }
+        
+        // Rooms
+        function renderRoomGrid() {
+            var grid = document.getElementById('roomGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            
+            for (var i = 0; i < rooms.length; i++) {
+                var room = rooms[i];
+                var card = document.createElement('div');
+                card.className = 'room-card';
+                card.onclick = (function(r) {
+                    return function() { selectRoom(r); };
+                })(room);
+                
+                card.innerHTML = 
+                    '<div class="room-card-header">' +
+                    '<div class="room-card-name">' + room.name + '</div>' +
+                    (room.password ? '<div class="room-card-lock">🔒</div>' : '') +
+                    '</div>' +
+                    '<div class="room-card-info">' + room.users.length + ' user' + (room.users.length !== 1 ? 's' : '') + ' • ' + room.messages.length + ' messages</div>';
+                
+                grid.appendChild(card);
+            }
+        }
+        
+        function showCreateRoomModal() {
+            document.getElementById('createRoomModal').classList.add('visible');
+            document.getElementById('newRoomName').value = '';
+            document.getElementById('newRoomPassword').value = '';
+        }
+        
+        function closeCreateRoomModal() {
+            document.getElementById('createRoomModal').classList.remove('visible');
+        }
+        
+        function createRoom() {
+            var name = document.getElementById('newRoomName').value.trim();
+            var password = document.getElementById('newRoomPassword').value;
+            
+            if (!name) {
+                alert('Please enter a room name');
+                return;
+            }
+            
+            var room = {
+                id: 'room_' + Date.now(),
+                name: name,
+                password: password || null,
+                messages: [],
+                users: []
+            };
+            
+            rooms.push(room);
+            closeCreateRoomModal();
+            saveToStorage();
+            selectRoom(room);
+        }
+        
+        function selectRoom(room) {
+            pendingRoomJoin = room;
+            
+            var passwordGroup = document.getElementById('passwordGroup');
+            if (room.password) {
+                passwordGroup.style.display = 'flex';
+            } else {
+                passwordGroup.style.display = 'none';
+            }
+            
+            document.getElementById('joinUsername').value = 'User' + Math.floor(Math.random() * 10000);
+            document.getElementById('joinUserColor').value = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            
+            document.getElementById('joinRoomModal').classList.add('visible');
+        }
+        
+        function closeJoinRoomModal() {
+            document.getElementById('joinRoomModal').classList.remove('visible');
+            pendingRoomJoin = null;
+        }
+        
+        function attemptJoinRoom() {
+            var username = document.getElementById('joinUsername').value.trim();
+            var color = document.getElementById('joinUserColor').value;
+            var password = document.getElementById('joinRoomPassword').value;
+            
+            if (!username) {
+                alert('Please enter a username');
+                return;
+            }
+            
+            if (pendingRoomJoin.password && password !== pendingRoomJoin.password) {
+                alert('Incorrect password');
+                return;
+            }
+            
+            currentUser = {
+                username: username,
+                color: color
+            };
+            
+            currentRoom = pendingRoomJoin;
+            
+            var userExists = false;
+            for (var i = 0; i < currentRoom.users.length; i++) {
+                if (currentRoom.users[i].username === username) {
+                    userExists = true;
+                    break;
+                }
+            }
+            
+            if (!userExists) {
+                currentRoom.users.push(currentUser);
+            }
+            
+            closeJoinRoomModal();
+            saveToStorage();
+            showChat();
+        }
+        
+        function leaveRoom() {
+            if (currentRoom && currentUser) {
+                for (var i = 0; i < currentRoom.users.length; i++) {
+                    if (currentRoom.users[i].username === currentUser.username) {
+                        currentRoom.users.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+            
+            currentRoom = null;
+            currentUser = null;
+            replyingTo = null;
+            cancelReply();
+            saveToStorage();
+            showRoomList();
+        }
+        
+        // Chat
+        function updateChatUI() {
+            if (!currentRoom || !currentUser) return;
+            
+            document.getElementById('sidebarRoomName').textContent = currentRoom.name;
+            document.getElementById('chatRoomName').textContent = currentRoom.name;
+            document.getElementById('roomUserCount').textContent = currentRoom.users.length + ' user' + (currentRoom.users.length !== 1 ? 's' : '') + ' online';
+            
+            var avatar = document.getElementById('currentUserAvatar');
+            avatar.textContent = currentUser.username.charAt(0).toUpperCase();
+            avatar.style.background = currentUser.color;
+            
+            document.getElementById('currentUsername').textContent = currentUser.username;
+            
+            renderUserList();
+        }
+        
+        function renderUserList() {
+            if (!currentRoom) return;
+            
+            var usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+            
+            for (var i = 0; i < currentRoom.users.length; i++) {
+                var user = currentRoom.users[i];
+                var div = document.createElement('div');
+                div.className = 'user-list-item';
+                div.onclick = (function(u) {
+                    return function() { mentionUser(u.username); };
+                })(user);
+                
+                var initial = user.username.charAt(0).toUpperCase();
+                
+                div.innerHTML = 
+                    '<div class="user-list-avatar" style="background: ' + user.color + '">' + initial + '</div>' +
+                    '<div class="user-list-name">' + user.username + '</div>';
+                
+                usersList.appendChild(div);
+            }
+        }
+        
+        function mentionUser(username) {
+            var input = document.getElementById('messageInput');
+            var currentValue = input.value;
+            
+            if (mentionStartPos !== -1) {
+                input.value = currentValue.substring(0, mentionStartPos) + '@' + username + ' ';
+            } else {
+                input.value = currentValue + '@' + username + ' ';
+            }
+            
+            input.focus();
+            hideMentionSuggestions();
+        }
+        
+        // Messages
+        function sendMessage() {
+            var input = document.getElementById('messageInput');
+            var text = input.value.trim();
+            
+            if (!text || !currentRoom || !currentUser) return;
+            
+            var isImage = text.match(/\.(gif|png|jpg|jpeg|webp)$/i) || text.includes('giphy.com') || text.includes('tenor.com');
+            
+            var message = {
+                id: Date.now(),
+                username: currentUser.username,
+                color: currentUser.color,
+                text: text,
+                isImage: isImage,
+                timestamp: new Date().toLocaleString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                }),
+                replyTo: replyingTo ? {
+                    id: replyingTo.id,
+                    username: replyingTo.username,
+                    text: replyingTo.text
+                } : null
+            };
+            
+            currentRoom.messages.push(message);
+            input.value = '';
+            replyingTo = null;
+            document.getElementById('replyPreview').classList.remove('active');
+            saveToStorage();
+            renderMessages();
+        }
+        
+        function renderMessages() {
+            if (!currentRoom) return;
+            
+            var container = document.getElementById('messagesArea');
+            container.innerHTML = '';
+            
+            for (var i = 0; i < currentRoom.messages.length; i++) {
+                var msg = currentRoom.messages[i];
+                var div = document.createElement('div');
+                div.className = 'message';
+                div.setAttribute('data-message-id', msg.id);
+                
+                var initial = msg.username.charAt(0).toUpperCase();
+                
+                var messageText = msg.text;
+                if (!msg.isImage) {
+                    messageText = messageText.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
+                }
+                
+                var replyHtml = '';
+                if (msg.replyTo) {
+                    var replyText = msg.replyTo.text;
+                    if (replyText.length > 60) {
+                        replyText = replyText.substring(0, 60) + '...';
+                    }
+                    replyHtml = '<div class="message-reply" style="border-color: ' + msg.color + '" onclick="scrollToMessage(' + msg.replyTo.id + ')">' +
+                        '<div class="message-reply-user">' + msg.replyTo.username + '</div>' +
+                        '<div class="message-reply-text">' + replyText + '</div>' +
+                        '</div>';
+                }
+                
+                div.innerHTML = 
+                    '<div class="message-avatar" style="background: ' + msg.color + '">' + initial + '</div>' +
+                    '<div class="message-content">' +
+                    '<div class="message-header">' +
+                    '<span class="message-username" style="color: ' + msg.color + '">' + msg.username + '</span>' +
+                    '<span class="message-time">' + msg.timestamp + '</span>' +
+                    '</div>' +
+                    replyHtml +
+                    '<div class="message-text">' +
+                    (msg.isImage ? '<img src="' + messageText + '" alt="Image" onerror="this.style.display=\'none\'">' : messageText) +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="message-actions">' +
+                    '<button class="message-action-btn" data-msg-id="' + msg.id + '">↩️</button>' +
+                    '</div>';
+                
+                var replyBtn = div.querySelector('.message-action-btn');
+                replyBtn.onclick = (function(m) {
+                    return function() { replyToMessage(m); };
+                })(msg);
+                
+                container.appendChild(div);
+            }
+            
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function replyToMessage(message) {
+            replyingTo = message;
+            
+            var preview = document.getElementById('replyPreview');
+            document.getElementById('replyPreviewUser').textContent = message.username;
+            document.getElementById('replyPreviewUser').style.color = message.color;
+            
+            var previewText = message.text;
+            if (message.isImage) {
+                previewText = '📷 Image';
+            } else if (previewText.length > 50) {
+                previewText = previewText.substring(0, 50) + '...';
+            }
+            document.getElementById('replyPreviewText').textContent = previewText;
+            
+            preview.classList.add('active');
+            document.getElementById('messageInput').focus();
+        }
+        
+        function cancelReply() {
+            replyingTo = null;
+            document.getElementById('replyPreview').classList.remove('active');
+        }
+        
+        function scrollToMessage(messageId) {
+            var messageEl = document.querySelector('[data-message-id="' + messageId + '"]');
+            if (messageEl) {
+                messageEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                messageEl.style.background = 'rgba(255, 68, 68, 0.1)';
+                setTimeout(function() {
+                    messageEl.style.background = '';
+                }, 1000);
+            }
+        }
+        
+        // Mentions
+        function handleMentionInput(e) {
+            var input = e.target;
+            var value = input.value;
+            var cursorPos = input.selectionStart;
+            
+            var atPos = -1;
+            for (var i = cursorPos - 1; i >= 0; i--) {
+                if (value[i] === '@') {
+                    atPos = i;
+                    break;
+                }
+                if (value[i] === ' ') {
+                    break;
+                }
+            }
+            
+            if (atPos !== -1) {
+                mentionStartPos = atPos;
+                mentionQuery = value.substring(atPos + 1, cursorPos).toLowerCase();
+                showMentionSuggestions();
+            } else {
+                hideMentionSuggestions();
+            }
+        }
+        
+        function showMentionSuggestions() {
+            if (!currentRoom) return;
+            
+            var suggestions = [];
+            for (var i = 0; i < currentRoom.users.length; i++) {
+                if (currentRoom.users[i].username.toLowerCase().includes(mentionQuery)) {
+                    suggestions.push(currentRoom.users[i]);
+                }
+            }
+            
+            if (suggestions.length === 0) {
+                hideMentionSuggestions();
+                return;
+            }
+            
+            var container = document.getElementById('mentionSuggestions');
+            container.innerHTML = '';
+            
+            for (var i = 0; i < suggestions.length; i++) {
+                var user = suggestions[i];
+                var div = document.createElement('div');
+                div.className = 'mention-suggestion-item';
+                if (i === selectedMentionIndex) {
+                    div.classList.add('selected');
+                }
+                
+                var initial = user.username.charAt(0).toUpperCase();
+                
+                div.innerHTML = 
+                    '<div class="mention-suggestion-avatar" style="background: ' + user.color + '">' + initial + '</div>' +
+                    '<div class="mention-suggestion-name">' + user.username + '</div>';
+                
+                div.onclick = (function(u) {
+                    return function() { selectMention(u.username); };
+                })(user);
+                container.appendChild(div);
+            }
+            
+            container.classList.add('visible');
+        }
+        
+        function hideMentionSuggestions() {
+            document.getElementById('mentionSuggestions').classList.remove('visible');
+            mentionStartPos = -1;
+            mentionQuery = '';
+            selectedMentionIndex = 0;
+        }
+        
+        function selectMention(username) {
+            var input = document.getElementById('messageInput');
+            var value = input.value;
+            
+            var before = value.substring(0, mentionStartPos);
+            var after = value.substring(input.selectionStart);
+            
+            input.value = before + '@' + username + ' ' + after;
+            input.focus();
+            
+            var newPos = before.length + username.length + 2;
+            input.setSelectionRange(newPos, newPos);
+            
+            hideMentionSuggestions();
+        }
+        
+        function handleMessageKeydown(e) {
+            var suggestions = document.getElementById('mentionSuggestions');
+            
+            if (suggestions.classList.contains('visible')) {
+                var items = suggestions.querySelectorAll('.mention-suggestion-item');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedMentionIndex = (selectedMentionIndex + 1) % items.length;
+                    showMentionSuggestions();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedMentionIndex = (selectedMentionIndex - 1 + items.length) % items.length;
+                    showMentionSuggestions();
+                } else if (e.key === 'Enter' && items.length > 0) {
+                    e.preventDefault();
+                    var selectedItem = items[selectedMentionIndex];
+                    if (selectedItem) {
+                        selectedItem.click();
+                    }
+                    return;
+                } else if (e.key === 'Escape') {
+                    hideMentionSuggestions();
+                }
+            } else if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // Storage
+        function saveToStorage() {
+            try {
+                localStorage.setItem('chatRooms', JSON.stringify(rooms));
+            } catch (e) {
+                console.error('Storage error:', e);
+            }
+        }
+        
+        function loadFromStorage() {
+            try {
+                var savedRooms = localStorage.getItem('chatRooms');
+                if (savedRooms) {
+                    rooms = JSON.parse(savedRooms);
+                }
+            } catch (e) {
+                console.error('Storage error:', e);
+                rooms = [];
+            }
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>status v2.3</title>
+    <title>status v2.4</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0%25' stop-color='%23ff4444'/%3E%3Cstop offset='50%25' stop-color='%23cc0000'/%3E%3Cstop offset='100%25' stop-color='%23660000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23ff6666' opacity='0.3'/%3E%3C/svg%3E">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
@@ -1289,7 +1289,7 @@
             .chat-sidebar {
                 position: fixed;
                 top: 0;
-                left: -280px;
+                left: -100%;
                 height: 100vh;
                 width: 280px;
                 z-index: 200;
@@ -1297,6 +1297,7 @@
                 border-right: 1px solid var(--border-color);
                 border-radius: 0;
                 max-height: 100vh;
+                transform: translateX(0);
             }
             
             .chat-sidebar.mobile-open {
@@ -1304,7 +1305,7 @@
                 box-shadow: 4px 0 16px rgba(0, 0, 0, 0.6);
             }
             
-            /* Overlay when sidebar is open */
+            /* Overlay when sidebar is open - initially hidden */
             .mobile-sidebar-overlay {
                 position: fixed;
                 top: 0;
@@ -1313,14 +1314,16 @@
                 height: 100%;
                 background: rgba(0, 0, 0, 0.7);
                 z-index: 199;
-                display: none;
+                display: none !important;
                 opacity: 0;
                 transition: opacity 0.3s ease;
+                pointer-events: none;
             }
             
             .mobile-sidebar-overlay.active {
-                display: block;
+                display: block !important;
                 opacity: 1;
+                pointer-events: auto;
             }
             
             /* Mobile header - Discord style */
@@ -1373,6 +1376,11 @@
             }
             
             /* Messages area - Discord spacing */
+            .chat-main-area {
+                width: 100%;
+                max-width: 100%;
+            }
+            
             .messages-area {
                 padding: 8px 12px;
                 gap: 8px;
@@ -1633,7 +1641,7 @@
         <header>
             <div class="status-indicator" id="statusIndicator" title="Triple-click anywhere for options"></div>
             <h1>status</h1>
-            <span style="font-size: 0.7rem; color: #9494a8; margin-left: 8px;">v2.3</span>
+            <span style="font-size: 0.7rem; color: #9494a8; margin-left: 8px;">v2.4</span>
         </header>
         
         <!-- Status Page View -->
@@ -1890,7 +1898,7 @@
     <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
     
     <script>
-        console.log('🚀 Status Chat v2.3 - BUTTONS FIXED!');
+        console.log('🚀 Status Chat v2.4 - MOBILE UI FIXED!');
         console.log('Triple-tap/click anywhere to access chat');
         
         // Giphy API key (free tier, replace with your own if needed)
@@ -3171,9 +3179,17 @@
             if (!chatHeader) return;
             
             var existingBtn = document.getElementById('mobileMenuBtn');
+            var sidebar = document.querySelector('.chat-sidebar');
             
             // Only add on mobile
             if (window.innerWidth <= 968) {
+                console.log('📱 Mobile view detected, setting up mobile menu');
+                
+                // Ensure sidebar starts hidden
+                if (sidebar) {
+                    sidebar.classList.remove('mobile-open');
+                }
+                
                 if (!existingBtn) {
                     var menuBtn = document.createElement('button');
                     menuBtn.id = 'mobileMenuBtn';
@@ -3184,39 +3200,53 @@
                     
                     // Insert as first child
                     chatHeader.insertBefore(menuBtn, chatHeader.firstChild);
+                    console.log('✅ Mobile menu button added');
                 }
                 
-                // Create overlay
-                if (!document.getElementById('mobileSidebarOverlay')) {
-                    var overlay = document.createElement('div');
+                // Create overlay if it doesn't exist
+                var overlay = document.getElementById('mobileSidebarOverlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
                     overlay.id = 'mobileSidebarOverlay';
                     overlay.className = 'mobile-sidebar-overlay';
                     overlay.onclick = closeMobileSidebar;
                     document.body.appendChild(overlay);
+                    console.log('✅ Mobile overlay created');
                 }
+                
+                // Ensure overlay starts hidden
+                overlay.classList.remove('active');
             } else {
+                console.log('💻 Desktop view detected');
                 // Remove mobile menu on desktop
                 if (existingBtn) existingBtn.remove();
                 var overlay = document.getElementById('mobileSidebarOverlay');
                 if (overlay) overlay.remove();
+                if (sidebar) sidebar.classList.remove('mobile-open');
             }
         }
         
         function toggleMobileSidebar() {
+            console.log('🔄 Toggle mobile sidebar');
             var sidebar = document.querySelector('.chat-sidebar');
             var overlay = document.getElementById('mobileSidebarOverlay');
             
             if (sidebar && overlay) {
                 if (sidebar.classList.contains('mobile-open')) {
+                    console.log('Closing sidebar');
                     closeMobileSidebar();
                 } else {
+                    console.log('Opening sidebar');
                     sidebar.classList.add('mobile-open');
                     overlay.classList.add('active');
                 }
+            } else {
+                console.log('❌ Sidebar or overlay not found');
             }
         }
         
         function closeMobileSidebar() {
+            console.log('❌ Closing mobile sidebar');
             var sidebar = document.querySelector('.chat-sidebar');
             var overlay = document.getElementById('mobileSidebarOverlay');
             

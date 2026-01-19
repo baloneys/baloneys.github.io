@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>status v2.6</title>
+    <title>status v3.0</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0%25' stop-color='%23ff4444'/%3E%3Cstop offset='50%25' stop-color='%23cc0000'/%3E%3Cstop offset='100%25' stop-color='%23660000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23ff6666' opacity='0.3'/%3E%3C/svg%3E">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
@@ -16,24 +16,11 @@
             --bg-hover: #252535;
             --text-primary: #e8e8f0;
             --text-secondary: #9494a8;
-            --accent-red: #ff4444;
-            --accent-red-glow: #ff444888;
+            --accent-red: #a855f7;
+            --accent-red-glow: #a855f788;
             --border-color: #2a2a3a;
             --success: #44ff88;
             --warning: #ffaa44;
-
-            // Add time labels
-            ctx.fillStyle = '#9494a8';
-            ctx.font = '10px JetBrains Mono';
-            ctx.textAlign = 'center';
-            var now = new Date();
-            for (var i = 0; i < days; i++) {
-                var date = new Date(now);
-                date.setDate(date.getDate() - (days - 1 - i));
-                var label = (date.getMonth() + 1) + '/' + date.getDate();
-                var x = (width / days) * i + (width / days) / 2;
-                ctx.fillText(label, x, height - 5);
-            }
         }
         
         * {
@@ -355,6 +342,55 @@
             overflow: hidden;
         }
         
+        /* Purple accents for chat section only */
+        .chat-layout .send-btn {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+        }
+        
+        .chat-layout .send-btn:hover {
+            box-shadow: 0 4px 16px var(--accent-red-glow);
+        }
+        
+        .chat-layout .emoji-btn:hover,
+        .chat-layout .gif-search-btn:hover,
+        .chat-layout .emoji-manager-btn:hover {
+            border-color: var(--accent-red);
+        }
+        
+        .chat-layout .message-action-btn:hover {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+        
+        .chat-layout .emoji:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .chat-layout .jump-to-bottom {
+            background: var(--accent-red);
+        }
+        
+        .chat-layout .jump-to-bottom:hover {
+            box-shadow: 0 6px 16px var(--accent-red-glow);
+        }
+        
+        .chat-layout .unread-badge {
+            color: var(--accent-red);
+        }
+        
+        .chat-layout .load-more-btn:hover {
+            border-color: var(--accent-red);
+        }
+        
+        .chat-layout .host-badge {
+            background: var(--accent-red);
+        }
+        
+        .chat-layout .room-code-value {
+            color: var(--accent-red);
+        }
+        
         .chat-sidebar {
             background: var(--bg-secondary);
             border-right: 1px solid var(--border-color);
@@ -403,7 +439,7 @@
         }
         
         .host-badge {
-            background: rgba(255, 68, 68, 0.2);
+            background: rgba(168, 85, 247, 0.2);
             color: var(--accent-red);
             padding: 2px 8px;
             border-radius: 4px;
@@ -686,7 +722,7 @@
         }
         
         .mention {
-            background: rgba(255, 68, 68, 0.2);
+            background: rgba(168, 85, 247, 0.2);
             color: var(--accent-red);
             padding: 2px 4px;
             border-radius: 3px;
@@ -869,7 +905,7 @@
         .message-input:focus {
             outline: none;
             border-color: var(--accent-red);
-            box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2);
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
         }
         
         .emoji-btn, .send-btn {
@@ -884,6 +920,12 @@
         
         .emoji-btn {
             font-size: 1.2rem;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(168, 85, 247, 0.2);
+        }
+        
+        .emoji-btn:active {
+            transform: scale(0.95);
         }
         
         .send-btn {
@@ -902,7 +944,7 @@
         }
         
         .send-btn:hover {
-            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
+            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
         }
         
         .emoji-picker {
@@ -960,11 +1002,16 @@
             padding: 6px;
             border-radius: 6px;
             transition: all 0.2s ease;
+            user-select: none;
         }
         
         .emoji:hover {
             background: var(--bg-tertiary);
             transform: scale(1.2);
+        }
+        
+        .emoji:active {
+            transform: scale(1.1);
         }
         
         .custom-emoji-item {
@@ -1065,7 +1112,7 @@
         input[type="password"]:focus {
             outline: none;
             border-color: var(--accent-red);
-            box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2);
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
         }
         
         input[type="color"] {
@@ -1126,7 +1173,7 @@
         }
         
         .modal-actions button.primary:hover {
-            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
+            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
             transform: translateY(-2px);
         }
         
@@ -1149,7 +1196,7 @@
         }
         
         .connection-status.error {
-            background: rgba(255, 68, 68, 0.2);
+            background: rgba(168, 85, 247, 0.2);
             color: var(--accent-red);
         }
         
@@ -1264,7 +1311,7 @@
         
         .jump-to-bottom:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(255, 68, 68, 0.4);
+            box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4);
         }
         
         .jump-to-bottom.hidden {
@@ -1294,6 +1341,28 @@
             display: none;
         }
 
+        /* Mobile touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            /* Mobile-only: improved touch responsiveness */
+            button, .emoji, .custom-emoji-item, .message-action-btn, 
+            .room-choice-btn, .user-list-item, .load-more-btn {
+                -webkit-tap-highlight-color: rgba(168, 85, 247, 0.2);
+                touch-action: manipulation;
+            }
+            
+            button:active, .emoji:active {
+                transform: scale(0.95);
+                transition: transform 0.1s ease;
+            }
+            
+            .emoji {
+                min-width: 44px;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
         
         @media (max-width: 968px) {
             /* Better mobile spacing */
@@ -1641,7 +1710,15 @@
             
             .emoji {
                 font-size: 1.6rem;
-                padding: 6px;
+                padding: 8px;
+                cursor: pointer;
+                -webkit-tap-highlight-color: rgba(168, 85, 247, 0.3);
+                touch-action: manipulation;
+            }
+            
+            .emoji:active {
+                background: var(--bg-tertiary);
+                transform: scale(1.15);
             }
             
             /* GIF search */
@@ -1652,6 +1729,20 @@
             
             .gif-item img {
                 height: 120px;
+            }
+            
+            /* Purple accents for mobile chat */
+            .chat-layout .send-btn {
+                background: var(--accent-red);
+                border-color: var(--accent-red);
+            }
+            
+            .chat-layout .jump-to-bottom {
+                background: var(--accent-red);
+            }
+            
+            .chat-layout .unread-badge {
+                color: var(--accent-red);
             }
         }
         
@@ -1772,7 +1863,7 @@
         <header>
             <div class="status-indicator" id="statusIndicator" title="Triple-click anywhere for options"></div>
             <h1>status</h1>
-            <span style="font-size: 0.7rem; color: #9494a8; margin-left: 8px;">v2.6</span>
+            <span style="font-size: 0.7rem; color: #9494a8; margin-left: 8px;">v3.0</span>
         </header>
         
         <!-- Status Page View -->
@@ -2033,7 +2124,7 @@
     <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
     
     <script>
-        console.log('🚀 Status Chat v2.6 - SCROLL FIXED!');
+        console.log('🚀 Status Chat v3.0 - FINAL COLORS!');
         console.log('Triple-tap/click anywhere to access chat');
         
         // Giphy API key (free tier, replace with your own if needed)
@@ -2164,7 +2255,10 @@
                 var isInteractive = target.tagName === 'BUTTON' || 
                                    target.tagName === 'INPUT' || 
                                    target.tagName === 'A' ||
+                                   target.tagName === 'IMG' ||
+                                   target.classList.contains('emoji') ||
                                    target.closest('.room-choice-btn') ||
+                                   target.closest('.emoji-picker') ||
                                    target.closest('button') ||
                                    target.closest('input') ||
                                    target.closest('.modal-content');
@@ -2620,9 +2714,20 @@
                 var span = document.createElement('span');
                 span.className = 'emoji';
                 span.textContent = emojis[i];
-                span.onclick = (function(emoji) {
-                    return function() { insertEmoji(emoji); };
+                
+                // Create handler function
+                var handler = (function(emoji) {
+                    return function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        insertEmoji(emoji);
+                    };
                 })(emojis[i]);
+                
+                // Add both click and touch handlers
+                span.onclick = handler;
+                span.ontouchend = handler;
+                
                 picker.appendChild(span);
             }
             
@@ -2632,9 +2737,20 @@
                 img.className = 'custom-emoji-item';
                 img.src = roomState.customEmojis[i].data;
                 img.alt = roomState.customEmojis[i].name;
-                img.onclick = (function(data) {
-                    return function() { insertCustomEmoji(data); };
+                
+                // Create handler function
+                var customHandler = (function(data) {
+                    return function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        insertCustomEmoji(data);
+                    };
                 })(roomState.customEmojis[i].data);
+                
+                // Add both click and touch handlers
+                img.onclick = customHandler;
+                img.ontouchend = customHandler;
+                
                 picker.appendChild(img);
             }
         }
@@ -3268,7 +3384,7 @@
             var messageEl = document.querySelector('[data-message-id="' + messageId + '"]');
             if (messageEl) {
                 messageEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                messageEl.style.background = 'rgba(255, 68, 68, 0.1)';
+                messageEl.style.background = 'rgba(168, 85, 247, 0.1)';
                 setTimeout(function() {
                     messageEl.style.background = '';
                 }, 1000);

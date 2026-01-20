@@ -848,6 +848,10 @@
             line-height: 1;
             display: block;
             margin: 8px 0;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
         }
         
         .custom-emoji {
@@ -2292,6 +2296,8 @@
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.95);
             cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .image-lightbox.visible {
@@ -2323,11 +2329,23 @@
             transition: 0.3s;
             cursor: pointer;
             z-index: 10001;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(168, 85, 247, 0.3);
+            user-select: none;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .lightbox-close:hover,
         .lightbox-close:focus {
             color: var(--accent-red);
+        }
+        
+        .lightbox-close:active {
+            transform: scale(0.9);
         }
         
         .lightbox-caption {
@@ -2649,8 +2667,8 @@
     <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
     
     <!-- Image Lightbox Modal -->
-    <div class="image-lightbox" id="imageLightbox" onclick="closeLightbox()">
-        <span class="lightbox-close">×</span>
+    <div class="image-lightbox" id="imageLightbox">
+        <span class="lightbox-close" id="lightboxClose">×</span>
         <img class="lightbox-content" id="lightboxImg">
         <div class="lightbox-caption" id="lightboxCaption"></div>
     </div>
@@ -4304,9 +4322,15 @@
                     if (stickerData.startsWith('data:') || stickerData.startsWith('http')) {
                         // Image sticker
                         messageText = '<img src="' + stickerData + '" class="message-sticker" onclick="openLightbox(\'' + stickerData.replace(/'/g, "\\'") + '\', \'Sticker from ' + msg.username + '\')" style="cursor: pointer;">';
-                    } else if (stickerData && stickerData.length < 10) {
+                    } else if (stickerData && stickerData.length < 50 && !stickerData.startsWith('data:')) {
                         // Emoji sticker (short text, likely just an emoji)
-                        messageText = '<span class="emoji-sticker">' + stickerData + '</span>';
+                        // Create element directly instead of HTML string to preserve Unicode
+                        var tempDiv = document.createElement('div');
+                        var emojiSpan = document.createElement('span');
+                        emojiSpan.className = 'emoji-sticker';
+                        emojiSpan.textContent = stickerData;
+                        tempDiv.appendChild(emojiSpan);
+                        messageText = tempDiv.innerHTML;
                     } else {
                         // Fallback - treat as image sticker
                         messageText = '<img src="' + stickerData + '" class="message-sticker" onclick="openLightbox(\'' + stickerData.replace(/'/g, "\\'") + '\', \'Sticker from ' + msg.username + '\')" style="cursor: pointer;">';
@@ -4331,41 +4355,70 @@
                     return '<img src="' + url + '" alt="Image" class="message-image" style="cursor: pointer;" onclick="openLightbox(\'' + url.replace(/'/g, "\\'") + '\', \'Sent by ' + msg.username + '\')" onerror="this.style.display=\'none\'">';
                 });
                 
-                var replyHtml = '';
+                var contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                
+                // Build message header
+                var headerDiv = document.createElement('div');
+                headerDiv.className = 'message-header';
+                
+                var usernameSpan = document.createElement('span');
+                usernameSpan.className = 'message-username';
+                usernameSpan.style.color = msg.color;
+                usernameSpan.textContent = msg.username;
+                
+                var timeSpan = document.createElement('span');
+                timeSpan.className = 'message-time';
+                timeSpan.textContent = msg.timestamp;
+                
+                headerDiv.appendChild(usernameSpan);
+                headerDiv.appendChild(timeSpan);
+                contentDiv.appendChild(headerDiv);
+                
+                // Add reply if exists
                 if (msg.replyTo) {
+                    var replyDiv = document.createElement('div');
+                    replyDiv.className = 'message-reply';
+                    replyDiv.style.borderColor = msg.color;
+                    replyDiv.onclick = function() { scrollToMessage(msg.replyTo.id); };
+                    
                     var replyText = msg.replyTo.text;
                     if (replyText.length > 60) {
                         replyText = replyText.substring(0, 60) + '...';
                     }
-                    replyHtml = '<div class="message-reply" style="border-color: ' + msg.color + '" onclick="scrollToMessage(\'' + msg.replyTo.id + '\')">' +
+                    
+                    replyDiv.innerHTML = 
                         '<div class="message-reply-user">' + msg.replyTo.username + '</div>' +
-                        '<div class="message-reply-text">' + replyText + '</div>' +
-                        '</div>';
+                        '<div class="message-reply-text">' + replyText + '</div>';
+                    
+                    contentDiv.appendChild(replyDiv);
                 }
                 
-                var contentDiv = document.createElement('div');
-                contentDiv.className = 'message-content';
+                // Build message text
+                var messageTextDiv = document.createElement('div');
+                messageTextDiv.className = 'message-text';
                 
-                // Build message text HTML with clickable images
-                var messageTextHtml = '';
-                if (msg.isSticker || messageText.indexOf('message-sticker') !== -1 || messageText.indexOf('emoji-sticker') !== -1) {
-                    // Already processed sticker
-                    messageTextHtml = messageText;
-                } else if (msg.isImage && !msg.text.startsWith('[IMG:') && !msg.text.startsWith('[STICKER:')) {
-                    // Regular image URL (including GIFs from Giphy)
-                    messageTextHtml = '<img src="' + messageText + '" alt="Image" class="message-image" style="cursor: pointer;" onclick="openLightbox(\'' + messageText.replace(/'/g, "\\'") + '\', \'Sent by ' + msg.username + '\')" onerror="this.style.display=\'none\'">';
+                // Check if it's an emoji sticker
+                if (messageText.indexOf('emoji-sticker') !== -1) {
+                    // Create emoji sticker element with textContent to preserve Unicode
+                    var match = messageText.match(/<span class="emoji-sticker">([^<]*)<\/span>/);
+                    if (match) {
+                        var emojiSpan = document.createElement('span');
+                        emojiSpan.className = 'emoji-sticker';
+                        // Decode HTML entities if any and set as textContent
+                        var tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = match[1];
+                        emojiSpan.textContent = tempDiv.textContent || tempDiv.innerText || match[1];
+                        messageTextDiv.appendChild(emojiSpan);
+                    } else {
+                        messageTextDiv.innerHTML = messageText;
+                    }
                 } else {
-                    // Text message (may contain custom emojis already processed above)
-                    messageTextHtml = messageText;
+                    // For all other content, use innerHTML
+                    messageTextDiv.innerHTML = messageText;
                 }
                 
-                contentDiv.innerHTML = 
-                    '<div class="message-header">' +
-                    '<span class="message-username" style="color: ' + msg.color + '">' + msg.username + '</span>' +
-                    '<span class="message-time">' + msg.timestamp + '</span>' +
-                    '</div>' +
-                    replyHtml +
-                    '<div class="message-text">' + messageTextHtml + '</div>';
+                contentDiv.appendChild(messageTextDiv);
                 
                 var actionsDiv = document.createElement('div');
                 actionsDiv.className = 'message-actions';
@@ -5115,11 +5168,6 @@
             
             // Prevent body scroll when lightbox is open
             document.body.style.overflow = 'hidden';
-            
-            // Prevent clicking image from closing lightbox
-            lightboxImg.onclick = function(e) {
-                e.stopPropagation();
-            };
         }
         
         function closeLightbox() {
@@ -5134,6 +5182,56 @@
                 closeLightbox();
             }
         });
+        
+        // Add touch event support for mobile lightbox closing
+        (function() {
+            var lightbox = document.getElementById('imageLightbox');
+            var closeBtn = document.getElementById('lightboxClose');
+            var lightboxImg = document.getElementById('lightboxImg');
+            
+            if (lightbox) {
+                // Click to close (desktop) - clicking background only
+                lightbox.addEventListener('click', function(e) {
+                    if (e.target === lightbox) {
+                        closeLightbox();
+                    }
+                });
+                
+                // Touch to close (mobile) - touching background only
+                lightbox.addEventListener('touchend', function(e) {
+                    if (e.target === lightbox) {
+                        e.preventDefault();
+                        closeLightbox();
+                    }
+                });
+            }
+            
+            if (lightboxImg) {
+                // Prevent closing when clicking/touching the image
+                lightboxImg.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+                
+                lightboxImg.addEventListener('touchend', function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            if (closeBtn) {
+                // Close button click
+                closeBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeLightbox();
+                });
+                
+                // Close button touch
+                closeBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeLightbox();
+                });
+            }
+        })();
         
         function showEmojiManager() {
             // Just show the emoji picker with add button visible

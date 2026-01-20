@@ -539,6 +539,55 @@
             color: white;
         }
         
+        .moderation-buttons {
+            display: none;
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            gap: 4px;
+            z-index: 10;
+        }
+        
+        .user-list-item:hover .moderation-buttons {
+            display: flex;
+        }
+        
+        .mod-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-primary);
+        }
+        
+        .mod-btn.kick-btn:hover {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        
+        .mod-btn.mute-btn:hover {
+            background: #ffc107;
+            border-color: #ffc107;
+            color: #000;
+        }
+        
+        .mod-btn.host-btn:hover {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: white;
+        }
+        
+        .mod-btn.muted {
+            background: #ffc107;
+            border-color: #ffc107;
+            color: #000;
+        }
+        
         .user-info-section {
             padding: 16px;
             background: var(--bg-tertiary);
@@ -725,7 +774,7 @@
             word-wrap: break-word;
         }
         
-        .message-text img {
+        .message-text img:not(.custom-emoji):not(.message-sticker) {
             max-width: 400px;
             height: auto;
             width: auto;
@@ -737,9 +786,24 @@
             object-fit: contain;
         }
         
-        .message-text img:hover {
+        .message-text img:not(.custom-emoji):not(.message-sticker):hover {
             transform: scale(1.02);
             box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+        }
+        
+        .message-text .custom-emoji {
+            width: 28px !important;
+            height: 28px !important;
+            max-width: 28px !important;
+            max-height: 28px !important;
+            display: inline-block !important;
+        }
+        
+        .message-text .message-sticker {
+            max-width: 160px !important;
+            height: auto !important;
+            width: auto !important;
+            display: block !important;
         }
         
         .message-image {
@@ -787,9 +851,11 @@
         }
         
         .custom-emoji {
-            width: 28px;
-            height: 28px;
-            display: inline-block;
+            width: 28px !important;
+            height: 28px !important;
+            max-width: 28px !important;
+            max-height: 28px !important;
+            display: inline-block !important;
             vertical-align: middle;
             margin: 0 2px;
             cursor: pointer;
@@ -991,6 +1057,17 @@
             content: attr(data-placeholder);
             color: var(--text-secondary);
             pointer-events: none;
+        }
+        
+        .message-input.muted {
+            background: rgba(220, 53, 69, 0.1);
+            border-color: #dc3545;
+            cursor: not-allowed;
+        }
+        
+        .message-input.muted:empty:before {
+            content: "You are muted";
+            color: #dc3545;
         }
         
         .message-input img {
@@ -2290,7 +2367,7 @@
                                 class="message-input" 
                                 id="messageInput" 
                                 contenteditable="true"
-                                data-placeholder="Type a message..." 
+                                data-placeholder="Type message here" 
                                 autocomplete="off"></div>
                             <button class="emoji-btn" onclick="toggleEmojiPicker()">😀</button>
                             <button class="send-btn" onclick="sendMessage()">Send</button>
@@ -3585,6 +3662,37 @@
                     }
                 });
                 
+                // Listen for user updates (mute status, etc)
+                roomRef.child('users').on('child_changed', function(snapshot) {
+                    var updatedUser = snapshot.val();
+                    
+                    // Update local state
+                    var userIndex = roomState.users.findIndex(function(u) {
+                        return u.username === updatedUser.username;
+                    });
+                    if (userIndex !== -1) {
+                        roomState.users[userIndex] = updatedUser;
+                        renderUserList();
+                    }
+                    
+                    // Update currentUser if it's them
+                    if (currentUser && updatedUser.username === currentUser.username) {
+                        currentUser.muted = updatedUser.muted;
+                        
+                        // Update input visual state
+                        var input = document.getElementById('messageInput');
+                        if (input) {
+                            if (updatedUser.muted) {
+                                input.classList.add('muted');
+                                input.contentEditable = 'false';
+                            } else {
+                                input.classList.remove('muted');
+                                input.contentEditable = 'true';
+                            }
+                        }
+                    }
+                });
+                
                 // Listen for messages
                 roomRef.child('messages').on('child_added', function(snapshot) {
                     var msg = snapshot.val();
@@ -3692,6 +3800,37 @@
                     }
                 });
                 
+                // Listen for user updates (mute status, etc)
+                roomRef.child('users').on('child_changed', function(snapshot) {
+                    var updatedUser = snapshot.val();
+                    
+                    // Update local state
+                    var userIndex = roomState.users.findIndex(function(u) {
+                        return u.username === updatedUser.username;
+                    });
+                    if (userIndex !== -1) {
+                        roomState.users[userIndex] = updatedUser;
+                        renderUserList();
+                    }
+                    
+                    // Update currentUser if it's them
+                    if (currentUser && updatedUser.username === currentUser.username) {
+                        currentUser.muted = updatedUser.muted;
+                        
+                        // Update input visual state
+                        var input = document.getElementById('messageInput');
+                        if (input) {
+                            if (updatedUser.muted) {
+                                input.classList.add('muted');
+                                input.contentEditable = 'false';
+                            } else {
+                                input.classList.remove('muted');
+                                input.contentEditable = 'true';
+                            }
+                        }
+                    }
+                });
+                
                 document.getElementById('joinConnectionStatus').innerHTML = '<div class="connection-status connected">Connected!</div>';
                 
                 setTimeout(function() {
@@ -3765,6 +3904,16 @@
         
         // Messaging
         function sendMessage() {
+            // Check if user is muted
+            if (currentUser && currentUser.muted) {
+                var input = document.getElementById('messageInput');
+                input.classList.add('muted');
+                setTimeout(function() {
+                    input.classList.remove('muted');
+                }, 2000);
+                return;
+            }
+            
             var input = document.getElementById('messageInput');
             
             // Get content from contenteditable - handle both text and images
@@ -3897,17 +4046,23 @@
                 
                 var messageText = msg.text;
                 
-                // Process stickers first
-                if (msg.isSticker || messageText.startsWith('[STICKER:')) {
-                    if (messageText.startsWith('[STICKER:')) {
-                        var stickerData = messageText.substring(10, messageText.length - 1);
-                        if (stickerData.startsWith('data:')) {
-                            // Image sticker
-                            messageText = '<img src="' + stickerData + '" class="message-sticker" onclick="openLightbox(\'' + stickerData.replace(/'/g, "\\'") + '\', \'Sticker from ' + msg.username + '\')" style="cursor: pointer;">';
-                        } else {
-                            // Emoji sticker (large emoji)
-                            messageText = '<span class="emoji-sticker">' + stickerData + '</span>';
-                        }
+                // Process stickers first (check both flag and tag)
+                if (msg.isSticker || (typeof messageText === 'string' && messageText.startsWith('[STICKER:'))) {
+                    // Extract sticker data
+                    var stickerData = messageText;
+                    if (messageText.startsWith('[STICKER:') && messageText.endsWith(']')) {
+                        stickerData = messageText.substring(10, messageText.length - 1);
+                    }
+                    
+                    if (stickerData.startsWith('data:') || stickerData.startsWith('http')) {
+                        // Image sticker
+                        messageText = '<img src="' + stickerData + '" class="message-sticker" onclick="openLightbox(\'' + stickerData.replace(/'/g, "\\'") + '\', \'Sticker from ' + msg.username + '\')" style="cursor: pointer;">';
+                    } else if (stickerData && stickerData.length < 10) {
+                        // Emoji sticker (short text, likely just an emoji)
+                        messageText = '<span class="emoji-sticker">' + stickerData + '</span>';
+                    } else {
+                        // Fallback - treat as image sticker
+                        messageText = '<img src="' + stickerData + '" class="message-sticker" onclick="openLightbox(\'' + stickerData.replace(/'/g, "\\'") + '\', \'Sticker from ' + msg.username + '\')" style="cursor: pointer;">';
                     }
                 } else if (!msg.isImage) {
                     // Regular text message - process mentions
@@ -4299,26 +4454,127 @@
                 
                 var nameDiv = document.createElement('div');
                 nameDiv.className = 'user-list-name';
-                nameDiv.textContent = user.username + (user.isHost ? ' 👑' : '');
+                nameDiv.textContent = user.username + (user.isHost ? ' 👑' : '') + (user.muted ? ' 🔇' : '');
                 
                 div.appendChild(avatarDiv);
                 div.appendChild(nameDiv);
                 
-                // Add transfer button for host
-                if (isHost && !user.isHost) {
-                    var transferBtn = document.createElement('button');
-                    transferBtn.className = 'transfer-host-btn';
-                    transferBtn.textContent = 'Make Host';
-                    transferBtn.onclick = (function(u) {
+                // Add moderation buttons for host
+                if (isHost && !user.isHost && user.username !== currentUser.username) {
+                    var modButtons = document.createElement('div');
+                    modButtons.className = 'moderation-buttons';
+                    
+                    // Mute/Unmute button
+                    var muteBtn = document.createElement('button');
+                    muteBtn.className = 'mod-btn mute-btn' + (user.muted ? ' muted' : '');
+                    muteBtn.textContent = user.muted ? 'Unmute' : 'Mute';
+                    muteBtn.onclick = (function(u) {
+                        return function(e) {
+                            e.stopPropagation();
+                            toggleMuteUser(u);
+                        };
+                    })(user);
+                    
+                    // Kick button
+                    var kickBtn = document.createElement('button');
+                    kickBtn.className = 'mod-btn kick-btn';
+                    kickBtn.textContent = 'Kick';
+                    kickBtn.onclick = (function(u) {
+                        return function(e) {
+                            e.stopPropagation();
+                            kickUser(u);
+                        };
+                    })(user);
+                    
+                    // Transfer host button
+                    var hostBtn = document.createElement('button');
+                    hostBtn.className = 'mod-btn host-btn';
+                    hostBtn.textContent = 'Make Host';
+                    hostBtn.onclick = (function(u) {
                         return function(e) {
                             e.stopPropagation();
                             showTransferHostModal(u);
                         };
                     })(user);
-                    div.appendChild(transferBtn);
+                    
+                    modButtons.appendChild(muteBtn);
+                    modButtons.appendChild(kickBtn);
+                    modButtons.appendChild(hostBtn);
+                    div.appendChild(modButtons);
                 }
                 
                 usersList.appendChild(div);
+            }
+        }
+        
+        // Moderation Functions
+        function kickUser(user) {
+            if (!isHost) return;
+            
+            if (confirm('Kick ' + user.username + ' from the room?')) {
+                // Remove user from Firebase
+                if (roomRef) {
+                    roomRef.child('users').child(user.username).remove();
+                    
+                    // Send kick notification
+                    roomRef.child('messages').push({
+                        id: Date.now() + '_' + Math.random(),
+                        username: 'System',
+                        color: '#dc3545',
+                        text: user.username + ' was kicked from the room',
+                        isImage: false,
+                        timestamp: new Date().toLocaleString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                        })
+                    });
+                }
+                
+                // Update local state
+                roomState.users = roomState.users.filter(function(u) {
+                    return u.username !== user.username;
+                });
+                renderUserList();
+            }
+        }
+        
+        function toggleMuteUser(user) {
+            if (!isHost) return;
+            
+            // Find user in local state
+            var userIndex = roomState.users.findIndex(function(u) {
+                return u.username === user.username;
+            });
+            
+            if (userIndex !== -1) {
+                var newMutedState = !roomState.users[userIndex].muted;
+                roomState.users[userIndex].muted = newMutedState;
+                
+                // Update in Firebase
+                if (roomRef) {
+                    roomRef.child('users').child(user.username).update({
+                        muted: newMutedState
+                    });
+                    
+                    // Send notification
+                    roomRef.child('messages').push({
+                        id: Date.now() + '_' + Math.random(),
+                        username: 'System',
+                        color: '#ffc107',
+                        text: user.username + ' was ' + (newMutedState ? 'muted' : 'unmuted'),
+                        isImage: false,
+                        timestamp: new Date().toLocaleString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                        })
+                    });
+                }
+                
+                renderUserList();
             }
         }
         

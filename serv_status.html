@@ -773,9 +773,6 @@
         .message-sticker:hover {
             transform: scale(1.05);
         }
-            transition: all 0.2s ease;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
         }
         
         .message-sticker:hover {
@@ -3401,7 +3398,7 @@
                 img.className = 'sticker';
                 img.src = stickerData;
                 img.onclick = function() {
-                    insertSticker('[IMG:' + stickerData + ']');
+                    insertSticker(stickerData); // Pass just the data, not wrapped in tag
                 };
                 grid.appendChild(img);
             });
@@ -3409,24 +3406,24 @@
         
         function insertSticker(sticker) {
             var input = document.getElementById('messageInput');
+            input.innerHTML = '';
             
-            // Check if sticker is an image URL (starts with [IMG:) or just emoji
-            if (sticker.startsWith('[IMG:')) {
-                input.innerHTML = '';
-                var imgData = sticker.substring(5, sticker.length - 1);
+            // Check if sticker is an image (base64 or URL) or just emoji text
+            if (sticker.startsWith('data:') || sticker.startsWith('http')) {
+                // Image sticker
                 var img = document.createElement('img');
-                img.src = imgData;
+                img.src = sticker;
                 img.className = 'sticker-preview';
                 img.setAttribute('data-sticker', 'true');
                 img.style.maxWidth = '120px';
                 img.style.height = 'auto';
                 input.appendChild(img);
             } else {
-                // Regular emoji sticker
-                input.innerHTML = '';
+                // Emoji sticker (large emoji text)
                 var span = document.createElement('span');
                 span.textContent = sticker;
                 span.style.fontSize = '4rem';
+                span.setAttribute('data-emoji-sticker', 'true');
                 input.appendChild(span);
             }
             
@@ -3806,8 +3803,8 @@
                 }
             } else {
                 // Check for large emoji stickers
-                var span = input.querySelector('span[style*="rem"]');
-                if (span) {
+                var span = input.querySelector('span');
+                if (span && (span.hasAttribute('data-emoji-sticker') || span.style.fontSize.includes('rem'))) {
                     text = '[STICKER:' + span.textContent + ']';
                     isSticker = true;
                 } else {

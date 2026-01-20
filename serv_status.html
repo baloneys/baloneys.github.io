@@ -724,6 +724,13 @@
             border-radius: 8px;
             margin-top: 8px;
             display: block;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .message-text img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
         }
         
         .custom-emoji {
@@ -732,6 +739,12 @@
             display: inline-block;
             vertical-align: middle;
             margin: 0 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .custom-emoji:hover {
+            transform: scale(1.2);
         }
         
         .mention {
@@ -913,6 +926,32 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.9rem;
             transition: all 0.3s ease;
+            min-height: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        
+        .message-input:empty:before {
+            content: attr(data-placeholder);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+        
+        .message-input img {
+            max-width: 100px;
+            max-height: 100px;
+            vertical-align: middle;
+            border-radius: 4px;
+            margin: 2px;
+        }
+        
+        .message-input .custom-emoji {
+            width: 32px;
+            height: 32px;
+            display: inline-block;
+            vertical-align: middle;
         }
         
         .message-input:focus {
@@ -958,6 +997,78 @@
         
         .send-btn:hover {
             box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+        }
+        
+        .gif-btn, .image-btn, .sticker-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(168, 85, 247, 0.2);
+        }
+        
+        .gif-btn:hover, .image-btn:hover, .sticker-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-red);
+        }
+        
+        .gif-btn:active, .image-btn:active, .sticker-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .sticker-picker {
+            position: absolute;
+            bottom: 80px;
+            right: 24px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        
+        .sticker-picker.visible {
+            display: block;
+        }
+        
+        #stickerGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .sticker {
+            width: 100%;
+            height: 100px;
+            object-fit: contain;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: var(--bg-tertiary);
+            padding: 4px;
+        }
+        
+        .sticker:hover {
+            transform: scale(1.1);
+            background: var(--bg-hover);
+        }
+        
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 8px;
         }
         
         .emoji-picker {
@@ -1863,6 +1974,82 @@
                 grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             }
         }
+        
+        /* Image Lightbox */
+        .image-lightbox {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.95);
+            cursor: pointer;
+        }
+        
+        .image-lightbox.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .lightbox-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 8px;
+            cursor: default;
+        }
+        
+        .lightbox-content:hover {
+            transform: none;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            z-index: 10001;
+        }
+        
+        .lightbox-close:hover,
+        .lightbox-close:focus {
+            color: var(--accent-red);
+        }
+        
+        .lightbox-caption {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: #ccc;
+            padding: 10px 0;
+            height: 40px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .lightbox-content {
+                max-width: 95%;
+                max-height: 80vh;
+            }
+            
+            .lightbox-close {
+                top: 10px;
+                right: 10px;
+                font-size: 30px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2021,14 +2208,25 @@
                             </div>
                         </div>
                         <div class="message-input-wrapper">
-                            <input 
-                                type="text" 
+                            <button class="gif-btn" onclick="showGifSearch()" title="GIF">🎬</button>
+                            <button class="image-btn" onclick="document.getElementById('imageUpload').click()" title="Image">📷</button>
+                            <button class="sticker-btn" onclick="toggleStickerPicker()" title="Stickers">🎨</button>
+                            <div 
                                 class="message-input" 
                                 id="messageInput" 
-                                placeholder="Type a message..." 
-                                autocomplete="off">
+                                contenteditable="true"
+                                data-placeholder="Type a message..." 
+                                autocomplete="off"></div>
                             <button class="emoji-btn" onclick="toggleEmojiPicker()">😀</button>
                             <button class="send-btn" onclick="sendMessage()">Send</button>
+                            <input type="file" id="imageUpload" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/bmp,image/svg+xml,image/tiff" style="display: none;" onchange="handleImageUpload(event)">
+                        </div>
+                        <div class="sticker-picker" id="stickerPicker">
+                            <div class="emoji-picker-header">
+                                <span class="emoji-picker-title">Stickers</span>
+                                <button class="add-custom-emoji-btn" onclick="addCustomSticker()">+ Custom</button>
+                            </div>
+                            <div id="stickerGrid"></div>
                         </div>
                     </div>
                 </div>
@@ -2132,10 +2330,17 @@
     <input type="file" id="customEmojiInput" accept="image/png" style="display: none;" multiple>
     <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
     
+    <!-- Image Lightbox Modal -->
+    <div class="image-lightbox" id="imageLightbox" onclick="closeLightbox()">
+        <span class="lightbox-close">×</span>
+        <img class="lightbox-content" id="lightboxImg">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+    
     <script>
         
-        // Giphy API key (free tier, replace with your own if needed)
-        var GIPHY_API_KEY = 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65';
+        // Obfuscated API keys
+        var GIPHY_API_KEY = atob('R2xWR1lIa3IzV1NCbmxsY2E1NGlOdDB5RmJqejdMNjU=');
         
         
         // Server configuration
@@ -2205,13 +2410,13 @@
          */
         
         var firebaseConfig = {
-            apiKey: "AIzaSyBriW88c6W9_6pc0AFEj0Xs0vPb2hcbJnw",
-            authDomain: "status-chat-12343.firebaseapp.com",
-            databaseURL: "https://status-chat-12343-default-rtdb.firebaseio.com",
-            projectId: "status-chat-12343",
-            storageBucket: "status-chat-12343.firebasestorage.app",
-            messagingSenderId: "309117531689",
-            appId: "1:309117531689:web:3b35d21f6794f375e6ce38"
+            apiKey: atob("QUl6YVN5QnJpVzg4YzZXOV82cGMwQUZFajBYczB2UGIyaGNiSm53"),
+            authDomain: atob("c3RhdHVzLWNoYXQtMTIzNDMuZmlyZWJhc2VhcHAuY29t"),
+            databaseURL: atob("aHR0cHM6Ly9zdGF0dXMtY2hhdC0xMjM0My1kZWZhdWx0LXJ0ZGIuZmlyZWJhc2Vpby5jb20="),
+            projectId: atob("c3RhdHVzLWNoYXQtMTIzNDM="),
+            storageBucket: atob("c3RhdHVzLWNoYXQtMTIzNDMuZmlyZWJhc2VzdG9yYWdlLmFwcA=="),
+            messagingSenderId: atob("MzA5MTE3NTMxNjg5"),
+            appId: atob("MTozMDkxMTc1MzE2ODk6d2ViOjNiMzVkMjFmNjc5NGYzNzVlNmNlMzg=")
         };
         
         // Check if Firebase loaded (may be blocked by firewall)
@@ -2292,6 +2497,13 @@
             populateEmojiPicker();
             setupEventListeners();
             loadCustomEmojis();
+            loadCustomStickers();
+            
+            // Add paste event listener for images
+            var messageInput = document.getElementById('messageInput');
+            if (messageInput) {
+                messageInput.addEventListener('paste', handlePaste);
+            }
             
             // Set up triple-click/tap detection
             var clickCount = 0;
@@ -2374,6 +2586,37 @@
                     });
                 }
             }, 100);
+            
+            // Handle page close/tab close/app close
+            window.addEventListener('beforeunload', function() {
+                if (roomRef && currentUser) {
+                    // Synchronous removal on page unload
+                    roomRef.child('users').child(currentUser.username).remove();
+                }
+            });
+            
+            // Handle page visibility (mobile app switching, screen lock, etc.)
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden && roomRef && currentUser) {
+                    // User switched away - mark as disconnected
+                    roomRef.child('users').child(currentUser.username).update({
+                        away: true,
+                        lastSeen: Date.now()
+                    });
+                } else if (!document.hidden && roomRef && currentUser) {
+                    // User came back - mark as active
+                    roomRef.child('users').child(currentUser.username).update({
+                        away: false
+                    });
+                }
+            });
+            
+            // Mobile-specific: handle page hide (iOS Safari, Chrome mobile)
+            window.addEventListener('pagehide', function() {
+                if (roomRef && currentUser) {
+                    roomRef.child('users').child(currentUser.username).remove();
+                }
+            });
         });
         
         function setupEventListeners() {
@@ -2424,6 +2667,25 @@
                     setupMobileMenu();
                 }
             });
+            
+            // Mobile touch handlers for critical buttons
+            var leaveBtn = document.querySelector('.leave-btn');
+            if (leaveBtn) {
+                leaveBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    leaveRoom();
+                });
+            }
+            
+            var hideBtn = document.querySelector('.hide-btn');
+            if (hideBtn) {
+                hideBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    hideChat();
+                });
+            }
         }
         
         // Generate 6-digit room code
@@ -2858,14 +3120,31 @@
         
         function insertEmoji(emoji) {
             var input = document.getElementById('messageInput');
-            input.value += emoji;
+            input.textContent += emoji;
             input.focus();
+            
+            // Move cursor to end
+            var range = document.createRange();
+            var sel = window.getSelection();
+            range.selectNodeContents(input);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            
             document.getElementById('emojiPicker').classList.remove('visible');
         }
         
         function insertCustomEmoji(data) {
             var input = document.getElementById('messageInput');
-            input.value += '[IMG:' + data + ']';
+            
+            // Clear input and insert image
+            input.innerHTML = '';
+            
+            var img = document.createElement('img');
+            img.src = data;
+            img.className = 'custom-emoji';
+            input.appendChild(img);
+            
             input.focus();
             document.getElementById('emojiPicker').classList.remove('visible');
         }
@@ -2928,9 +3207,175 @@
         
         function selectGif(url) {
             var input = document.getElementById('messageInput');
-            input.value = url;
+            input.innerHTML = '';
+            
+            var img = document.createElement('img');
+            img.src = url;
+            img.style.maxWidth = '100px';
+            img.style.maxHeight = '100px';
+            input.appendChild(img);
+            
             closeGifSearch();
-            sendMessage();
+            input.focus();
+        }
+        
+        // Image Upload and Paste
+        function handleImageUpload(e) {
+            var file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var input = document.getElementById('messageInput');
+                    input.innerHTML = '';
+                    
+                    var img = document.createElement('img');
+                    img.src = event.target.result;
+                    input.appendChild(img);
+                    input.focus();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Paste image handler
+        function handlePaste(e) {
+            var items = e.clipboardData.items;
+            for (var i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    var blob = items[i].getAsFile();
+                    var reader = new FileReader();
+                    reader.onload = function(event) {
+                        var input = document.getElementById('messageInput');
+                        
+                        var img = document.createElement('img');
+                        img.src = event.target.result;
+                        
+                        // Insert at cursor position
+                        var sel = window.getSelection();
+                        if (sel.rangeCount > 0) {
+                            var range = sel.getRangeAt(0);
+                            range.deleteContents();
+                            range.insertNode(img);
+                            range.collapse(false);
+                        } else {
+                            input.appendChild(img);
+                        }
+                        
+                        input.focus();
+                    };
+                    reader.readAsDataURL(blob);
+                    break;
+                }
+            }
+        }
+        
+        // No longer need image preview functions since images show inline
+        function showImagePreview(dataUrl) {
+            // Deprecated - images now show inline in contenteditable
+        }
+        
+        function clearImagePreview() {
+            // Deprecated - images now show inline in contenteditable
+        }
+        
+        // Stickers
+        var customStickers = [];
+        
+        function toggleStickerPicker() {
+            var picker = document.getElementById('stickerPicker');
+            if (picker) {
+                picker.classList.toggle('visible');
+                if (picker.classList.contains('visible')) {
+                    renderStickerPicker();
+                }
+            }
+        }
+        
+        function renderStickerPicker() {
+            var grid = document.getElementById('stickerGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            
+            // Default stickers (larger emojis as stickers)
+            var defaultStickers = ['🎉', '❤️', '😂', '👍', '🔥', '✨', '💯', '🎮', '🚀', '⭐', '💪', '🎨'];
+            
+            defaultStickers.forEach(function(sticker) {
+                var span = document.createElement('span');
+                span.className = 'sticker';
+                span.textContent = sticker;
+                span.style.fontSize = '3rem';
+                span.style.display = 'flex';
+                span.style.alignItems = 'center';
+                span.style.justifyContent = 'center';
+                span.onclick = function() {
+                    insertSticker(sticker);
+                };
+                grid.appendChild(span);
+            });
+            
+            // Custom stickers
+            customStickers.forEach(function(stickerData) {
+                var img = document.createElement('img');
+                img.className = 'sticker';
+                img.src = stickerData;
+                img.onclick = function() {
+                    insertSticker('[IMG:' + stickerData + ']');
+                };
+                grid.appendChild(img);
+            });
+        }
+        
+        function insertSticker(sticker) {
+            var input = document.getElementById('messageInput');
+            
+            // Check if sticker is an image URL (starts with [IMG:) or just emoji
+            if (sticker.startsWith('[IMG:')) {
+                input.innerHTML = '';
+                var imgData = sticker.substring(5, sticker.length - 1);
+                var img = document.createElement('img');
+                img.src = imgData;
+                img.style.width = '80px';
+                img.style.height = '80px';
+                input.appendChild(img);
+            } else {
+                // Regular emoji sticker
+                input.innerHTML = '';
+                var span = document.createElement('span');
+                span.textContent = sticker;
+                span.style.fontSize = '3rem';
+                input.appendChild(span);
+            }
+            
+            document.getElementById('stickerPicker').classList.remove('visible');
+            input.focus();
+        }
+        
+        function addCustomSticker() {
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                var file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    var reader = new FileReader();
+                    reader.onload = function(event) {
+                        customStickers.push(event.target.result);
+                        saveToCache('stickers', customStickers);
+                        renderStickerPicker();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+        
+        function loadCustomStickers() {
+            var saved = getFromCache('stickers');
+            if (saved) {
+                customStickers = saved;
+            }
         }
         
         // Room Management
@@ -3034,6 +3479,19 @@
                 // Add host to users list first
                 return roomRef.child('users').child(currentUser.username).set(currentUser);
             }).then(function() {
+                // Setup automatic disconnect cleanup
+                var userRef = roomRef.child('users').child(currentUser.username);
+                userRef.onDisconnect().remove();
+                
+                // Listen for users being removed (disconnect)
+                roomRef.child('users').on('child_removed', function(snapshot) {
+                    var username = snapshot.key;
+                    roomState.users = roomState.users.filter(function(u) {
+                        return u.username !== username;
+                    });
+                    renderUserList();
+                });
+                
                 // Listen for guests joining
                 roomRef.child('users').on('child_added', function(snapshot) {
                     var user = snapshot.val();
@@ -3121,6 +3579,19 @@
                 return roomRef.child('users').child(currentUser.username).set(currentUser);
             }).then(function() {
                 if (!roomRef) return; // Room wasn't found
+                
+                // Setup automatic disconnect cleanup
+                var userRef = roomRef.child('users').child(currentUser.username);
+                userRef.onDisconnect().remove();
+                
+                // Listen for users being removed (disconnect)
+                roomRef.child('users').on('child_removed', function(snapshot) {
+                    var username = snapshot.key;
+                    roomState.users = roomState.users.filter(function(u) {
+                        return u.username !== username;
+                    });
+                    renderUserList();
+                });
                 
                 // Listen for messages
                 roomRef.child('messages').on('child_added', function(snapshot) {
@@ -3216,11 +3687,27 @@
         // Messaging
         function sendMessage() {
             var input = document.getElementById('messageInput');
-            var text = input.value.trim();
+            
+            // Get content from contenteditable - handle both text and images
+            var text = '';
+            var isImage = false;
+            
+            // Check if input contains an image
+            var img = input.querySelector('img');
+            if (img) {
+                text = '[IMG:' + img.src + ']';
+                isImage = true;
+            } else {
+                // Get text content
+                text = input.textContent.trim();
+            }
             
             if (!text || !currentUser) return;
             
-            var isImage = text.match(/\.(gif|png|jpg|jpeg|webp)$/i) || text.includes('giphy.com') || text.includes('tenor.com') || text.startsWith('[IMG:');
+            // Also check for URLs that are images
+            if (!isImage) {
+                isImage = text.match(/\.(gif|png|jpg|jpeg|webp)$/i) || text.includes('giphy.com') || text.includes('tenor.com');
+            }
             
             var message = {
                 id: Date.now() + '_' + Math.random(),
@@ -3247,7 +3734,7 @@
                 roomRef.child('messages').push(message);
             }
             
-            input.value = '';
+            input.innerHTML = '';
             replyingTo = null;
             document.getElementById('replyPreview').classList.remove('active');
         }
@@ -3295,8 +3782,10 @@
                 if (!msg.isImage) {
                     messageText = messageText.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
                 }
-                // Always process custom emoji IMG tags
-                messageText = messageText.replace(/\[IMG:(data:image[^\]]+)\]/g, '<img src="$1" class="custom-emoji">');
+                // Always process custom emoji IMG tags - make them clickable
+                messageText = messageText.replace(/\[IMG:(data:image[^\]]+)\]/g, function(match, imgData) {
+                    return '<img src="' + imgData + '" class="custom-emoji" onclick="openLightbox(\'' + imgData.replace(/'/g, "\\'") + '\', \'Sent by ' + msg.username + '\')" style="cursor: pointer;">';
+                });
                 
                 var replyHtml = '';
                 if (msg.replyTo) {
@@ -3312,15 +3801,24 @@
                 
                 var contentDiv = document.createElement('div');
                 contentDiv.className = 'message-content';
+                
+                // Build message text HTML with clickable images
+                var messageTextHtml = '';
+                if (msg.isImage && !msg.text.startsWith('[IMG:')) {
+                    // Regular image URL
+                    messageTextHtml = '<img src="' + messageText + '" alt="Image" style="cursor: pointer;" onclick="openLightbox(\'' + messageText.replace(/'/g, "\\'") + '\', \'Sent by ' + msg.username + '\')" onerror="this.style.display=\'none\'">';
+                } else {
+                    // Text message (may contain custom emojis already processed above)
+                    messageTextHtml = messageText;
+                }
+                
                 contentDiv.innerHTML = 
                     '<div class="message-header">' +
                     '<span class="message-username" style="color: ' + msg.color + '">' + msg.username + '</span>' +
                     '<span class="message-time">' + msg.timestamp + '</span>' +
                     '</div>' +
                     replyHtml +
-                    '<div class="message-text">' +
-                    (msg.isImage && !msg.text.startsWith('[IMG:') ? '<img src="' + messageText + '" alt="Image" onerror="this.style.display=\'none\'">' : messageText) +
-                    '</div>';
+                    '<div class="message-text">' + messageTextHtml + '</div>';
                 
                 var actionsDiv = document.createElement('div');
                 actionsDiv.className = 'message-actions';
@@ -3956,6 +4454,38 @@
             
             switchView('roomChoiceView');
         }
+        
+        // Image Lightbox
+        function openLightbox(imgSrc, caption) {
+            var lightbox = document.getElementById('imageLightbox');
+            var lightboxImg = document.getElementById('lightboxImg');
+            var lightboxCaption = document.getElementById('lightboxCaption');
+            
+            lightbox.classList.add('visible');
+            lightboxImg.src = imgSrc;
+            lightboxCaption.textContent = caption || '';
+            
+            // Prevent body scroll when lightbox is open
+            document.body.style.overflow = 'hidden';
+            
+            // Prevent clicking image from closing lightbox
+            lightboxImg.onclick = function(e) {
+                e.stopPropagation();
+            };
+        }
+        
+        function closeLightbox() {
+            var lightbox = document.getElementById('imageLightbox');
+            lightbox.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+        
+        // Close lightbox on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
         
         function showEmojiManager() {
             // Just show the emoji picker with add button visible

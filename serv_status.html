@@ -4322,18 +4322,14 @@
                     if (stickerData.startsWith('data:') || stickerData.startsWith('http')) {
                         // Image sticker
                         messageText = '<img src="' + stickerData + '" class="message-sticker" onclick="openLightbox(\'' + stickerData.replace(/'/g, "\\'") + '\', \'Sticker from ' + msg.username + '\')" style="cursor: pointer;">';
-                    } else if (stickerData && stickerData.length < 50 && !stickerData.startsWith('data:')) {
-                        // Emoji sticker (short text, likely just an emoji)
-                        // Create element directly instead of HTML string to preserve Unicode
-                        var tempDiv = document.createElement('div');
+                    } else {
+                        // Emoji sticker - create element directly to preserve Unicode
+                        var emojiContainer = document.createElement('div');
                         var emojiSpan = document.createElement('span');
                         emojiSpan.className = 'emoji-sticker';
-                        emojiSpan.textContent = stickerData;
-                        tempDiv.appendChild(emojiSpan);
-                        messageText = tempDiv.innerHTML;
-                    } else {
-                        // Fallback - treat as image sticker
-                        messageText = '<img src="' + stickerData + '" class="message-sticker" onclick="openLightbox(\'' + stickerData.replace(/'/g, "\\'") + '\', \'Sticker from ' + msg.username + '\')" style="cursor: pointer;">';
+                        emojiSpan.textContent = stickerData;  // Use textContent to preserve emoji
+                        emojiContainer.appendChild(emojiSpan);
+                        messageText = emojiContainer.innerHTML;
                     }
                 } else if (!msg.isImage) {
                     // Regular text message - process mentions
@@ -4354,6 +4350,14 @@
                 messageText = messageText.replace(/\[IMG:(https?:\/\/[^\]]+)\]/g, function(match, url) {
                     return '<img src="' + url + '" alt="Image" class="message-image" style="cursor: pointer;" onclick="openLightbox(\'' + url.replace(/'/g, "\\'") + '\', \'Sent by ' + msg.username + '\')" onerror="this.style.display=\'none\'">';
                 });
+                
+                // Handle plain URLs for images (GIFs from Giphy that aren't wrapped in tags)
+                if (msg.isImage && !messageText.includes('<img') && !messageText.startsWith('[')) {
+                    // It's a plain URL - check if it's an image URL
+                    if (messageText.match(/\.(gif|png|jpg|jpeg|webp)$/i) || messageText.includes('giphy.com') || messageText.includes('tenor.com') || messageText.startsWith('http')) {
+                        messageText = '<img src="' + messageText + '" alt="Image" class="message-image" style="cursor: pointer;" onclick="openLightbox(\'' + messageText.replace(/'/g, "\\'") + '\', \'Sent by ' + msg.username + '\')" onerror="this.style.display=\'none\'">';
+                    }
+                }
                 
                 var contentDiv = document.createElement('div');
                 contentDiv.className = 'message-content';
@@ -4398,25 +4402,8 @@
                 var messageTextDiv = document.createElement('div');
                 messageTextDiv.className = 'message-text';
                 
-                // Check if it's an emoji sticker
-                if (messageText.indexOf('emoji-sticker') !== -1) {
-                    // Create emoji sticker element with textContent to preserve Unicode
-                    var match = messageText.match(/<span class="emoji-sticker">([^<]*)<\/span>/);
-                    if (match) {
-                        var emojiSpan = document.createElement('span');
-                        emojiSpan.className = 'emoji-sticker';
-                        // Decode HTML entities if any and set as textContent
-                        var tempDiv = document.createElement('div');
-                        tempDiv.innerHTML = match[1];
-                        emojiSpan.textContent = tempDiv.textContent || tempDiv.innerText || match[1];
-                        messageTextDiv.appendChild(emojiSpan);
-                    } else {
-                        messageTextDiv.innerHTML = messageText;
-                    }
-                } else {
-                    // For all other content, use innerHTML
-                    messageTextDiv.innerHTML = messageText;
-                }
+                // Use innerHTML directly - emojis are already properly encoded from the creation step
+                messageTextDiv.innerHTML = messageText;
                 
                 contentDiv.appendChild(messageTextDiv);
                 

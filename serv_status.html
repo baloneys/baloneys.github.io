@@ -760,14 +760,19 @@
         }
         
         .message-sticker {
-            max-width: 320px !important;
-            max-height: 320px !important;
+            max-width: 160px !important;
             height: auto !important;
             width: auto !important;
             object-fit: contain;
             cursor: pointer;
             margin: 8px 0;
             display: block !important;
+            transition: all 0.2s ease;
+        }
+        
+        .message-sticker:hover {
+            transform: scale(1.05);
+        }
             transition: all 0.2s ease;
             image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
@@ -785,8 +790,8 @@
         }
         
         .custom-emoji {
-            width: 22px;
-            height: 22px;
+            width: 28px;
+            height: 28px;
             display: inline-block;
             vertical-align: middle;
             margin: 0 2px;
@@ -2003,8 +2008,7 @@
             }
             
             .message-sticker {
-                max-width: 240px !important;
-                max-height: 240px !important;
+                max-width: 140px !important;
                 height: auto !important;
                 width: auto !important;
             }
@@ -3217,6 +3221,7 @@
             var img = document.createElement('img');
             img.src = data;
             img.className = 'custom-emoji';
+            img.setAttribute('data-is-emoji', 'true'); // Mark as custom emoji
             input.appendChild(img);
             
             input.focus();
@@ -3784,9 +3789,16 @@
                     text = img.getAttribute('data-original-url');
                     isImage = true;
                 } else if (img.src.startsWith('data:')) {
-                    // Base64 image (uploaded/pasted)
-                    text = '[IMG:' + img.src + ']';
-                    isImage = true;
+                    // Check if it's a custom emoji or regular image
+                    if (img.hasAttribute('data-is-emoji')) {
+                        // Custom emoji (small, inline)
+                        text = '[EMOJI:' + img.src + ']';
+                        isImage = false; // Don't treat as full image
+                    } else {
+                        // Base64 image (uploaded/pasted)
+                        text = '[IMG:' + img.src + ']';
+                        isImage = true;
+                    }
                 } else {
                     // Regular URL (shouldn't happen often with data-original-url, but keep as fallback)
                     text = img.src;
@@ -3905,9 +3917,14 @@
                     messageText = messageText.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
                 }
                 
-                // Process custom emoji IMG tags (small inline emojis with base64 data)
+                // Process custom emoji EMOJI tags (small inline emojis with base64 data)
+                messageText = messageText.replace(/\[EMOJI:(data:image[^\]]+)\]/g, function(match, imgData) {
+                    return '<img src="' + imgData + '" class="custom-emoji" onclick="openLightbox(\'' + imgData.replace(/'/g, "\\'") + '\', \'Custom Emoji\')" style="cursor: pointer;">';
+                });
+                
+                // Process regular IMG tags with base64 data (uploaded/pasted images)
                 messageText = messageText.replace(/\[IMG:(data:image[^\]]+)\]/g, function(match, imgData) {
-                    return '<img src="' + imgData + '" class="custom-emoji" onclick="openLightbox(\'' + imgData.replace(/'/g, "\\'") + '\', \'Sent by ' + msg.username + '\')" style="cursor: pointer;">';
+                    return '<img src="' + imgData + '" class="message-image" onclick="openLightbox(\'' + imgData.replace(/'/g, "\\'") + '\', \'Sent by ' + msg.username + '\')" style="cursor: pointer;">';
                 });
                 
                 // Process IMG tags with URLs (GIFs from Giphy, external images)

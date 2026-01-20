@@ -760,25 +760,17 @@
         }
         
         .message-sticker {
-            max-width: 160px !important;
-            height: auto !important;
-            width: auto !important;
-            margin-top: 4px;
-            display: block !important;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            object-fit: contain;
-        }
-        
-        .message-sticker {
-            max-width: 160px !important;
+            max-width: 320px !important;
+            max-height: 320px !important;
             height: auto !important;
             width: auto !important;
             object-fit: contain;
             cursor: pointer;
-            margin-top: 4px;
+            margin: 8px 0;
             display: block !important;
             transition: all 0.2s ease;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
         
         .message-sticker:hover {
@@ -786,15 +778,15 @@
         }
         
         .emoji-sticker {
-            font-size: 7rem;
+            font-size: 4rem;
             line-height: 1;
             display: block;
             margin: 8px 0;
         }
         
         .custom-emoji {
-            width: 28px;
-            height: 28px;
+            width: 22px;
+            height: 22px;
             display: inline-block;
             vertical-align: middle;
             margin: 0 2px;
@@ -804,7 +796,7 @@
         }
         
         .custom-emoji:hover {
-            transform: scale(1.3);
+            transform: scale(1.2);
         }
         
         .mention {
@@ -1010,8 +1002,8 @@
         }
         
         .message-input .custom-emoji {
-            width: 32px;
-            height: 32px;
+            width: 24px;
+            height: 24px;
             display: inline-block;
             vertical-align: middle;
             object-fit: contain;
@@ -2011,13 +2003,14 @@
             }
             
             .message-sticker {
-                max-width: 120px !important;
+                max-width: 240px !important;
+                max-height: 240px !important;
                 height: auto !important;
                 width: auto !important;
             }
             
             .emoji-sticker {
-                font-size: 5rem;
+                font-size: 4rem;
             }
             
             .check-btn {
@@ -3419,15 +3412,16 @@
                 var img = document.createElement('img');
                 img.src = imgData;
                 img.className = 'sticker-preview';
-                img.style.width = '80px';
-                img.style.height = '80px';
+                img.setAttribute('data-sticker', 'true');
+                img.style.maxWidth = '120px';
+                img.style.height = 'auto';
                 input.appendChild(img);
             } else {
                 // Regular emoji sticker
                 input.innerHTML = '';
                 var span = document.createElement('span');
                 span.textContent = sticker;
-                span.style.fontSize = '3rem';
+                span.style.fontSize = '4rem';
                 input.appendChild(span);
             }
             
@@ -3779,17 +3773,12 @@
             // Check if input contains an image
             var img = input.querySelector('img');
             if (img) {
-                // Check if it's a sticker (has sticker class or large emoji size)
-                if (img.classList.contains('sticker-preview') || 
-                    (img.style.width === '80px' && img.style.height === '80px')) {
+                // Check if it's a sticker (has data-sticker attribute or sticker-preview class)
+                if (img.hasAttribute('data-sticker') || img.classList.contains('sticker-preview')) {
                     // It's a sticker
-                    if (img.src.startsWith('data:')) {
-                        text = '[STICKER:' + img.src + ']';
-                    } else {
-                        text = '[STICKER:' + img.src + ']';
-                    }
+                    text = '[STICKER:' + img.src + ']';
                     isSticker = true;
-                    isImage = true;
+                    isImage = false; // Mark as sticker, not regular image
                 } else if (img.hasAttribute('data-original-url')) {
                     // GIF from Giphy or other external URL (use stored URL to prevent base64 conversion)
                     text = img.getAttribute('data-original-url');
@@ -3805,7 +3794,7 @@
                 }
             } else {
                 // Check for large emoji stickers
-                var span = input.querySelector('span[style*="3rem"]');
+                var span = input.querySelector('span[style*="rem"]');
                 if (span) {
                     text = '[STICKER:' + span.textContent + ']';
                     isSticker = true;

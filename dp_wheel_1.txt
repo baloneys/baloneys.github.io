@@ -299,6 +299,12 @@ Take a drink if you play Red Dead Redemption
 Take a drink if you play Valorant
 Take a drink if you play Overwatch
 Take a drink if you play Final Fantasy
+Take a drink and spin again
+Take a drinkg for everyone around the table you dont have friended
+Take 3 drinks if you've been quoted in the Drinking Party discord server
+Give out 5 drinks and spin again
+Everyone listening to Spotify right now take 3
+Everyone listening to Youtube music right now take 3
 <player> sits on <rem_player>’s lap until their next turn.
 <player> gives <rem_player> 3 drinks.
 <player> and <rem_player> WATERFALL together — last one to stop drinks 5.
@@ -350,3 +356,5 @@ Take a drink if you play Final Fantasy
 <rem_player> decides if this is a group drink (3) or a punishment drink (5 for <player>).
 <player> drinks twice, then doubles the next drink they receive.
 <rem_player> and <player> cheers — everyone else drinks 3, they drink 2 more for fun.
+<player> & <rem_player> most sober drinks 5
+<player> make a staff member do a waterfall with you. Be evil with it

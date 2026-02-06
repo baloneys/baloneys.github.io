@@ -303,6 +303,7 @@ Take a drink and spin again
 Take a drinkg for everyone around the table you dont have friended
 Take 3 drinks if you've been quoted in the Drinking Party discord server
 Give out 5 drinks and spin again
+Drink for each hour of sleep you had las night
 Everyone listening to Spotify right now take 3
 Everyone listening to Youtube music right now take 3
 <player> sits on <rem_player>’s lap until their next turn.

@@ -1,0 +1,123 @@
+Speak in your strongest Australian accent until your next turn.
+Call everyone “mate” until your next turn.
+Use “yeah, nah” in every answer for two rounds.
+Pretend you’re a tradie explaining to <player> why the job will take another three weeks.
+Give a dramatic Australian weather report about it being bloody hot.
+Act like you’ve just found a huntsman spider in your bedroom.
+Pretend a magpie is swooping you for 20 seconds.
+Do your best kookaburra laugh.
+Hop around like a kangaroo while arguing with <player>.
+Narrate <random> like you’re presenting an Australian wildlife documentary.
+Give the group a proper Aussie pub toast.
+Pretend you’re ordering food from a servo at 2 a.m.
+Convince <player> that drop bears are real.
+Explain the rules of cricket without admitting that you don’t understand them.
+Act like a seagull stealing <random>’s chips.
+Pretend you’re cooking snags at a Bunnings barbecue.
+Introduce yourself as Australia’s least-qualified wildlife expert.
+Give <player> a creative Aussie insult without being genuinely mean.
+Tell <random> to “chuck a U-ey” and explain where they’re going.
+Pretend you’re an eshay asking <player> for their shoes.
+Give a speech about why your suburb is better than <random>’s suburb.
+Describe your avatar using only Aussie slang.
+Shout “OI!” every time someone says your name until your next turn.
+Commentate an imaginary AFL match between <player> and <random>.
+Perform a dramatic apology to the emus for losing the Emu War.
+Try to sell <player> a suspicious second-hand ute.
+Give <random> directions using only “up the road,” “round the corner” and “not far.”
+Pretend you’ve just burnt the sausages at a family barbie.
+Teach <player> an Australian slang word.
+Finish every sentence with “reckon” until your next turn.
+Give everyone an Australian nickname.
+Tell a story that includes a ute, a magpie, a servo and a slab of beer.
+Pretend <rem_player> is a pub bouncer refusing to let you inside.
+Start a chant for <player>.
+Give a passionate speech about whether it’s called a potato cake or a scallop.
+Argue with <random> over the last chicken parmi.
+Order a drink using the most exaggerated Aussie slang possible.
+Act like your horse just lost at the Melbourne Cup.
+Complain about the price of a pint for 20 seconds.
+Pretend you’re running a meat raffle and <player> has won the grand prize.
+Challenge <random> to a completely imaginary Australian pub sport.
+Explain why your mate <player> has been banned from the local pub.
+Act like a cassowary chasing <random>.
+Wrestle an imaginary crocodile.
+React as if a spider just landed on your face.
+Give <player> a safety briefing for visiting Australia.
+Describe <random> as a newly discovered Australian species.
+Pretend you’re being attacked by flies in the Outback.
+Say “G’day, mate” to every player.
+Call <player> a galah.
+Mention the weather three times before your next turn.
+Ask <random>, “How ya going?”
+Say “she’ll be right” whenever something goes wrong until your next turn.
+Replace “afternoon” with “arvo” for two rounds.
+Replace “breakfast” with “brekkie” for two rounds.
+Replace “McDonald’s” with “Macca’s” for the rest of the game.
+Say “no worries” after every sentence until your next turn.
+Pretend your thongs have just broken in the middle of a servo car park.
+Ask <player> where the nearest bottle-o is.
+Announce that you and <random> are going on a servo run.
+Call everything <player> does “a bit dodgy” until your next turn.
+Say “too easy” whenever someone gives you an instruction.
+Describe <player> as “a good cunt” in the friendliest Australian way possible.
+Pretend <random> is a tourist and warn them about Australia’s wildlife.
+Give <player> the most stereotypical Aussie greeting you can manage.
+Pretend you’re a lifeguard yelling at <rem_player> for swimming outside the flags.
+Act like <player> has just stolen your spot at the barbie.
+Pretend you and <random> are two tradies arguing over whose smoko break is longer.
+Ask <player> if they want to go down to the servo for a meat pie.
+Convince <rem_player> that a bin chicken is a respected Australian national animal.
+Tell <random> a completely fake fact about Australia with full confidence.
+Pretend <player> has brought the wrong beer to the barbie.
+Give a motivational speech to <random> before they enter the Outback.
+Sit in the cuck chair until your next turn and commentate on everything <player> does.
+Take your place in the cuck chair and give <random> relationship advice they absolutely did not ask for.
+Sit in the cuck chair while <player> gives you a dramatic Australian nickname.
+Go to the cuck chair and pretend you’ve been banned from the local pub.
+Sit in the cuck chair and explain why <random> is having a better night than you.
+Take a seat in the cuck chair and narrate the room like a disappointed wildlife presenter.
+Sit in the cuck chair until someone says “yeah, nah.”
+Go to the cuck chair and give a speech about how the emus took everything from you.
+Sit in the cuck chair and watch <player> perform their next dare. Provide unwanted commentary throughout.
+Take your seat in the cuck chair and pretend you’re waiting outside a Bunnings while everyone else gets a sausage.
+Sit in the cuck chair and complain that <random> stole your spot at the barbie.
+Go to the cuck chair and act like a pub bouncer has put you in time-out.
+Sit in the cuck chair and call everyone “champ” until your next turn.
+Take the cuck chair and deliver a dramatic monologue about being left behind during a servo run.
+Sit in the cuck chair while <player> chooses an Aussie nickname for you. You must answer to it for the next two rounds.
+Go to the cuck chair and pretend you’re watching <random> win the meat raffle you desperately wanted.
+Sit in the cuck chair and explain how you lost custody of your imaginary ute.
+Take a seat in the cuck chair and ask passing players, “You right, mate?” until your next turn.
+Sit in the cuck chair and pretend you’ve been exiled from the backyard barbie.
+Go to the cuck chair and give live commentary on the room in your strongest Australian accent.
+<player> must speak with an Aussie accent until their next turn.
+<player> can only say "yeah, nah" or "nah, yeah" until their next turn.
+<player> must call <rem_player> "mate" for the next three rounds.
+<player> must narrate <random> like a Steve Irwin documentary.
+<player> must convince <random> that drop bears are real.
+<player> must give <rem_player> an Aussie nickname.
+<player> and <random> must argue over whether it's a parmi or parma.
+<player> must pretend <random> is a dangerous Australian animal.
+<player> must teach <rem_player> an Aussie slang word.
+<player> must introduce <random> as Australia's newest wildlife discovery.
+<player> must perform an AFL commentary over <random> walking across the room.
+<player> must pretend <rem_player> has just burnt the snags at the barbie.
+<player> must give <random> a dramatic weather forecast: "It's bloody hot."
+<player> must try to sell <rem_player> a dodgy second-hand ute.
+<player> must give <random> directions using only Aussie slang.
+<player> must sit in the cuck chair until their next turn.
+<player> sits in the cuck chair while <random> gives them a motivational speech.
+<player> must proudly announce, "I'm king of the cuck chair!"
+<player> sits in the cuck chair while everyone points and laughs for 5 seconds.
+<player> sits in the cuck chair while <random> roasts them.
+<player> must sit in the cuck chair and compliment everyone else.
+<player> sits in the cuck chair while everyone else cheers for <rem_player>.
+<player> must wave at everyone from the cuck chair like royalty.
+<player> must remain seated in the cuck chair until someone else lands on a dare.
+<player> must defend why the cuck chair is actually the best seat in the house.
+<player> and <random> must both squeeze onto the cuck chair for one minute.
+<player> sits in the cuck chair while everyone takes turns giving them a fake award.
+<player> sits in the cuck chair and narrates the room like a sports commentator.
+<player> must dramatically pretend they chose the cuck chair willingly.
+<player> sits in the cuck chair while <random> crowns them "Supreme Simp."

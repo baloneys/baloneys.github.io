@@ -32,6 +32,7 @@
     </style>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="home.css" />
+    <link rel="stylesheet" href="spotify.css" />
   </head>
   <body>
     <!-- shared icons -->
@@ -407,6 +408,65 @@
       </div>
     </footer>
 
+
+    <!-- Music dock (spotify.js) -->
+    <aside class="music-dock hidden" id="musicDock" aria-label="Music player">
+      <div class="md-head">
+        <span class="md-label">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M6.5 9.3c3.8-1.1 8.1-.8 11.3 1M7.2 12.4c3.2-.9 6.6-.6 9.3.9M7.9 15.3c2.6-.7 5.1-.5 7.3.7" fill="none" stroke="#050505" stroke-width="1.7" stroke-linecap="round"/></svg>
+          Now playing
+        </span>
+        <div class="md-head-actions">
+          <button class="md-link hidden" id="mdConnect" type="button">Connect Spotify</button>
+          <button class="md-icon" id="mdExpand" type="button" aria-label="Show tracklist" title="Tracklist">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <button class="md-icon" id="mdMin" type="button" aria-label="Minimise player" title="Minimise">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="md-embed-wrap" id="mdEmbedWrap"><div id="mdEmbed"></div></div>
+
+      <div class="md-custom hidden" id="mdCustom">
+        <div class="md-backdrop" id="mdBackdrop"></div>
+        <div class="md-track">
+          <div class="md-art" id="mdArt" role="img" aria-label="Album artwork"></div>
+          <div class="md-meta">
+            <a class="md-song" id="mdSong" href="https://open.spotify.com/playlist/1TvmUKdRCv9QvYrCp8p64o" target="_blank" rel="noopener noreferrer">Loading…</a>
+            <span class="md-artist" id="mdArtist"></span>
+          </div>
+        </div>
+        <div class="md-seek">
+          <span class="md-time" id="mdPos">0:00</span>
+          <input class="md-range" id="mdSeek" type="range" min="0" max="1" value="0" step="1000" aria-label="Seek">
+          <span class="md-time" id="mdDuration">0:00</span>
+        </div>
+        <div class="md-controls">
+          <div class="md-buttons">
+            <button class="md-icon" id="mdPrev" type="button" aria-label="Previous track"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zm3.5 7L19 5v14z" fill="currentColor"/></svg></button>
+            <button class="md-play" id="mdPlay" type="button" aria-label="Play"></button>
+            <button class="md-icon" id="mdNext" type="button" aria-label="Next track"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM5 5l9.5 7L5 19z" fill="currentColor"/></svg></button>
+          </div>
+          <label class="md-volume">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9zm12.5 3a4 4 0 0 0-2-3.5v7a4 4 0 0 0 2-3.5" fill="currentColor"/></svg>
+            <input class="md-range" id="mdVolume" type="range" min="0" max="100" value="30" aria-label="Volume">
+          </label>
+        </div>
+        <div class="md-foot">
+          <a href="https://open.spotify.com/playlist/1TvmUKdRCv9QvYrCp8p64o" target="_blank" rel="noopener noreferrer">Playing on Spotify</a>
+          <button id="mdDisconnect" type="button">Disconnect</button>
+        </div>
+      </div>
+
+      <p class="md-error hidden" id="mdError"></p>
+      <p class="md-hint" id="mdHint">Tap anywhere to start the music</p>
+    </aside>
+    <button class="md-bubble hidden" id="mdBubble" type="button" aria-label="Open music player">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13M9 18a3 3 0 1 1-6 0a3 3 0 0 1 6 0m11-2a3 3 0 1 1-6 0a3 3 0 0 1 6 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
     <script>
       (function () {
         var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -513,15 +573,16 @@
           reveals.forEach(function (el) { el.classList.add("is-visible") })
         }
 
-        // Easter egg: triple-click the DPT background for pong
-        var bg = document.getElementById("dpt-bg")
+        // Easter egg: triple-click any empty space for tetris
         var clicks = []
-        bg.addEventListener("click", function () {
+        document.addEventListener("click", function (e) {
+          if (e.target.closest("a, button, input, textarea, select, label, p, h1, h2, h3, li, img, video, .navigation-mobile-overlay, .music-dock, .md-bubble")) return
           var now = Date.now()
           clicks = clicks.filter(function (t) { return now - t < 800 }).concat(now)
-          if (clicks.length >= 3) window.location.href = "https://kanaris-beans.com/pong"
+          if (clicks.length >= 3) window.location.href = "/tetris"
         })
       })()
     </script>
+    <script src="spotify.js" defer></script>
   </body>
 </html>

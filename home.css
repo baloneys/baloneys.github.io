@@ -152,7 +152,10 @@ img {
 }
 
 .navigation-link.is-straya {
-  color: var(--straya-gold);
+  background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .navigation-mobile-overlay.is-open {
@@ -167,9 +170,6 @@ img {
 /* ---------- Straya banner ---------- */
 
 :root {
-  --straya-gold: #ffcd00;
-  --straya-green: #00843d;
-  --straya-lime: #7dff2a;
   --straya-banner: url("straya-banner.webp");
 }
 
@@ -219,7 +219,7 @@ img {
   right: 0;
   bottom: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--straya-green), var(--straya-gold), var(--straya-green));
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-primary));
 }
 
 .straya-inner {
@@ -245,8 +245,11 @@ img {
 }
 
 .straya-subheader strong {
-  color: var(--straya-lime);
-  text-shadow: 0 0 14px color-mix(in srgb, var(--straya-lime) 45%, transparent), 0 2px 10px rgba(0, 0, 0, 0.85);
+  background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
 }
 
 .straya-actions {
@@ -254,18 +257,6 @@ img {
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--spacing-md);
-}
-
-.btn-straya {
-  color: #111;
-  border-color: var(--straya-gold);
-  background-color: var(--straya-gold);
-  box-shadow: 0 6px 24px -8px color-mix(in srgb, var(--straya-gold) 70%, transparent);
-}
-
-.btn-straya:hover:not(:disabled) {
-  border-color: #ffe066;
-  background-color: #ffe066;
 }
 
 @keyframes strayaDrift {

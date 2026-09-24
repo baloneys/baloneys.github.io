@@ -169,26 +169,37 @@ img {
 :root {
   --straya-gold: #ffcd00;
   --straya-green: #00843d;
-  /* Swap this for the real banner once it's in the repo */
-  --straya-banner: url("aus-pics/5.png");
+  --straya-lime: #7dff2a;
+  --straya-banner: url("straya-banner.webp");
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .straya-section {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  background: #0b1a08;
   border-bottom: 1px solid var(--color-border);
 }
 
+/* The banner carries the STRAYA logo in its centre, so it stays uncropped-ish and clear */
 .straya-media {
   position: absolute;
   inset: 0;
   z-index: -2;
   background-image: var(--straya-banner);
   background-size: cover;
-  background-position: center 40%;
-  transform: scale(1.04);
-  animation: strayaDrift 24s ease-in-out infinite alternate;
+  background-position: center 42%;
+  transform: scale(1.02);
+  animation: strayaDrift 20s ease-in-out infinite alternate;
 }
 
 .straya-section::before {
@@ -197,8 +208,8 @@ img {
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(90deg, var(--color-surface) 0%, color-mix(in srgb, var(--color-surface) 75%, transparent) 45%, transparent 100%),
-    linear-gradient(0deg, var(--color-surface) 0%, transparent 35%);
+    radial-gradient(ellipse at center 45%, transparent 35%, color-mix(in srgb, var(--color-surface) 55%, transparent) 100%),
+    linear-gradient(0deg, var(--color-surface) 0%, color-mix(in srgb, var(--color-surface) 70%, transparent) 18%, transparent 42%);
 }
 
 .straya-section::after {
@@ -214,65 +225,35 @@ img {
 .straya-inner {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: var(--spacing-lg);
-  min-height: clamp(320px, 46vh, 460px);
-  margin: 0 auto;
-  padding: var(--spacing-3xl) var(--spacing-xl);
-  max-width: var(--content-max-width);
-}
-
-.straya-tag {
-  display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-xs) var(--spacing-md);
-  color: var(--straya-gold);
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-heading);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  background: color-mix(in srgb, var(--straya-gold) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--straya-gold) 35%, transparent);
-  border-radius: var(--border-radius-full);
+  justify-content: flex-end;
+  gap: var(--spacing-lg);
+  min-height: clamp(440px, 72vh, 680px);
+  margin: 0 auto;
+  padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-2xl);
+  max-width: var(--content-max-width);
+  text-align: center;
 }
 
-.straya-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--straya-green);
-  box-shadow: 0 0 10px var(--straya-green);
-  animation: footerPulse 2s infinite;
-}
-
-.straya-title {
+.straya-subheader {
+  color: var(--color-on-surface);
   font-family: var(--font-family-heading);
   font-weight: var(--font-weight-heading);
-  font-size: clamp(3rem, 9vw, 6.5rem);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  text-transform: lowercase;
-  background: linear-gradient(100deg, var(--color-on-surface) 30%, var(--straya-gold) 75%, var(--color-accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: none;
+  font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+  line-height: 1.3;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
 }
 
-.straya-copy {
-  max-width: 34rem;
-  color: var(--color-on-surface-secondary);
-  font-size: var(--font-size-lg);
+.straya-subheader strong {
+  color: var(--straya-lime);
+  text-shadow: 0 0 14px color-mix(in srgb, var(--straya-lime) 45%, transparent), 0 2px 10px rgba(0, 0, 0, 0.85);
 }
 
 .straya-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--spacing-md);
-  margin-top: var(--spacing-sm);
 }
 
 .btn-straya {
@@ -288,8 +269,8 @@ img {
 }
 
 @keyframes strayaDrift {
-  from { transform: scale(1.04) translate3d(0, 0, 0); }
-  to { transform: scale(1.1) translate3d(-1.5%, -1%, 0); }
+  from { transform: scale(1.02); }
+  to { transform: scale(1.07); }
 }
 
 @keyframes footerPulse {
@@ -704,12 +685,16 @@ img {
 
 @media (max-width: 767px) {
   .straya-inner {
-    min-height: 300px;
+    min-height: 500px;
     padding: var(--spacing-2xl) var(--spacing-lg);
   }
+  /* keep the logo clear of the text on narrow screens */
+  .straya-media {
+    bottom: 140px;
+    background-position: center 45%;
+  }
   .straya-section::before {
-    background:
-      linear-gradient(0deg, var(--color-surface) 0%, color-mix(in srgb, var(--color-surface) 70%, transparent) 60%, color-mix(in srgb, var(--color-surface) 40%, transparent) 100%);
+    background: linear-gradient(0deg, var(--color-surface) 0%, var(--color-surface) 26%, transparent 55%);
   }
   .hero-section {
     min-height: 80vh;
@@ -744,10 +729,14 @@ img {
 }
 
 @media (max-width: 479px) {
-  .straya-actions,
-  .straya-actions a,
-  .straya-actions .btn {
+  .straya-actions {
     width: 100%;
+    flex-wrap: nowrap;
+  }
+  .straya-actions .btn {
+    flex: 1;
+    padding: var(--spacing-md) var(--spacing-sm);
+    font-size: var(--font-size-sm);
   }
 }
 

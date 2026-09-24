@@ -310,15 +310,15 @@
         }
 
         .status.waiting {
-            background: rgba(255, 165, 0, 0.2);
-            color: #ffa500;
-            border: 1px solid #ffa500;
+            background: rgba(255, 111, 174, 0.2);
+            color: #ff6fae;
+            border: 1px solid #ff6fae;
         }
 
         .status.connected {
-            background: rgba(0, 255, 0, 0.2);
-            color: #00ff00;
-            border: 1px solid #00ff00;
+            background: rgba(199, 125, 255, 0.2);
+            color: #c77dff;
+            border: 1px solid #c77dff;
         }
 
         .status.error {
@@ -525,8 +525,8 @@
         }
 
         .skin-option.selected {
-            border-color: #10b981;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border-color: #c77dff;
+            box-shadow: 0 0 15px rgba(199, 125, 255, 0.5);
         }
 
         .skin-option img {
@@ -581,8 +581,10 @@
             <a href="../index.html" class="navigation-logo">baloneys</a>
             <div class="navigation-desktop-menu">
                 <a href="../index.html" class="navigation-link">Home</a>
+                <a href="/index.html#straya" class="navigation-link is-straya">Straya</a>
                 <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" class="navigation-link">Worlds</a>
-                <a href="vrc-dynamic-player-tags.html" class="navigation-link">Tagging</a>
+                <a href="/dynabackend/vrc-dynamic-player-tags.html" class="navigation-link">Tagging</a>
+                <a href="/speen" class="navigation-link">speen</a>
                 <a href="https://jinxxy.com/baloneys" target="_blank" class="navigation-link">Store</a>
                 <a href="https://discord.gg/gYWJsYhwXN" target="_blank" class="btn-sm btn-primary btn">Contact Me</a>
             </div>
@@ -606,8 +608,10 @@
         <div class="navigation-mobile-content">
             <div class="navigation-mobile-links">
                 <a href="../index.html" class="navigation-mobile-link">Home</a>
+                <a href="/index.html#straya" class="navigation-mobile-link">Straya</a>
                 <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" class="navigation-mobile-link">Worlds</a>
-                <a href="vrc-dynamic-player-tags.html" class="navigation-mobile-link">Tagging</a>
+                <a href="/dynabackend/vrc-dynamic-player-tags.html" class="navigation-mobile-link">Tagging</a>
+                <a href="/speen" class="navigation-mobile-link">speen</a>
                 <a href="https://jinxxy.com/baloneys" target="_blank" class="navigation-mobile-link">Store</a>
                 <a href="https://discord.gg/gYWJsYhwXN" target="_blank" class="btn-primary btn">Contact Me</a>
             </div>
@@ -1027,11 +1031,11 @@ function updateSkinCarousel() {
                     if (isHost) {
                         player2Ready = data.ready;
                         document.getElementById('p2ReadyStatus').textContent = player2Ready ? 'Ready!' : 'Not Ready';
-                        document.getElementById('p2ReadyStatus').style.color = player2Ready ? '#10b981' : '#e0e0e0';
+                        document.getElementById('p2ReadyStatus').style.color = player2Ready ? '#c77dff' : '#e0e0e0';
                     } else {
                         player1Ready = data.ready;
                         document.getElementById('p1ReadyStatus').textContent = player1Ready ? 'Ready!' : 'Not Ready';
-                        document.getElementById('p1ReadyStatus').style.color = player1Ready ? '#10b981' : '#e0e0e0';
+                        document.getElementById('p1ReadyStatus').style.color = player1Ready ? '#c77dff' : '#e0e0e0';
                     }
                     
                     // Check if both players are ready
@@ -1072,17 +1076,17 @@ function updateSkinCarousel() {
             if (isHost) {
                 player1Ready = myReady;
                 document.getElementById('p1ReadyStatus').textContent = player1Ready ? 'Ready!' : 'Not Ready';
-                document.getElementById('p1ReadyStatus').style.color = player1Ready ? '#10b981' : '#e0e0e0';
+                document.getElementById('p1ReadyStatus').style.color = player1Ready ? '#c77dff' : '#e0e0e0';
             } else {
                 player2Ready = myReady;
                 document.getElementById('p2ReadyStatus').textContent = player2Ready ? 'Ready!' : 'Not Ready';
-                document.getElementById('p2ReadyStatus').style.color = player2Ready ? '#10b981' : '#e0e0e0';
+                document.getElementById('p2ReadyStatus').style.color = player2Ready ? '#c77dff' : '#e0e0e0';
             }
             
             // Update button text
             const readyButton = document.getElementById('readyButton');
             readyButton.textContent = myReady ? 'Cancel Ready' : 'Ready Up!';
-            readyButton.style.background = myReady ? '#10b981' : '#9d00ff';
+            readyButton.style.background = myReady ? '#c77dff' : '#9d00ff';
             
             // Send ready state to opponent
             if (conn && conn.open) {

@@ -339,3 +339,14 @@ select:focus {
 html.show-debug .debug-console {
   display: block !important;
 }
+
+.navigation-link.is-straya {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navigation-mobile-overlay {
+  background: var(--color-surface) !important;
+}

@@ -929,3 +929,52 @@ body.chat-body {
   .voice-bar { padding: 8px var(--spacing-md); }
   .composer { padding-bottom: max(var(--spacing-md), env(safe-area-inset-bottom)); }
 }
+
+/* ---------- Touch and phone layout ---------- */
+
+.msg.tools-open .msg-tools { display: flex; }
+.msg.tools-open { background: rgba(255, 255, 255, 0.035); }
+
+@media (hover: none) {
+  .icon-btn { width: 42px; height: 42px; }
+  .msg-tools .icon-btn { width: 40px; height: 40px; font-size: 1.05rem; }
+  .react-pop button { width: 42px; height: 42px; }
+  .member-actions .icon-btn { width: 38px; height: 38px; }
+  .conv { padding: 10px 8px; }
+  .reaction { padding: 3px 10px; }
+  .emoji-grid { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); }
+  .emoji-grid button { height: 44px; }
+}
+
+@media (max-width: 760px) {
+  /* Inputs at 16px so iOS doesn't zoom in when they're focused. */
+  .composer-input, .input, .edit-input { font-size: 16px; }
+
+  /* Give a conversation the whole screen; the back button returns to the list. */
+  body.chat-body:has(.app.in-conv) #siteNav { display: none; }
+  .app.with-members .members { top: 0; width: min(320px, 88vw); }
+
+  .conv-head { gap: 6px; padding: 8px var(--spacing-sm); padding-top: max(8px, env(safe-area-inset-top)); }
+  .conv-head-title { font-size: var(--font-size-sm); }
+  .composer { padding-left: var(--spacing-sm); padding-right: var(--spacing-sm); }
+  .composer-box { gap: 0; }
+  .composer-box .icon-btn { width: 38px; }
+  .msg-image { max-width: 100%; }
+  .msg-tools { right: var(--spacing-sm); }
+  .jump { right: var(--spacing-md); }
+  .popover { left: var(--spacing-sm); right: var(--spacing-sm); max-height: 50dvh; }
+
+  /* Dialogs become bottom sheets. */
+  .modal { align-items: flex-end; padding: 0; }
+  .modal-card, .modal-card.wide { max-width: none; max-height: 88dvh; border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0; padding: var(--spacing-xl) var(--spacing-lg); padding-bottom: max(var(--spacing-xl), env(safe-area-inset-bottom)); }
+  .modal-actions { flex-wrap: wrap; }
+  .modal-actions .btn { flex: 1 1 auto; }
+
+  .side-actions { padding: var(--spacing-sm); }
+  .me-bar { padding-bottom: max(var(--spacing-md), env(safe-area-inset-bottom)); }
+  .lightbox-tools { top: auto; bottom: max(var(--spacing-lg), env(safe-area-inset-bottom)); right: 50%; transform: translateX(50%); }
+}
+
+body.chat-body { -webkit-tap-highlight-color: transparent; }
+.pop-head .link-btn { flex: none; font-size: var(--font-size-xs); white-space: nowrap; }
+.pop-head .emoji-search { flex: 1; min-width: 0; }

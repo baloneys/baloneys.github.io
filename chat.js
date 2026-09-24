@@ -1,5 +1,23 @@
 // chat.js: /chat. Accounts, DMs, rooms, voice, push and safety on Firebase (status-chat-12343).
-// Data layout and access rules live in firebase/database.rules.json; setup notes in firebase/SAFETY.md.
+// Firebase Authentication (email/password) + Cloud Firestore hold accounts and all chat data
+// (rules: firebase/firestore.rules). Realtime Database only carries the live bits that need
+// disconnect cleanup: online status, typing and voice-call setup (rules: firebase/database.rules.json).
+// Voice audio itself is peer-to-peer WebRTC. Setup notes: firebase/SAFETY.md.
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import {
+  getAuth, connectAuthEmulator, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  signOut as fbSignOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword
+} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import {
+  getFirestore, connectFirestoreEmulator, doc, collection, getDoc, getDocFromServer, getDocs, setDoc, updateDoc, deleteDoc, addDoc,
+  onSnapshot, query, where, orderBy, limit, serverTimestamp, writeBatch, deleteField, arrayUnion, arrayRemove
+} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import {
+  getDatabase, connectDatabaseEmulator, ref as rtRef, onValue, onChildAdded, onChildChanged, set as rtSet,
+  remove as rtRemove, push as rtPush, onDisconnect, serverTimestamp as rtNow
+} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js';
+import { getMessaging, getToken, deleteToken, onMessage, isSupported as messagingSupported } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js';
+
 (function () {
   'use strict';
 
@@ -39,15 +57,36 @@
     ['other', 'Something else']
   ];
 
-  firebase.initializeApp(FIREBASE_CONFIG);
-  const auth = firebase.auth();
-  const db = firebase.database();
+  const app = initializeApp(FIREBASE_CONFIG);
+  const auth = getAuth(app);
+  const fs = getFirestore(app);      // accounts, messages, rooms, moderation
+  const rtdb = getDatabase(app);     // presence, typing, voice signalling
   const params = new URLSearchParams(location.search);
   if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && params.has('emu')) {
-    auth.useEmulator('http://127.0.0.1:9099', { disableWarnings: true });
-    db.useEmulator('127.0.0.1', 9000);
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+    connectFirestoreEmulator(fs, '127.0.0.1', 8085);
+    connectDatabaseEmulator(rtdb, '127.0.0.1', 9000);
+    window.__chatTest = { auth, fs, rtdb, doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, serverTimestamp, rtRef, rtSet, voice: () => voice };
   }
-  const TS = firebase.database.ServerValue.TIMESTAMP;
+  const NOW = serverTimestamp;       // Firestore server time
+  const R = (path) => rtRef(rtdb, path);
+
+  // Firestore timestamps -> milliseconds (pending local writes use the estimate).
+  function ms(v) { return v && typeof v.toMillis === 'function' ? v.toMillis() : typeof v === 'number' ? v : Date.now(); }
+  function norm(snap) {
+    const d = snap.data({ serverTimestamps: 'estimate' });
+    if (!d) return null;
+    for (const k of ['ts', 'createdAt', 'updatedAt', 'resolvedAt', 'at']) if (k in d) d[k] = ms(d[k]);
+    if (d.evidence) { for (const k of ['ts', 'capturedAt']) if (d.evidence[k]) d.evidence[k] = ms(d.evidence[k]); }
+    return d;
+  }
+  // Drop null/undefined fields: the rules treat optional fields as absent, never null.
+  function clean(o) { for (const k of Object.keys(o)) if (o[k] == null) delete o[k]; return o; }
+
+  // Fields written to delete a message (author, room host or moderator).
+  const DELETION = () => ({ deleted: true, text: deleteField(), image: deleteField(), sticker: deleteField(), replyTo: deleteField(), reactions: deleteField() });
+  const convKey = (c) => (c.type === 'dm' ? 'dm_' : 'room_') + c.id;
+  const typingPath = (c) => (c.type === 'dm' ? 'typingDm/' : 'typingRoom/') + c.id;
 
   // ---------- State ----------
 
@@ -80,6 +119,8 @@
     nsfw: {},               // key -> 'ok'|'flagged'|'error'|'checking'
     revealed: new Set(),
     seenMeta: {},
+    read: {},               // convKey -> last read (ms)
+    roomChecks: {},
     pushOn: false,
     settings: loadSettings()
   };
@@ -274,31 +315,32 @@
 
   function watchUser(uid) {
     if (!uid || S.userSubs[uid]) return;
-    const ref = db.ref('users/' + uid);
-    const cb = ref.on('value', (s) => {
-      if (s.val()) S.users[uid] = s.val(); else delete S.users[uid];
-      if (S.me && uid === S.me.uid) { S.profile = s.val(); renderMe(); }
+    S.userSubs[uid] = onSnapshot(doc(fs, 'users', uid), (s) => {
+      const u = norm(s);
+      if (u) S.users[uid] = u; else delete S.users[uid];
+      if (S.me && uid === S.me.uid) { S.profile = u; renderMe(); }
       queueRerender();
     }, () => {});
-    S.userSubs[uid] = () => ref.off('value', cb);
     watchPresence(uid);
   }
 
   function watchPresence(uid) {
     if (presenceSubs[uid]) return;
-    const ref = db.ref('status/' + uid + '/online');
-    const cb = ref.on('value', (s) => {
+    presenceSubs[uid] = onValue(R('status/' + uid + '/online'), (s) => {
       presence[uid] = s.val() === true;
       document.querySelectorAll('[data-presence="' + uid + '"]').forEach((p) => p.classList.toggle('online', presence[uid]));
     }, () => {});
-    presenceSubs[uid] = () => ref.off('value', cb);
   }
 
   function watchCustoms(uid) {
     if (!uid || S.customSubs[uid]) return;
-    const ref = db.ref('customs/' + uid);
-    const cb = ref.on('value', (s) => { S.customs[uid] = s.val() || {}; queueRerender(); if (uid === S.me.uid) refreshOpenPickers(); }, () => {});
-    S.customSubs[uid] = () => ref.off('value', cb);
+    S.customSubs[uid] = onSnapshot(collection(fs, 'customs', uid, 'items'), (qs) => {
+      const items = {};
+      qs.forEach((d) => { items[d.id] = norm(d); });
+      S.customs[uid] = items;
+      queueRerender();
+      if (uid === S.me.uid) refreshOpenPickers();
+    }, () => {});
   }
 
   function customUsable(uid, item) {
@@ -311,11 +353,11 @@
   }
 
   function setupPresence() {
-    const ref = db.ref('status/' + S.me.uid);
-    db.ref('.info/connected').on('value', (s) => {
+    const ref = R('status/' + S.me.uid);
+    S.listSubs.push(onValue(R('.info/connected'), (s) => {
       if (s.val() !== true) return;
-      ref.onDisconnect().set({ online: false, lastChanged: TS }).then(() => ref.set({ online: true, lastChanged: TS }));
-    });
+      onDisconnect(ref).set({ online: false, lastChanged: rtNow() }).then(() => rtSet(ref, { online: true, lastChanged: rtNow() }));
+    }));
   }
 
   // ---------- Auth ----------
@@ -362,10 +404,10 @@
     $('authSubmit').disabled = true;
     try {
       if (authMode === 'in') {
-        await auth.signInWithEmailAndPassword(emailFor(name), pass);
+        await signInWithEmailAndPassword(auth, emailFor(name), pass);
       } else {
         signingUp = true;
-        const cred = await auth.createUserWithEmailAndPassword(emailFor(name), pass);
+        const cred = await createUserWithEmailAndPassword(auth, emailFor(name), pass);
         try {
           await claimUsername(cred.user.uid, name, authColor);
         } catch (err) {
@@ -384,21 +426,22 @@
         c === 'auth/too-many-requests' ? 'Too many attempts. Wait a bit and try again.' :
         c === 'auth/operation-not-allowed' ? 'Sign-ups are switched off right now.' :
         c === 'auth/network-request-failed' ? "Can't reach the server. Check your connection." :
-        /PERMISSION_DENIED/.test(c + err.message) ? 'That username is taken.' :
+        /permission-denied|PERMISSION_DENIED/.test(c + err.message) ? 'That username is taken.' :
         (err.message || 'Something went wrong.');
     } finally {
       $('authSubmit').disabled = false;
     }
   });
 
+  // One batch: the username claim and the profile are checked against each other by the rules.
   function claimUsername(uid, name, color) {
-    return db.ref().update({
-      ['usernames/' + name.toLowerCase()]: uid,
-      ['users/' + uid]: { username: name, color, createdAt: TS }
-    });
+    const batch = writeBatch(fs);
+    batch.set(doc(fs, 'usernames', name.toLowerCase()), { uid });
+    batch.set(doc(fs, 'users', uid), { username: name, color, createdAt: NOW() });
+    return batch.commit();
   }
 
-  auth.onAuthStateChanged(async (user) => {
+  onAuthStateChanged(auth, async (user) => {
     $('boot').classList.add('hidden');
     if (!user) {
       stopApp();
@@ -408,10 +451,10 @@
     }
     if (signingUp) return;
     // Recover accounts whose profile write failed during sign-up.
-    const snap = await db.ref('users/' + user.uid).get().catch(() => null);
+    const snap = await getDoc(doc(fs, 'users', user.uid)).catch(() => null);
     if (snap && !snap.exists()) {
       const name = (user.email || '').split('@')[0];
-      try { await claimUsername(user.uid, name, authColor); } catch (err) { await auth.signOut(); $('authError').textContent = "Couldn't finish setting up your account."; return; }
+      try { await claimUsername(user.uid, name, authColor); } catch (err) { await fbSignOut(auth); $('authError').textContent = "Couldn't finish setting up your account."; return; }
     }
     startApp(user);
   });
@@ -420,9 +463,9 @@
 
   let started = false;
 
-  function sub(list, ref, event, cb) {
-    const h = ref.on(event, cb, (err) => console.warn('listener', ref.toString(), err && err.code));
-    list.push(() => ref.off(event, h));
+  // Realtime Database listener that is removed with the rest of `list`.
+  function sub(list, ref, cb) {
+    list.push(onValue(ref, cb, (err) => console.warn('listener', ref.toString(), err && err.code)));
   }
 
   function startApp(user) {
@@ -438,11 +481,16 @@
     watchCustoms(user.uid);
     setupPresence();
 
-    sub(S.listSubs, db.ref('mods'), 'value', (s) => { S.mods = s.val() || {}; renderMe(); setupModWatch(); queueRerender(); });
-    sub(S.listSubs, db.ref('bans'), 'value', (s) => { S.bans = s.val() || {}; renderMe(); queueRerender(); });
-    sub(S.listSubs, db.ref('blocks/' + user.uid), 'value', (s) => { S.blocks = s.val() || {}; S.msgNodes.clear(); queueRerender(); });
-    sub(S.listSubs, db.ref('userDms/' + user.uid), 'value', (s) => syncDms(s.val() || {}));
-    sub(S.listSubs, db.ref('userRooms/' + user.uid), 'value', (s) => syncRooms(s.val() || {}));
+    const onErr = (what) => (err) => console.warn('listener', what, err && err.code);
+    const docsMap = (qs) => { const o = {}; qs.forEach((d) => { o[d.id] = norm(d); }); return o; };
+    S.listSubs.push(
+      onSnapshot(collection(fs, 'mods'), (qs) => { S.mods = {}; qs.forEach((d) => { S.mods[d.id] = true; }); renderMe(); setupModWatch(); queueRerender(); }, onErr('mods')),
+      onSnapshot(collection(fs, 'bans'), (qs) => { S.bans = docsMap(qs); renderMe(); queueRerender(); }, onErr('bans')),
+      onSnapshot(collection(fs, 'blocks', user.uid, 'users'), (qs) => { S.blocks = {}; qs.forEach((d) => { S.blocks[d.id] = true; }); S.msgNodes.clear(); queueRerender(); }, onErr('blocks')),
+      onSnapshot(collection(fs, 'readState', user.uid, 'convs'), (qs) => { S.read = {}; qs.forEach((d) => { S.read[d.id] = norm(d).at; }); queueRerender(); }, onErr('readState')),
+      onSnapshot(query(collection(fs, 'dms'), where('members', 'array-contains', user.uid)), (qs) => syncDms(docsMap(qs)), onErr('dms')),
+      onSnapshot(query(collection(fs, 'rooms'), where('memberIds', 'array-contains', user.uid)), (qs) => syncRooms(docsMap(qs)), onErr('rooms'))
+    );
 
     initPush();
     route();
@@ -463,8 +511,7 @@
     for (const k in dmSubs) delete dmSubs[k];
     for (const k in roomSubs) delete roomSubs[k];
     if (modSub) { modSub(); modSub = null; }
-    db.ref('.info/connected').off();
-    Object.assign(S, { me: null, profile: null, users: {}, customs: {}, mods: {}, bans: {}, blocks: {}, dms: {}, rooms: {}, seenMeta: {} });
+    Object.assign(S, { me: null, profile: null, users: {}, customs: {}, mods: {}, bans: {}, blocks: {}, dms: {}, rooms: {}, read: {}, seenMeta: {} });
     $('dmList').replaceChildren(); $('roomList').replaceChildren();
   }
 
@@ -484,60 +531,52 @@
   const roomSubs = {};
   const voiceWatch = {};   // 'dm:<id>' | 'room:<code>' -> { uid: participant }
 
+  // dms/{id} documents where I'm a member (created with the first message).
   function syncDms(val) {
     for (const id in dmSubs) if (!val[id]) { dmSubs[id](); delete dmSubs[id]; delete S.dms[id]; }
     for (const id in val) {
-      S.dms[id] = Object.assign(S.dms[id] || {}, val[id]);
-      const other = val[id].with || otherOf(id);
+      const other = otherOf(id);
+      S.dms[id] = { key: 'dm_' + id, with: other, meta: val[id] };
       watchUser(other);
-      if (!dmSubs[id]) {
-        const metaRef = db.ref('dms/' + id + '/meta');
-        const vRef = db.ref('voiceDm/' + id + '/participants');
-        const h1 = metaRef.on('value', (s) => { S.dms[id] && (S.dms[id].meta = s.val()); onMetaChange('dm', id, s.val()); queueRerender(); }, () => {});
-        const h2 = vRef.on('value', (s) => { onVoicePresence('dm:' + id, s.val() || {}); }, () => {});
-        dmSubs[id] = () => { metaRef.off('value', h1); vRef.off('value', h2); };
-      }
+      onMetaChange('dm', id, val[id]);
+      if (!dmSubs[id]) dmSubs[id] = onValue(R('voiceDm/' + id + '/participants'), (s) => { onVoicePresence('dm:' + id, s.val() || {}); }, () => {});
     }
     queueRerender();
   }
 
+  // rooms/{code} documents where I'm in memberIds. Dropping out of the query means we left,
+  // were kicked, or the room was deleted.
   function syncRooms(val) {
     for (const code in roomSubs) {
-      if (val[code]) continue;
-      roomSubs[code](); delete roomSubs[code]; delete S.rooms[code];
-      // Removed from the room (kicked, left, or it was deleted).
-      leaveVoiceIf('room', code);
-      if (S.conv && S.conv.type === 'room' && S.conv.id === code) { toast('You are no longer in that room.'); openHome(); }
+      if (val[code] || S.roomChecks[code]) continue;
+      // Confirm with the server first: a rejected local write can make the room blink out of the query.
+      S.roomChecks[code] = getDocFromServer(doc(fs, 'rooms', code)).then((snap) => snap.exists() && snap.data().memberIds.includes(S.me.uid)).catch(() => false).then((still) => {
+        delete S.roomChecks[code];
+        if (still || !roomSubs[code]) return;
+        roomSubs[code](); delete roomSubs[code]; delete S.rooms[code];
+        leaveVoiceIf('room', code);
+        if (S.conv && S.conv.type === 'room' && S.conv.id === code) { toast('You are no longer in that room.'); openHome(); }
+        queueRerender();
+      });
     }
     for (const code in val) {
-      S.rooms[code] = Object.assign(S.rooms[code] || {}, val[code]);
-      if (!roomSubs[code]) {
-        const metaRef = db.ref('rooms/' + code + '/meta');
-        const vRef = db.ref('voiceRoom/' + code + '/participants');
-        const h1 = metaRef.on('value', (s) => {
-          if (!s.exists()) {
-            // Room deleted, or we were kicked: tidy our list.
-            db.ref('userRooms/' + S.me.uid + '/' + code).remove().catch(() => {});
-            if (S.conv && S.conv.type === 'room' && S.conv.id === code) { toast('That room is gone.'); openHome(); }
-            return;
-          }
-          if (S.rooms[code]) S.rooms[code].meta = s.val();
-          onMetaChange('room', code, s.val());
-          queueRerender();
-        }, () => {});
-        const h2 = vRef.on('value', (s) => { onVoicePresence('room:' + code, s.val() || {}); }, () => {});
-        roomSubs[code] = () => { metaRef.off('value', h1); vRef.off('value', h2); };
-      }
+      S.rooms[code] = { key: 'room_' + code, meta: val[code] };
+      val[code].memberIds.forEach(watchUser);
+      onMetaChange('room', code, val[code]);
+      if (S.conv && S.conv.type === 'room' && S.conv.id === code) applyRoomMeta(val[code]);
+      if (!roomSubs[code]) roomSubs[code] = onValue(R('voiceRoom/' + code + '/participants'), (s) => { onVoicePresence('room:' + code, s.val() || {}); }, () => {});
     }
     queueRerender();
   }
+
+  function lastReadOf(entry) { return (entry && S.read[entry.key]) || 0; }
 
   function isUnread(entry) {
     const meta = entry && entry.meta;
     if (!meta || !meta.updatedAt || !meta.last) return false;
     if (meta.last.from === S.me.uid) return false;
     if (isBlocked(meta.last.from)) return false;
-    return meta.updatedAt > (entry.lastRead || 0);
+    return meta.updatedAt > lastReadOf(entry);
   }
 
   function onMetaChange(type, id, meta) {
@@ -680,7 +719,7 @@
     setHash('#dm/' + uid);
     enterConv();
     // Make sure the other person exists before showing a composer.
-    const u = await db.ref('users/' + uid).get().catch(() => null);
+    const u = await getDoc(doc(fs, 'users', uid)).catch(() => null);
     if (!u || !u.exists()) { toast("That user doesn't exist."); return openHome(); }
   }
 
@@ -689,16 +728,18 @@
     closeConv();
     S.conv = { type: 'room', id: code, base: 'rooms/' + code };
     setHash('#room/' + code);
-    const base = 'rooms/' + code;
-    sub(S.convSubs, db.ref(base + '/members'), 'value', (s) => {
-      S.members = s.val() || {};
-      Object.keys(S.members).forEach((u) => { watchUser(u); watchCustoms(u); });
-      if (S.conv && S.conv.id === code && !S.members[S.me.uid]) { leaveVoiceIf('room', code); openHome(); return; }
-      queueRerender();
-    });
-    sub(S.convSubs, db.ref(base + '/muted'), 'value', (s) => { S.roomMuted = s.val() || {}; renderConvBanner(); queueRerender(); });
-    sub(S.convSubs, db.ref(base + '/banned'), 'value', (s) => { S.roomBanned = s.val() || {}; if (S.showMembers) renderMembers(); });
+    if (S.rooms[code]) applyRoomMeta(S.rooms[code].meta);
     enterConv();
+  }
+
+  // Members, mutes and kicks all live on the room document.
+  function applyRoomMeta(meta) {
+    S.members = {};
+    meta.memberIds.forEach((u) => { S.members[u] = u === meta.owner ? 'owner' : 'member'; watchUser(u); watchCustoms(u); });
+    S.roomMuted = Object.fromEntries(meta.muted.map((u) => [u, true]));
+    S.roomBanned = Object.fromEntries(meta.banned.map((u) => [u, true]));
+    renderConvBanner();
+    if (S.showMembers) renderMembers();
   }
 
   function enterConv() {
@@ -712,7 +753,7 @@
     if (c.type === 'dm') watchCustoms(c.other);
     watchCustoms(S.me.uid);
     subscribeMessages();
-    sub(S.convSubs, db.ref(c.base + '/typing'), 'value', (s) => { S.typing = s.val() || {}; renderTyping(); });
+    sub(S.convSubs, R(typingPath(c)), (s) => { S.typing = s.val() || {}; renderTyping(); });
     const tick = setInterval(renderTyping, 3000);
     S.convSubs.push(() => clearInterval(tick));
     S.showMembers = c.type === 'room' && window.innerWidth > 1100;
@@ -724,24 +765,31 @@
     if (window.innerWidth > 760) setTimeout(() => $('composerInput').focus(), 0);
   }
 
+  // Newest S.limit messages, live. Older pages widen the window.
   function subscribeMessages(onReady) {
     const c = S.conv;
     if (S.msgUnsub) S.msgUnsub();
-    const q = db.ref(c.base + '/messages').orderByKey().limitToLast(S.limit);
+    const q = query(collection(fs, c.base, 'messages'), orderBy('ts', 'desc'), limit(S.limit));
     let initial = true;
-    const onAdd = (s) => { S.msgs.set(s.key, s.val()); const m = s.val(); watchUser(m.from); watchCustoms(m.from); if (!initial) scheduleRender(true); };
-    const onChange = (s) => { S.msgs.set(s.key, s.val()); scheduleRender(false); };
-    const onRemove = (s) => { S.msgs.delete(s.key); S.msgNodes.delete(s.key); scheduleRender(false); };
-    q.on('child_added', onAdd, (err) => { fail(err, "Couldn't load messages."); });
-    q.on('child_changed', onChange);
-    q.on('child_removed', onRemove);
-    q.once('value').then((snap) => {
+    const unsub = onSnapshot(q, (qs) => {
       if (S.conv !== c) return;
-      initial = false;
-      S.hasOlder = snap.numChildren() >= S.limit;
-      if (onReady) onReady(); else { renderMessages(true); markRead(); }
-    }).catch(() => {});
-    S.msgUnsub = () => { q.off('child_added', onAdd); q.off('child_changed', onChange); q.off('child_removed', onRemove); S.msgUnsub = null; };
+      let added = false;
+      qs.docChanges().forEach((ch) => {
+        if (ch.type === 'removed') { S.msgs.delete(ch.doc.id); S.msgNodes.delete(ch.doc.id); return; }
+        const m = norm(ch.doc);
+        S.msgs.set(ch.doc.id, m);
+        watchUser(m.from); watchCustoms(m.from);
+        if (ch.type === 'added') added = true;
+      });
+      if (initial) {
+        initial = false;
+        S.hasOlder = qs.size >= S.limit;
+        if (onReady) onReady(); else { renderMessages(true); markRead(); }
+      } else {
+        scheduleRender(added);
+      }
+    }, (err) => { fail(err, "Couldn't load messages."); });
+    S.msgUnsub = () => { unsub(); S.msgUnsub = null; };
   }
 
   function loadOlder() {
@@ -760,12 +808,11 @@
     if (!c || document.hidden || !atBottom()) return;
     const entry = c.type === 'dm' ? S.dms[c.id] : S.rooms[c.id];
     const meta = entry && entry.meta;
-    if (entry && meta && (entry.lastRead || 0) >= (meta.updatedAt || 0)) return;
+    if (!entry || !meta) return; // conversation not started yet
+    if (lastReadOf(entry) >= (meta.updatedAt || 0)) return;
     if (Date.now() - lastReadWrite < 1500) { setTimeout(markRead, 1600); return; }
     lastReadWrite = Date.now();
-    const path = c.type === 'dm' ? 'userDms/' + S.me.uid + '/' + c.id : 'userRooms/' + S.me.uid + '/' + c.id;
-    if (c.type === 'dm' && !entry) return; // conversation not started yet
-    db.ref(path + '/lastRead').set(TS).catch(() => {});
+    setDoc(doc(fs, 'readState', S.me.uid, 'convs', convKey(c)), { at: NOW() }).catch(() => {});
   }
   document.addEventListener('visibilitychange', () => { if (!document.hidden) markRead(); });
   window.addEventListener('focus', markRead);
@@ -784,12 +831,28 @@
     });
   }
 
+  // Messages in time order (ties broken by id).
+  function sortedKeys() {
+    return [...S.msgs.keys()].sort((a, b) => (S.msgs.get(a).ts - S.msgs.get(b).ts) || (a < b ? -1 : 1));
+  }
+
   function atBottom(slack) {
     const b = $('messages');
     return b.scrollHeight - b.scrollTop - b.clientHeight < (slack || 40);
   }
 
   function scrollToBottom() { const b = $('messages'); b.scrollTop = b.scrollHeight; $('jumpBtn').classList.add('hidden'); }
+
+  // Touch screens have no hover: tapping a message shows its actions.
+  const coarse = window.matchMedia('(hover: none)');
+  $('messages').addEventListener('click', (e) => {
+    if (!coarse.matches) return;
+    const msg = e.target.closest('.msg');
+    if (!msg || msg.classList.contains('system') || e.target.closest('a, button, img, .spoiler, textarea, .msg-tools')) return;
+    const open = msg.classList.contains('tools-open');
+    $('messages').querySelectorAll('.msg.tools-open').forEach((n) => n.classList.remove('tools-open'));
+    if (!open) msg.classList.add('tools-open');
+  });
 
   $('messages').addEventListener('scroll', () => {
     if (atBottom()) { $('jumpBtn').classList.add('hidden'); markRead(); }
@@ -801,7 +864,7 @@
     if (!c) return;
     const box = $('messages');
     const wasBottom = atBottom(120);
-    const keys = [...S.msgs.keys()].sort();
+    const keys = sortedKeys();
     const out = [];
     if (S.hasOlder) out.push(el('div', { class: 'load-older' }, btn('Load older messages', 'btn-sm btn-ghost', loadOlder)));
     else out.push(convStart());
@@ -909,12 +972,11 @@
       if (m.scan === 'blocked') body.append(el('div', { class: 'msg-deleted', text: 'Image removed by the automatic filter.' }));
     }
 
-    const reacts = m.reactions ? Object.entries(m.reactions).filter(([, who]) => who && Object.keys(who).length) : [];
+    const reacts = reactionsByEmoji(m);
     if (reacts.length && !m.deleted) {
-      body.append(el('div', { class: 'reactions' }, reacts.map(([emo, who]) => {
-        const uids = Object.keys(who);
+      body.append(el('div', { class: 'reactions' }, reacts.map(([emo, uids]) => {
         return el('button', {
-          class: 'reaction' + (who[S.me.uid] ? ' mine' : ''), type: 'button', title: uids.map(nameOf).join(', '),
+          class: 'reaction' + (uids.includes(S.me.uid) ? ' mine' : ''), type: 'button', title: uids.map(nameOf).join(', '),
           onclick: () => toggleReaction(key, emo)
         }, emo, el('b', { text: String(uids.length) }));
       })));
@@ -1116,14 +1178,14 @@
   function sendTyping() {
     if (!S.conv || Date.now() - typingSent < 3000) return;
     typingSent = Date.now();
-    const ref = db.ref(S.conv.base + '/typing/' + S.me.uid);
-    ref.set(Date.now()).catch(() => {});
-    ref.onDisconnect().remove();
+    const ref = R(typingPath(S.conv) + '/' + S.me.uid);
+    rtSet(ref, Date.now()).catch(() => {});
+    onDisconnect(ref).remove();
   }
   function stopTyping() {
     if (!S.conv || !typingSent) return;
     typingSent = 0;
-    db.ref(S.conv.base + '/typing/' + S.me.uid).remove().catch(() => {});
+    rtRemove(R(typingPath(S.conv) + '/' + S.me.uid)).catch(() => {});
   }
 
   function copyCode() {
@@ -1149,7 +1211,7 @@
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); }
     else if (e.key === 'Escape') { if (S.reply) { S.reply = null; renderBars(); } closePopover(); }
     else if (e.key === 'ArrowUp' && !input.value) {
-      const mine = [...S.msgs.entries()].reverse().find(([, m]) => m.from === S.me.uid && m.text && !m.deleted && !m.kind);
+      const mine = sortedKeys().reverse().map((k) => [k, S.msgs.get(k)]).find(([, m]) => m.from === S.me.uid && m.text && !m.deleted && !m.kind);
       if (mine) { e.preventDefault(); S.editing = mine[0]; scheduleRender(false); }
     }
   });
@@ -1233,36 +1295,24 @@
     return "Couldn't send that message.";
   }
 
+  // One batch: the message, the conversation's "last message" summary and my read marker.
   function postMessage(fields) {
     const c = S.conv;
     const me = S.me.uid;
-    const ref = db.ref(c.base + '/messages').push();
-    const msg = Object.assign({ from: me, ts: TS }, fields);
-    const last = { from: me, text: (fields.kind === 'system' ? nameOf(me) + ' ' : '') + (preview(fields) || '…').slice(0, 200) };
-    const up = { [c.base + '/messages/' + ref.key]: msg };
-    if (c.type === 'dm') {
-      const [a, b] = c.id.split('_');
-      up['dms/' + c.id + '/meta'] = { a, b, updatedAt: TS, last };
-      up['userDms/' + me + '/' + c.id + '/with'] = c.other;
-      up['userDms/' + me + '/' + c.id + '/updatedAt'] = TS;
-      up['userDms/' + me + '/' + c.id + '/lastRead'] = TS;
-      up['userDms/' + c.other + '/' + c.id + '/with'] = me;
-      up['userDms/' + c.other + '/' + c.id + '/updatedAt'] = TS;
-    } else {
-      up['rooms/' + c.id + '/meta/updatedAt'] = TS;
-      up['rooms/' + c.id + '/meta/last'] = last;
-      up['userRooms/' + me + '/' + c.id + '/lastRead'] = TS;
-    }
-    return db.ref().update(up);
+    const batch = writeBatch(fs);
+    batch.set(doc(collection(fs, c.base, 'messages')), Object.assign({ from: me, ts: NOW() }, fields));
+    const last = { from: me, text: (preview(fields) || '…').slice(0, 200) };
+    if (c.type === 'dm') batch.set(doc(fs, 'dms', c.id), { members: c.id.split('_'), updatedAt: NOW(), last });
+    else batch.update(doc(fs, 'rooms', c.id), { updatedAt: NOW(), last });
+    batch.set(doc(fs, 'readState', me, 'convs', convKey(c)), { at: NOW() });
+    return batch.commit();
   }
 
   function roomSystem(code, text) {
-    const ref = db.ref('rooms/' + code + '/messages').push();
-    return db.ref().update({
-      ['rooms/' + code + '/messages/' + ref.key]: { from: S.me.uid, ts: TS, kind: 'system', text },
-      ['rooms/' + code + '/meta/updatedAt']: TS,
-      ['rooms/' + code + '/meta/last']: { from: S.me.uid, text: (nameOf(S.me.uid) + ' ' + text).slice(0, 200) }
-    });
+    const batch = writeBatch(fs);
+    batch.set(doc(collection(fs, 'rooms', code, 'messages')), { from: S.me.uid, ts: NOW(), kind: 'system', text });
+    batch.update(doc(fs, 'rooms', code), { updatedAt: NOW(), last: { from: S.me.uid, text: (nameOf(S.me.uid) + ' ' + text).slice(0, 200) } });
+    return batch.commit();
   }
 
   async function runCommand(text) {
@@ -1297,7 +1347,7 @@
       const v = ta.value.trim();
       S.editing = null;
       if (!v) { scheduleRender(false); return deleteMessage(key, m); }
-      if (v !== m.text) await db.ref(S.conv.base + '/messages/' + key).update({ text: v, edited: true }).catch((err) => fail(err));
+      if (v !== m.text) await updateDoc(doc(fs, S.conv.base, 'messages', key), { text: v, edited: true }).catch((err) => fail(err));
       scheduleRender(false);
       input.focus();
     };
@@ -1314,15 +1364,25 @@
     if (!(await confirmBox('Delete message?', mine ? "This can't be undone." : 'Delete this message from ' + nameOf(m.from) + '?', 'Delete', true))) return;
     const c = S.conv;
     try {
-      await db.ref(c.base + '/messages/' + key).update({ deleted: true, text: null, image: null, sticker: null, replyTo: null, reactions: null });
+      await updateDoc(doc(fs, c.base, 'messages', key), DELETION());
       if (!mine && amMod()) logMod('delete_message', { path: c.base + '/messages/' + key, uid: m.from });
     } catch (err) { fail(err); }
   }
 
+  // reactions.{uid} is that person's list of emoji (up to 8) on the message.
   function toggleReaction(key, emo) {
     const m = S.msgs.get(key);
-    const on = m && m.reactions && m.reactions[emo] && m.reactions[emo][S.me.uid];
-    db.ref(S.conv.base + '/messages/' + key + '/reactions/' + emo + '/' + S.me.uid).set(on ? null : true).catch((err) => fail(err));
+    const mine = ((m && m.reactions && m.reactions[S.me.uid]) || []).filter((e) => e !== emo);
+    const next = mine.length === ((m && m.reactions && m.reactions[S.me.uid]) || []).length ? mine.concat(emo) : mine;
+    if (next.length > 8) { toast('That’s enough reactions on one message.'); return; }
+    updateDoc(doc(fs, S.conv.base, 'messages', key), { ['reactions.' + S.me.uid]: next.length ? next : deleteField() }).catch((err) => fail(err));
+  }
+
+  // Invert { uid: [emoji] } into [[emoji, [uid...]]] in first-seen order.
+  function reactionsByEmoji(m) {
+    const out = new Map();
+    for (const [uid, list] of Object.entries(m.reactions || {})) for (const e of list || []) { if (!out.has(e)) out.set(e, []); out.get(e).push(uid); }
+    return [...out.entries()];
   }
 
   function openReactPop(node, key, e) {
@@ -1534,7 +1594,7 @@
     try {
       const raw = await readAsDataURL(file);
       // Keep small GIFs animated; everything else gets resized.
-      entry.data = file.type === 'image/gif' && raw.length < 1400000 ? raw : await compress(raw, 1600, 1400000);
+      entry.data = file.type === 'image/gif' && raw.length < 900000 ? raw : await compress(raw, 1600, 900000);
     } catch (err) { toast(err.message || "Couldn't read that image."); return; }
     S.pendingImages.push(entry);
     renderBars();
@@ -1637,7 +1697,8 @@
       max: 20, ok: 'Open',
       check: async (v) => {
         if (!/^[A-Za-z0-9_]{3,20}$/.test(v)) return "That isn't a valid username.";
-        const uid = (await db.ref('usernames/' + v.toLowerCase()).get()).val();
+        const claim = await getDoc(doc(fs, 'usernames', v.toLowerCase()));
+        const uid = claim.exists() ? claim.data().uid : null;
         if (!uid) return 'No one has that username.';
         if (uid === S.me.uid) return "That's you!";
         target = uid;
@@ -1661,12 +1722,11 @@
       let code;
       for (let i = 0; i < 5; i++) {
         code = randomCode();
-        if (!(await db.ref('rooms/' + code + '/meta').get()).exists()) break;
+        if (!(await getDoc(doc(fs, 'rooms', code))).exists()) break;
       }
-      await db.ref().update({
-        ['rooms/' + code + '/meta']: { name: name.slice(0, 40), owner: S.me.uid, createdAt: TS },
-        ['rooms/' + code + '/members/' + S.me.uid]: 'owner',
-        ['userRooms/' + S.me.uid + '/' + code]: { lastRead: TS }
+      await setDoc(doc(fs, 'rooms', code), {
+        name: name.slice(0, 40), owner: S.me.uid, createdAt: NOW(), updatedAt: NOW(),
+        memberIds: [S.me.uid], muted: [], banned: []
       });
       await roomSystem(code, 'created the room');
       openRoom(code);
@@ -1690,12 +1750,12 @@
     if (S.rooms[code]) return openRoom(code);
     if (amBanned()) { toast('Your account is suspended.'); return openHome(); }
     try {
-      const meta = (await db.ref('rooms/' + code + '/meta').get()).val();
-      if (!meta) { toast('No room with code ' + code + '.'); return openHome(); }
-      await db.ref().update({
-        ['rooms/' + code + '/members/' + S.me.uid]: 'member',
-        ['userRooms/' + S.me.uid + '/' + code]: { lastRead: TS }
-      });
+      const snap = await getDoc(doc(fs, 'rooms', code));
+      if (!snap.exists()) { toast('No room with code ' + code + '.'); return openHome(); }
+      const meta = snap.data();
+      if (meta.memberIds.includes(S.me.uid)) return openRoom(code);
+      if (meta.banned.includes(S.me.uid)) { toast("You've been removed from that room."); return openHome(); }
+      await updateDoc(doc(fs, 'rooms', code), { memberIds: arrayUnion(S.me.uid) });
       await roomSystem(code, 'joined').catch(() => {});
       openRoom(code);
     } catch (err) {
@@ -1707,8 +1767,7 @@
   async function leaveRoom(code) {
     const r = S.rooms[code];
     const meta = r && r.meta;
-    const members = S.conv && S.conv.id === code ? S.members : ((await db.ref('rooms/' + code + '/members').get().catch(() => null)) || { val: () => ({}) }).val() || {};
-    const others = Object.keys(members).filter((u) => u !== S.me.uid);
+    const others = ((meta && meta.memberIds) || []).filter((u) => u !== S.me.uid);
     if (meta && meta.owner === S.me.uid && others.length) {
       openModal('Leave ' + meta.name + '?', el('p', { class: 'modal-text', text: "You're the host. Hand the room to someone else first, or delete it for everyone." }), [
         btn('Cancel', 'btn-ghost', closeModal),
@@ -1722,7 +1781,7 @@
     try {
       leaveVoiceIf('room', code);
       await roomSystem(code, 'left').catch(() => {});
-      await db.ref().update({ ['rooms/' + code + '/members/' + S.me.uid]: null, ['userRooms/' + S.me.uid + '/' + code]: null });
+      await updateDoc(doc(fs, 'rooms', code), { memberIds: arrayRemove(S.me.uid) });
       openHome();
     } catch (err) { fail(err); }
   }
@@ -1731,9 +1790,8 @@
     if (!skipConfirm && !(await confirmBox('Delete room?', 'This deletes the room and all its messages for everyone.', 'Delete room', true))) return;
     try {
       leaveVoiceIf('room', code);
-      await db.ref('voiceRoom/' + code + '/participants/' + S.me.uid).remove().catch(() => {});
-      await db.ref('rooms/' + code).remove();
-      await db.ref('userRooms/' + S.me.uid + '/' + code).remove().catch(() => {});
+      await rtRemove(R('voiceRoom/' + code + '/participants/' + S.me.uid)).catch(() => {});
+      await deleteDoc(doc(fs, 'rooms', code));
       if (amMod() && !(S.rooms[code] && S.rooms[code].meta && S.rooms[code].meta.owner === S.me.uid)) logMod('delete_room', { room: code });
       openHome();
     } catch (err) { fail(err); }
@@ -1781,8 +1839,8 @@
     const code = S.conv.id;
     const muted = !S.roomMuted[uid];
     try {
-      await db.ref('rooms/' + code + '/muted/' + uid).set(muted ? true : null);
-      if (muted) await db.ref('voiceRoom/' + code + '/participants/' + uid).remove().catch(() => {});
+      await updateDoc(doc(fs, 'rooms', code), { muted: muted ? arrayUnion(uid) : arrayRemove(uid) });
+      if (muted) await rtRemove(R('voiceRoom/' + code + '/participants/' + uid)).catch(() => {});
       await roomSystem(code, (muted ? 'muted ' : 'unmuted ') + nameOf(uid));
     } catch (err) { fail(err); }
   }
@@ -1791,29 +1849,21 @@
     const code = S.conv.id;
     if (!(await confirmBox('Kick ' + nameOf(uid) + '?', "They'll be removed and can't rejoin unless you allow them back.", 'Kick', true))) return;
     try {
-      await db.ref().update({
-        ['rooms/' + code + '/members/' + uid]: null,
-        ['rooms/' + code + '/banned/' + uid]: true,
-        ['userRooms/' + uid + '/' + code]: null
-      });
-      await db.ref('voiceRoom/' + code + '/participants/' + uid).remove().catch(() => {});
+      await updateDoc(doc(fs, 'rooms', code), { memberIds: arrayRemove(uid), muted: arrayRemove(uid), banned: arrayUnion(uid) });
+      await rtRemove(R('voiceRoom/' + code + '/participants/' + uid)).catch(() => {});
       await roomSystem(code, 'kicked ' + nameOf(uid));
     } catch (err) { fail(err); }
   }
 
   async function unbanFromRoom(uid) {
-    try { await db.ref('rooms/' + S.conv.id + '/banned/' + uid).remove(); toast(nameOf(uid) + ' can rejoin now.'); } catch (err) { fail(err); }
+    try { await updateDoc(doc(fs, 'rooms', S.conv.id), { banned: arrayRemove(uid) }); toast(nameOf(uid) + ' can rejoin now.'); } catch (err) { fail(err); }
   }
 
   async function transferHost(uid) {
     const code = S.conv.id;
     if (!(await confirmBox('Make ' + nameOf(uid) + ' the host?', "You'll lose host controls for this room.", 'Transfer'))) return;
     try {
-      await db.ref().update({
-        ['rooms/' + code + '/meta/owner']: uid,
-        ['rooms/' + code + '/members/' + uid]: 'owner',
-        ['rooms/' + code + '/members/' + S.me.uid]: 'member'
-      });
+      await updateDoc(doc(fs, 'rooms', code), { owner: uid });
       await roomSystem(code, 'made ' + nameOf(uid) + ' the host');
     } catch (err) { fail(err); }
   }
@@ -1823,7 +1873,7 @@
     const meta = S.rooms[code].meta;
     const name = await promptBox('Rename room', 'Room name', { max: 40, value: meta.name, ok: 'Save' });
     if (!name || name === meta.name) return;
-    try { await db.ref('rooms/' + code + '/meta/name').set(name); await roomSystem(code, 'renamed the room to ' + name); } catch (err) { fail(err); }
+    try { await updateDoc(doc(fs, 'rooms', code), { name }); await roomSystem(code, 'renamed the room to ' + name); } catch (err) { fail(err); }
   }
 
   $('convMenuBtn').addEventListener('click', () => {
@@ -1872,7 +1922,8 @@
   async function setBlocked(uid, on) {
     if (on && !(await confirmBox('Block ' + nameOf(uid) + '?', "They won't be able to DM you or call you, and their room messages will be hidden for you.", 'Block', true))) return;
     try {
-      await db.ref('blocks/' + S.me.uid + '/' + uid).set(on ? true : null);
+      const bref = doc(fs, 'blocks', S.me.uid, 'users', uid);
+      await (on ? setDoc(bref, { createdAt: NOW() }) : deleteDoc(bref));
       if (on && voice && voice.peers.has(uid)) closePeer(uid);
       toast(on ? nameOf(uid) + ' is blocked.' : nameOf(uid) + ' is unblocked.');
       renderConvBanner();
@@ -1911,14 +1962,14 @@
       if (m.text) snapshot.text = m.text;
       if (m.image) snapshot.image = m.image;
       if (m.sticker) snapshot.sticker = m.sticker;
-      await db.ref('reports').push({ by: S.me.uid, ts: TS, type: 'message', reason, note: note || null, target: m.from, path, snapshot, status: 'open' });
+      await addDoc(collection(fs, 'reports'), clean({ by: S.me.uid, ts: NOW(), type: 'message', reason, note: note || null, target: m.from, path, snapshot, status: 'open' }));
       if (!isBlocked(m.from)) setTimeout(() => offerBlock(m.from), 400);
     });
   }
 
   function reportUser(uid) {
     reportForm('Report ' + nameOf(uid), 'Report this account. To report a specific message, use the ⚑ button on it instead.', async (reason, note) => {
-      await db.ref('reports').push({ by: S.me.uid, ts: TS, type: 'user', reason, note: note || null, target: uid, status: 'open' });
+      await addDoc(collection(fs, 'reports'), clean({ by: S.me.uid, ts: NOW(), type: 'user', reason, note: note || null, target: uid, status: 'open' }));
       if (!isBlocked(uid)) setTimeout(() => offerBlock(uid), 400);
     });
   }
@@ -1926,7 +1977,7 @@
   function offerBlock(uid) {
     openModal('Block ' + nameOf(uid) + ' too?', el('p', { class: 'modal-text', text: "Blocking stops them DMing or calling you and hides their messages in rooms." }), [
       btn('No thanks', 'btn-ghost', closeModal),
-      btn('Block', 'btn-accent', async () => { closeModal(); await db.ref('blocks/' + S.me.uid + '/' + uid).set(true).catch((e) => fail(e)); toast(nameOf(uid) + ' is blocked.'); })
+      btn('Block', 'btn-accent', async () => { closeModal(); await setDoc(doc(fs, 'blocks', S.me.uid, 'users', uid), { createdAt: NOW() }).catch((e) => fail(e)); toast(nameOf(uid) + ' is blocked.'); })
     ]);
   }
 
@@ -1942,15 +1993,13 @@
       $('modCount').textContent = n > 99 ? '99+' : String(n);
       $('modCount').classList.toggle('hidden', !n);
     };
-    const rq = db.ref('reports').orderByChild('status').equalTo('open');
-    const fq = db.ref('flags').orderByChild('status').equalTo('open');
-    const h1 = rq.on('value', (s) => { counts.reports = s.numChildren(); draw(); if (modTab === 'reports') drawModTab(); }, () => {});
-    const h2 = fq.on('value', (s) => { counts.flags = s.numChildren(); draw(); if (modTab === 'flags') drawModTab(); }, () => {});
-    modSub = () => { rq.off('value', h1); fq.off('value', h2); };
+    const u1 = onSnapshot(query(collection(fs, 'reports'), where('status', '==', 'open')), (qs) => { counts.reports = qs.size; draw(); if (modTab === 'reports') drawModTab(); }, () => {});
+    const u2 = onSnapshot(query(collection(fs, 'flags'), where('status', '==', 'open')), (qs) => { counts.flags = qs.size; draw(); if (modTab === 'flags') drawModTab(); }, () => {});
+    modSub = () => { u1(); u2(); };
   }
 
   function logMod(action, details) {
-    return db.ref('modLog').push(Object.assign({ by: S.me.uid, ts: TS, action }, details || {})).catch(() => {});
+    return addDoc(collection(fs, 'modLog'), clean(Object.assign({ by: S.me.uid, ts: NOW(), action }, details || {}))).catch(() => {});
   }
 
   let modTab = null, modBody = null, modQuery = '';
@@ -1974,17 +2023,15 @@
     modBody.replaceChildren(el('p', { class: 'side-empty', text: 'Loading…' }));
     try {
       if (tab === 'reports') {
-        const s = await db.ref('reports').orderByChild('status').equalTo('open').get();
-        const list = [];
-        s.forEach((c) => { list.push([c.key, c.val()]); });
+        const qs = await getDocs(query(collection(fs, 'reports'), where('status', '==', 'open')));
+        const list = qs.docs.map((d) => [d.id, norm(d)]);
         list.sort((a, b) => (b[1].priority ? 1 : 0) - (a[1].priority ? 1 : 0) || b[1].ts - a[1].ts);
         list.forEach(([, r]) => { watchUser(r.by); watchUser(r.target); });
         if (modTab !== tab) return;
         modBody.replaceChildren(...(list.length ? list.map(([id, r]) => reportCard(id, r)) : [el('p', { class: 'side-empty', text: 'No open reports. Nice.' })]));
       } else if (tab === 'flags') {
-        const s = await db.ref('flags').orderByChild('status').equalTo('open').get();
-        const list = [];
-        s.forEach((c) => { list.push([c.key, c.val()]); });
+        const qs = await getDocs(query(collection(fs, 'flags'), where('status', '==', 'open')));
+        const list = qs.docs.map((d) => [d.id, norm(d)]);
         list.sort((a, b) => b[1].ts - a[1].ts).forEach(([, f]) => watchUser(f.uid));
         if (modTab !== tab) return;
         modBody.replaceChildren(el('p', { class: 'field-hint', text: 'Images the server scanner removed or could not check. The images themselves are already gone.' }),
@@ -1994,7 +2041,7 @@
             el('p', { class: 'field-hint', text: f.where }),
             el('div', { class: 'mod-actions' },
               btn('View user', 'btn-sm btn-ghost', () => { modQuery = nameOf(f.uid); modTab = 'users'; openModPanel('users', modQuery); }),
-              btn('Done', 'btn-sm btn-primary', async () => { await db.ref('flags/' + id).update({ status: 'resolved' }).catch(fail); drawModTab(); }))))
+              btn('Done', 'btn-sm btn-primary', async () => { await updateDoc(doc(fs, 'flags', id), { status: 'resolved' }).catch(fail); drawModTab(); }))))
             : [el('p', { class: 'side-empty', text: 'Nothing flagged.' })]));
       } else if (tab === 'users') {
         const inputEl = el('input', { class: 'input', placeholder: 'Username', value: modQuery });
@@ -2002,11 +2049,14 @@
         const look = async () => {
           modQuery = inputEl.value.trim();
           if (!modQuery) return;
-          const uid = (await db.ref('usernames/' + modQuery.toLowerCase()).get()).val();
+          const claim = await getDoc(doc(fs, 'usernames', modQuery.toLowerCase()));
+          const uid = claim.exists() ? claim.data().uid : null;
           if (!uid) { out.replaceChildren(el('p', { class: 'side-empty', text: 'No such user.' })); return; }
           watchUser(uid); watchCustoms(uid);
-          const [u, strikes, customs] = await Promise.all([db.ref('users/' + uid).get(), db.ref('strikes/' + uid).get(), db.ref('customs/' + uid).get()]);
-          out.replaceChildren(userModCard(uid, u.val() || {}, strikes.val() || 0, customs.val() || {}));
+          const [u, strikes, customs] = await Promise.all([getDoc(doc(fs, 'users', uid)), getDoc(doc(fs, 'strikes', uid)), getDocs(collection(fs, 'customs', uid, 'items'))]);
+          const items = {};
+          customs.forEach((d) => { items[d.id] = norm(d); });
+          out.replaceChildren(userModCard(uid, norm(u) || {}, strikes.exists() ? strikes.data().count || 0 : 0, items));
         };
         inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') look(); });
         modBody.replaceChildren(el('div', { class: 'row' }, inputEl, btn('Look up', 'btn-primary', look)), out);
@@ -2020,9 +2070,8 @@
           el('div', { class: 'mod-actions' }, btn('Lift suspension', 'btn-sm btn-outline', () => setBan(uid, false)))))
           : [el('p', { class: 'side-empty', text: 'No one is suspended.' })]));
       } else if (tab === 'log') {
-        const s = await db.ref('modLog').orderByKey().limitToLast(60).get();
-        const list = [];
-        s.forEach((c) => { list.unshift(c.val()); });
+        const qs = await getDocs(query(collection(fs, 'modLog'), orderBy('ts', 'desc'), limit(60)));
+        const list = qs.docs.map((d) => norm(d));
         list.forEach((l) => { watchUser(l.by); if (l.uid) watchUser(l.uid); });
         if (modTab !== tab) return;
         modBody.replaceChildren(...(list.length ? list.map((l) => el('p', { class: 'mod-log' },
@@ -2056,7 +2105,7 @@
     const ev = r.evidence && !r.evidence.missing ? r.evidence : null;
     const setStatus = async (status, action) => {
       try {
-        await db.ref('reports/' + id).update({ status, resolvedBy: S.me.uid, resolvedAt: TS, action: action || status });
+        await updateDoc(doc(fs, 'reports', id), { status, resolvedBy: S.me.uid, resolvedAt: NOW(), action: action || status });
         logMod(status === 'dismissed' ? 'dismiss_report' : 'resolve_report', { uid: r.target, reason: action || null });
         drawModTab();
       } catch (err) { fail(err); }
@@ -2072,7 +2121,7 @@
       r.priority ? el('p', { class: 'field-hint urgent-note', text: 'Suspected child abuse material: suspend the account, then report it to the authorities (see firebase/SAFETY.md). Keep the report; do not download or share the image.' }) : null,
       el('div', { class: 'mod-actions' },
         r.path ? btn('Delete message', 'btn-sm btn-outline', async () => {
-          try { await db.ref(r.path).update({ deleted: true, text: null, image: null, sticker: null }); logMod('delete_message', { path: r.path, uid: r.target }); toast('Message deleted.'); } catch (err) { fail(err, 'Message is already gone.'); }
+          try { await updateDoc(doc(fs, r.path), DELETION()); logMod('delete_message', { path: r.path, uid: r.target }); toast('Message deleted.'); } catch (err) { fail(err, 'Message is already gone.'); }
         }) : null,
         S.bans[r.target] || r.target === S.me.uid ? null : btn('Suspend user', 'btn-sm btn-accent', () => setBan(r.target, true, REASON_LABEL[r.reason])),
         btn('Dismiss', 'btn-sm btn-ghost', () => setStatus('dismissed')),
@@ -2087,12 +2136,12 @@
       u.bio ? el('p', { class: 'modal-text', text: u.bio }) : null,
       el('div', { class: 'mod-actions' },
         S.bans[uid] ? btn('Lift suspension', 'btn-sm btn-outline', () => setBan(uid, false)) : btn('Suspend', 'btn-sm btn-accent', () => setBan(uid, true)),
-        u.avatar ? btn('Remove avatar', 'btn-sm btn-outline', async () => { await db.ref('users/' + uid).update({ avatar: null, avatarScan: null }).catch(fail); logMod('remove_avatar', { uid }); drawModTab(); }) : null,
-        strikes ? btn('Clear strikes', 'btn-sm btn-ghost', async () => { await db.ref('strikes/' + uid).remove().catch(fail); logMod('clear_strikes', { uid }); drawModTab(); }) : null,
+        u.avatar ? btn('Remove avatar', 'btn-sm btn-outline', async () => { await updateDoc(doc(fs, 'users', uid), { avatar: deleteField(), avatarScan: deleteField() }).catch(fail); logMod('remove_avatar', { uid }); drawModTab(); }) : null,
+        strikes ? btn('Clear strikes', 'btn-sm btn-ghost', async () => { await deleteDoc(doc(fs, 'strikes', uid)).catch(fail); logMod('clear_strikes', { uid }); drawModTab(); }) : null,
         btn('Message', 'btn-sm btn-ghost', () => { closeModal(); openDm(uid); })),
       items.length ? el('div', null, el('p', { class: 'side-title', text: 'Custom emoji & stickers' }), el('div', { class: 'customs-grid' }, items.map(([id, it]) =>
         el('div', { class: 'custom-item' }, el('img', { src: it.data, alt: it.name }), el('span', { text: it.name + (it.scan !== 'ok' ? ' (' + it.scan + ')' : '') }),
-          btn('Remove', 'btn-sm btn-ghost', async () => { await db.ref('customs/' + uid + '/' + id).remove().catch(fail); logMod('remove_custom', { uid }); drawModTab(); }))))) : null);
+          btn('Remove', 'btn-sm btn-ghost', async () => { await deleteDoc(doc(fs, 'customs', uid, 'items', id)).catch(fail); logMod('remove_custom', { uid }); drawModTab(); }))))) : null);
   }
 
   async function setBan(uid, on, suggested) {
@@ -2101,11 +2150,11 @@
       if (on) {
         const reason = await promptBox('Suspend ' + nameOf(uid), 'Reason (shown to them)', { max: 200, value: suggested || '', ok: 'Suspend' });
         if (!reason) return;
-        await db.ref('bans/' + uid).set({ by: S.me.uid, ts: TS, reason });
+        await setDoc(doc(fs, 'bans', uid), { by: S.me.uid, ts: NOW(), reason });
         logMod('suspend', { uid, reason });
         toast(nameOf(uid) + ' is suspended.');
       } else {
-        await db.ref('bans/' + uid).remove();
+        await deleteDoc(doc(fs, 'bans', uid));
         logMod('unsuspend', { uid });
         toast('Suspension lifted.');
       }
@@ -2132,7 +2181,7 @@
         if (amBanned()) throw new Error('Your account is suspended.');
         const data = await compress(await readAsDataURL(f), 128, 58000, true);
         if ((await classify(data)) === 'flagged') { toast("That picture can't be used."); return; }
-        await db.ref('users/' + S.me.uid).update({ avatar: data, avatarScan: 'pending' });
+        await updateDoc(doc(fs, 'users', S.me.uid), { avatar: data, avatarScan: 'pending' });
         toast(SERVER_SCAN ? 'Avatar updated. Others see it once it has been checked.' : 'Avatar updated.');
         setTimeout(drawAv, 300);
       } catch (err) { fail(err, err.message); }
@@ -2152,12 +2201,12 @@
       el('p', { class: 'side-title', text: 'Profile' }),
       el('div', { class: 'row' }, avHost, el('div', { class: 'stack' },
         btn('Upload picture', 'btn-sm btn-outline', () => avInput.click()),
-        p.avatar ? btn('Remove picture', 'btn-sm btn-ghost', async () => { await db.ref('users/' + S.me.uid).update({ avatar: null, avatarScan: null }).catch(fail); setTimeout(drawAv, 300); }) : null,
+        p.avatar ? btn('Remove picture', 'btn-sm btn-ghost', async () => { await updateDoc(doc(fs, 'users', S.me.uid), { avatar: deleteField(), avatarScan: deleteField() }).catch(fail); setTimeout(drawAv, 300); }) : null,
         avInput)),
       el('div', { class: 'field' }, el('label', { text: 'Colour' }), sw),
       el('div', { class: 'field' }, el('label', { text: 'Bio' }), bio),
       btn('Save profile', 'btn-primary', async () => {
-        try { await db.ref('users/' + S.me.uid).update({ color, bio: bio.value.trim() || null }); toast('Profile saved.'); } catch (err) { fail(err); }
+        try { await updateDoc(doc(fs, 'users', S.me.uid), { color, bio: bio.value.trim() || deleteField() }); toast('Profile saved.'); } catch (err) { fail(err); }
       }),
 
       el('p', { class: 'side-title', text: 'Notifications' }),
@@ -2199,9 +2248,9 @@
     [btn('Cancel', 'btn-ghost', closeModal), btn('Change', 'btn-primary', async () => {
       if (next.value.length < 8) { err.textContent = 'Use at least 8 characters.'; return; }
       try {
-        const cred = firebase.auth.EmailAuthProvider.credential(S.me.email, cur.value);
-        await S.me.reauthenticateWithCredential(cred);
-        await S.me.updatePassword(next.value);
+        const cred = EmailAuthProvider.credential(S.me.email, cur.value);
+        await reauthenticateWithCredential(S.me, cred);
+        await updatePassword(S.me, next.value);
         closeModal(); toast('Password changed.');
       } catch (e) { err.textContent = /wrong-password|invalid-credential/.test(e.code || '') ? 'Current password is wrong.' : (e.message || 'Something went wrong.'); }
     })]);
@@ -2210,8 +2259,8 @@
   async function signOut() {
     closeModal();
     await disablePush(true).catch(() => {});
-    await db.ref('status/' + S.me.uid).set({ online: false, lastChanged: TS }).catch(() => {});
-    await auth.signOut();
+    await rtSet(R('status/' + S.me.uid), { online: false, lastChanged: rtNow() }).catch(() => {});
+    await fbSignOut(auth);
     setHash('');
   }
 
@@ -2225,7 +2274,7 @@
         el('img', { src: it.data, alt: it.name }),
         el('span', { text: (isEmoji ? ':' + it.name + ':' : it.name) }),
         it.scan !== 'ok' && SERVER_SCAN ? el('small', { class: 'field-hint', text: 'being checked' }) : null,
-        btn('Delete', 'btn-sm btn-ghost', () => db.ref('customs/' + S.me.uid + '/' + id).remove().then(draw).catch(fail))))
+        btn('Delete', 'btn-sm btn-ghost', () => deleteDoc(doc(fs, 'customs', S.me.uid, 'items', id)).then(draw).catch(fail))))
         : [el('p', { class: 'side-empty', text: isEmoji ? 'No custom emoji yet.' : 'No custom stickers yet.' })]));
     };
     fileIn.addEventListener('change', async () => {
@@ -2243,7 +2292,7 @@
           const raw = await readAsDataURL(f);
           const data = f.type === 'image/gif' && raw.length < 290000 ? raw : await compress(raw, isEmoji ? 96 : 320, 290000);
           if ((await classify(data)) === 'flagged') { toast("That image can't be used."); continue; }
-          await db.ref('customs/' + S.me.uid).push({ kind, name, data, scan: 'pending', createdAt: TS });
+          await addDoc(collection(fs, 'customs', S.me.uid, 'items'), { kind, name, data, scan: 'pending', createdAt: NOW() });
         } catch (err) { fail(err, err.message); }
       }
       openCustomsManager(kind);
@@ -2258,9 +2307,9 @@
   // ---------- Push notifications (Firebase Cloud Messaging) ----------
 
   let messaging = null;
-  function getMessaging() {
+  async function pushMessaging() {
     if (messaging) return messaging;
-    try { messaging = firebase.messaging(); } catch (e) { messaging = null; }
+    try { if (await messagingSupported()) messaging = getMessaging(app); } catch (e) { messaging = null; }
     return messaging;
   }
 
@@ -2275,17 +2324,17 @@
     if (!('serviceWorker' in navigator)) throw new Error('This browser can’t do push notifications.');
     const perm = silent ? Notification.permission : await Notification.requestPermission();
     if (perm !== 'granted') throw new Error('Notifications are blocked for this site in your browser settings.');
-    const m = getMessaging();
+    const m = await pushMessaging();
     if (!m) throw new Error('This browser can’t do push notifications.');
     const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js');
-    const token = await m.getToken(Object.assign({ serviceWorkerRegistration: reg }, VAPID_KEY ? { vapidKey: VAPID_KEY } : {}));
+    const token = await getToken(m, Object.assign({ serviceWorkerRegistration: reg }, VAPID_KEY ? { vapidKey: VAPID_KEY } : {}));
     if (!token) throw new Error('Couldn’t turn on notifications.');
-    await db.ref('fcmTokens/' + S.me.uid + '/' + token).set(true);
+    await setDoc(doc(fs, 'fcmTokens', S.me.uid, 'tokens', token), { createdAt: NOW() });
     try { localStorage.setItem('chat.push.' + S.me.uid, token); } catch (e) { /* ignore */ }
     S.pushOn = true;
     if (!pushListening) {
       pushListening = true;
-      m.onMessage((payload) => {
+      onMessage(m, (payload) => {
         const n = payload.notification || {};
         const link = (payload.fcmOptions && payload.fcmOptions.link) || '';
         const hash = link.includes('#') ? link.slice(link.indexOf('#')) : '';
@@ -2301,9 +2350,9 @@
     let token = null;
     try { token = localStorage.getItem('chat.push.' + S.me.uid); localStorage.removeItem('chat.push.' + S.me.uid); } catch (e) { /* ignore */ }
     S.pushOn = false;
-    if (token) await db.ref('fcmTokens/' + S.me.uid + '/' + token).remove().catch(() => {});
-    const m = getMessaging();
-    if (m) await m.deleteToken().catch(() => {});
+    if (token) await deleteDoc(doc(fs, 'fcmTokens', S.me.uid, 'tokens', token)).catch(() => {});
+    const m = await pushMessaging();
+    if (m) await deleteToken(m).catch(() => {});
     if (!quiet) toast('Push notifications are off.');
   }
 
@@ -2382,13 +2431,13 @@
     const base = voiceBase(scope, id);
     const me = S.me.uid;
     const v = voice = { scope, id, base, session: randomId(), stream, peers: new Map(), muted: false, deafened: false, parts: {}, unsubs: [], seen: new Set(), chain: Promise.resolve(), meters: {}, speaking: {} };
-    const myRef = db.ref(base + '/participants/' + me);
-    const inbox = db.ref(base + '/signals/' + me);
+    const myRef = R(base + '/participants/' + me);
+    const inbox = R(base + '/signals/' + me);
     try {
-      await inbox.remove().catch(() => {});
-      await myRef.onDisconnect().remove();
-      await inbox.onDisconnect().remove();
-      await myRef.set({ joinedAt: TS, session: v.session, muted: false });
+      await rtRemove(inbox).catch(() => {});
+      await onDisconnect(myRef).remove();
+      await onDisconnect(inbox).remove();
+      await rtSet(myRef, { joinedAt: rtNow(), session: v.session, muted: false });
     } catch (err) {
       stream.getTracks().forEach((t) => t.stop());
       if (voice === v) voice = null;
@@ -2397,9 +2446,8 @@
       return;
     }
     if (voice !== v) return;
-    sub(v.unsubs, db.ref(base + '/participants'), 'value', (s) => onParticipants(v, s.val() || {}));
-    sub(v.unsubs, inbox, 'child_added', (s) => handleSignals(v, s));
-    sub(v.unsubs, inbox, 'child_changed', (s) => handleSignals(v, s));
+    sub(v.unsubs, R(base + '/participants'), (s) => onParticipants(v, s.val() || {}));
+    v.unsubs.push(onChildAdded(inbox, (s) => handleSignals(v, s)), onChildChanged(inbox, (s) => handleSignals(v, s)));
     watchSpeaking(v, me, stream);
     v.meterTimer = setInterval(() => updateSpeaking(v), 150);
     renderVoice(); renderConvHead(); queueRerender();
@@ -2417,10 +2465,10 @@
     Object.values(v.meters).forEach((m) => { try { m.ctx.close(); } catch (e) { /* ignore */ } });
     v.stream.getTracks().forEach((t) => t.stop());
     if (S.me) {
-      const myRef = db.ref(v.base + '/participants/' + S.me.uid);
-      const inbox = db.ref(v.base + '/signals/' + S.me.uid);
-      myRef.onDisconnect().cancel(); inbox.onDisconnect().cancel();
-      await Promise.all([myRef.remove().catch(() => {}), inbox.remove().catch(() => {})]);
+      const myRef = R(v.base + '/participants/' + S.me.uid);
+      const inbox = R(v.base + '/signals/' + S.me.uid);
+      onDisconnect(myRef).cancel(); onDisconnect(inbox).cancel();
+      await Promise.all([rtRemove(myRef).catch(() => {}), rtRemove(inbox).catch(() => {})]);
     }
     renderVoice(); renderConvHead(); queueRerender();
   }
@@ -2445,7 +2493,7 @@
   }
 
   function sendSignal(v, to, data) {
-    return db.ref(v.base + '/signals/' + to + '/' + S.me.uid).push(Object.assign({ session: v.session, ts: TS }, data)).catch((err) => console.warn('signal', err));
+    return rtPush(R(v.base + '/signals/' + to + '/' + S.me.uid), Object.assign({ session: v.session, ts: rtNow() }, data)).catch((err) => console.warn('signal', err));
   }
 
   function createPeer(v, uid, session, initiator) {
@@ -2497,7 +2545,7 @@
       if (v.seen.has(key)) return;
       v.seen.add(key);
       const sig = sigSnap.val();
-      sigSnap.ref.remove().catch(() => {});
+      rtRemove(sigSnap.ref).catch(() => {});
       v.chain = v.chain.then(() => processSignal(v, from, sig)).catch((err) => console.warn('signal handling', err));
     });
   }
@@ -2563,7 +2611,7 @@
     if (!voice) return;
     voice.muted = on;
     voice.stream.getAudioTracks().forEach((t) => { t.enabled = !on; });
-    db.ref(voice.base + '/participants/' + S.me.uid + '/muted').set(on).catch(() => {});
+    rtSet(R(voice.base + '/participants/' + S.me.uid + '/muted'), on).catch(() => {});
     renderVoice();
   }
 

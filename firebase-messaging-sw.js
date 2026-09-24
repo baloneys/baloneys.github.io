@@ -1,7 +1,7 @@
 // Service worker for chat push notifications (Firebase Cloud Messaging).
 // It must live at the site root so it can show notifications for /chat.
-importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js');
 
 firebase.initializeApp({
   apiKey: 'AIzaSyBriW88c6W9_6pc0AFEj0Xs0vPb2hcbJnw',

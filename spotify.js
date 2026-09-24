@@ -8,7 +8,7 @@
   var CONFIG = {
     playlistId: '1TvmUKdRCv9QvYrCp8p64o',
     // From https://developer.spotify.com/dashboard. Leave empty to show only the official player.
-    clientId: '',
+    clientId: '1a28896a59e84cc4b9a700c6030f4158',
     redirectUri: location.origin + '/',
     startVolume: 0.3,
     scopes: 'streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state'

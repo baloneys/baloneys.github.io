@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pong | baloneys</title>
-    <meta name="description" content="Pong against the CPU, a friend on the same keyboard, or online." />
+    <title>Battleships | baloneys</title>
+    <meta name="description" content="Battleships against a smart CPU or a friend online." />
     <meta name="theme-color" content="#050505" />
-    <meta property="og:title" content="Pong | baloneys" />
-    <meta property="og:description" content="Pong against the CPU, a friend on the same keyboard, or online." />
-    <link rel="canonical" href="https://kanaris-beans.com/pong" />
+    <meta property="og:title" content="Battleships | baloneys" />
+    <meta property="og:description" content="Battleships against a smart CPU or a friend online." />
+    <link rel="canonical" href="https://kanaris-beans.com/battleships" />
     <link rel="icon" href="public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" sizes="32x32" />
 
     <script>document.documentElement.classList.remove("no-js")</script>
@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="games.css" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
     <script src="games-common.js" defer></script>
-    <script src="pong.js" defer></script>
+    <script src="battleships.js" defer></script>
   </head>
   <body>
     <!-- shared icons -->
@@ -53,9 +53,9 @@
         </a>
         <div class="navigation-desktop-menu">
           <a href="index.html" class="navigation-link is-straya">Straya</a>
-          <a href="pong" class="navigation-link" aria-current="page">Pong</a>
+          <a href="pong" class="navigation-link">Pong</a>
           <a href="tetris" class="navigation-link">Tetris</a>
-          <a href="battleships" class="navigation-link">Battleships</a>
+          <a href="battleships" class="navigation-link" aria-current="page">Battleships</a>
           <a href="chess" class="navigation-link">Chess</a>
           <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="btn btn-sm btn-primary">Contact Me</a>
         </div>
@@ -75,9 +75,9 @@
       <div class="navigation-mobile-content">
         <div class="navigation-mobile-links">
           <a href="index.html" class="navigation-mobile-link">Straya</a>
-          <a href="pong" class="navigation-mobile-link" aria-current="page">Pong</a>
+          <a href="pong" class="navigation-mobile-link">Pong</a>
           <a href="tetris" class="navigation-mobile-link">Tetris</a>
-          <a href="battleships" class="navigation-mobile-link">Battleships</a>
+          <a href="battleships" class="navigation-mobile-link" aria-current="page">Battleships</a>
           <a href="chess" class="navigation-mobile-link">Chess</a>
         </div>
         <div class="navigation-mobile-actions">
@@ -89,41 +89,20 @@
     <main id="main">
       <div class="game-page">
         <header class="game-head">
-          <h1 class="game-title">pong</h1>
-          <p class="game-tagline">first to the target wins. rally to 69 for a surprise.</p>
+          <h1 class="game-title">battleships</h1>
+          <p class="game-tagline">hits keep your turn. sink the whole fleet to win.</p>
         </header>
         <section class="panel" id="menuPanel">
           <h2 class="panel-title">Pick a mode</h2>
           <div class="mode-grid">
             <button class="mode-card" id="modeCpu" type="button"><strong>vs CPU</strong><span>One player</span></button>
-            <button class="mode-card" id="modeLocal" type="button"><strong>Local</strong><span>Two players, one keyboard</span></button>
             <button class="mode-card" id="modeOnline" type="button"><strong>Online</strong><span>Play a friend</span></button>
           </div>
           <div class="option-row" id="difficultyChips">
             <span class="option-label">CPU difficulty</span>
-            <button class="chip" data-value="easy">Easy</button><button class="chip" data-value="normal">Normal</button><button class="chip" data-value="hard">Hard</button>
+            <button class="chip" data-value="easy">Easy</button><button class="chip" data-value="hard">Hard</button>
           </div>
-          <div class="option-row" id="targetChips">
-            <span class="option-label">Match length</span>
-            <button class="chip" data-value="5">First to 5</button><button class="chip" data-value="7">First to 7</button><button class="chip" data-value="11">First to 11</button><button class="chip" data-value="inf">Endless</button>
-          </div>
-          <div class="ball-picker">
-            <div class="option-row"><span class="option-label">Ball</span></div>
-            <div class="skin-row" id="skinRow"></div>
-            <div class="ball-add">
-              <button class="btn btn-sm btn-outline" id="uploadBall" type="button">Upload image or GIF</button>
-              <button class="btn btn-sm btn-outline" id="gifBall" type="button">Search GIFs</button>
-              <form class="emoji-form" id="emojiForm">
-                <input class="text-input" id="emojiInput" maxlength="16" placeholder="😀" aria-label="Emoji ball">
-                <button class="btn btn-sm btn-outline" type="submit">Use emoji</button>
-              </form>
-            </div>
-            <div class="gif-panel hidden" id="gifPanel">
-              <input class="text-input" id="gifSearch" type="search" placeholder="Search Giphy… (empty shows trending)" aria-label="Search GIFs">
-              <div class="gif-results" id="gifResults"></div>
-              <p class="gif-credit">GIFs powered by GIPHY</p>
-            </div>
-          </div>
+          <p class="notice" id="menuStats"></p>
         </section>
 
         <section class="panel hidden" id="onlinePanel">
@@ -145,32 +124,67 @@
             <p class="notice" style="margin-top:0">Share this code (click to copy)</p>
             <span class="lobby-code" id="lobbyCode" title="Copy code">-----</span>
           </div>
-          <p class="notice" id="lobbyTarget"></p>
+          
           <ul class="lobby-players" id="lobbyPlayers"></ul>
           <div class="actions">
             <button class="btn btn-primary" id="readyBtn" type="button">Ready</button>
             <button class="btn btn-outline" id="lobbyLeave" type="button">Leave</button>
           </div>
         </section>
-        <section class="hidden" id="gameView">
+        <section class="hidden" id="placeView">
+          <div class="bs-layout">
+            <div>
+              <h2 class="bs-heading">Place your fleet</h2>
+              <div class="bs-grid" id="placeGrid"></div>
+            </div>
+            <aside class="bs-side">
+              <p class="notice" style="margin:0 0 var(--spacing-md);text-align:left">Pick a ship, then click the grid. Click a placed ship to move it. <kbd>R</kbd> rotates.</p>
+              <div class="ship-picker" id="shipPicker"></div>
+              <div class="actions" style="justify-content:flex-start">
+                <button class="btn btn-sm btn-outline" id="rotateBtn" type="button">↔ Horizontal</button>
+                <button class="btn btn-sm btn-outline" id="randomBtn" type="button">Randomise</button>
+                <button class="btn btn-sm btn-outline" id="clearBtn" type="button">Clear</button>
+              </div>
+              <p class="notice" id="placeStatus" style="text-align:left"></p>
+              <div class="actions" style="justify-content:flex-start">
+                <button class="btn btn-primary" id="readyFleet" type="button" disabled>Start battle</button>
+                <button class="btn btn-outline" id="placeBack" type="button">Menu</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="hidden" id="battleView">
           <div class="hud">
-            <div class="hud-group"><span class="hud-stat"><span id="name1">P1</span> <b id="score1">0</b></span><span class="hud-stat"><b id="score2">0</b> <span id="name2">P2</span></span></div>
-            <div class="hud-group"><span class="hud-stat" id="targetLabel"></span><span class="hud-stat">rally <b id="rally">0</b></span><span class="hud-stat">best <b id="best">0</b></span></div>
+            <div class="hud-group"><span class="hud-stat bs-turn" id="turnText"></span></div>
             <div class="hud-group">
               <button class="btn btn-sm btn-outline" id="soundBtn" type="button">Sound</button>
-              <button class="btn btn-sm btn-outline" id="pauseBtn" type="button">Pause</button>
               <button class="btn btn-sm btn-outline" id="quitBtn" type="button">Quit</button>
             </div>
           </div>
-          <div class="stage">
-            <canvas id="pongCanvas" aria-label="Pong court"></canvas>
-            <div class="overlay hidden" id="overlay">
-              <h2 id="overlayTitle"></h2>
-              <p id="overlayText"></p>
-              <div class="actions" id="overlayActions" style="margin-top:0"></div>
+          <div class="bs-battle">
+            <div class="bs-board-wrap">
+              <h2 class="bs-heading" id="enemyLabel">Enemy waters</h2>
+              <div class="bs-grid" id="enemyGrid"></div>
+              <ul class="fleet-status" id="enemyFleet"></ul>
+            </div>
+            <div class="bs-board-wrap small">
+              <h2 class="bs-heading" id="myLabel">Your fleet</h2>
+              <div class="bs-grid" id="ownGrid"></div>
+              <ul class="fleet-status" id="myFleet"></ul>
+              <ol class="bs-log" id="battleLog"></ol>
             </div>
           </div>
-          <p class="controls-help" id="help"></p>
+          <div class="bs-overlay-anchor">
+            <div class="overlay hidden" id="overlay" style="position:fixed">
+              <h2 id="overlayTitle"></h2>
+              <p id="overlayText"></p>
+              <div class="actions" style="margin-top:0">
+                <button class="btn btn-primary" id="againBtn" type="button">Play again</button>
+                <button class="btn btn-outline" id="menuBtn" type="button">Menu</button>
+              </div>
+            </div>
+          </div>
         </section>
       </div>
     </main>

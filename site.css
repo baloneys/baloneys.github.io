@@ -1,0 +1,341 @@
+/*
+  site.css — shared baloneys theme layer for the standalone pages
+  (terms, privacy, speen, 404, and the dynabackend pages).
+  Load it LAST in <head> so it wins over each page's inline styles.
+  Keep in sync with dynabackend/site.css.
+*/
+
+:root {
+  --color-primary: #9d00ff;
+  --color-primary-hover: #8400d6;
+  --color-primary-dark: #6f00b5;
+  --color-accent: #e60065;
+  --color-surface: #050505;
+  --color-surface-elevated: #0d0a12;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-outline: rgba(157, 0, 255, 0.25);
+  --color-text: #f7f2ff;
+  --color-text-secondary: #c9beeb;
+  --color-on-surface: #f7f2ff;
+  --color-on-surface-secondary: #c9beeb;
+  --color-primary-soft: #d4a5ff;
+  --font-heading: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --gradient-brand: linear-gradient(to right, #9d00ff, #e60065);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(157, 0, 255, 0.12), transparent 55%),
+    var(--color-surface);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  color: #fff;
+  background: var(--color-primary);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ---------- Headings ---------- */
+
+h1,
+h2,
+h3,
+.page-title {
+  font-family: var(--font-heading);
+  letter-spacing: 0.01em;
+}
+
+h1 {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h3 {
+  color: var(--color-primary-soft);
+}
+
+/* ---------- Navigation (matches the homepage) ---------- */
+
+nav.navigation-wrapper,
+.navigation-wrapper > .navigation-container1 > nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(5, 5, 5, 0.85);
+  border-bottom: 1px solid var(--color-border);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.navigation-container {
+  max-width: 84rem;
+  margin: 0 auto;
+}
+
+.navigation-wrapper a,
+.footer-root a {
+  text-decoration: none !important;
+}
+
+.navigation-logo .section-title,
+.navigation-logo span,
+a.navigation-logo:not(:has(span)) {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navigation-link {
+  position: relative;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.navigation-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.navigation-link:hover {
+  color: var(--color-primary);
+}
+
+.navigation-link:hover::after {
+  width: 100%;
+}
+
+.navigation-mobile-link {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.navigation-mobile-link:hover {
+  color: var(--color-primary);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  border-radius: 4px;
+  text-decoration: none !important;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary {
+  color: #fff;
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 6px 24px -8px rgba(157, 0, 255, 0.7);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  box-shadow: 0 8px 28px -8px rgba(157, 0, 255, 0.85);
+  transform: translateY(-2px);
+}
+
+.btn-secondary,
+.btn-outline {
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-outline);
+}
+
+.btn-secondary:hover,
+.btn-outline:hover {
+  color: #fff;
+  border-color: var(--color-primary);
+  background: rgba(157, 0, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ---------- Content cards ---------- */
+
+.content-section {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-border);
+  box-shadow: 0 20px 60px -40px rgba(157, 0, 255, 0.5);
+}
+
+.highlight-box {
+  background: rgba(157, 0, 255, 0.08);
+  border-left-color: var(--color-primary);
+}
+
+.content-section a:not(.btn) {
+  color: var(--color-primary-soft);
+  text-decoration: underline;
+  text-decoration-color: rgba(157, 0, 255, 0.5);
+  text-underline-offset: 3px;
+}
+
+.content-section a:not(.btn):hover {
+  color: #fff;
+  text-decoration-color: var(--color-primary);
+}
+
+input,
+textarea,
+select {
+  font-family: var(--font-body);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(157, 0, 255, 0.2) !important;
+}
+
+/* ---------- Footer (matches the homepage) ---------- */
+
+.footer-root {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-outline);
+}
+
+.footer-root::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 80% 20%, rgba(157, 0, 255, 0.08), transparent 40%);
+}
+
+.footer-container {
+  position: relative;
+  max-width: 84rem;
+  margin: 0 auto;
+}
+
+.footer-logo-text {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--color-primary);
+  -webkit-text-fill-color: var(--color-primary);
+  background: none;
+  text-transform: lowercase;
+}
+
+.footer-column-title {
+  position: relative;
+  padding-bottom: 0.5rem;
+  font-family: var(--font-heading);
+  color: var(--color-text);
+}
+
+.footer-column-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 30px;
+  height: 2px;
+  background: var(--color-primary);
+}
+
+.footer-nav-link {
+  display: inline-block;
+  color: var(--color-text-secondary);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-nav-link:hover {
+  color: var(--color-primary);
+  transform: translateX(4px);
+}
+
+.footer-social-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.footer-social-icon:hover {
+  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+}
+
+.footer-copyright {
+  color: var(--color-text-secondary);
+}
+
+/* Empty TeleportHQ placeholder slots */
+.footer-nav-link:empty,
+.footer-bottom-links:empty {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  .footer-column-title::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Developer debug consoles only show with ?debug in the URL */
+.debug-console {
+  display: none !important;
+}
+
+html.show-debug .debug-console {
+  display: block !important;
+}

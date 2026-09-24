@@ -1,32 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
-    <title>Baloneys - VRChat World Creator & 3D Artist</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Primary SEO Meta Tags -->
+    <title>Baloneys - VRChat World Creator & 3D Artist</title>
     <meta name="description" content="Baloneys - VRChat world creator and 3D artist. Discover immersive VR worlds, custom environments, and digital experiences by Baloneys." />
+    <meta name="theme-color" content="#050505" />
+    <meta property="og:title" content="Baloneys - VRChat World Creator & 3D Artist" />
+    <meta property="og:description" content="Baloneys - VRChat world creator and 3D artist. Discover immersive VR worlds, custom environments, and digital experiences by Baloneys." />
+    <link rel="canonical" href="https://kanaris-beans.com/baloneys" />
+    <link rel="icon" href="public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" sizes="32x32" />
+
+    <script>document.documentElement.classList.remove("no-js")</script>
+    <script defer src="https://analytics.baloneys.studio/script.js" data-website-id="03418d76-12f0-4a2b-94ba-24dff73a6f6b"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" />
+
+    <style>
+      /* minimal reset (replaces the old TeleportHQ reset) */
+      *, *::before, *::after { box-sizing: border-box; border-width: 0; border-style: solid; -webkit-font-smoothing: antialiased; }
+      body { margin: 0; }
+      p, h1, h2, h3, figure { margin: 0; padding: 0; }
+      a { color: inherit; text-decoration: inherit; }
+      img, svg, video { display: block; }
+      button { font: inherit; color: inherit; background: transparent; }
+    </style>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="home.css" />
     <meta name="keywords" content="Baloneys, Baloneys VRChat, VRChat worlds, VRChat creator, 3D artist, virtual reality worlds, VR world creator, immersive VR experiences, custom VRChat worlds, VRChat world builder" />
     <meta name="author" content="Baloneys" />
     <meta name="robots" content="index, follow" />
-    <!-- Brand Identity -->
     <meta property="og:site_name" content="Baloneys" />
-    <!-- Open Graph / Facebook -->
-    <meta property="og:title" content="Baloneys - VRChat World Creator & 3D Artist" />
-    <meta property="og:description" content="Baloneys creates VRChat worlds and immersive 3D environments. Explore custom virtual reality experiences and digital spaces." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://kanaris-beans.com/baloneys" />
     <meta property="og:image" content="https://kanaris-beans.com/public/pw64s5dmavz539gvjm065tw71xp1.png" />
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@beilude" />
     <meta name="twitter:creator" content="@beilude" />
-    <meta name="twitter:title" content="Baloneys - VRChat World Creator & 3D Artist" />
-    <meta name="twitter:description" content="Baloneys creates VRChat worlds and immersive 3D environments. Explore custom virtual reality experiences and digital spaces." />
     <meta name="twitter:image" content="https://kanaris-beans.com/public/pw64s5dmavz539gvjm065tw71xp1.png" />
-    <!-- Canonical -->
-    <link rel="canonical" href="https://kanaris-beans.com/baloneys" />
-    <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -46,620 +59,192 @@
       "image": "https://kanaris-beans.com/public/pw64s5dmavz539gvjm065tw71xp1.png"
     }
     </script>
-
-    <style data-tag="reset-style-sheet">
-      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;  -webkit-font-smoothing: antialiased;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;  color: inherit;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}pre {  white-space: normal;}input {  padding: 2px 4px;}img {  display: block;}details {  display: block;  margin: 0;  padding: 0;}summary::-webkit-details-marker {  display: none;}[data-thq="accordion"] [data-thq="accordion-content"] {  max-height: 0;  overflow: hidden;  transition: max-height 0.3s ease-in-out;  padding: 0;}[data-thq="accordion"] details[data-thq="accordion-trigger"][open] + [data-thq="accordion-content"] {  max-height: 1000vh;}details[data-thq="accordion-trigger"][open] summary [data-thq="accordion-icon"] {  transform: rotate(180deg);}html { scroll-behavior: smooth  }
-    </style>
-    <style data-tag="default-style-sheet">
-      html {
-        font-family: Inter;
-        font-size: 1rem;
-      }
-
-      body {
-        font-weight: 400;
-        font-style:normal;
-        text-decoration: undefined;
-        text-transform: undefined;
-        letter-spacing: 0.01em;
-        line-height: 1.6;
-        color: var(--color-on-surface);
-        background: var(--color-surface);
-        fill: var(--color-on-surface);
-      }
-      
-      /* Hero Section Fixes */
-      .hero-splash {
-        position: relative;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-      }
-
-      .hero-video-wrapper {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        z-index: 0;
-      }
-
-      .hero-video {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        min-width: 100%;
-        min-height: 100%;
-        width: auto;
-        height: auto;
-        transform: translate(-50%, -50%);
-        object-fit: cover;
-      }
-
-      .hero-scrim {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          180deg,
-          rgba(0, 0, 0, 0.6) 0%,
-          rgba(0, 0, 0, 0.4) 50%,
-          rgba(0, 0, 0, 0.7) 100%
-        );
-        z-index: 1;
-      }
-
-      .hero-content-outer {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 2rem;
-        width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      
-      .hero-content-outer > a {
-        margin-top: 2rem;
-      }
-      
-      .hero-content-outer > a .btn {
-        padding: 0.75rem 2rem;
-        font-size: 0.95rem;
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: #ffffff;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-      }
-
-      .hero-content-outer > a .btn:hover {
-        background: rgba(255, 255, 255, 0.3);
-        border-color: rgba(255, 255, 255, 0.5);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      }
-      
-      /* Layout BALONEYS title to the left of description */
-      .baloneys-hero-grid {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 3rem;
-        width: 100%;
-        margin-bottom: 2rem;
-      }
-      
-      .hero-title-block {
-        flex-shrink: 0;
-      }
-
-      .hero-title {
-        font-size: 4rem;
-        font-weight: 900;
-        letter-spacing: 0.05em;
-        line-height: 1;
-        margin: 0;
-        color: #ffffff;
-        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-      }
-      
-      .hero-desc-block {
-        flex: 1;
-        text-align: left;
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-
-      .hero-subtitle {
-        font-size: 1.125rem;
-        line-height: 1.7;
-        color: rgba(255, 255, 255, 0.95);
-        margin: 0;
-        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-      }
-
-      .hero-badge-row {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-      }
-
-      .hero-badge {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #ffffff;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-      
-      /* Responsive: stack on mobile */
-      @media (max-width: 768px) {
-        .baloneys-hero-grid {
-          flex-direction: column;
-          align-items: center;
-        }
-        
-        .hero-title {
-          font-size: 3rem;
-          text-align: center;
-        }
-        
-        .hero-desc-block {
-          text-align: center;
-        }
-
-        .hero-badge-row {
-          justify-content: center;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .hero-title {
-          font-size: 2.5rem;
-        }
-        
-        .hero-subtitle {
-          font-size: 1rem;
-        }
-        
-        .hero-content-outer {
-          padding: 1.5rem;
-        }
-      }
-    </style>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/animate.css@4.1.1/animate.css"
-    />
-    <link
-      rel="shortcut icon"
-      href="public/pw64s5dmavz539gvjm065tw71xp1.png"
-      type="icon/png"
-      sizes="32x32"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css"
-    />
   </head>
   <body>
-    <link rel="stylesheet" href="./style.css" />
-    <div>
-      <link href="./baloneys.css" rel="stylesheet" />
+    <!-- shared icons -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <symbol id="icon-cart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle r="1" cx="8" cy="21"/><circle r="1" cx="19" cy="21"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></g></symbol>
+      <symbol id="icon-external" viewBox="0 0 24 24"><path d="M15 3h6v6m-11 5L21 3m-3 10v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="m12 19l-7-7l7-7m7 7H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7l-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    </svg>
 
-      <div class="baloneys-container1">
-        <navigation-wrapper class="navigation-wrapper">
-          <!--Navigation component-->
-          <div class="navigation-container1">
-            <div class="navigation-container2">
-              <div class="navigation-container3">
-                <style>
-                  @media (prefers-reduced-motion: reduce) {
-                  .navigation-mobile-overlay.is-open {
-                    animation: none;
-                  }
-                  .navigation-mobile-link:hover {
-                    transform: none;
-                  }
-                  }
-                </style>
-              </div>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- Navigation -->
+    <header class="navigation-wrapper" id="siteNav">
+      <nav class="navigation-container" aria-label="Main">
+        <a href="index.html" class="navigation-logo" aria-label="baloneys home">
+          <span class="section-title">baloneys</span>
+        </a>
+        <div class="navigation-desktop-menu">
+          <a href="index.html#straya" class="navigation-link is-straya">Straya</a>
+          <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener" class="navigation-link">Worlds</a>
+          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html" target="_blank" rel="noreferrer noopener" class="navigation-link">Tagging</a>
+          <a href="https://kanaris-beans.com/speen" target="_blank" rel="noreferrer noopener" class="navigation-link">speen</a>
+          <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener" class="navigation-link">Store</a>
+          <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="btn btn-sm btn-primary">Contact Me</a>
+        </div>
+        <button id="navToggle" class="navigation-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileOverlay">
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </nav>
+    </header>
+
+    <div id="mobileOverlay" class="navigation-mobile-overlay" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="navigation-mobile-header">
+        <a href="index.html" class="navigation-logo"><span class="section-title">baloneys</span></a>
+        <button id="navClose" class="navigation-toggle" aria-label="Close menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="navigation-mobile-content">
+        <div class="navigation-mobile-links">
+          <a href="index.html#straya" class="navigation-mobile-link">Straya</a>
+          <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener" class="navigation-mobile-link">Worlds</a>
+          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html" target="_blank" rel="noreferrer noopener" class="navigation-mobile-link">Tagging</a>
+          <a href="https://kanaris-beans.com/speen" target="_blank" rel="noreferrer noopener" class="navigation-mobile-link">speen</a>
+          <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener" class="navigation-mobile-link">Store</a>
+        </div>
+        <div class="navigation-mobile-actions">
+          <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="btn btn-lg btn-primary">Contact Me</a>
+        </div>
+      </div>
+    </div>
+
+    <main id="main">
+      <section class="hero-section about-hero">
+        <div class="hero-media-container">
+          <video class="hero-bg-video" src="https://videos.pexels.com/video-files/35334706/14971407_360_640_30fps.mp4" poster="https://images.pexels.com/videos/35334706/pictures/preview-0.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+          <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content-wrapper">
+          <div class="hero-grid">
+            <div class="hero-left">
+              <h1 class="hero-title home-hero-title">baloneys</h1>
             </div>
-            <nav class="navigation-wrapper">
-              <div class="navigation-container">
-                <a href="index.html">
-                  <div class="navigation-logo">
-                    <span class="section-title">baloneys</span>
-                  </div>
-                </a>
-                <div class="navigation-desktop-menu">
-                  <a href="index.html">
-                    <div
-                      class="navigation-thq-navigation-link-elm1 navigation-link"
-                    >
-                      <span>Home</span>
-                    </div>
-                  </a>
-                  <a
-                    href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="navigation-link"><span>Worlds</span></div>
-                  </a>
-                  <a
-                    href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="navigation-link"><span>Tagging</span></div>
-                  </a>
-                  <a
-                    href="https://jinxxy.com/baloneys"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="navigation-link"><span>Store</span></div>
-                  </a>
-                  <a
-                    href="https://discord.gg/gYWJsYhwXN"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="btn-sm btn-primary btn">
-                      <span>Contact Me</span>
-                    </div>
-                  </a>
-                </div>
-                <button
-                  id="navToggle"
-                  aria-label="Open Menu"
-                  aria-expanded="false"
-                  class="navigation-toggle"
-                >
-                  <svg
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="24"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M4 6h16M4 12h16M4 18h16"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-            </nav>
-            <div id="mobileOverlay" class="navigation-mobile-overlay">
-              <div class="navigation-mobile-header">
-                <a href="index.html">
-                  <div class="navigation-logo">
-                    <span class="section-title">baloneys</span>
-                  </div>
-                </a>
-                <button
-                  id="navClose"
-                  aria-label="Close Menu"
-                  class="navigation-toggle"
-                >
-                  <svg
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="24"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M18 6L6 18M6 6l12 12"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-              <div class="navigation-mobile-content">
-                <div class="navigation-mobile-links">
-                  <a href="index.html">
-                    <div class="navigation-mobile-link">
-                      <span>Home</span>
-                    </div>
-                  </a>
-                  <a
-                    href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="navigation-mobile-link">
-                      <span>Worlds</span>
-                    </div>
-                  </a>
-                  <a
-                    href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="navigation-mobile-link">
-                      <span>Tagging</span>
-                    </div>
-                  </a>
-                  <a
-                    href="https://jinxxy.com/baloneys"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="navigation-mobile-link"><span>Store</span></div>
-                  </a>
-                </div>
-                <div class="navigation-mobile-actions">
-                  <a
-                    href="https://discord.gg/gYWJsYhwXN"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="btn-primary btn-lg btn">
-                      <span>Contact Me</span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="navigation-container4">
-              <div class="navigation-container5">
-                <style>
-                          @keyframes fadeIn {from {opacity: 0;}
-                  to {opacity: 1;}}
-                </style>
-              </div>
-            </div>
-            <div class="navigation-container6">
-              <div class="navigation-container7">
-                <script defer="" data-name="navigation-logic">
-                  document.addEventListener('DOMContentLoaded', function() {
-                    (function(){
-                      const navToggle = document.getElementById("navToggle")
-                      const navClose = document.getElementById("navClose")
-                      const mobileOverlay = document.getElementById("mobileOverlay")
-                      const body = document.body
-
-                      function openMenu() {
-                        mobileOverlay.classList.add("is-open")
-                        navToggle.setAttribute("aria-expanded", "true")
-                        body.style.overflow = "hidden"
-                      }
-
-                      function closeMenu() {
-                        mobileOverlay.classList.remove("is-open")
-                        navToggle.setAttribute("aria-expanded", "false")
-                        body.style.overflow = ""
-                      }
-
-                      navToggle.addEventListener("click", openMenu)
-                      navClose.addEventListener("click", closeMenu)
-
-                      const mobileLinks = mobileOverlay.querySelectorAll(".navigation-mobile-link")
-                      mobileLinks.forEach((link) => {
-                        link.addEventListener("click", closeMenu)
-                      })
-
-                      window.addEventListener("resize", () => {
-                        if (window.innerWidth > 767 && mobileOverlay.classList.contains("is-open")) {
-                          closeMenu()
-                        }
-                      })
-
-                      document.addEventListener("keydown", (e) => {
-                        if (e.key === "Escape" && mobileOverlay.classList.contains("is-open")) {
-                          closeMenu()
-                        }
-                      })
-                    })()
-                  });
-                </script>
-              </div>
-            </div>
-          </div>
-        </navigation-wrapper>
-        <section class="hero-splash">
-          <div class="hero-video-wrapper">
-            <video
-              src="https://videos.pexels.com/video-files/35334706/14971407_360_640_30fps.mp4"
-              loop="true"
-              muted="true"
-              poster="https://images.pexels.com/videos/35334706/pictures/preview-0.jpg"
-              autoplay="true"
-              playsinline="true"
-              class="hero-video"
-            ></video>
-            <div class="hero-scrim">
-              <section class="cta-section"></section>
-              <div></div>
-            </div>
-          </div>
-          <div class="hero-content-outer">
-            <div class="baloneys-hero-grid">
-              <div class="hero-title-block">
-                <h1 class="hero-title">BALONEYS</h1>
-              </div>
-              <div class="hero-desc-block">
-                <p class="hero-subtitle">
-                  Baloneys is a VRChat world creator and 3D artist specializing in immersive virtual reality experiences. Explore VRChat worlds, custom 3D environments, and digital spaces crafted by Baloneys.
-                </p>
-                <div class="hero-badge-row">
-                  <span class="hero-badge">VRChat World Creator</span>
-                  <span class="hero-badge">3D Artist</span>
-                  <span class="hero-badge">VR Designer</span>
-                </div>
-              </div>
-            </div>
-            <a href="/">
-              <div class="btn-accent btn-xl btn"><span>Enter Site</span></div>
-            </a>
-          </div>
-        </section>
-        <section style="padding: 4rem 2rem; max-width: 1200px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 3rem;">
-            <h2 style="font-size: 2.5rem; margin-bottom: 1rem; font-weight: 700;">About Baloneys</h2>
-            <p style="font-size: 1.125rem; line-height: 1.8; max-width: 800px; margin: 0 auto;">
-              Baloneys is a VRChat world creator and 3D artist with a focus on crafting immersive virtual reality experiences. 
-              With skills in detailed world building, lighting design, and interactive environments, Baloneys creates 
-              VRChat worlds that offer engaging and memorable experiences for the community.
-            </p>
-          </div>
-          
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-            <div style="text-align: center; padding: 2rem;">
-              <h3 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 600;">VRChat Worlds</h3>
-              <p style="line-height: 1.7;">
-                Explore Baloneys' collection of custom VRChat worlds featuring thoughtful design, optimized performance, and unique interactive elements.
+            <div class="hero-right">
+              <p class="hero-subtitle home-hero-subtitle">
+                Baloneys is a VRChat world creator and 3D artist specializing in
+                immersive virtual reality experiences. Explore VRChat worlds,
+                custom 3D environments, and digital spaces crafted by Baloneys.
               </p>
+              <ul class="badge-row" aria-label="Roles">
+                <li class="badge">VRChat World Creator</li>
+                <li class="badge">3D Artist</li>
+                <li class="badge">VR Designer</li>
+              </ul>
+              <div class="hero-cta-group">
+                <a href="index.html" class="btn btn-lg btn-primary">Enter Site</a>
+                <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener" class="btn btn-lg btn-outline">VRChat Profile</a>
+              </div>
             </div>
-            <div style="text-align: center; padding: 2rem;">
-              <h3 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 600;">3D Environments</h3>
-              <p style="line-height: 1.7;">
-                Quality 3D environments and assets designed for virtual reality, created by Baloneys with attention to detail and performance.
-              </p>
-            </div>
-            <div style="text-align: center; padding: 2rem;">
-              <h3 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 600;">Custom Solutions</h3>
-              <p style="line-height: 1.7;">
-                Baloneys offers custom VRChat world creation services, prefabs, and tools for creators looking to enhance their virtual experiences.
-              </p>
-            </div>
-          </div>
-
-          <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 3rem 2rem; text-align: center;">
-            <h2 style="font-size: 2rem; margin-bottom: 1.5rem; font-weight: 700;">Connect with Baloneys</h2>
-            <p style="font-size: 1.125rem; line-height: 1.8; max-width: 700px; margin: 0 auto 2rem;">
-              Join the Baloneys community to stay updated on new VRChat world releases, 3D art projects, and available content. 
-              Follow Baloneys on social media and Discord for updates and announcements.
-            </p>
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-              <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noopener" style="padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; font-weight: 500;">Visit VRChat Profile</a>
-              <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noopener" style="padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; font-weight: 500;">Join Discord</a>
-              <a href="https://jinxxy.com/baloneys" target="_blank" rel="noopener" style="padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; font-weight: 500;">Browse Store</a>
-            </div>
-          </div>
-        </section>
-        <div class="baloneys-container2">
-          <div class="baloneys-container3">
-            <script defer="" data-name="baloneys-interactions">
-              document.addEventListener('DOMContentLoaded', function() {
-                (function(){
-                  const rail = document.getElementById("productRail")
-                  const prevBtn = document.getElementById("prevBtn")
-                  const nextBtn = document.getElementById("nextBtn")
-
-                  if (rail && prevBtn && nextBtn) {
-                    const scrollAmount = 340
-
-                    nextBtn.addEventListener("click", () => {
-                      rail.scrollBy({
-                        left: scrollAmount,
-                        behavior: "smooth",
-                      })
-                    })
-
-                    prevBtn.addEventListener("click", () => {
-                      rail.scrollBy({
-                        left: -scrollAmount,
-                        behavior: "smooth",
-                      })
-                    })
-                  }
-
-                  // FIXED: Updated parallax effect to work with centered video
-                  window.addEventListener("scroll", () => {
-                    const scrolled = window.pageYOffset
-                    const video = document.querySelector(".hero-video")
-                    if (video) {
-                      // Combine the centering transform with the parallax effect
-                      video.style.transform = `translate(-50%, calc(-50% + ${scrolled * 0.3}px))`
-                    }
-                  })
-                })()
-              });
-            </script>
           </div>
         </div>
-        <footer-wrapper class="footer-wrapper">
-          <!--Footer component-->
-          <div class="footer-container1">
-            <footer class="footer-root">
-              <div class="footer-container">
-                <div class="footer-grid">
-                  <div class="footer-brand-column">
-                    <a href="index.html">
-                      <div class="footer-logo-link">
-                        <span class="footer-logo-text">baloneys</span>
-                      </div>
-                    </a>
-                    <p class="footer-brand-description section-content">
-                      <span>Crafting highly immersive experiences,</span>
-                      <br />
-                      <span>environments, and robust prefabs.</span>
-                      <br />
-                    </p>
-                    <div class="footer-social-links">
-                      <a
-                        href="https://discord.gg/gYWJsYhwXN"
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        <div
-                          aria-label="Discord"
-                          class="footer-thq-footer-social-icon-elm1 footer-social-icon"
-                        >
-                          <svg
-                            width="24"
-                            xmlns="http://www.w3.org/2000/svg"
-                            height="24"
-                            viewBox="0 0 24 24"
-                          >
-                            <g
-                              fill="none"
+      </section>
+
+      <section class="about-section">
+        <header class="section-head reveal">
+          <span class="section-eyebrow">About</span>
+          <h2 class="section-title">About Baloneys</h2>
+          <p class="section-subtitle">
+            Baloneys is a VRChat world creator and 3D artist with a focus on
+            crafting immersive virtual reality experiences. With skills in
+            detailed world building, lighting design, and interactive
+            environments, Baloneys creates VRChat worlds that offer engaging and
+            memorable experiences for the community.
+          </p>
+        </header>
+        <div class="feature-grid">
+            <article class="feature-card reveal">
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0-18 0m.6-3h16.8M3.6 15h16.8M11.5 3a17 17 0 0 0 0 18m1-18a17 17 0 0 1 0 18"/></g></svg></div>
+              <h3 class="store-item-title">VRChat Worlds</h3>
+              <p class="section-content">Explore Baloneys' collection of custom VRChat worlds featuring thoughtful design, optimized performance, and unique interactive elements.</p>
+            </article>
+            <article class="feature-card reveal">
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3l8 4.5v9L12 21l-8-4.5v-9zm0 9l8-4.5M12 12v9m0-9L4 7.5"/></g></svg></div>
+              <h3 class="store-item-title">3D Environments</h3>
+              <p class="section-content">Quality 3D environments and assets designed for virtual reality, created by Baloneys with attention to detail and performance.</p>
+            </article>
+            <article class="feature-card reveal">
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8l-4 4l4 4m10-8l4 4l-4 4M14 4l-4 16"/></g></svg></div>
+              <h3 class="store-item-title">Custom Solutions</h3>
+              <p class="section-content">Baloneys offers custom VRChat world creation services, prefabs, and tools for creators looking to enhance their virtual experiences.</p>
+            </article>
+        </div>
+      </section>
+
+      <section class="cta-section">
+        <div class="cta-container">
+          <div class="cta-split cta-centered reveal">
+            <div class="cta-content">
+              <span class="section-eyebrow">Community</span>
+              <h2 class="section-title">Connect with Baloneys</h2>
+              <p class="section-content">
+                Join the Baloneys community to stay updated on new VRChat world
+                releases, 3D art projects, and available content. Follow Baloneys
+                on social media and Discord for updates and announcements.
+              </p>
+              <div class="cta-btns">
+                <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="btn btn-lg btn-accent">Join Discord</a>
+                <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener" class="btn btn-lg btn-outline">Visit VRChat Profile</a>
+                <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener" class="btn btn-lg btn-outline">Browse Store</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-root">
+      <div class="footer-container">
+        <div class="footer-grid">
+          <div class="footer-brand-column">
+            <a href="index.html" class="footer-logo-link"><span class="footer-logo-text">baloneys</span></a>
+            <p class="footer-brand-description section-content">
+              Crafting highly immersive experiences,<br />
+              environments, and robust prefabs.
+            </p>
+            <div class="footer-social-links">
+              <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="footer-social-icon" aria-label="Discord">
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12a1 1 0 1 0 2 0a1 1 0 0 0-2 0m6 0a1 1 0 1 0 2 0a1 1 0 0 0-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833-1.667 3.5-3c.667-1.667.5-5.833-1.5-11.5c-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.9 11.9 0 0 0-4.053 0L9 4c-1.5.16-3.043.485-4.5 1.5c-2 5.667-2.167 9.833-1.5 11.5c.667 1.333 2 3 3.5 3c.5 0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></g></svg>
+              </a>
+              <a href="https://x.com/beilude" target="_blank" rel="noreferrer noopener" class="footer-social-icon" aria-label="X (Twitter)">
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 4.01c-1 .49-1.98.689-3 .99c-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4c0 0-4.182 7.433 4 11c-1.872 1.247-3.739 2.088-6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58-1.04 6.522-3.723 7.651-7.742a13.8 13.8 0 0 0 .497-3.753c0-.249 1.51-2.772 1.818-4.013z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <a href="https://github.com/baloneys" target="_blank" rel="noreferrer noopener" class="footer-social-icon" aria-label="GitHub">
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5c.08-1.25-.27-2.48-1-3.5c.28-1.15.28-2.35 0-3.5c0 0-1 0-3 1.5c-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5c-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></g></svg>
+              </a>
+            </div>
+          </div>
+          <div class="footer-nav-column">
+            <h3 class="section-subtitle footer-column-title">Navigation</h3>
+            <nav class="footer-nav-list" aria-label="Footer navigation">
+              <a href="index.html" class="footer-nav-link">Home</a>
+              <a href="index.html#straya" class="footer-nav-link">Straya</a>
+              <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener" class="footer-nav-link">Jinxxy Store</a>
+              <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener" class="footer-nav-link">VRChat Worlds</a>
+              <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html" target="_blank" rel="noreferrer noopener" class="footer-nav-link">VRCDynamicPlayerTags</a>
+            </nav>
+          </div>
+          <div class="footer-nav-column">
+            <h3 class="section-subtitle footer-column-title">Resources</h3>
+            <nav class="footer-nav-list" aria-label="Resources">
+              <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="footer-nav-link">Support Discord</a>
+              <a href="terms.html" class="footer-nav-link">Terms of Service</a>
+              <a href="privacy.html" class="footer-nav-link">Privacy Policy</a>
+            </nav>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="footer-bottom-content">
+            <p class="footer-copyright section-content">© <span data-year>2025</span> baloneys. All rights reserved</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

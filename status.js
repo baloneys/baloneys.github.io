@@ -11,7 +11,7 @@
     timeoutMs: 8000,
     // Optional: a free key from https://www.bungie.net/en/Application (set its origin to
     // https://kanaris-beans.com) adds Bungie's official Destiny 2 alerts to the card.
-    bungieApiKey: '',
+    bungieApiKey: '326a059da8264fd5988a116868b1ab4d',
     domain: 'jabbawackasunitedfansorangetown61.com'
   };
 

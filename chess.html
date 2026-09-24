@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pong | baloneys</title>
-    <meta name="description" content="Pong against the CPU, a friend on the same keyboard, or online." />
+    <title>Chess | baloneys</title>
+    <meta name="description" content="Chess against the CPU, a friend on the same screen, or online." />
     <meta name="theme-color" content="#050505" />
-    <meta property="og:title" content="Pong | baloneys" />
-    <meta property="og:description" content="Pong against the CPU, a friend on the same keyboard, or online." />
-    <link rel="canonical" href="https://kanaris-beans.com/pong" />
+    <meta property="og:title" content="Chess | baloneys" />
+    <meta property="og:description" content="Chess against the CPU, a friend on the same screen, or online." />
+    <link rel="canonical" href="https://kanaris-beans.com/chess" />
     <link rel="icon" href="public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" sizes="32x32" />
 
     <script>document.documentElement.classList.remove("no-js")</script>
@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="games.css" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
     <script src="games-common.js" defer></script>
-    <script src="pong.js" defer></script>
+    <script src="chess.js" defer></script>
   </head>
   <body>
     <!-- shared icons -->
@@ -53,10 +53,10 @@
         </a>
         <div class="navigation-desktop-menu">
           <a href="index.html" class="navigation-link is-straya">Straya</a>
-          <a href="pong" class="navigation-link" aria-current="page">Pong</a>
+          <a href="pong" class="navigation-link">Pong</a>
           <a href="tetris" class="navigation-link">Tetris</a>
           <a href="battleships" class="navigation-link">Battleships</a>
-          <a href="chess" class="navigation-link">Chess</a>
+          <a href="chess" class="navigation-link" aria-current="page">Chess</a>
           <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="btn btn-sm btn-primary">Contact Me</a>
         </div>
         <button id="navToggle" class="navigation-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileOverlay">
@@ -75,10 +75,10 @@
       <div class="navigation-mobile-content">
         <div class="navigation-mobile-links">
           <a href="index.html" class="navigation-mobile-link">Straya</a>
-          <a href="pong" class="navigation-mobile-link" aria-current="page">Pong</a>
+          <a href="pong" class="navigation-mobile-link">Pong</a>
           <a href="tetris" class="navigation-mobile-link">Tetris</a>
           <a href="battleships" class="navigation-mobile-link">Battleships</a>
-          <a href="chess" class="navigation-mobile-link">Chess</a>
+          <a href="chess" class="navigation-mobile-link" aria-current="page">Chess</a>
         </div>
         <div class="navigation-mobile-actions">
           <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="btn btn-lg btn-primary">Contact Me</a>
@@ -89,26 +89,28 @@
     <main id="main">
       <div class="game-page">
         <header class="game-head">
-          <h1 class="game-title">pong</h1>
-          <p class="game-tagline">first to the target wins. rally to 69 for a surprise.</p>
+          <h1 class="game-title">chess</h1>
+          <p class="game-tagline">full rules: castling, en passant, promotion and draws</p>
         </header>
         <section class="panel" id="menuPanel">
           <h2 class="panel-title">Pick a mode</h2>
           <div class="mode-grid">
             <button class="mode-card" id="modeCpu" type="button"><span class="icon">🤖</span><strong>vs CPU</strong><span>One player</span></button>
-            <button class="mode-card" id="modeLocal" type="button"><span class="icon">🎮</span><strong>Local</strong><span>Two players, one keyboard</span></button>
+            <button class="mode-card" id="modeLocal" type="button"><span class="icon">♟&#xFE0E;</span><strong>Local</strong><span>Two players, one screen</span></button>
             <button class="mode-card" id="modeOnline" type="button"><span class="icon">🌐</span><strong>Online</strong><span>Play a friend</span></button>
           </div>
           <div class="option-row" id="difficultyChips">
-            <span class="option-label">CPU difficulty</span>
+            <span class="option-label">CPU strength</span>
             <button class="chip" data-value="easy">Easy</button><button class="chip" data-value="normal">Normal</button><button class="chip" data-value="hard">Hard</button>
           </div>
-          <div class="option-row" id="targetChips">
-            <span class="option-label">Match length</span>
-            <button class="chip" data-value="5">First to 5</button><button class="chip" data-value="7">First to 7</button><button class="chip" data-value="11">First to 11</button><button class="chip" data-value="inf">Endless</button>
+          <div class="option-row" id="sideChips">
+            <span class="option-label">Play as (vs CPU)</span>
+            <button class="chip" data-value="w">White</button><button class="chip" data-value="b">Black</button><button class="chip" data-value="r">Random</button>
           </div>
-          <div class="option-row"><span class="option-label">Ball skin</span></div>
-          <div class="skin-row" id="skinRow"></div>
+          <div class="option-row" id="clockChips">
+            <span class="option-label">Clock (local + online)</span>
+            <button class="chip" data-value="0">None</button><button class="chip" data-value="3">3 + 2</button><button class="chip" data-value="5">5 min</button><button class="chip" data-value="10">10 min</button>
+          </div>
         </section>
 
         <section class="panel hidden" id="onlinePanel">
@@ -129,7 +131,7 @@
             <p class="notice" style="margin-top:0">Share this code (click to copy)</p>
             <span class="lobby-code" id="lobbyCode" title="Copy code">-----</span>
           </div>
-          <p class="notice" id="lobbyTarget"></p>
+          <p class="notice" id="lobbyClock"></p>
           <ul class="lobby-players" id="lobbyPlayers"></ul>
           <div class="actions">
             <button class="btn btn-primary" id="readyBtn" type="button">Ready</button>
@@ -137,24 +139,45 @@
           </div>
         </section>
         <section class="hidden" id="gameView">
-          <div class="hud">
-            <div class="hud-group"><span class="hud-stat"><span id="name1">P1</span> <b id="score1">0</b></span><span class="hud-stat"><b id="score2">0</b> <span id="name2">P2</span></span></div>
-            <div class="hud-group"><span class="hud-stat" id="targetLabel"></span><span class="hud-stat">rally <b id="rally">0</b></span><span class="hud-stat">best <b id="best">0</b></span></div>
-            <div class="hud-group">
-              <button class="btn btn-sm btn-outline" id="soundBtn" type="button">Sound</button>
-              <button class="btn btn-sm btn-outline" id="pauseBtn" type="button">Pause</button>
-              <button class="btn btn-sm btn-outline" id="quitBtn" type="button">Quit</button>
+          <div class="chess-layout">
+            <div class="chess-board-col">
+              <div class="chess-player"><span id="topName"></span><span class="captured" id="capturedByBlack"></span><span class="clock hidden" id="topClock">0:00</span></div>
+              <div class="chess-board-wrap">
+                <div class="chess-board" id="board" role="grid" aria-label="Chess board"></div>
+                <div class="overlay hidden" id="overlay">
+                  <h2 id="overlayTitle"></h2>
+                  <p id="overlayText"></p>
+                  <div class="actions" style="margin-top:0">
+                    <button class="btn btn-primary" id="againBtn" type="button">Play again</button>
+                    <button class="btn btn-outline" id="menuBtn" type="button">Menu</button>
+                  </div>
+                </div>
+              </div>
+              <div class="chess-player"><span id="bottomName"></span><span class="captured" id="capturedByWhite"></span><span class="clock hidden" id="bottomClock">0:00</span></div>
             </div>
+            <aside class="chess-side">
+              <p class="chess-status" id="chessStatus"></p>
+              <p class="notice" id="materialDiff" style="text-align:left;margin:0 0 var(--spacing-md)"></p>
+              <div class="draw-offer hidden" id="drawOffer">
+                <span>Opponent offers a draw</span>
+                <button class="btn btn-sm btn-primary" id="acceptDraw" type="button">Accept</button>
+                <button class="btn btn-sm btn-outline" id="declineDraw" type="button">Decline</button>
+              </div>
+              <ol class="move-list" id="moveList"></ol>
+              <div class="actions" style="justify-content:flex-start">
+                <button class="btn btn-sm btn-outline" id="undoBtn" type="button">Undo</button>
+                <button class="btn btn-sm btn-outline" id="flipBtn" type="button">Flip board</button>
+                <button class="btn btn-sm btn-outline hidden" id="drawBtn" type="button">Offer draw</button>
+                <button class="btn btn-sm btn-outline" id="resignBtn" type="button">Resign</button>
+                <button class="btn btn-sm btn-outline" id="soundBtn" type="button">Sound</button>
+                <button class="btn btn-sm btn-outline" id="quitBtn" type="button">Quit</button>
+              </div>
+            </aside>
           </div>
-          <div class="stage">
-            <canvas id="pongCanvas" aria-label="Pong court"></canvas>
-            <div class="overlay hidden" id="overlay">
-              <h2 id="overlayTitle"></h2>
-              <p id="overlayText"></p>
-              <div class="actions" id="overlayActions" style="margin-top:0"></div>
-            </div>
+          <div class="overlay hidden" id="promoModal" style="position:fixed">
+            <h2>Promote to</h2>
+            <div class="promo-choices" id="promoChoices"></div>
           </div>
-          <p class="controls-help" id="help"></p>
         </section>
       </div>
     </main>

@@ -95,22 +95,31 @@
         <section class="panel" id="menuPanel">
           <h2 class="panel-title">Pick a mode</h2>
           <div class="mode-grid">
-            <button class="mode-card" id="modeSolo" type="button"><span class="icon">🧱</span><strong>Solo</strong><span>Marathon: speeds up every 10 lines</span></button>
-            <button class="mode-card" id="modeLocal" type="button"><span class="icon">🎮</span><strong>Versus</strong><span>Two players, one keyboard</span></button>
-            <button class="mode-card" id="modeOnline" type="button"><span class="icon">🌐</span><strong>Online</strong><span>2–4 players</span></button>
+            <button class="mode-card" id="modeSolo" type="button"><strong>Solo</strong><span>Marathon: speeds up every 10 lines</span></button>
+            <button class="mode-card" id="modeLocal" type="button"><strong>Versus</strong><span>Two players, one keyboard</span></button>
+            <button class="mode-card" id="modeOnline" type="button"><strong>Online</strong><span>2–4 players</span></button>
           </div>
           <p class="notice" id="menuBest"></p>
           <div class="option-row" id="livesChips">
             <span class="option-label">Versus lives</span>
             <button class="chip" data-value="1">1</button><button class="chip" data-value="3">3</button><button class="chip" data-value="5">5</button><button class="chip" data-value="inf">∞</button>
           </div>
-          <div class="option-row"><span class="option-label">Skin</span></div>
+          <div class="option-row"><span class="option-label">Colour</span></div>
           <div class="skin-row" id="skinRow"></div>
+          <div class="colour-picker hidden" id="colourPicker">
+            <div class="cp-area" id="cpArea"><div class="cp-thumb" id="cpThumb"></div></div>
+            <div class="cp-hue" id="cpHue"><div class="cp-hue-thumb" id="cpHueThumb"></div></div>
+            <div class="cp-row">
+              <div class="cp-preview" id="cpPreview"></div>
+              <input class="text-input cp-hex" id="cpHex" maxlength="7" aria-label="Hex colour">
+              <button class="btn btn-sm btn-primary" id="cpDone" type="button">Done</button>
+            </div>
+          </div>
         </section>
 
         <section class="panel hidden" id="onlinePanel">
           <h2 class="panel-title">Online</h2>
-          <div class="option-row" style="margin:0 0 var(--spacing-lg)"><span class="option-label">Your name</span><input class="text-input" id="playerName" maxlength="16" placeholder="Player"></div>
+          <div id="profileEditor"></div>
           <div class="actions" style="margin-top:0"><button class="btn btn-primary" id="createLobby" type="button">Create lobby</button></div>
           <form class="option-row" id="joinForm">
             <span class="option-label">or join with a code</span>

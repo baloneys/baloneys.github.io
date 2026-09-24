@@ -95,8 +95,8 @@
         <section class="panel" id="menuPanel">
           <h2 class="panel-title">Pick a mode</h2>
           <div class="mode-grid">
-            <button class="mode-card" id="modeCpu" type="button"><span class="icon">🤖</span><strong>vs CPU</strong><span>One player</span></button>
-            <button class="mode-card" id="modeOnline" type="button"><span class="icon">🌐</span><strong>Online</strong><span>Play a friend</span></button>
+            <button class="mode-card" id="modeCpu" type="button"><strong>vs CPU</strong><span>One player</span></button>
+            <button class="mode-card" id="modeOnline" type="button"><strong>Online</strong><span>Play a friend</span></button>
           </div>
           <div class="option-row" id="difficultyChips">
             <span class="option-label">CPU difficulty</span>
@@ -107,6 +107,7 @@
 
         <section class="panel hidden" id="onlinePanel">
           <h2 class="panel-title">Online</h2>
+          <div id="profileEditor"></div>
           <div class="actions" style="margin-top:0"><button class="btn btn-primary" id="createLobby" type="button">Create lobby</button></div>
           <form class="option-row" id="joinForm">
             <span class="option-label">or join with a code</span>
@@ -141,7 +142,7 @@
               <div class="ship-picker" id="shipPicker"></div>
               <div class="actions" style="justify-content:flex-start">
                 <button class="btn btn-sm btn-outline" id="rotateBtn" type="button">↔ Horizontal</button>
-                <button class="btn btn-sm btn-outline" id="randomBtn" type="button">🎲 Random</button>
+                <button class="btn btn-sm btn-outline" id="randomBtn" type="button">Randomise</button>
                 <button class="btn btn-sm btn-outline" id="clearBtn" type="button">Clear</button>
               </div>
               <p class="notice" id="placeStatus" style="text-align:left"></p>
@@ -168,7 +169,7 @@
               <ul class="fleet-status" id="enemyFleet"></ul>
             </div>
             <div class="bs-board-wrap small">
-              <h2 class="bs-heading">Your fleet</h2>
+              <h2 class="bs-heading" id="myLabel">Your fleet</h2>
               <div class="bs-grid" id="ownGrid"></div>
               <ul class="fleet-status" id="myFleet"></ul>
               <ol class="bs-log" id="battleLog"></ol>

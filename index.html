@@ -513,13 +513,13 @@
           reveals.forEach(function (el) { el.classList.add("is-visible") })
         }
 
-        // Easter egg: triple-click the DPT background for pong
-        var bg = document.getElementById("dpt-bg")
+        // Easter egg: triple-click any empty space for tetris
         var clicks = []
-        bg.addEventListener("click", function () {
+        document.addEventListener("click", function (e) {
+          if (e.target.closest("a, button, input, textarea, select, label, p, h1, h2, h3, li, img, video, .navigation-mobile-overlay")) return
           var now = Date.now()
           clicks = clicks.filter(function (t) { return now - t < 800 }).concat(now)
-          if (clicks.length >= 3) window.location.href = "https://kanaris-beans.com/pong"
+          if (clicks.length >= 3) window.location.href = "/tetris"
         })
       })()
     </script>

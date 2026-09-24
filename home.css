@@ -966,3 +966,10 @@ img {
     transform: none;
   }
 }
+
+.navigation-link[aria-current="page"],
+.navigation-mobile-link[aria-current="page"] {
+  color: var(--color-primary);
+}
+
+.navigation-link[aria-current="page"]::after { width: 100%; }

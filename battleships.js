@@ -336,7 +336,14 @@
     buildGrid($('#enemyGrid'), onFire);
     buildGrid($('#ownGrid'), null);
     $('#battleLog').textContent = '';
-    $('#enemyLabel').textContent = settings.mode === 'cpu' ? 'CPU waters' : 'Opponent\'s waters';
+    var lbl = $('#enemyLabel');
+    lbl.textContent = '';
+    if (settings.mode === 'online' && net.them) lbl.appendChild(G.Profile.avatar(net.them, 22));
+    lbl.appendChild(document.createTextNode(settings.mode === 'cpu' ? 'CPU waters' : (net.them ? net.them.name : 'Opponent') + '\'s waters'));
+    var mine = $('#myLabel');
+    mine.textContent = '';
+    mine.appendChild(G.Profile.avatar(G.Profile.get(), 22));
+    mine.appendChild(document.createTextNode('Your fleet'));
     paintTarget();
     paintOwn($('#ownGrid'), state.myShips, state.enemyShots);
     renderFleetStatus($('#enemyFleet'), state.enemySunk);
@@ -412,7 +419,7 @@
 
   function applyEnemyShot(r, c, res) {
     state.enemyShots[r][c] = res.result === 'miss' ? 'miss' : 'hit';
-    var who = settings.mode === 'cpu' ? 'CPU' : 'Opponent';
+    var who = settings.mode === 'cpu' ? 'CPU' : (net.them ? net.them.name : 'Opponent');
     var coord = LETTERS[r] + (c + 1);
     if (res.result === 'miss') {
       log(who + ' fired at ' + coord + ': miss.');
@@ -468,7 +475,7 @@
      Online
      ================================================================= */
 
-  var net = { role: null, session: null, myReady: false, theirReady: false, theirFleetReady: false, myFleetReady: false, iStart: null };
+  var net = { role: null, session: null, myReady: false, theirReady: false, theirFleetReady: false, myFleetReady: false, iStart: null, them: null };
 
   function netSend(msg) {
     if (!net.session) return;
@@ -479,7 +486,12 @@
   function onNet(d) {
     if (!d || typeof d !== 'object') return;
     switch (d.t) {
+      case 'hi':
+        net.them = G.Profile.sanitize(d.profile);
+        renderLobby();
+        break;
       case 'hello':
+        net.them = G.Profile.sanitize(d.profile);
         renderLobby();
         break;
       case 'ready':
@@ -568,19 +580,18 @@
   function renderLobby() {
     var list = $('#lobbyPlayers');
     list.textContent = '';
-    var connected = net.role === 'guest' || (net.session && net.session.conns && net.session.conns.length);
-    [[net.role === 'host' ? 'You (host)' : 'Host', net.role === 'host' ? net.myReady : net.theirReady],
-     [net.role === 'host' ? (connected ? 'Opponent' : 'Waiting for opponent…') : 'You', net.role === 'host' ? net.theirReady : net.myReady]]
-      .forEach(function (row, i) {
-        var li = document.createElement('li');
-        var a = document.createElement('span'); a.textContent = row[0];
-        var b = document.createElement('span');
-        var empty = i === 1 && !connected;
-        b.className = row[1] ? 'ready' : 'waiting';
-        b.textContent = empty ? '' : row[1] ? '✓ Ready' : 'Not ready';
-        li.appendChild(a); li.appendChild(b);
-        list.appendChild(li);
-      });
+    var me = G.Profile.get();
+    var connected = net.role === 'guest' || !!(net.session && net.session.conns && net.session.conns.length);
+    function st(r) { return r ? ['✓ Ready', 'ready'] : ['Not ready', 'waiting']; }
+    var mine = st(net.myReady), theirs = st(net.theirReady);
+    var themName = net.them ? net.them.name : (net.role === 'host' ? 'Opponent' : 'Host');
+    if (net.role === 'host') {
+      list.appendChild(G.lobbyRow(me, me.name + ' (host) · you', mine[0], mine[1]));
+      list.appendChild(connected ? G.lobbyRow(net.them, themName, theirs[0], theirs[1]) : G.lobbyRow(null, 'Waiting for opponent…', '', 'waiting'));
+    } else {
+      list.appendChild(G.lobbyRow(net.them, themName + ' (host)', theirs[0], theirs[1]));
+      list.appendChild(G.lobbyRow(me, me.name + ' · you', mine[0], mine[1]));
+    }
     $('#readyBtn').disabled = !connected;
     $('#readyBtn').textContent = net.myReady ? 'Not ready' : 'Ready';
   }
@@ -597,7 +608,7 @@
         screen('lobbyPanel');
         renderLobby();
       },
-      onJoin: function (conn) { net.session.send(conn, { t: 'hello' }); G.Sound.beep(660, 0.1, 'triangle'); renderLobby(); },
+      onJoin: function (conn) { net.session.send(conn, { t: 'hello', profile: G.Profile.get() }); G.Sound.beep(660, 0.1, 'triangle'); renderLobby(); },
       onData: function (conn, d) { onNet(d); },
       onLeave: opponentLeft,
       onError: netError
@@ -611,7 +622,7 @@
     net.myReady = net.theirReady = false;
     setNotice('Connecting…');
     net.session = G.Net.join('battleships', code, {
-      onOpen: function () { G.hide($('#lobbyCodeBox')); screen('lobbyPanel'); renderLobby(); },
+      onOpen: function () { net.session.send({ t: 'hi', profile: G.Profile.get() }); G.hide($('#lobbyCodeBox')); screen('lobbyPanel'); renderLobby(); },
       onData: onNet,
       onClose: opponentLeft,
       onError: netError
@@ -715,6 +726,7 @@
     $('#menuBtn').addEventListener('click', toMenu);
     $('#quitBtn').addEventListener('click', toMenu);
     G.Sound.bindButton($('#soundBtn'));
+    G.Profile.mount($('#profileEditor'));
     screen('menuPanel');
   }
 

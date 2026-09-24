@@ -60,13 +60,25 @@
     '0>3': [[0, 0], [-1, 0], [2, 0], [-1, 2], [2, -1]]
   };
 
-  var SKINS = [
-    { name: 'Purple Dream', bottom: '#1e1b4b', top: '#c77dff' },
-    { name: 'Ocean Blue', bottom: '#0c4a6e', top: '#38bdf8' },
-    { name: 'Fire Red', bottom: '#7f1d1d', top: '#f87171' },
-    { name: 'Neon Pink', bottom: '#500724', top: '#ff4fa3' },
-    { name: 'Moonlight', bottom: '#27272a', top: '#e4e4e7' }
+  // Neon purple → blue palettes (bottom of the well → top).
+  var PALETTES = [
+    { name: 'Violet', bottom: '#1c0638', top: '#c77dff' },
+    { name: 'Ultraviolet', bottom: '#24063f', top: '#a020ff' },
+    { name: 'Indigo', bottom: '#140b4a', top: '#7c6cff' },
+    { name: 'Plasma', bottom: '#2a0a52', top: '#4cc9ff' },
+    { name: 'Cobalt', bottom: '#06123f', top: '#3d8bff' }
   ];
+
+  var HEX_RE = /^#[0-9a-f]{6}$/i;
+
+  function customPalette(hex) {
+    hex = HEX_RE.test(hex || '') ? hex : '#9d00ff';
+    return { name: 'Custom', bottom: mix('#07040c', hex, 0.3), top: hex };
+  }
+
+  function safePalette(p) {
+    return p && HEX_RE.test(p.bottom || '') && HEX_RE.test(p.top || '') ? { bottom: p.bottom, top: p.top } : PALETTES[0];
+  }
 
   var LINE_POINTS = [0, 100, 300, 500, 800];
   var ATTACK = [0, 0, 1, 2, 4];
@@ -90,7 +102,8 @@
   function Player(opts) {
     this.id = opts.id;
     this.name = opts.name;
-    this.skin = opts.skin || 0;
+    this.palette = safePalette(opts.palette);
+    this.avatar = opts.avatar || null;
     this.local = opts.local;          // controlled on this device
     this.controls = opts.controls;    // key map for local players
     this.lives = opts.lives;
@@ -300,7 +313,7 @@
       p: this.piece ? [this.piece.type, this.piece.rot, this.piece.x, this.piece.y] : null,
       h: this.hold,
       q: this.queue.slice(0, 5),
-      s: this.score, l: this.lines, v: this.level, lv: this.lives, lo: this.losses, a: this.alive, i: this.incoming, sk: this.skin
+      s: this.score, l: this.lines, v: this.level, lv: this.lives, lo: this.losses, a: this.alive, i: this.incoming, pal: [this.palette.bottom, this.palette.top]
     };
   };
 
@@ -312,7 +325,7 @@
     this.queue = (d.q || []).filter(function (t) { return SHAPES[t]; });
     this.score = +d.s || 0; this.lines = +d.l || 0; this.level = +d.v || 1;
     this.losses = +d.lo || 0; this.alive = d.a !== false; this.incoming = +d.i || 0;
-    this.skin = SKINS[d.sk] ? d.sk : 0;
+    if (Array.isArray(d.pal)) this.palette = safePalette({ bottom: d.pal[0], top: d.pal[1] });
   };
 
   /* =================================================================
@@ -322,8 +335,8 @@
   var settings = {
     mode: null,
     lives: G.Store.get('tetris_lives', '3'),
-    skin: G.Store.get('tetris_skin', 0),
-    name: G.Store.get('tetris_name', '')
+    colour: G.Store.get('tetris_colour', '0'),        // '0'–'4' or 'custom'
+    customHex: G.Store.get('tetris_custom_hex', '#b026ff')
   };
 
   var game = null;
@@ -392,7 +405,9 @@
       var head = document.createElement('div');
       head.className = 'board-head';
       head.innerHTML = '<span class="board-name"></span><span class="board-lives"></span>';
-      head.querySelector('.board-name').textContent = p.name;
+      var nameEl = head.querySelector('.board-name');
+      if (p.avatar) nameEl.appendChild(G.Profile.avatar({ name: p.name, avatar: p.avatar }, 22));
+      nameEl.appendChild(document.createTextNode(p.name));
       var cv = document.createElement('canvas');
       cv.width = (COLS + SIDE * 2) * CELL;
       cv.height = ROWS * CELL;
@@ -562,8 +577,7 @@
   /* ---------- drawing ---------- */
 
   function blockColor(p, row) {
-    var s = SKINS[p.skin] || SKINS[0];
-    return mix(s.bottom, s.top, 1 - row / ROWS);
+    return mix(p.palette.bottom, p.palette.top, 1 - row / ROWS);
   }
 
   function drawBlock(ctx, x, y, size, color, alpha) {
@@ -734,14 +748,15 @@
      ================================================================= */
 
   function startSolo() {
-    var p = new Player({ id: 'me', name: 'You', skin: settings.skin, local: true, controls: KEYS_SOLO, lives: 1 });
+    var p = new Player({ id: 'me', name: 'You', palette: myPalette(), local: true, controls: KEYS_SOLO, lives: 1 });
     startGame('solo', [p]);
   }
 
   function startLocal() {
     var lives = livesValue();
-    var a = new Player({ id: 'p1', name: 'Player 1', skin: settings.skin, local: true, controls: KEYS_P1, lives: lives });
-    var b = new Player({ id: 'p2', name: 'Player 2', skin: (settings.skin + 1) % SKINS.length, local: true, controls: KEYS_P2, lives: lives });
+    var a = new Player({ id: 'p1', name: 'Player 1', palette: myPalette(), local: true, controls: KEYS_P1, lives: lives });
+    var other = settings.colour === 'custom' ? PALETTES[3] : PALETTES[(+settings.colour + 3) % PALETTES.length];
+    var b = new Player({ id: 'p2', name: 'Player 2', palette: other, local: true, controls: KEYS_P2, lives: lives });
     startGame('local', [a, b]);
   }
 
@@ -751,9 +766,13 @@
 
   var net = { role: null, session: null, lobby: [], mySlot: null, myReady: false, dirty: false, lastSend: 0 };
 
-  function myName() {
-    var n = ($('#playerName').value || '').trim().slice(0, 16);
-    return n || 'Player';
+  function myPalette() {
+    return settings.colour === 'custom' ? customPalette(settings.customHex) : (PALETTES[+settings.colour] || PALETTES[0]);
+  }
+
+  function myEntry(slot) {
+    var pr = G.Profile.get(), pal = myPalette();
+    return { slot: slot, name: pr.name, avatar: pr.avatar, ready: false, pal: [pal.bottom, pal.top] };
   }
 
   function netSend(msg) {
@@ -771,14 +790,12 @@
     renderLobby();
   }
 
-  function strip(x) { return { slot: x.slot, name: x.name, ready: x.ready, skin: x.skin }; }
+  function strip(x) { return { slot: x.slot, name: x.name, avatar: x.avatar, ready: x.ready, pal: x.pal }; }
 
   function createLobby() {
-    settings.name = myName();
-    G.Store.set('tetris_name', settings.name);
     net.role = 'host';
     net.mySlot = 1;
-    net.lobby = [{ slot: 1, name: settings.name, ready: false, skin: settings.skin }];
+    net.lobby = [myEntry(1)];
     setOnlineNotice('Creating lobby…');
     net.session = G.Net.host('tetris', {
       maxGuests: 3,
@@ -791,7 +808,7 @@
       onJoin: function (conn) {
         var used = net.lobby.map(function (x) { return x.slot; });
         conn.slot = [2, 3, 4].filter(function (s) { return used.indexOf(s) === -1; })[0];
-        net.lobby.push({ slot: conn.slot, name: 'Player ' + conn.slot, ready: false, skin: 0 });
+        net.lobby.push({ slot: conn.slot, name: 'Player ' + conn.slot, avatar: null, ready: false, pal: [PALETTES[0].bottom, PALETTES[0].top] });
         G.Sound.beep(660, 0.1, 'triangle');
         hostBroadcastLobby();
       },
@@ -810,13 +827,12 @@
   function joinLobby() {
     var code = G.cleanCode($('#joinCode').value);
     if (code.length !== 5) return netError('Lobby codes are 5 characters.');
-    settings.name = myName();
-    G.Store.set('tetris_name', settings.name);
     net.role = 'guest';
     setOnlineNotice('Connecting…');
     net.session = G.Net.join('tetris', code, {
       onOpen: function () {
-        net.session.send({ t: 'hi', name: settings.name, skin: settings.skin });
+        var me = myEntry(0);
+        net.session.send({ t: 'hi', profile: G.Profile.get(), pal: me.pal });
         G.hide($('#lobbyCodeBox'));
         screen('lobbyPanel');
       },
@@ -844,7 +860,14 @@
     var entry = lobbyEntry(slot);
     switch (d.t) {
       case 'hi':
-        if (entry) { entry.name = String(d.name || 'Player').slice(0, 16); entry.skin = SKINS[d.skin] ? d.skin : 0; hostBroadcastLobby(); }
+        if (entry) {
+          var pr = G.Profile.sanitize(d.profile);
+          entry.name = pr.name;
+          entry.avatar = pr.avatar;
+          var pal = Array.isArray(d.pal) ? safePalette({ bottom: d.pal[0], top: d.pal[1] }) : PALETTES[0];
+          entry.pal = [pal.bottom, pal.top];
+          hostBroadcastLobby();
+        }
         break;
       case 'ready':
         if (entry) { entry.ready = !!d.v; hostBroadcastLobby(); }
@@ -917,7 +940,9 @@
     var lv = livesValue();
     var players = list.slice().sort(function (a, b) { return a.slot - b.slot; }).map(function (x) {
       var mine = x.slot === net.mySlot;
-      return new Player({ id: x.slot, name: mine ? x.name + ' (you)' : x.name, skin: x.skin || 0, local: mine, controls: KEYS_SOLO, lives: lv });
+      var pr = G.Profile.sanitize({ name: x.name, avatar: x.avatar });
+      var pal = Array.isArray(x.pal) ? { bottom: x.pal[0], top: x.pal[1] } : null;
+      return new Player({ id: x.slot, name: mine ? pr.name + ' (you)' : pr.name, avatar: pr.avatar, palette: pal, local: mine, controls: KEYS_SOLO, lives: lv });
     });
     net.lobby.forEach(function (x) { x.ready = false; });
     net.myReady = false;
@@ -957,19 +982,18 @@
     var list = $('#lobbyPlayers');
     list.textContent = '';
     net.lobby.slice().sort(function (a, b) { return a.slot - b.slot; }).forEach(function (x) {
-      var li = document.createElement('li');
-      var a = document.createElement('span');
-      a.textContent = x.name + (x.slot === 1 ? ' (host)' : '') + (x.slot === net.mySlot ? ' · you' : '');
-      var b = document.createElement('span');
-      b.className = x.ready ? 'ready' : 'waiting';
-      b.textContent = x.ready ? '✓ Ready' : 'Not ready';
-      li.appendChild(a); li.appendChild(b);
+      var pr = G.Profile.sanitize({ name: x.name, avatar: x.avatar });
+      var li = G.lobbyRow(pr, pr.name + (x.slot === 1 ? ' (host)' : '') + (x.slot === net.mySlot ? ' · you' : ''), x.ready ? '✓ Ready' : 'Not ready', x.ready ? 'ready' : 'waiting');
+      if (Array.isArray(x.pal)) {
+        var sw = document.createElement('span');
+        sw.className = 'lobby-swatch';
+        sw.style.background = 'linear-gradient(to top, ' + safePalette({ bottom: x.pal[0], top: x.pal[1] }).bottom + ', ' + safePalette({ bottom: x.pal[0], top: x.pal[1] }).top + ')';
+        li.firstChild.appendChild(sw);
+      }
       list.appendChild(li);
     });
     for (var i = net.lobby.length; i < 4; i++) {
-      var empty = document.createElement('li');
-      empty.innerHTML = '<span class="waiting">Open slot</span><span></span>';
-      list.appendChild(empty);
+      list.appendChild(G.lobbyRow(null, 'Open slot', '', 'waiting'));
     }
     var mine = lobbyEntry(net.mySlot);
     net.myReady = !!(mine && mine.ready);
@@ -1001,25 +1025,126 @@
   function renderSkins() {
     var row = $('#skinRow');
     row.textContent = '';
-    SKINS.forEach(function (s, i) {
+    PALETTES.forEach(function (pal, i) {
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'skin-btn' + (i === settings.skin ? ' active' : '');
-      b.title = s.name;
-      b.style.background = 'linear-gradient(to top, ' + s.bottom + ', ' + s.top + ')';
+      b.className = 'skin-btn' + (settings.colour === String(i) ? ' active' : '');
+      b.title = pal.name;
+      b.setAttribute('aria-label', pal.name);
+      b.style.background = 'linear-gradient(to top, ' + pal.bottom + ', ' + pal.top + ')';
       b.addEventListener('click', function () {
-        settings.skin = i;
-        G.Store.set('tetris_skin', i);
+        settings.colour = String(i);
+        G.Store.set('tetris_colour', settings.colour);
+        G.hide($('#colourPicker'));
         renderSkins();
       });
       row.appendChild(b);
     });
+    var c = customPalette(settings.customHex);
+    var cb = document.createElement('button');
+    cb.type = 'button';
+    cb.className = 'skin-btn custom-colour' + (settings.colour === 'custom' ? ' active' : '');
+    cb.title = 'Custom colour';
+    cb.setAttribute('aria-label', 'Custom colour');
+    cb.style.background = 'linear-gradient(to top, ' + c.bottom + ', ' + c.top + ')';
+    cb.innerHTML = '<span class="custom-plus">+</span>';
+    cb.addEventListener('click', function () {
+      settings.colour = 'custom';
+      G.Store.set('tetris_colour', 'custom');
+      renderSkins();
+      G.show($('#colourPicker'));
+      Picker.set(settings.customHex);
+    });
+    row.appendChild(cb);
   }
+
+  /* ---------- custom colour picker (HSV) ---------- */
+
+  var Picker = (function () {
+    var h = 280, sat = 1, val = 1;
+
+    function hsvToHex(hh, ss, vv) {
+      var f = function (n) {
+        var k = (n + hh / 60) % 6;
+        return vv - vv * ss * Math.max(0, Math.min(k, 4 - k, 1));
+      };
+      return '#' + [f(5), f(3), f(1)].map(function (x) { return Math.round(x * 255).toString(16).padStart(2, '0'); }).join('');
+    }
+
+    function hexToHsv(hex) {
+      var r = parseInt(hex.substr(1, 2), 16) / 255, g = parseInt(hex.substr(3, 2), 16) / 255, b = parseInt(hex.substr(5, 2), 16) / 255;
+      var max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min, hh = 0;
+      if (d) {
+        if (max === r) hh = ((g - b) / d) % 6;
+        else if (max === g) hh = (b - r) / d + 2;
+        else hh = (r - g) / d + 4;
+        hh *= 60;
+        if (hh < 0) hh += 360;
+      }
+      return { h: hh, s: max ? d / max : 0, v: max };
+    }
+
+    function paint(fromHex) {
+      var hex = hsvToHex(h, sat, val);
+      $('#cpArea').style.background = 'linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(' + h + ', 100%, 50%))';
+      $('#cpThumb').style.left = (sat * 100) + '%';
+      $('#cpThumb').style.top = ((1 - val) * 100) + '%';
+      $('#cpThumb').style.background = hex;
+      $('#cpHueThumb').style.left = (h / 360 * 100) + '%';
+      $('#cpHueThumb').style.background = 'hsl(' + h + ', 100%, 50%)';
+      if (!fromHex) $('#cpHex').value = hex;
+      var pal = customPalette(hex);
+      $('#cpPreview').style.background = 'linear-gradient(to top, ' + pal.bottom + ', ' + pal.top + ')';
+      settings.customHex = hex;
+      G.Store.set('tetris_custom_hex', hex);
+      var cb = document.querySelector('.custom-colour');
+      if (cb) cb.style.background = $('#cpPreview').style.background;
+    }
+
+    function drag(el, onMove) {
+      el.addEventListener('pointerdown', function (e) {
+        el.setPointerCapture(e.pointerId);
+        onMove(e);
+        function move(ev) { onMove(ev); }
+        function up() { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); }
+        el.addEventListener('pointermove', move);
+        el.addEventListener('pointerup', up);
+        el.addEventListener('pointercancel', up);
+      });
+    }
+
+    function frac(e, el) {
+      var r = el.getBoundingClientRect();
+      return { x: Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)), y: Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)) };
+    }
+
+    function init() {
+      drag($('#cpArea'), function (e) { var f = frac(e, $('#cpArea')); sat = f.x; val = 1 - f.y; paint(); });
+      drag($('#cpHue'), function (e) { h = frac(e, $('#cpHue')).x * 360; paint(); });
+      $('#cpHex').addEventListener('input', function () {
+        var v = $('#cpHex').value.trim();
+        if (!/^#/.test(v)) v = '#' + v;
+        if (HEX_RE.test(v)) { var hsv = hexToHsv(v.toLowerCase()); h = hsv.h; sat = hsv.s; val = hsv.v; paint(true); }
+      });
+      $('#cpDone').addEventListener('click', function () { G.hide($('#colourPicker')); renderSkins(); });
+    }
+
+    return {
+      init: init,
+      set: function (hex) { var hsv = hexToHsv(HEX_RE.test(hex) ? hex : '#b026ff'); h = hsv.h; sat = hsv.s; val = hsv.v; paint(); }
+    };
+  })();
 
   function init() {
     renderSkins();
+    Picker.init();
     renderMenuBest();
-    $('#playerName').value = settings.name;
+    G.Profile.mount($('#profileEditor'), function () {
+      if (net.role === 'host' && net.session) {
+        var me = lobbyEntry(1), pr = G.Profile.get();
+        if (me) { me.name = pr.name; me.avatar = pr.avatar; hostBroadcastLobby(); }
+      }
+    });
 
     G.chips($('#livesChips'), settings.lives, function (v) { settings.lives = v; G.Store.set('tetris_lives', v); });
     var lobbyLives = G.chips($('#lobbyLivesChips'), settings.lives, function (v) {

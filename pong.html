@@ -95,9 +95,9 @@
         <section class="panel" id="menuPanel">
           <h2 class="panel-title">Pick a mode</h2>
           <div class="mode-grid">
-            <button class="mode-card" id="modeCpu" type="button"><span class="icon">🤖</span><strong>vs CPU</strong><span>One player</span></button>
-            <button class="mode-card" id="modeLocal" type="button"><span class="icon">🎮</span><strong>Local</strong><span>Two players, one keyboard</span></button>
-            <button class="mode-card" id="modeOnline" type="button"><span class="icon">🌐</span><strong>Online</strong><span>Play a friend</span></button>
+            <button class="mode-card" id="modeCpu" type="button"><strong>vs CPU</strong><span>One player</span></button>
+            <button class="mode-card" id="modeLocal" type="button"><strong>Local</strong><span>Two players, one keyboard</span></button>
+            <button class="mode-card" id="modeOnline" type="button"><strong>Online</strong><span>Play a friend</span></button>
           </div>
           <div class="option-row" id="difficultyChips">
             <span class="option-label">CPU difficulty</span>
@@ -107,12 +107,28 @@
             <span class="option-label">Match length</span>
             <button class="chip" data-value="5">First to 5</button><button class="chip" data-value="7">First to 7</button><button class="chip" data-value="11">First to 11</button><button class="chip" data-value="inf">Endless</button>
           </div>
-          <div class="option-row"><span class="option-label">Ball skin</span></div>
-          <div class="skin-row" id="skinRow"></div>
+          <div class="ball-picker">
+            <div class="option-row"><span class="option-label">Ball</span></div>
+            <div class="skin-row" id="skinRow"></div>
+            <div class="ball-add">
+              <button class="btn btn-sm btn-outline" id="uploadBall" type="button">Upload image or GIF</button>
+              <button class="btn btn-sm btn-outline" id="gifBall" type="button">Search GIFs</button>
+              <form class="emoji-form" id="emojiForm">
+                <input class="text-input" id="emojiInput" maxlength="16" placeholder="😀" aria-label="Emoji ball">
+                <button class="btn btn-sm btn-outline" type="submit">Use emoji</button>
+              </form>
+            </div>
+            <div class="gif-panel hidden" id="gifPanel">
+              <input class="text-input" id="gifSearch" type="search" placeholder="Search Giphy… (empty shows trending)" aria-label="Search GIFs">
+              <div class="gif-results" id="gifResults"></div>
+              <p class="gif-credit">GIFs powered by GIPHY</p>
+            </div>
+          </div>
         </section>
 
         <section class="panel hidden" id="onlinePanel">
           <h2 class="panel-title">Online</h2>
+          <div id="profileEditor"></div>
           <div class="actions" style="margin-top:0"><button class="btn btn-primary" id="createLobby" type="button">Create lobby</button></div>
           <form class="option-row" id="joinForm">
             <span class="option-label">or join with a code</span>

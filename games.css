@@ -610,3 +610,208 @@
 @media (max-width: 900px) {
   .chess-layout { grid-template-columns: minmax(0, 600px); }
 }
+
+/* =================================================================
+   Profiles + avatars
+   ================================================================= */
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-primary) 45%, #140f1f);
+  color: #fff;
+  font-family: var(--font-family-heading);
+  font-weight: 800;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.profile-editor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  margin: 0 auto var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-lg);
+  max-width: 440px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-surface);
+}
+
+.profile-pic {
+  flex: none;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px var(--color-outline);
+  transition: box-shadow 0.2s ease;
+}
+
+.profile-pic:hover { box-shadow: 0 0 0 2px var(--color-primary), 0 0 18px color-mix(in srgb, var(--color-primary) 50%, transparent); }
+
+.profile-fields { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.profile-fields .option-label { text-align: left; }
+.profile-fields .text-input { max-width: none; text-align: left; }
+.profile-actions { display: flex; gap: 6px; }
+
+.lobby-who { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
+.lobby-players li { align-items: center; }
+
+.hud-player { display: inline-flex; align-items: center; gap: 6px; }
+
+/* =================================================================
+   Pong ball picker
+   ================================================================= */
+
+.ball-picker { margin-top: var(--spacing-md); }
+
+.skin-btn .emoji-ball { font-size: 1.5rem; line-height: 1; }
+
+.skin-btn.custom { position: relative; }
+
+.skin-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e60065;
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 18px;
+  text-align: center;
+}
+
+.skin-btn.custom:hover .skin-remove, .skin-btn.custom:focus-within .skin-remove { display: block; }
+@media (hover: none) { .skin-btn.custom .skin-remove { display: block; } }
+
+.ball-add { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-sm); margin-top: var(--spacing-md); }
+
+.emoji-form { display: flex; gap: 6px; }
+.emoji-form .text-input { width: 90px; font-size: 1.2rem; padding: 6px 10px; }
+
+.gif-panel { margin-top: var(--spacing-md); }
+.gif-panel .text-input { max-width: 100%; text-align: left; }
+
+.gif-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 6px;
+  max-height: 280px;
+  margin-top: var(--spacing-sm);
+  overflow-y: auto;
+}
+
+.gif-results button {
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.gif-results button:hover { border-color: var(--color-primary); }
+.gif-results img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gif-credit { margin-top: 6px; color: var(--color-on-surface-secondary); font-size: 0.7rem; text-align: right; }
+
+.ball-sprite {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  object-fit: contain;
+  will-change: transform;
+  z-index: 2;
+}
+
+.ball-sprite.emoji { display: grid; place-items: center; line-height: 1; }
+
+/* =================================================================
+   Tetris colour picker
+   ================================================================= */
+
+.custom-colour { position: relative; }
+
+.custom-plus {
+  color: #fff;
+  font-family: var(--font-family-heading);
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.colour-picker {
+  display: grid;
+  gap: var(--spacing-md);
+  margin: var(--spacing-lg) auto 0;
+  max-width: 320px;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-outline);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-surface);
+  box-shadow: 0 20px 50px -30px color-mix(in srgb, var(--color-primary) 90%, transparent);
+}
+
+.cp-area {
+  position: relative;
+  height: 170px;
+  border-radius: var(--border-radius-md);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.cp-thumb, .cp-hue-thumb {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.6);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cp-hue {
+  position: relative;
+  height: 14px;
+  border-radius: var(--border-radius-full);
+  background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+  cursor: pointer;
+  touch-action: none;
+}
+
+.cp-hue-thumb { top: 50%; }
+
+.cp-row { display: flex; align-items: center; gap: var(--spacing-sm); }
+
+.cp-preview {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 0 0 1px var(--color-border);
+}
+
+.cp-hex { flex: 1; max-width: none; font-family: var(--font-family-heading); text-transform: lowercase; }
+
+.lobby-swatch {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px var(--color-border);
+}
+
+.bs-heading, .chess-player > span:first-child { display: inline-flex; align-items: center; gap: 8px; }

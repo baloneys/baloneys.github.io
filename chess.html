@@ -95,9 +95,9 @@
         <section class="panel" id="menuPanel">
           <h2 class="panel-title">Pick a mode</h2>
           <div class="mode-grid">
-            <button class="mode-card" id="modeCpu" type="button"><span class="icon">🤖</span><strong>vs CPU</strong><span>One player</span></button>
-            <button class="mode-card" id="modeLocal" type="button"><span class="icon">♟&#xFE0E;</span><strong>Local</strong><span>Two players, one screen</span></button>
-            <button class="mode-card" id="modeOnline" type="button"><span class="icon">🌐</span><strong>Online</strong><span>Play a friend</span></button>
+            <button class="mode-card" id="modeCpu" type="button"><strong>vs CPU</strong><span>One player</span></button>
+            <button class="mode-card" id="modeLocal" type="button"><strong>Local</strong><span>Two players, one screen</span></button>
+            <button class="mode-card" id="modeOnline" type="button"><strong>Online</strong><span>Play a friend</span></button>
           </div>
           <div class="option-row" id="difficultyChips">
             <span class="option-label">CPU strength</span>
@@ -115,6 +115,7 @@
 
         <section class="panel hidden" id="onlinePanel">
           <h2 class="panel-title">Online</h2>
+          <div id="profileEditor"></div>
           <div class="actions" style="margin-top:0"><button class="btn btn-primary" id="createLobby" type="button">Create lobby</button></div>
           <form class="option-row" id="joinForm">
             <span class="option-label">or join with a code</span>

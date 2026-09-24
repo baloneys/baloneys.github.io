@@ -21,7 +21,8 @@
     hard: { speed: 1.0, error: 6, react: 0.05 }
   };
 
-  var SKINS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  var BUILTIN = ['classic', 'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b9'];
+  var GIPHY_KEY = 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65';
 
   /* ---------- state ---------- */
 
@@ -34,16 +35,18 @@
     mode: null,                                     // 'cpu' | 'local' | 'online'
     difficulty: G.Store.get('pong_difficulty', 'normal'),
     target: G.Store.get('pong_target', '7'),        // '5' | '7' | '11' | 'inf'
-    skin: G.Store.get('pong_skin', 0)
+    skin: (function (v) { return typeof v === 'number' ? (v ? 'b' + v : 'classic') : (v || 'classic'); })(G.Store.get('pong_skin', 'classic'))
   };
 
-  var net = { role: null, session: null, conn: null, myReady: false, theirReady: false, lastSend: 0, lastPad: null };
+  var net = { role: null, session: null, conn: null, myReady: false, theirReady: false, lastSend: 0, lastPad: null, them: null };
 
   var game = null;
   var raf = null;
   var keys = {};
   var pointers = {};
   var skinImages = {};
+  var customBalls = G.Store.get('pong_custom_balls', []);
+  var sprite = null;
   var best = G.Store.get('pong_best_rally', 0);
 
   function newGame() {
@@ -66,7 +69,9 @@
     };
   }
 
-  /* ---------- skins ---------- */
+  /* ---------- ball skins ---------- */
+  // A skin is 'classic', a built-in 'b1'…'b9' (ball1.png / .gif on the site),
+  // or a custom one: { id, kind: 'image' | 'gif' | 'emoji', src | emoji }.
 
   function loadSkins() {
     for (var i = 1; i <= 9; i++) {
@@ -74,37 +79,164 @@
         var img = new Image();
         img.onerror = function () { img.onerror = null; img.src = 'ball' + n + '.gif'; };
         img.src = 'ball' + n + '.png';
-        skinImages[n] = img;
+        skinImages['b' + n] = img;
       })(i);
     }
+  }
+
+  function skinInfo(id) {
+    if (!id || id === 'classic') return { kind: 'classic' };
+    if (skinImages[id]) return { kind: 'image', src: skinImages[id].src };
+    var c = customBalls.filter(function (x) { return x.id === id; })[0];
+    return c ? c : { kind: 'classic' };
+  }
+
+  function saveCustom() {
+    try { localStorage.setItem('games_pong_custom_balls', JSON.stringify(customBalls)); }
+    catch (e) { G.banner('Browser storage is full · remove a custom ball first'); return false; }
+    return true;
+  }
+
+  function addCustom(ball) {
+    ball.id = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    customBalls.unshift(ball);
+    if (customBalls.length > 16) customBalls.length = 16;
+    if (!saveCustom()) { customBalls.shift(); return; }
+    selectSkin(ball.id);
+  }
+
+  function selectSkin(id) {
+    settings.skin = id;
+    G.Store.set('pong_skin', id);
+    renderSkinPicker();
+    syncSprite();
+  }
+
+  function skinButton(id, info, removable) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'skin-btn' + (id === settings.skin ? ' active' : '') + (removable ? ' custom' : '');
+    b.title = info.kind === 'classic' ? 'Classic' : info.kind === 'emoji' ? info.emoji : 'Ball';
+    if (info.kind === 'classic') {
+      var dot = document.createElement('span');
+      dot.style.cssText = 'width:16px;height:16px;border-radius:50%;background:#f3e6ff;box-shadow:0 0 10px #9d00ff';
+      b.appendChild(dot);
+    } else if (info.kind === 'emoji') {
+      var e = document.createElement('span');
+      e.className = 'emoji-ball';
+      e.textContent = info.emoji;
+      b.appendChild(e);
+    } else {
+      var img = document.createElement('img');
+      img.alt = '';
+      img.src = info.src;
+      b.appendChild(img);
+    }
+    b.addEventListener('click', function () { selectSkin(id); });
+    if (removable) {
+      var x = document.createElement('span');
+      x.className = 'skin-remove';
+      x.textContent = '×';
+      x.title = 'Remove';
+      x.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        customBalls = customBalls.filter(function (c) { return c.id !== id; });
+        saveCustom();
+        if (settings.skin === id) selectSkin('classic'); else renderSkinPicker();
+      });
+      b.appendChild(x);
+    }
+    return b;
   }
 
   function renderSkinPicker() {
     var row = $('#skinRow');
     row.textContent = '';
-    SKINS.forEach(function (n) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'skin-btn' + (n === settings.skin ? ' active' : '');
-      b.title = n === 0 ? 'Classic' : 'Skin ' + n;
-      if (n === 0) {
-        var dot = document.createElement('span');
-        dot.style.cssText = 'width:16px;height:16px;border-radius:50%;background:#c77dff;box-shadow:0 0 10px #9d00ff';
-        b.appendChild(dot);
-      } else {
-        var img = document.createElement('img');
-        img.alt = '';
-        img.src = skinImages[n].src;
-        img.onerror = function () { img.onerror = null; img.src = 'ball' + n + '.gif'; };
-        b.appendChild(img);
-      }
-      b.addEventListener('click', function () {
-        settings.skin = n;
-        G.Store.set('pong_skin', n);
-        renderSkinPicker();
+    BUILTIN.forEach(function (id) { row.appendChild(skinButton(id, skinInfo(id), false)); });
+    customBalls.forEach(function (c) { row.appendChild(skinButton(c.id, c, true)); });
+  }
+
+  function firstEmoji(text) {
+    text = String(text || '').trim();
+    if (!text) return null;
+    var first = text;
+    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+      var seg = new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text)[Symbol.iterator]().next();
+      first = seg.value ? seg.value.segment : text;
+    } else {
+      first = Array.from(text).slice(0, 2).join('');
+    }
+    try { if (!/\p{Extended_Pictographic}|\p{Regional_Indicator}/u.test(first)) return null; } catch (e) {}
+    return first;
+  }
+
+  function uploadBall() {
+    G.pickFile('image/*').then(function (file) {
+      if (!file) return;
+      var gif = file.type === 'image/gif';
+      return G.readImageFile(file, 128, { keepGif: true, png: true, maxGifBytes: 900 * 1024 }).then(function (data) {
+        addCustom({ kind: gif ? 'gif' : 'image', src: data });
       });
-      row.appendChild(b);
-    });
+    }).catch(function (err) { G.banner(err.message); });
+  }
+
+  var gifTimer = null;
+  function searchGifs() {
+    clearTimeout(gifTimer);
+    gifTimer = setTimeout(function () {
+      var q = $('#gifSearch').value.trim();
+      var box = $('#gifResults');
+      box.textContent = 'Loading…';
+      var url = 'https://api.giphy.com/v1/' + (q ? 'gifs/search?q=' + encodeURIComponent(q) + '&' : 'gifs/trending?') +
+        'api_key=' + GIPHY_KEY + '&limit=24&rating=pg';
+      fetch(url).then(function (r) { if (!r.ok) throw new Error(); return r.json(); }).then(function (data) {
+        box.textContent = '';
+        (data.data || []).forEach(function (gif) {
+          var still = gif.images && gif.images.fixed_width_small && gif.images.fixed_width_small.url;
+          var src = gif.images && gif.images.fixed_height_small && gif.images.fixed_height_small.url;
+          if (!/^https:\/\/[a-z0-9.]*giphy\.com\//.test(src || '')) return;
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.title = gif.title || 'GIF';
+          var img = document.createElement('img');
+          img.src = still || src;
+          img.alt = gif.title || '';
+          img.loading = 'lazy';
+          b.appendChild(img);
+          b.addEventListener('click', function () {
+            addCustom({ kind: 'gif', src: src });
+            G.hide($('#gifPanel'));
+          });
+          box.appendChild(b);
+        });
+        if (!box.children.length) box.textContent = 'No GIFs found.';
+      }).catch(function () { box.textContent = 'Couldn\'t reach Giphy right now.'; });
+    }, 300);
+  }
+
+  // Image and GIF balls are drawn as a real <img> over the canvas so GIFs animate.
+  function syncSprite() {
+    var info = skinInfo(settings.skin);
+    var stage = canvas.parentElement;
+    if (sprite) { sprite.remove(); sprite = null; }
+    if (info.kind === 'image' || info.kind === 'gif') {
+      sprite = document.createElement('img');
+      sprite.className = 'ball-sprite';
+      sprite.alt = '';
+      sprite.src = info.src;
+      if (info.src === (skinImages[settings.skin] || {}).src && /\.png$/.test(info.src)) {
+        sprite.onerror = function () { sprite.onerror = null; sprite.src = info.src.replace(/\.png$/, '.gif'); };
+      }
+      stage.appendChild(sprite);
+    }
+  }
+
+  function placeSprite(b) {
+    if (!sprite) return;
+    var scale = canvas.clientWidth / W;
+    var size = BALL_R * 3.4 * scale;
+    sprite.style.width = sprite.style.height = size + 'px';
+    sprite.style.transform = 'translate(' + (b.x * scale - size / 2) + 'px,' + (b.y * scale - size / 2) + 'px)';
   }
 
   /* ---------- screens ---------- */
@@ -116,8 +248,24 @@
 
   function names() {
     if (settings.mode === 'cpu') return ['You', 'CPU'];
-    if (settings.mode === 'online') return net.role === 'host' ? ['You', 'Opponent'] : ['Opponent', 'You'];
+    if (settings.mode === 'online') {
+      var them = net.them ? net.them.name : 'Opponent';
+      return net.role === 'host' ? ['You', them] : [them, 'You'];
+    }
     return ['Player 1', 'Player 2'];
+  }
+
+  function profiles() {
+    var me = G.Profile.get();
+    if (settings.mode === 'cpu') return [me, null];
+    if (settings.mode === 'online') return net.role === 'host' ? [me, net.them] : [net.them, me];
+    return [null, null];
+  }
+
+  function hudName(el, name, profile) {
+    el.textContent = '';
+    if (profile) el.appendChild(G.Profile.avatar(profile, 20));
+    el.appendChild(document.createTextNode(name));
   }
 
   function targetScore() { return settings.target === 'inf' ? Infinity : parseInt(settings.target, 10); }
@@ -127,8 +275,10 @@
     game = newGame();
     screen('gameView');
     var n = names();
-    $('#name1').textContent = n[0];
-    $('#name2').textContent = n[1];
+    var pr = profiles();
+    hudName($('#name1'), n[0], pr[0]);
+    hudName($('#name2'), n[1], pr[1]);
+    syncSprite();
     $('#targetLabel').textContent = settings.target === 'inf' ? 'Endless' : 'First to ' + settings.target;
     $('#help').innerHTML = helpText();
     hideOverlay();
@@ -145,8 +295,10 @@
 
   function quitToMenu() {
     stopLoop();
+    if (sprite) { sprite.remove(); sprite = null; }
     if (net.session) { net.session.close(); net.session = null; }
     net.role = null;
+    net.them = null;
     game = null;
     screen('menuPanel');
   }
@@ -442,8 +594,8 @@
     paddle(PX, g.p1.y, '#9d00ff');
     paddle(W - PX - PW, g.p2.y, '#e60065');
 
-    // trail
-    g.trail.forEach(function (t, i) {
+    // trail (classic ball only; it would cover custom balls)
+    if (skinInfo(settings.skin).kind === 'classic') g.trail.forEach(function (t, i) {
       ctx.fillStyle = 'rgba(199, 125, 255,' + (i / g.trail.length) * 0.35 + ')';
       ctx.beginPath();
       ctx.arc(t.x, t.y, BALL_R * (0.4 + 0.6 * i / g.trail.length), 0, Math.PI * 2);
@@ -459,9 +611,14 @@
     ctx.globalAlpha = 1;
 
     // ball
-    var b = g.ball, img = skinImages[settings.skin];
-    if (settings.skin && img && img.complete && img.naturalWidth) {
-      ctx.drawImage(img, b.x - BALL_R * 1.5, b.y - BALL_R * 1.5, BALL_R * 3, BALL_R * 3);
+    var b = g.ball, info = skinInfo(settings.skin);
+    if (sprite) {
+      placeSprite(b);
+    } else if (info.kind === 'emoji') {
+      ctx.font = Math.round(BALL_R * 4) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(info.emoji, b.x, b.y + 1);
     } else {
       ctx.shadowBlur = 16;
       ctx.shadowColor = '#c77dff';
@@ -645,6 +802,11 @@
     switch (d.t) {
       case 'hello':
         settings.target = String(d.target);
+        net.them = G.Profile.sanitize(d.profile);
+        renderLobby();
+        break;
+      case 'hi':
+        net.them = G.Profile.sanitize(d.profile);
         renderLobby();
         break;
       case 'ready':
@@ -693,18 +855,16 @@
   function renderLobby() {
     var list = $('#lobbyPlayers');
     list.textContent = '';
-    var rows = net.role === 'host'
-      ? [['You (host)', net.myReady], [net.session && net.session.conns.length ? 'Opponent' : 'Waiting for opponent…', net.theirReady, !(net.session && net.session.conns.length)]]
-      : [['Host', net.theirReady], ['You', net.myReady]];
-    rows.forEach(function (r) {
-      var li = document.createElement('li');
-      var a = document.createElement('span'); a.textContent = r[0];
-      var b = document.createElement('span');
-      b.className = r[2] ? 'waiting' : r[1] ? 'ready' : 'waiting';
-      b.textContent = r[2] ? '' : r[1] ? '✓ Ready' : 'Not ready';
-      li.appendChild(a); li.appendChild(b);
-      list.appendChild(li);
-    });
+    var me = G.Profile.get();
+    var connected = net.role === 'guest' || !!(net.session && net.session.conns && net.session.conns.length);
+    function status(ready) { return ready ? ['✓ Ready', 'ready'] : ['Not ready', 'waiting']; }
+    var mine = status(net.myReady), theirs = status(net.theirReady);
+    var hostRow = net.role === 'host' ? G.lobbyRow(me, me.name + ' (host) · you', mine[0], mine[1]) : G.lobbyRow(net.them, (net.them ? net.them.name : 'Host') + ' (host)', theirs[0], theirs[1]);
+    var guestRow = net.role === 'host'
+      ? (connected ? G.lobbyRow(net.them, net.them ? net.them.name : 'Opponent', theirs[0], theirs[1]) : G.lobbyRow(null, 'Waiting for opponent…', '', 'waiting'))
+      : G.lobbyRow(me, me.name + ' · you', mine[0], mine[1]);
+    list.appendChild(hostRow);
+    list.appendChild(guestRow);
     $('#lobbyTarget').textContent = settings.target === 'inf' ? 'Endless' : 'First to ' + settings.target;
     var connected = net.role === 'guest' || (net.session && net.session.conns.length);
     $('#readyBtn').disabled = !connected;
@@ -725,7 +885,7 @@
         renderLobby();
       },
       onJoin: function (conn) {
-        net.session.send(conn, { t: 'hello', target: settings.target });
+        net.session.send(conn, { t: 'hello', target: settings.target, profile: G.Profile.get() });
         G.Sound.beep(660, 0.1, 'triangle');
         renderLobby();
       },
@@ -744,6 +904,7 @@
     $('#onlineNotice').className = 'notice';
     net.session = G.Net.join('pong', code, {
       onOpen: function () {
+        net.session.send({ t: 'hi', profile: G.Profile.get() });
         G.hide($('#lobbyCodeBox'));
         screen('lobbyPanel');
         renderLobby();
@@ -793,6 +954,22 @@
   function init() {
     loadSkins();
     renderSkinPicker();
+    G.Profile.mount($('#profileEditor'));
+    $('#uploadBall').addEventListener('click', uploadBall);
+    $('#gifBall').addEventListener('click', function () {
+      var panel = $('#gifPanel');
+      panel.classList.toggle('hidden');
+      if (!panel.classList.contains('hidden')) { $('#gifSearch').focus(); searchGifs(); }
+    });
+    $('#gifSearch').addEventListener('input', searchGifs);
+    $('#emojiForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var em = firstEmoji($('#emojiInput').value);
+      if (!em) { G.banner('Type or paste an emoji'); return; }
+      $('#emojiInput').value = '';
+      addCustom({ kind: 'emoji', emoji: em });
+    });
+    window.addEventListener('resize', function () { if (game) placeSprite(game.ball); });
 
     var diff = G.chips($('#difficultyChips'), settings.difficulty, function (v) { settings.difficulty = v; G.Store.set('pong_difficulty', v); });
     G.chips($('#targetChips'), settings.target, function (v) { settings.target = v; G.Store.set('pong_target', v); });

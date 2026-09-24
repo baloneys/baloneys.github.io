@@ -304,41 +304,6 @@ img {
   opacity: 0.7;
 }
 
-.scroll-cue {
-  position: absolute;
-  left: 50%;
-  bottom: var(--spacing-2xl);
-  z-index: 3;
-  display: flex;
-  width: 26px;
-  height: 42px;
-  justify-content: center;
-  padding-top: 8px;
-  border: 2px solid color-mix(in srgb, var(--color-on-surface) 40%, transparent);
-  border-radius: 14px;
-  transform: translateX(-50%);
-  transition: border-color 0.2s ease;
-}
-
-.scroll-cue::before {
-  content: "";
-  width: 4px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--color-primary);
-  animation: scrollCue 1.8s ease-in-out infinite;
-}
-
-.scroll-cue:hover {
-  border-color: var(--color-primary);
-}
-
-@keyframes scrollCue {
-  0% { opacity: 0; transform: translateY(0); }
-  40% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(14px); }
-}
-
 /* ---------- Store ---------- */
 
 .store-section {
@@ -949,9 +914,6 @@ img {
   }
   .hero-overlay {
     background: linear-gradient(0deg, var(--color-surface) 10%, color-mix(in srgb, var(--color-surface) 60%, transparent) 100%);
-  }
-  .scroll-cue {
-    display: none;
   }
   .carousel-nav {
     display: none;

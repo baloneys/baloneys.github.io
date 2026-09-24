@@ -1328,5 +1328,17 @@ function updateSkinCarousel() {
         }
     </script>
 <script>document.querySelectorAll("[data-year]").forEach(function(e){e.textContent=new Date().getFullYear()})</script>
+<script>
+    // Easter egg: triple-click empty space to open /chat
+    (function () {
+        var clicks = [];
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('a, button, input, select, textarea, label, canvas, [contenteditable], .navigation-mobile-overlay')) return;
+            var now = Date.now();
+            clicks = clicks.filter(function (t) { return now - t < 800; }).concat(now);
+            if (clicks.length >= 3) window.location.href = '/chat';
+        });
+    })();
+</script>
 </body>
 </html>

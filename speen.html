@@ -1,606 +1,164 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
-    <script defer src="https://analytics.baloneys.studio/script.js" data-website-id="03418d76-12f0-4a2b-94ba-24dff73a6f6b"></script>
-    <title>speen - baloneys | dumbass world creator</title>
-    <meta
-      property="og:title"
-      content="speen - baloneys | dumbass world creator"
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    <meta property="twitter:card" content="summary_large_image" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>speen - baloneys | dumbass world creator</title>
+    <meta name="description" content="Things that spin, lovingly collected by baloneys." />
+    <meta name="theme-color" content="#050505" />
+    <meta property="og:title" content="speen - baloneys | dumbass world creator" />
+    <meta property="og:description" content="Things that spin, lovingly collected by baloneys." />
+    <link rel="canonical" href="https://kanaris-beans.com/speen" />
+    <link rel="icon" href="public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" sizes="32x32" />
 
-    <style data-tag="reset-style-sheet">
-      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;  -webkit-font-smoothing: antialiased;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;  color: inherit;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}pre {  white-space: normal;}input {  padding: 2px 4px;}img {  display: block;}details {  display: block;  margin: 0;  padding: 0;}summary::-webkit-details-marker {  display: none;}[data-thq="accordion"] [data-thq="accordion-content"] {  max-height: 0;  overflow: hidden;  transition: max-height 0.3s ease-in-out;  padding: 0;}[data-thq="accordion"] details[data-thq="accordion-trigger"][open] + [data-thq="accordion-content"] {  max-height: 1000vh;}details[data-thq="accordion-trigger"][open] summary [data-thq="accordion-icon"] {  transform: rotate(180deg);}html { scroll-behavior: smooth  }
+    <script>document.documentElement.classList.remove("no-js")</script>
+    <script defer src="https://analytics.baloneys.studio/script.js" data-website-id="03418d76-12f0-4a2b-94ba-24dff73a6f6b"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" />
+
+    <style>
+      /* minimal reset (replaces the old TeleportHQ reset) */
+      *, *::before, *::after { box-sizing: border-box; border-width: 0; border-style: solid; -webkit-font-smoothing: antialiased; }
+      body { margin: 0; }
+      p, h1, h2, h3, figure { margin: 0; padding: 0; }
+      a { color: inherit; text-decoration: inherit; }
+      img, svg, video { display: block; }
+      button { font: inherit; color: inherit; background: transparent; }
     </style>
-    <style data-tag="default-style-sheet">
-      html {
-        font-family: Inter;
-        font-size: 1rem;
-      }
-
-      body {
-        font-weight: 400;
-        font-style:normal;
-        text-decoration: undefined;
-        text-transform: undefined;
-        letter-spacing: 0.01em;
-        line-height: 1.6;
-        color: var(--color-on-surface);
-        background: var(--color-surface);
-
-        fill: var(--color-on-surface);
-      }
-    </style>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/animate.css@4.1.1/animate.css"
-    />
-    <link
-      rel="shortcut icon"
-      href="public/pw64s5dmavz539gvjm065tw71xp1.png"
-      type="icon/png"
-      sizes="32x32"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css"
-    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="home.css" />
   </head>
   <body>
-    <link rel="stylesheet" href="./style.css" />
-    <div>
-      <link href="./speen1.css" rel="stylesheet" />
+    <!-- shared icons -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <symbol id="icon-cart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle r="1" cx="8" cy="21"/><circle r="1" cx="19" cy="21"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></g></symbol>
+      <symbol id="icon-external" viewBox="0 0 24 24"><path d="M15 3h6v6m-11 5L21 3m-3 10v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="m12 19l-7-7l7-7m7 7H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7l-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    </svg>
 
-      <div class="speen-container1">
-        <navigation-wrapper class="navigation-wrapper">
-          <!--Navigation component-->
-          <div class="navigation-container1">
-            <div class="navigation-container2">
-              <div class="navigation-container3">
-                <style>
-                  @media (prefers-reduced-motion: reduce) {
-                  .navigation-mobile-overlay.is-open {
-                    animation: none;
-                  }
-                  .navigation-mobile-link:hover {
-                    transform: none;
-                  }
-                  }
-                </style>
-              </div>
-            </div>
-            <nav class="navigation-wrapper">
-              <div class="navigation-container">
-                <a href="index.html">
-                  <div class="navigation-logo">
-                    <span class="section-title">baloneys</span>
-                  </div>
-                </a>
-                <div class="navigation-desktop-menu">
-                  <a href="index.html">
-                    <div
-                      class="navigation-thq-navigation-link-elm1 navigation-link"
-                    >
-                      <span>Home</span>
-                    </div>
-                  </a>
-                  <a
-                    href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="navigation-link"><span>Worlds</span></div>
-                  </a>
-                  <a
-                    href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="navigation-link"><span>Tagging</span></div>
-                  </a>
-                  <a
-                    href="https://jinxxy.com/baloneys"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="navigation-link"><span>Store</span></div>
-                  </a>
-                  <a
-                    href="https://discord.gg/gYWJsYhwXN"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <div class="btn-sm btn-primary btn">
-                      <span>Contact Me</span>
-                    </div>
-                  </a>
-                </div>
-                <button
-                  id="navToggle"
-                  aria-label="Open Menu"
-                  aria-expanded="false"
-                  class="navigation-toggle"
-                >
-                  <svg
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="24"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M4 6h16M4 12h16M4 18h16"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-            </nav>
-            <div id="mobileOverlay" class="navigation-mobile-overlay">
-              <div class="navigation-mobile-header">
-                <a href="index.html">
-                  <div class="navigation-logo">
-                    <span class="section-title">baloneys</span>
-                  </div>
-                </a>
-                <button
-                  id="navClose"
-                  aria-label="Close Menu"
-                  class="navigation-toggle"
-                >
-                  <svg
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="24"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M18 6L6 18M6 6l12 12"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-              <div class="navigation-mobile-content">
-                <div class="navigation-mobile-links">
-                  <a href="index.html">
-                    <div class="navigation-mobile-link">
-                      <span>Worlds</span>
-                    </div>
-                  </a>
-                  <a href="index.html">
-                    <div class="navigation-mobile-link">
-                      <span>Avatars</span>
-                    </div>
-                  </a>
-                  <a href="index.html">
-                    <div class="navigation-mobile-link">
-                      <span>Assets</span>
-                    </div>
-                  </a>
-                  <a href="index.html">
-                    <div class="navigation-mobile-link"><span>Store</span></div>
-                  </a>
-                </div>
-                <div class="navigation-mobile-actions">
-                  <a href="index.html">
-                    <div class="btn-primary btn-lg btn">
-                      <span>Get in Touch</span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="navigation-container4">
-              <div class="navigation-container5">
-                <style>
-                          @keyframes fadeIn {from {opacity: 0;}
-                  to {opacity: 1;}}
-                </style>
-              </div>
-            </div>
-            <div class="navigation-container6">
-              <div class="navigation-container7">
-                <script defer="" data-name="navigation-logic">
-                  document.addEventListener('DOMContentLoaded', function() {
-                    (function(){
-                      const navToggle = document.getElementById("navToggle")
-                      const navClose = document.getElementById("navClose")
-                      const mobileOverlay = document.getElementById("mobileOverlay")
-                      const body = document.body
+    <a class="skip-link" href="#main">Skip to content</a>
 
-                      function openMenu() {
-                        mobileOverlay.classList.add("is-open")
-                        navToggle.setAttribute("aria-expanded", "true")
-                        body.style.overflow = "hidden"
-                      }
-
-                      function closeMenu() {
-                        mobileOverlay.classList.remove("is-open")
-                        navToggle.setAttribute("aria-expanded", "false")
-                        body.style.overflow = ""
-                      }
-
-                      navToggle.addEventListener("click", openMenu)
-                      navClose.addEventListener("click", closeMenu)
-
-                      const mobileLinks = mobileOverlay.querySelectorAll(".navigation-mobile-link")
-                      mobileLinks.forEach((link) => {
-                        link.addEventListener("click", closeMenu)
-                      })
-
-                      window.addEventListener("resize", () => {
-                        if (window.innerWidth > 767 && mobileOverlay.classList.contains("is-open")) {
-                          closeMenu()
-                        }
-                      })
-
-                      document.addEventListener("keydown", (e) => {
-                        if (e.key === "Escape" && mobileOverlay.classList.contains("is-open")) {
-                          closeMenu()
-                        }
-                      })
-                    })()
-                  });
-                </script>
-              </div>
-            </div>
-          </div>
-        </navigation-wrapper>
-        <section class="speen-thq-hero-section-elm hero-section">
-          <div class="hero-media-container">
-            <video
-              src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2Y0ZWdqaGFsMXZhc2ExdzA1bDRkaWJueHlodzhpbm44cjY5bjYxcyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/tWXgz9AigKytlLCgnO/giphy.gif"
-              loop="true"
-              muted="true"
-              poster="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2Y0ZWdqaGFsMXZhc2ExdzA1bDRkaWJueHlodzhpbm44cjY5bjYxcyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/tWXgz9AigKytlLCgnO/giphy.gif"
-              autoplay="true"
-              playsinline="true"
-              class="hero-bg-video"
-            ></video>
-            <div class="hero-overlay">
-              <div class="store-container">
-                <div
-                  class="speen-thq-store-carousel-wrapper-elm store-carousel-wrapper"
-                ></div>
-              </div>
-              <div class="hero-left">
-                <h1 class="hero-title home-hero-title">speen</h1>
-                <p class="hero-subtitle">I like how these things spin</p>
-              </div>
-              <div id="store-rail" class="speen-thq-store-rail-elm1 store-rail">
-                <div class="store-card">
-                  <div class="speen-thq-store-card-media-elm1 store-card-media">
-                    <img
-                      alt="GIF 2"
-                      src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejE2ZmszOHlrNjNoMmdlOW04YWxsNHJxdnhsb3B1bWdsZm1lOXpzcCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/SGcapv1ixmBBb1Etpa/giphy.gif"
-                      class="speen-image1"
-                    />
-                  </div>
-                </div>
-                <div class="store-card">
-                  <div class="speen-thq-store-card-media-elm2 store-card-media">
-                    <img
-                      alt="GIF 2"
-                      src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExemN3dGs1eTN4Zno0aDQ4ZGNoNnQxcmFrcXp3ZnhwNHE3aG9jZTcyYSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sHokl2HZpdkP54CLIR/giphy.gif"
-                      class="speen-image2"
-                    />
-                  </div>
-                </div>
-                <div class="store-card">
-                  <div class="speen-thq-store-card-media-elm3 store-card-media">
-                    <img
-                      alt="VR experience showcase"
-                      src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNW1xbXM3NDVpczJ3dDhzNmszenZ6Z2hlN2FxY29tYzBuM3prM290aSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/idqbUKTV55BNNWX2m0/giphy.gif"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div id="store-rail" class="speen-thq-store-rail-elm2 store-rail">
-                <div class="store-card">
-                  <div class="speen-thq-store-card-media-elm4 store-card-media">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src="https://www.youtube.com/embed/JltWsTrTK6s"
-                      title="YouTube video player"
-                      frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowfullscreen="true"
-                      class="speen-thq-image-elm"
-                    ></iframe>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-              <div id="store-rail" class="speen-thq-store-rail-elm2 store-rail">
-                <div class="store-card">
-                  <div class="speen-thq-store-card-media-elm4 store-card-media">
-                    <iframe width="100%" height="100%" src="./speen - baloneys _ dumbass world creator_files/JltWsTrTK6s.html" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="true" class="speen-thq-image-elm"></iframe>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-        </section>
-        <div class="speen-container2">
-          <div class="speen-container3">
-            <style>
-                      @keyframes fadeIn {from {opacity: 0;
-              transform: translateY(10px);}
-              to {opacity: 1;
-              transform: translateY(0);}}
-            </style>
-          </div>
+    <!-- Navigation -->
+    <header class="navigation-wrapper" id="siteNav">
+      <nav class="navigation-container" aria-label="Main">
+        <a href="index.html" class="navigation-logo" aria-label="baloneys home">
+          <span class="section-title">baloneys</span>
+        </a>
+        <div class="navigation-desktop-menu">
+          <a href="index.html#straya" class="navigation-link is-straya">Straya</a>
+          <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener" class="navigation-link">Worlds</a>
+          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html" target="_blank" rel="noreferrer noopener" class="navigation-link">Tagging</a>
+          <a href="https://kanaris-beans.com/speen" target="_blank" rel="noreferrer noopener" class="navigation-link">speen</a>
+          <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener" class="navigation-link">Store</a>
+          <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="btn btn-sm btn-primary">Contact Me</a>
         </div>
-        <div class="speen-container4">
-          <div class="speen-container5">
-            <script defer="" data-name="baloneys-interactions">
-              document.addEventListener('DOMContentLoaded', function() {
-                (function(){
-                  // Store Carousel Navigation
-                  const rail = document.getElementById("store-rail")
-                  const prevBtn = document.getElementById("store-prev")
-                  const nextBtn = document.getElementById("store-next")
+        <button id="navToggle" class="navigation-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileOverlay">
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </nav>
+    </header>
 
-                  if (rail && prevBtn && nextBtn) {
-                    nextBtn.addEventListener("click", () => {
-                      const cardWidth = rail.querySelector(".store-card").offsetWidth + 24
-                      rail.scrollBy({ left: cardWidth, behavior: "smooth" })
-                    })
-
-                    prevBtn.addEventListener("click", () => {
-                      const cardWidth = rail.querySelector(".store-card").offsetWidth + 24
-                      rail.scrollBy({ left: -cardWidth, behavior: "smooth" })
-                    })
-                  }
-
-                  // Testimonials Carousel
-                  const testimonials = document.querySelectorAll(".testimonial-item")
-                  const dots = document.querySelectorAll(".dot")
-                  let currentTestimonial = 0
-
-                  function showTestimonial(index) {
-                    testimonials.forEach((t) => t.classList.remove("active"))
-                    dots.forEach((d) => d.classList.remove("active"))
-
-                    testimonials[index].classList.add("active")
-                    dots[index].classList.add("active")
-                  }
-
-                  dots.forEach((dot, index) => {
-                    dot.addEventListener("click", () => {
-                      currentTestimonial = index
-                      showTestimonial(currentTestimonial)
-                    })
-                  })
-
-                  // Auto-rotate testimonials
-                  setInterval(() => {
-                    currentTestimonial = (currentTestimonial + 1) % testimonials.length
-                    showTestimonial(currentTestimonial)
-                  }, 5000)
-
-                  // Parallax for Hero Video
-                  window.addEventListener("scroll", () => {
-                    const scroll = window.pageYOffset
-                    const video = document.querySelector(".hero-bg-video")
-                    if (video) {
-                      video.style.transform = `translateY(${scroll * 0.3}px)`
-                    }
-                  })
-                })()
-              });
-            </script>
-          </div>
-        </div>
-        <footer-wrapper class="footer-wrapper">
-          <!--Footer component-->
-          <div class="footer-container1">
-            <footer class="footer-root">
-              <div class="footer-container">
-                <div class="footer-grid">
-                  <div class="footer-brand-column">
-                    <a href="file:///C:/Users/seanb/Downloads/baloneys%20_%20dumbass%20world%20creator-html%20(3)/index.html">
-                      <div class="footer-logo-link">
-                        <span class="footer-logo-text">baloneys</span>
-                      </div>
-                    </a>
-                    <p class="footer-brand-description section-content">
-                      <span>Crafting highly immersive experiences,</span>
-                      <br>
-                      <span>environments, and robust prefabs.</span>
-                      <br>
-                    </p>
-                    <div class="footer-social-links">
-                      <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener">
-                        <div aria-label="Discord" class="footer-thq-footer-social-icon-elm1 footer-social-icon">
-                          <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
-                            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                              <path d="M8 12a1 1 0 1 0 2 0a1 1 0 0 0-2 0m6 0a1 1 0 1 0 2 0a1 1 0 0 0-2 0"></path>
-                              <path d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833-1.667 3.5-3c.667-1.667.5-5.833-1.5-11.5c-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.9 11.9 0 0 0-4.053 0L9 4c-1.5.16-3.043.485-4.5 1.5c-2 5.667-2.167 9.833-1.5 11.5c.667 1.333 2 3 3.5 3c.5 0 2-2 2-3"></path>
-                              <path d="M7 16.5c3.5 1 6.5 1 10 0"></path>
-                            </g>
-                          </svg>
-                        </div>
-                      </a>
-                      <a href="https://x.com/beilude" target="_blank" rel="noreferrer noopener">
-                        <div aria-label="Twitter" class="footer-thq-footer-social-icon-elm2 footer-social-icon">
-                          <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
-                            <path d="M22 4.01c-1 .49-1.98.689-3 .99c-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4c0 0-4.182 7.433 4 11c-1.872 1.247-3.739 2.088-6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58-1.04 6.522-3.723 7.651-7.742a13.8 13.8 0 0 0 .497-3.753c0-.249 1.51-2.772 1.818-4.013z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                          </svg>
-                        </div>
-                      </a>
-                      <a href="https://github.com/baloneys" target="_blank" rel="noreferrer noopener">
-                        <div aria-label="Instagram" class="footer-thq-footer-social-icon-elm3 footer-social-icon">
-                          <svg width="24" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
-                            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                              <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5c.08-1.25-.27-2.48-1-3.5c.28-1.15.28-2.35 0-3.5c0 0-1 0-3 1.5c-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5c-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"></path>
-                              <path d="M9 18c-4.51 2-5-2-7-2"></path>
-                            </g>
-                          </svg>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                  <div class="footer-nav-column">
-                    <h3 class="section-subtitle footer-column-title">
-                      Navigation
-                    </h3>
-                    <nav class="footer-nav-list">
-                      <a href="file:///C:/Users/seanb/Downloads/baloneys%20_%20dumbass%20world%20creator-html%20(3)/index.html">
-                        <div class="footer-nav-link"><span>Home</span></div>
-                      </a>
-                      <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener">
-                        <div class="footer-thq-footer-nav-link-elm2 footer-nav-link">
-                          <span>Jinxxy Store</span>
-                        </div>
-                      </a>
-                      <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener">
-                        <div class="footer-thq-footer-nav-link-elm3 footer-nav-link">
-                          <span>VRChat Worlds</span>
-                        </div>
-                      </a>
-                      <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html" target="_blank" rel="noreferrer noopener">
-                        <div class="footer-thq-footer-nav-link-elm4 footer-nav-link">
-                          <span>VRCDynamicPlayerTags</span>
-                        </div>
-                      </a>
-                    </nav>
-                  </div>
-                  <div class="footer-nav-column">
-                    <h3 class="section-subtitle footer-column-title">
-                      Resources
-                    </h3>
-                    <nav class="footer-nav-list">
-                      <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener">
-                        <div class="footer-thq-footer-nav-link-elm5 footer-nav-link">
-                          <span>Support Discord</span>
-                        </div>
-                      </a>
-                      <a href="https://kanaris-beans.com/terms" target="_blank" rel="noreferrer noopener">
-                        <div class="footer-thq-footer-nav-link-elm6 footer-nav-link">
-                          <span>Terms of Service</span>
-                        </div>
-                      </a>
-                      <a href="https://kanaris-beans.com/privacy" target="_blank" rel="noreferrer noopener">
-                        <div class="footer-thq-footer-nav-link-elm7 footer-nav-link">
-                          <span>Privacy Policy</span>
-                        </div>
-                      </a>
-                      <a href="file:///C:/Users/seanb/Downloads/baloneys%20_%20dumbass%20world%20creator-html%20(3)/speen1.html#">
-                        <div class="footer-thq-footer-nav-link-elm8 footer-nav-link"></div>
-                      </a>
-                      <a href="file:///C:/Users/seanb/Downloads/baloneys%20_%20dumbass%20world%20creator-html%20(3)/speen1.html#">
-                        <div class="footer-thq-footer-nav-link-elm9 footer-nav-link"></div>
-                      </a>
-                    </nav>
-                  </div>
-                </div>
-                <div class="footer-bottom">
-                  <div class="footer-bottom-content">
-                    <p class="footer-copyright section-content">
-                      © 2025 baloneys. All rights reserved
-                    </p>
-                    <div class="footer-thq-footer-bottom-links-elm footer-bottom-links"></div>
-                  </div>
-                </div>
-              </div>
-            </footer>
-            <div class="footer-container2">
-              <div class="footer-container3">
-                <style>
-                          @keyframes footerPulse {0% {opacity: 1;
-                  transform: scale(1);}
-                  50% {opacity: 0.5;
-                  transform: scale(1.2);}
-                  100% {opacity: 1;
-                  transform: scale(1);}}
-                </style>
-              </div>
-            </div>
-            <div class="footer-container4">
-              <div class="footer-container5">
-                <script defer="" data-name="footer-logic">
-                  document.addEventListener('DOMContentLoaded', function() {
-                    (function(){
-                      const footerInputs = document.querySelectorAll(".footer-email-input")
-
-                      footerInputs.forEach((input) => {
-                        input.addEventListener("focus", () => {
-                          input.parentElement.style.boxShadow = "0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent)"
-                        })
-
-                        input.addEventListener("blur", () => {
-                          input.parentElement.style.boxShadow = "none"
-                        })
-                      })
-
-                      const newsletterForm = document.querySelector(".footer-newsletter-form")
-                      if (newsletterForm) {
-                        newsletterForm.addEventListener("submit", (e) => {
-                          const input = newsletterForm.querySelector(".footer-email-input")
-                          if (input && input.checkValidity()) {
-                            const btn = newsletterForm.querySelector(".footer-submit-btn")
-                            const originalText = btn.innerHTML
-
-                            btn.innerHTML = "<span>Subscribed!</span>"
-                            btn.style.backgroundColor = "#2ecc71"
-                            btn.style.borderColor = "#2ecc71"
-                            btn.disabled = true
-
-                            setTimeout(() => {
-                              btn.innerHTML = originalText
-                              btn.style.backgroundColor = ""
-                              btn.style.borderColor = ""
-                              btn.disabled = false
-                              newsletterForm.reset()
-                            }, 3000)
-                          }
-                        })
-                      }
-                    })()
-                  });
-                </script>
-              </div>
-            </div>
-          </div>
-        </footer-wrapper>
-        
+    <div id="mobileOverlay" class="navigation-mobile-overlay" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="navigation-mobile-header">
+        <a href="index.html" class="navigation-logo"><span class="section-title">baloneys</span></a>
+        <button id="navClose" class="navigation-toggle" aria-label="Close menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </div>
-      <link rel="canonical" href="https://genuine-peaceful-elk-hohcwo.teleporthq.app/speen1">
+      <div class="navigation-mobile-content">
+        <div class="navigation-mobile-links">
+          <a href="index.html#straya" class="navigation-mobile-link">Straya</a>
+          <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener" class="navigation-mobile-link">Worlds</a>
+          <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html" target="_blank" rel="noreferrer noopener" class="navigation-mobile-link">Tagging</a>
+          <a href="https://kanaris-beans.com/speen" target="_blank" rel="noreferrer noopener" class="navigation-mobile-link">speen</a>
+          <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener" class="navigation-mobile-link">Store</a>
+        </div>
+        <div class="navigation-mobile-actions">
+          <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="btn btn-lg btn-primary">Contact Me</a>
+        </div>
+      </div>
     </div>
-  
 
-</body></html>
+    <main id="main">
+      <section class="page-hero">
+        <img class="page-hero-bg" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2Y0ZWdqaGFsMXZhc2ExdzA1bDRkaWJueHlodzhpbm44cjY5bjYxcyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/tWXgz9AigKytlLCgnO/giphy.gif" alt="" aria-hidden="true" data-hide-broken />
+        <div class="page-hero-inner">
+          <span class="section-eyebrow">Round and round</span>
+          <h1 class="hero-title page-hero-title">speen</h1>
+          <p class="hero-subtitle">I like how these things spin</p>
+        </div>
+      </section>
+
+      <section class="speen-gallery" aria-label="Spinning things">
+        <div class="speen-grid">
+          <figure class="speen-card reveal">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejE2ZmszOHlrNjNoMmdlOW04YWxsNHJxdnhsb3B1bWdsZm1lOXpzcCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/SGcapv1ixmBBb1Etpa/giphy.gif" alt="A spinning thing" loading="lazy" decoding="async" data-hide-broken />
+          </figure>
+          <figure class="speen-card reveal">
+            <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExemN3dGs1eTN4Zno0aDQ4ZGNoNnQxcmFrcXp3ZnhwNHE3aG9jZTcyYSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sHokl2HZpdkP54CLIR/giphy.gif" alt="Another spinning thing" loading="lazy" decoding="async" data-hide-broken />
+          </figure>
+          <figure class="speen-card reveal">
+            <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNW1xbXM3NDVpczJ3dDhzNmszenZ6Z2hlN2FxY29tYzBuM3prM290aSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/idqbUKTV55BNNWX2m0/giphy.gif" alt="Yet another spinning thing" loading="lazy" decoding="async" data-hide-broken />
+          </figure>
+          <figure class="speen-card speen-card-video reveal">
+            <iframe src="https://www.youtube-nocookie.com/embed/JltWsTrTK6s" title="speen on YouTube" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </figure>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-root">
+      <div class="footer-container">
+        <div class="footer-grid">
+          <div class="footer-brand-column">
+            <a href="index.html" class="footer-logo-link"><span class="footer-logo-text">baloneys</span></a>
+            <p class="footer-brand-description section-content">
+              Crafting highly immersive experiences,<br />
+              environments, and robust prefabs.
+            </p>
+            <div class="footer-social-links">
+              <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="footer-social-icon" aria-label="Discord">
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12a1 1 0 1 0 2 0a1 1 0 0 0-2 0m6 0a1 1 0 1 0 2 0a1 1 0 0 0-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833-1.667 3.5-3c.667-1.667.5-5.833-1.5-11.5c-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.9 11.9 0 0 0-4.053 0L9 4c-1.5.16-3.043.485-4.5 1.5c-2 5.667-2.167 9.833-1.5 11.5c.667 1.333 2 3 3.5 3c.5 0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></g></svg>
+              </a>
+              <a href="https://x.com/beilude" target="_blank" rel="noreferrer noopener" class="footer-social-icon" aria-label="X (Twitter)">
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 4.01c-1 .49-1.98.689-3 .99c-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4c0 0-4.182 7.433 4 11c-1.872 1.247-3.739 2.088-6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58-1.04 6.522-3.723 7.651-7.742a13.8 13.8 0 0 0 .497-3.753c0-.249 1.51-2.772 1.818-4.013z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <a href="https://github.com/baloneys" target="_blank" rel="noreferrer noopener" class="footer-social-icon" aria-label="GitHub">
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5c.08-1.25-.27-2.48-1-3.5c.28-1.15.28-2.35 0-3.5c0 0-1 0-3 1.5c-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5c-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></g></svg>
+              </a>
+            </div>
+          </div>
+          <div class="footer-nav-column">
+            <h3 class="section-subtitle footer-column-title">Navigation</h3>
+            <nav class="footer-nav-list" aria-label="Footer navigation">
+              <a href="index.html" class="footer-nav-link">Home</a>
+              <a href="index.html#straya" class="footer-nav-link">Straya</a>
+              <a href="https://jinxxy.com/baloneys" target="_blank" rel="noreferrer noopener" class="footer-nav-link">Jinxxy Store</a>
+              <a href="https://vrchat.com/home/user/usr_54097a4a-dab6-47ce-bcc5-00f39aa03555" target="_blank" rel="noreferrer noopener" class="footer-nav-link">VRChat Worlds</a>
+              <a href="https://kanaris-beans.com/dynabackend/vrc-dynamic-player-tags.html" target="_blank" rel="noreferrer noopener" class="footer-nav-link">VRCDynamicPlayerTags</a>
+            </nav>
+          </div>
+          <div class="footer-nav-column">
+            <h3 class="section-subtitle footer-column-title">Resources</h3>
+            <nav class="footer-nav-list" aria-label="Resources">
+              <a href="https://discord.gg/gYWJsYhwXN" target="_blank" rel="noreferrer noopener" class="footer-nav-link">Support Discord</a>
+              <a href="terms.html" class="footer-nav-link">Terms of Service</a>
+              <a href="privacy.html" class="footer-nav-link">Privacy Policy</a>
+            </nav>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="footer-bottom-content">
+            <p class="footer-copyright section-content">© <span data-year>2025</span> baloneys. All rights reserved</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

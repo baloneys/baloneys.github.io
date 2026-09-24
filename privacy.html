@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy - baloneys</title>
-    <link rel="shortcut icon" href="../public/pw64s5dmavz539gvjm065tw71xp1.png" type="icon/png" sizes="32x32">
+    <link rel="shortcut icon" href="../public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" sizes="32x32">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap">
     <style>
         /* Navigation Styles */
@@ -15,7 +15,7 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            background: rgba(10, 10, 10, 0.95);
+            background: rgba(5, 5, 5, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -41,7 +41,7 @@
         .section-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #6366f1;
+            color: #9d00ff;
         }
 
         .navigation-desktop-menu {
@@ -77,7 +77,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(10, 10, 10, 0.98);
+            background: rgba(5, 5, 5, 0.98);
             z-index: 2000;
             transform: translateX(-100%);
             transition: transform 0.3s ease;
@@ -127,7 +127,7 @@
         /* Footer Styles */
         .footer-root {
             width: 100%;
-            background: #1a1a1a;
+            background: #0d0a12;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             margin-top: 4rem;
         }
@@ -154,7 +154,7 @@
         .footer-logo-text {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #6366f1;
+            color: #9d00ff;
         }
 
         .footer-brand-description {
@@ -182,14 +182,14 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: rgba(99, 102, 241, 0.2);
+            background: rgba(157, 0, 255, 0.2);
             color: rgba(255, 255, 255, 0.8);
             transition: all 0.3s ease;
             cursor: pointer;
         }
 
         .footer-social-icon:hover {
-            background: rgba(99, 102, 241, 0.3);
+            background: rgba(157, 0, 255, 0.3);
             color: #fff;
             transform: translateY(-2px);
         }
@@ -244,10 +244,10 @@
 
         /* Page Specific Styles */
         :root {
-            --color-surface: #0a0a0a;
-            --color-surface-elevated: #1a1a1a;
-            --color-primary: #6366f1;
-            --color-primary-hover: #4f46e5;
+            --color-surface: #050505;
+            --color-surface-elevated: #0d0a12;
+            --color-primary: #9d00ff;
+            --color-primary-hover: #8400d6;
             --color-text: #ffffff;
             --color-text-secondary: rgba(255, 255, 255, 0.7);
             --color-border: rgba(255, 255, 255, 0.1);
@@ -284,7 +284,7 @@
             font-size: 2.5rem;
             font-weight: 900;
             margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+            background: linear-gradient(135deg, #c77dff 0%, #9d00ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -325,7 +325,7 @@
         h3 {
             font-size: 1.25rem;
             font-weight: 600;
-            color: #a5b4fc;
+            color: #d4a5ff;
             margin-bottom: 0.75rem;
             margin-top: 1.5rem;
         }
@@ -348,13 +348,13 @@
         }
 
         a {
-            color: #6366f1;
+            color: #9d00ff;
             text-decoration: none;
             transition: color 0.2s ease;
         }
 
         a:hover {
-            color: #818cf8;
+            color: #c77dff;
             text-decoration: underline;
         }
 
@@ -378,7 +378,7 @@
         .btn-primary:hover {
             background: var(--color-primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 12px rgba(157, 0, 255, 0.4);
             text-decoration: none;
         }
 
@@ -400,8 +400,8 @@
         }
 
         .highlight-box {
-            background: rgba(99, 102, 241, 0.1);
-            border-left: 3px solid #6366f1;
+            background: rgba(157, 0, 255, 0.1);
+            border-left: 3px solid #9d00ff;
             padding: 1.25rem;
             border-radius: 8px;
             margin: 1.5rem 0;
@@ -480,6 +480,8 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="site.css">
 </head>
 <body>
     <navigation-wrapper class="navigation-wrapper">
@@ -717,7 +719,7 @@
                     </div>
                     <div class="footer-bottom">
                         <div class="footer-bottom-content">
-                            <p class="footer-copyright section-content">© 2025 baloneys. All rights reserved</p>
+                            <p class="footer-copyright section-content">© <span data-year>2025</span> baloneys. All rights reserved</p>
                         </div>
                     </div>
                 </div>
@@ -766,5 +768,6 @@
             });
         });
     </script>
+<script>document.querySelectorAll("[data-year]").forEach(function(e){e.textContent=new Date().getFullYear()})</script>
 </body>
 </html>

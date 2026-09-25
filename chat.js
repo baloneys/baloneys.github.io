@@ -1122,7 +1122,7 @@
       image: typeof st.image === 'string' && st.image.length < 90000 && DATA_IMG_RE.test(st.image) ? st.image : null,
       hostId: typeof st.hostId === 'string' ? st.hostId : '',
       members, order: list(st.order), muted: list(st.muted), banned: list(st.banned),
-      nicks: cleanNicks(st.nicks), desc: cleanDesc(st.desc), theme: cleanRoomTheme(st.theme), accent: isHex(st.accent) ? st.accent : null
+      ...roomLook(st)
     });
     S.msgNodes.clear();
     queueRerender();
@@ -1142,7 +1142,7 @@
     return { stops, angle: Math.max(0, Math.min(360, Number(t.angle) || 0)) };
   }
   // What a host can customise, as carried in room state and handovers.
-  const roomLook = (x) => ({ nicks: cleanNicks(x.nicks), desc: cleanDesc(x.desc), theme: cleanRoomTheme(x.theme), accent: isHex(x.accent) ? x.accent : null });
+  const roomLook = (x) => ({ nicks: cleanNicks(x.nicks), desc: cleanDesc(x.desc), theme: cleanRoomTheme(x.theme), accent: isHex(x.accent) ? x.accent : null, accent2: isHex(x.accent) && isHex(x.accent2) ? x.accent2 : null });
 
   function memberOnClosed(link) {
     const code = link.room;
@@ -1422,8 +1422,8 @@
     else if (action === 'nick') setNick(H, id, extra, S.me.id);
     else if (action === 'look') {
       const x = roomLook(Object.assign({}, H, extra));
-      const changed = x.desc !== H.desc || JSON.stringify(x.theme) !== JSON.stringify(H.theme) || x.accent !== H.accent;
-      Object.assign(H, { desc: x.desc, theme: x.theme, accent: x.accent });
+      const changed = x.desc !== H.desc || JSON.stringify(x.theme) !== JSON.stringify(H.theme) || x.accent !== H.accent || x.accent2 !== H.accent2;
+      Object.assign(H, { desc: x.desc, theme: x.theme, accent: x.accent, accent2: x.accent2 });
       if (changed) { hostSync(H); hostSystem(H, 'customised the room'); }
     }
     else if (action === 'delmsg') hostApply(code, S.me.id, { k: 'del', id });
@@ -1446,6 +1446,9 @@
     [btn('Cancel', 'btn-ghost', closeModal), nickIn(id, code) ? btn('Reset', 'btn-outline', () => save('')) : null, btn('Save', 'btn-primary', () => save(input.value))].filter(Boolean));
   }
 
+  // The room banner: its theme if it has one, otherwise a soft wash of the accent gradient.
+  const roomBannerCss = (r, acc) => (r && r.theme ? roomGradCss(r.theme)
+    : 'radial-gradient(120% 140% at 0% 0%, ' + acc[0] + 'cc, transparent 60%), radial-gradient(120% 140% at 100% 100%, ' + acc[1] + 'aa, transparent 55%), linear-gradient(135deg, ' + acc[0] + '55, ' + acc[1] + '44), #0b0b12');
   const roomGradCss = (t) => 'linear-gradient(' + t.angle + 'deg, ' + t.stops.join(', ') + ')';
 
   function roomSettings(code) {
@@ -1453,7 +1456,7 @@
     if (!H) return;
     closeModal();
     let image = H.image || null;
-    const d = { name: H.name, desc: H.desc || '', theme: H.theme ? { stops: H.theme.stops.slice(), angle: H.theme.angle } : null, accent: H.accent || null };
+    const d = { name: H.name, desc: H.desc || '', theme: H.theme ? { stops: H.theme.stops.slice(), angle: H.theme.angle } : null, accent: roomAccent(H) };
     const file = el('input', { type: 'file', accept: 'image/*', hidden: true });
     file.addEventListener('change', async () => {
       const f = file.files[0]; file.value = '';
@@ -1466,10 +1469,10 @@
     });
     const wrap = el('div', { class: 'room-studio' });
     const preview = () => {
-      const hero = el('div', { class: 'rs-hero', style: { background: d.theme ? roomGradCss(d.theme) : 'linear-gradient(135deg, #1a1030, #0b0b12)' } },
+      const acc = d.accent || lookAccent();
+      return el('div', { class: 'rs-hero', style: { background: roomBannerCss({ theme: d.theme }, acc) } },
         el('div', { class: 'rs-hero-inner' }, roomIcon({ code, name: d.name || H.name, image, status: 'connected' }, true),
-          el('div', null, el('strong', { class: 'rs-name', style: d.accent ? { color: d.accent } : {}, text: d.name || H.name }), el('p', { class: 'rs-desc', text: d.desc || 'No description yet' }))));
-      return hero;
+          el('div', null, el('strong', { class: 'rs-name grad-text', style: { '--ag1': acc[0], '--ag2': acc[1] }, text: d.name || H.name }), el('p', { class: 'rs-desc', text: d.desc || 'No description yet' }))));
     };
     const heroBox = el('div');
     const redrawHero = () => heroBox.replaceChildren(preview());
@@ -1490,9 +1493,9 @@
         el('div', { class: 'grad-stops' }, d.theme.stops.map((c, i) => colorInput(c, (v) => { d.theme.stops[i] = v; redrawHero(); })),
           el('button', { type: 'button', class: 'btn btn-sm btn-ghost', text: d.theme.stops.length > 2 ? '− Stop' : '+ Stop', onclick: () => { if (d.theme.stops.length > 2) d.theme.stops.pop(); else d.theme.stops.push('#e60065'); draw(); } })),
         slider('Angle', 0, 360, d.theme.angle, '°', (v) => { d.theme.angle = v; redrawHero(); })) : null;
-      const accents = el('div', { class: 'swatches' },
-        el('button', { type: 'button', class: 'swatch none' + (!d.accent ? ' selected' : ''), 'aria-label': 'No room accent', title: 'Use each person’s own accent', onclick: () => { d.accent = null; draw(); } }),
-        ACCENTS.map((c) => el('button', { type: 'button', class: 'swatch' + (c === d.accent ? ' selected' : ''), style: { background: c }, 'aria-label': 'Accent ' + c, onclick: () => { d.accent = c; draw(); } })));
+      const accents = el('div', { class: 'stack' },
+        choice([['none', 'Everyone’s own'], ['room', 'Room accent']], d.accent ? 'room' : 'none', (v) => { d.accent = v === 'room' ? (d.accent || ACCENT_GRADS[0].slice()) : null; draw(); }),
+        d.accent ? accentPicker(d.accent, (pair) => { d.accent = pair; redrawHero(); }) : null);
       wrap.replaceChildren(heroBox,
         el('div', { class: 'row rs-pic' },
           btn(image ? 'Change picture' : 'Upload picture', 'btn-sm btn-outline', () => file.click()),
@@ -1500,7 +1503,7 @@
         el('div', { class: 'field' }, el('label', { text: 'Room name' }), nameIn),
         el('div', { class: 'field' }, el('label', { text: 'Description' }), descIn),
         el('div', { class: 'field' }, el('label', { text: 'Room theme' }), el('p', { class: 'field-hint', text: 'Members see this background while they’re in the room (unless they turn room themes off).' }), themes, custom),
-        el('div', { class: 'field' }, el('label', { text: 'Room accent' }), accents, d.accent ? colorInput(d.accent, (v) => { d.accent = v; redrawHero(); }) : null));
+        el('div', { class: 'field' }, el('label', { text: 'Room accent' }), accents));
     }
     draw();
     openModal('Room settings', wrap, [btn('Cancel', 'btn-ghost', closeModal), btn('Save', 'btn-primary', () => {
@@ -1508,7 +1511,7 @@
       const n = d.name.trim();
       if (n && n !== H.name) hostTool(code, 'rename', null, n);
       if (image !== (H.image || null)) hostTool(code, 'image', null, image);
-      hostTool(code, 'look', null, { desc: d.desc, theme: d.theme, accent: d.accent });
+      hostTool(code, 'look', null, { desc: d.desc, theme: d.theme, accent: d.accent ? d.accent[0] : null, accent2: d.accent ? d.accent[1] : null });
       closeModal();
     })], { wide: true });
   }
@@ -1917,10 +1920,14 @@
         'This is the start of your DMs with ' + nameOf(c.id) + '. Messages go directly between your browsers and are saved only on your devices.');
     }
     const r = S.rooms[c.id] || {};
-    return el('div', { class: 'conv-start room-start' + (r.theme ? ' themed-room' : ''), style: r.theme ? { '--room-grad': roomGradCss(r.theme) } : {} },
-      roomIcon(Object.assign({ code: c.id }, r), true), el('strong', { text: roomName(c.id) }),
-      r.desc ? el('p', { class: 'room-desc', text: r.desc }) : null,
-      el('span', null, 'Welcome to the room. Share code ', el('span', { class: 'code-chip', text: c.id, onclick: copyCode }), ' to invite people.'));
+    const acc = (look.roomThemes !== false && roomAccent(r)) || lookAccent();
+    return el('div', { class: 'conv-start room-start' },
+      el('div', { class: 'room-banner', style: { background: roomBannerCss(look.roomThemes !== false ? r : {}, acc) } }),
+      el('div', { class: 'room-start-body' },
+        roomIcon(Object.assign({ code: c.id }, r), true),
+        el('strong', { class: 'room-start-name' }, roomName(c.id)),
+        r.desc ? el('p', { class: 'room-desc', text: r.desc }) : null,
+        el('span', null, 'Welcome to the room. Share code ', el('span', { class: 'code-chip', text: c.id, onclick: copyCode }), ' to invite people.')));
   }
 
   function msgSig(key, m) {
@@ -3407,16 +3414,43 @@
   const LOOK_DEFAULT = {
     bg: 'default', theme: 'baloneys', grad: { stops: ['#12001f', '#3b0764', '#e60065'], angle: 150, three: true },
     solid: '#0b0b12', imgBlur: 0, imgDim: 35, imgFit: 'cover',
-    panel: 78, glassBlur: 16, text: 'default', textColor: '#ece6ff', accent: '#9d00ff', accentGrad: null, size: 15
+    panel: 78, glassBlur: 16, text: 'default', textColor: '#ece6ff', accent: '#9d00ff', accent2: null, accentFlat: false, size: 15
   };
 
   let look = loadLook();
   let lookImage = null;
   function loadLook() {
-    try { return Object.assign({}, LOOK_DEFAULT, JSON.parse(localStorage.getItem('chat.look') || '{}')); } catch (e) { return Object.assign({}, LOOK_DEFAULT); }
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem('chat.look') || '{}') || {}; } catch (e) { /* fresh start */ }
+    // Earlier versions kept the gradient as accentGrad.
+    if (isHexPair(saved.accentGrad)) { saved.accent = saved.accentGrad[0]; saved.accent2 = saved.accentGrad[1]; }
+    delete saved.accentGrad;
+    return Object.assign({}, LOOK_DEFAULT, saved);
   }
   function saveLook() { try { localStorage.setItem('chat.look', JSON.stringify(look)); } catch (e) { /* private mode */ } }
 
+  // Every accent is a two-colour gradient; a single colour gets a partner a little further round the colour wheel.
+  const ACCENT_PAIRS = { '#9d00ff': '#e60065', '#e60065': '#ff8a00', '#7c3aed': '#db2777', '#2563eb': '#06b6d4', '#06b6d4': '#a78bfa', '#10b981': '#06b6d4', '#f59e0b': '#ef4444', '#ef4444': '#f59e0b', '#ec4899': '#8b5cf6', '#a3a3a3': '#f5f5f5' };
+  function accentPartner(hex) {
+    hex = String(hex || '').toLowerCase();
+    if (ACCENT_PAIRS[hex]) return ACCENT_PAIRS[hex];
+    const n = parseInt(hex.slice(1), 16);
+    let r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
+    let h = 0, sat = 0;
+    if (d) {
+      sat = d / (1 - Math.abs(2 * l - 1));
+      h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+      h *= 60;
+    }
+    h = (h + 55 + 360) % 360;
+    const L = Math.min(0.7, l + 0.06), C = (1 - Math.abs(2 * L - 1)) * sat, X = C * (1 - Math.abs(((h / 60) % 2) - 1)), m = L - C / 2;
+    const [a, bb, c] = h < 60 ? [C, X, 0] : h < 120 ? [X, C, 0] : h < 180 ? [0, C, X] : h < 240 ? [0, X, C] : h < 300 ? [X, 0, C] : [C, 0, X];
+    return '#' + [a, bb, c].map((v) => Math.round((v + m) * 255).toString(16).padStart(2, '0')).join('');
+  }
+  const ACCENT_GRADS = [['#9d00ff', '#e60065'], ...NAME_GRADS.slice(1), ['#e60065', '#ff8a00'], ['#2563eb', '#06b6d4'], ['#10b981', '#06b6d4'], ['#ec4899', '#8b5cf6']];
+  const lookAccent = () => [look.accent, isHex(look.accent2) ? look.accent2 : accentPartner(look.accent)];
+  const roomAccent = (r) => (r && isHex(r.accent) ? [r.accent, isHex(r.accent2) ? r.accent2 : accentPartner(r.accent)] : null);
   const gradCss = (g) => 'linear-gradient(' + g.angle + 'deg, ' + (g.three ? g.stops : g.stops.slice(0, 2)).join(', ') + ')';
 
   // The room you're in can bring its own background and accent (unless you've turned room themes off).
@@ -3427,14 +3461,14 @@
   let lastRoomLook = '';
   function paintRoomLook() {
     const r = activeRoomLook();
-    const key = r ? JSON.stringify([r.theme, r.accent]) : '';
+    const key = r ? JSON.stringify([r.theme, r.accent, r.accent2]) : '';
     if (key !== lastRoomLook) applyLook();
   }
 
   function applyLook() {
     const body = document.body;
     const room = activeRoomLook();
-    lastRoomLook = room ? JSON.stringify([room.theme, room.accent]) : '';
+    lastRoomLook = room ? JSON.stringify([room.theme, room.accent, room.accent2]) : '';
     const bg = $('chatBg');
     const custom = look.bg !== 'default';
     body.classList.toggle('themed', custom || !!(room && room.theme) || look.panel < 100);
@@ -3457,14 +3491,15 @@
     }
     if (room && room.theme) { bg.style.background = roomGradCss(room.theme); bg.style.setProperty('--img', 'none'); bg.classList.remove('image'); }
     body.style.setProperty('--panel-a', String(Math.max(0.08, look.panel / 100)));
-    // A room's own accent wins; otherwise your accent can be a gradient (accented text only, no glow).
-    const grad = !(room && room.accent) && isHexPair(look.accentGrad) ? look.accentGrad : null;
-    body.classList.toggle('accent-grad', !!grad);
-    if (grad) { body.style.setProperty('--ag1', grad[0]); body.style.setProperty('--ag2', grad[1]); body.style.setProperty('--gradient-brand', 'linear-gradient(to right, ' + grad[0] + ', ' + grad[1] + ')'); }
-    else body.style.removeProperty('--gradient-brand');
-    const accent = (room && room.accent) || (grad ? grad[0] : look.accent);
-    body.style.setProperty('--color-primary', accent);
-    body.style.setProperty('--color-accent', grad && !(room && room.accent) ? grad[1] : accent === '#9d00ff' ? '#e60065' : accent);
+    // A room's own accent wins inside the room. Accented text is a gradient (no glow) unless you pick Flat.
+    const [a1, a2] = roomAccent(room) || lookAccent();
+    const grad = !look.accentFlat;
+    body.classList.toggle('accent-grad', grad);
+    body.style.setProperty('--ag1', a1);
+    body.style.setProperty('--ag2', a2);
+    body.style.setProperty('--gradient-brand', 'linear-gradient(to right, ' + a1 + ', ' + (grad ? a2 : a1) + ')');
+    body.style.setProperty('--color-primary', a1);
+    body.style.setProperty('--color-accent', grad ? a2 : a1);
     body.style.setProperty('--msg-size', look.size + 'px');
     body.style.setProperty('--msg-color', look.text === 'custom' ? look.textColor : '#ece6ff');
     body.classList.toggle('blend-text', look.text === 'blend');
@@ -3680,24 +3715,26 @@
         }, el('b', { text: label }), el('small', { text: hint })))),
         look.text === 'custom' ? colorInput(look.textColor, (v) => setLook({ textColor: v })) : null,
         look.text === 'blend' && look.glassBlur ? el('p', { class: 'field-hint', text: 'Frosted glass is paused while Blend is on, so the text can see your background.' }) : null),
-      sec('Accent colour',
-        choice([['solid', 'Solid'], ['gradient', 'Gradient']], look.accentGrad ? 'gradient' : 'solid', (v) => {
-          setLook({ accentGrad: v === 'gradient' ? (look.accentGrad || (isHexPair(S.me.nameGrad) ? S.me.nameGrad.slice(0, 2) : NAME_GRADS[0].slice())) : null });
-          drawStudio();
-        }),
-        look.accentGrad ? [
-          el('div', { class: 'grad-presets' },
-            NAME_GRADS.map((pair) => el('button', { type: 'button', class: 'grad-chip' + (pair[0] === look.accentGrad[0] && pair[1] === look.accentGrad[1] ? ' on' : ''), style: { background: 'linear-gradient(90deg, ' + pair[0] + ', ' + pair[1] + ')' }, 'aria-label': 'Accent gradient ' + pair.join(' to '), onclick: () => { setLook({ accentGrad: pair.slice() }); drawStudio(); } }))),
-          el('div', { class: 'grad-stops' },
-            [0, 1].map((i) => colorInput(look.accentGrad[i], (v) => { const g = look.accentGrad.slice(); g[i] = v; setLook({ accentGrad: g }); })),
-            isHexPair(S.me.nameGrad) ? btn('Match my name', 'btn-sm btn-ghost', () => { setLook({ accentGrad: S.me.nameGrad.slice(0, 2) }); drawStudio(); }) : null),
-          el('p', { class: 'accent-grad-demo', text: 'Section titles and outlined buttons use this' })
-        ] : [
-          el('div', { class: 'swatches' }, ACCENTS.map((c) => el('button', { type: 'button', class: 'swatch' + (c === look.accent ? ' selected' : ''), style: { background: c }, 'aria-label': 'Accent ' + c, onclick: () => { setLook({ accent: c }); drawStudio(); } }))),
-          colorInput(look.accent, (v) => setLook({ accent: v }))
-        ]),
+      sec('Accent colour', accentPicker(lookAccent(), (pair) => setLook({ accent: pair[0], accent2: pair[1] }), true),
+        choice([['grad', 'Gradient'], ['flat', 'Flat']], look.accentFlat ? 'flat' : 'grad', (v) => { setLook({ accentFlat: v === 'flat' }); drawStudio(); }),
+        el('p', { class: 'accent-grad-demo', text: 'Section titles, outlined buttons and the logo use this' })),
       sec('Text size', slider('Messages', 13, 19, look.size, 'px', (v) => setLook({ size: v }))),
       sec('Preview', el('div', { class: 'studio-preview' }, previewMsg('Seany', 'this looks sick 🔥'), previewMsg(S.me.name, 'right?? **bold** and ||spoilers|| too'))));
+  }
+
+  // Gradient chips plus two colour stops; used for your accent and a room's accent.
+  function accentPicker(pair, onpick, withName) {
+    const wrap = el('div', { class: 'accent-picker' });
+    const draw = (cur) => wrap.replaceChildren(
+      el('div', { class: 'grad-presets' }, ACCENT_GRADS.map((g) => el('button', {
+        type: 'button', class: 'grad-chip' + (cur && g[0] === cur[0] && g[1] === cur[1] ? ' on' : ''), style: { background: 'linear-gradient(90deg, ' + g[0] + ', ' + g[1] + ')' },
+        'aria-label': 'Accent ' + g.join(' to '), onclick: () => { onpick(g.slice()); draw(g); }
+      }))),
+      cur ? el('div', { class: 'grad-stops' },
+        [0, 1].map((i) => colorInput(cur[i], (v) => { cur = cur.slice(); cur[i] = v; onpick(cur); })),
+        withName && isHexPair(S.me.nameGrad) ? btn('Match my name', 'btn-sm btn-ghost', () => { const g = S.me.nameGrad.slice(0, 2); onpick(g); draw(g); }) : null) : null);
+    draw(pair);
+    return wrap;
   }
 
   function previewMsg(name, text) {

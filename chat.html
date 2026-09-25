@@ -48,6 +48,7 @@
       <symbol id="i-smile" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></g></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
       <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-palette" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-1.8a1.8 1.8 0 0 0-1.3 3.1c.4.4.6.9.6 1.4 0 .9-.7 1.5-1.5 1.5z"/><circle cx="7.5" cy="10.5" r="1.2" fill="currentColor"/><circle cx="12" cy="7" r="1.2" fill="currentColor"/><circle cx="16.5" cy="10.5" r="1.2" fill="currentColor"/></g></symbol>
       <symbol id="i-dots" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></g></symbol>
     </svg>
 
@@ -87,6 +88,7 @@
       </div>
     </div>
 
+    <div class="chat-bg" id="chatBg" aria-hidden="true"></div>
     <main id="main" class="chat-root">
       <div class="net-banner hidden" id="netBanner" role="status"></div>
       <div class="boot" id="boot"><div class="boot-dot"></div><span>connecting…</span></div>
@@ -137,6 +139,7 @@
           <div class="me-bar">
             <div id="meAvatar"></div>
             <span class="me-text"><span class="me-name" id="meName"></span><button class="me-code" type="button" id="meCode" title="Copy your add-me link"></button></span>
+            <button class="icon-btn studio-btn" type="button" id="studioBtn" title="Customise" aria-label="Customise"><svg><use href="#i-palette"/></svg></button>
             <button class="icon-btn" type="button" id="settingsBtn" title="Settings" aria-label="Settings"><svg><use href="#i-gear"/></svg></button>
           </div>
         </aside>
@@ -188,6 +191,8 @@
         <aside class="members hidden" id="membersPane" aria-label="Members"></aside>
       </div>
     </main>
+
+    <aside class="studio" id="studio" aria-label="Customise" aria-hidden="true"></aside>
 
     <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="modal-card" id="modalCard"></div></div>
 

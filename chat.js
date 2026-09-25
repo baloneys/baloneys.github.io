@@ -93,7 +93,7 @@
         else n.setAttribute(k, v === true ? '' : v);
       }
     }
-    for (const kid of kids.flat()) {
+    for (const kid of kids.flat(Infinity)) {
       if (kid == null || kid === false) continue;
       n.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
     }
@@ -307,19 +307,54 @@
       bio: typeof p.bio === 'string' ? p.bio.slice(0, 190) : ''
     };
     if (typeof p.avatar === 'string' && p.avatar.length < 70000 && /^data:image\/(png|jpeg|webp|gif);base64,/.test(p.avatar)) out.avatar = p.avatar;
+    if (typeof p.banner === 'string' && p.banner.length < 170000 && /^data:image\/(png|jpeg|webp|gif);base64,/.test(p.banner)) out.banner = p.banner;
+    if (isHexPair(p.nameGrad)) out.nameGrad = p.nameGrad.slice(0, 2);
+    if (isHexPair(p.bannerGrad)) out.bannerGrad = p.bannerGrad.slice(0, 2);
     return out;
   }
 
-  function myProfile() { const m = S.me; return { name: m.name, color: m.color, bio: m.bio || '', avatar: m.avatar || undefined }; }
+  const isHex = (c) => typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c);
+  const isHexPair = (a) => Array.isArray(a) && a.length >= 2 && isHex(a[0]) && isHex(a[1]);
 
-  function setProfile(id, p) {
-    const clean = cleanProfile(p);
+  function myProfile() {
+    const m = S.me;
+    return { name: m.name, color: m.color, bio: m.bio || '', avatar: m.avatar || undefined, banner: m.banner || undefined, nameGrad: m.nameGrad || undefined, bannerGrad: m.bannerGrad || undefined };
+  }
+  // Rooms send only this light version on every update; pictures travel once, on join or change.
+  function lightProfile(p) { return p ? { name: p.name, color: p.color, bio: p.bio, nameGrad: p.nameGrad, bannerGrad: p.bannerGrad } : {}; }
+
+  function setProfile(id, p, light) {
+    let clean = cleanProfile(p);
     const old = S.profiles[id];
+    if (light && old) {
+      // Light updates carry no pictures: keep the ones we already have.
+      if (old.avatar) clean.avatar = old.avatar;
+      if (old.banner) clean.banner = old.banner;
+    }
     if (old && JSON.stringify(old) === JSON.stringify(clean)) return;
     S.profiles[id] = clean;
     persist('profiles');
     S.msgNodes.clear();
     queueRerender();
+  }
+
+  // A person's name in their colour, or their gradient with a soft glow.
+  function nameEl(id, cls, extra) {
+    const p = profileOf(id) || {};
+    const span = el('span', Object.assign({ class: 'uname' + (cls ? ' ' + cls : ''), text: nameOf(id) }, extra || {}));
+    if (p.nameGrad) {
+      span.classList.add('grad');
+      span.style.setProperty('--g1', p.nameGrad[0]);
+      span.style.setProperty('--g2', p.nameGrad[1]);
+    } else if (p.color) span.style.color = p.color;
+    return span;
+  }
+
+  function roomIcon(r, big) {
+    const img = r && r.image && (iHost(r.code) ? r.image : safeSrc(r.image));
+    const n = el('span', { class: 'room-icon' + (big ? ' big' : '') + (r && r.status !== 'connected' ? ' dim' : '') + (img ? ' has-img' : ''), text: img ? '' : ((r && (r.name || r.code)) || '#').slice(0, 1).toUpperCase() });
+    if (img) n.style.backgroundImage = 'url("' + img.replace(/"/g, '') + '")';
+    return n;
   }
 
   // Images from other people are only shown once the in-browser filter has passed them.
@@ -365,12 +400,12 @@
   let modalClose = null;
   function openModal(title, body, actions, opts) {
     const card = $('modalCard');
-    card.className = 'modal-card' + (opts && opts.wide ? ' wide' : '');
-    card.replaceChildren(
-      el('h2', { class: 'modal-title', text: title }),
+    card.className = 'modal-card' + (opts && opts.wide ? ' wide' : '') + (opts && opts.card ? ' flush' : '');
+    card.replaceChildren(...[
+      title ? el('h2', { class: 'modal-title', text: title }) : null,
       body,
       actions && actions.length ? el('div', { class: 'modal-actions' }, actions) : null
-    );
+    ].filter(Boolean));
     $('modal').classList.add('visible');
     modalClose = opts && opts.onClose;
     const f = card.querySelector('input:not([type=checkbox]):not([type=radio]), textarea');
@@ -1025,6 +1060,9 @@
         break;
       }
       case 'room': applyRoomState(code, d.room); break;
+      case 'profiles':
+        if (d.profiles && typeof d.profiles === 'object') for (const id of Object.keys(d.profiles).slice(0, MAX_ROOM + 5)) if (id !== S.me.id && /^[a-z2-9]{16}$/.test(id)) setProfile(id, d.profiles[id]);
+        break;
       case 'rmsg': {
         const m = cleanMsg(d.msg, String(d.msg && d.msg.from || ''), roomKey(code), true);
         if (m) DB.getMsg(m.conv, m.id).then((old) => { if (!old) storeIncoming(m); });
@@ -1069,12 +1107,13 @@
     const members = {};
     for (const id of Object.keys(st.members || {}).slice(0, MAX_ROOM + 5)) {
       const p = st.members[id] || {};
-      if (id !== S.me.id) setProfile(id, p);
+      if (id !== S.me.id) setProfile(id, p, true);
       members[id] = { online: !!p.online, joinedAt: Number(p.joinedAt) || 0 };
     }
     const list = (a) => (Array.isArray(a) ? a.filter((x) => typeof x === 'string').slice(0, 500) : []);
     saveRoom(code, {
       name: typeof st.name === 'string' ? st.name.slice(0, 40) : code,
+      image: typeof st.image === 'string' && st.image.length < 90000 && DATA_IMG_RE.test(st.image) ? st.image : null,
       hostId: typeof st.hostId === 'string' ? st.hostId : '',
       members, order: list(st.order), muted: list(st.muted), banned: list(st.banned)
     });
@@ -1141,7 +1180,7 @@
   async function localRoomState(code) {
     const r = S.rooms[code] || {};
     const history = await DB.recent(roomKey(code), ROOM_HISTORY);
-    return { name: r.name || code, members: r.members || {}, order: r.order || [], muted: r.muted || [], banned: r.banned || [], history, known: r.order || [] };
+    return { name: r.name || code, image: r.image || null, members: r.members || {}, order: r.order || [], muted: r.muted || [], banned: r.banned || [], history, known: r.order || [] };
   }
 
   async function hostRoom(code, statePromise, fresh) {
@@ -1149,7 +1188,7 @@
     const state = await statePromise;
     const peer = new window.Peer(ROOM_PREFIX + code, peerOptions());
     const H = {
-      code, peer, links: new Map(), name: state.name || code, hostId: S.me.id,
+      code, peer, links: new Map(), name: state.name || code, image: typeof state.image === 'string' && DATA_IMG_RE.test(state.image) ? state.image : null, hostId: S.me.id,
       members: {}, order: [], muted: new Set(state.muted || []), banned: new Set(state.banned || []),
       known: new Set(state.known || []), history: (state.history || []).slice(-ROOM_HISTORY), voice: {}, reports: state.reports || [], claiming: true
     };
@@ -1193,9 +1232,17 @@
     const members = {};
     for (const id in H.members) {
       const p = id === S.me.id ? myProfile() : (S.profiles[id] || {});
-      members[id] = { name: p.name, color: p.color, bio: p.bio, avatar: p.avatar, online: H.members[id].online, joinedAt: H.members[id].joinedAt };
+      members[id] = Object.assign(lightProfile(p), { online: H.members[id].online, joinedAt: H.members[id].joinedAt });
     }
-    return { name: H.name, hostId: H.hostId, members, order: H.order, muted: [...H.muted], banned: [...H.banned] };
+    return { name: H.name, image: H.image || null, hostId: H.hostId, members, order: H.order, muted: [...H.muted], banned: [...H.banned] };
+  }
+
+  function fullProfile(id) { return id === S.me.id ? myProfile() : S.profiles[id] || null; }
+  function hostShareProfiles(H, ids, toLink) {
+    const profiles = {};
+    for (const id of ids) { const p = fullProfile(id); if (p) profiles[id] = p; }
+    const msg = { t: 'profiles', profiles };
+    if (toLink) toLink.conn.send(msg); else hostBroadcast(H, msg, S.me.id);
   }
 
   function hostBroadcast(H, msg, except) {
@@ -1231,6 +1278,8 @@
       if (!H.members[id]) { H.members[id] = { joinedAt: Date.now(), online: true }; H.order.push(id); }
       H.members[id].online = true;
       link.conn.send({ t: 'welcome', room: publicState(H), history: H.history.slice(-100) });
+      hostShareProfiles(H, Object.keys(H.members).filter((m) => m !== id), link);
+      hostShareProfiles(H, [id]);
       hostSync(H);
       if (!H.known.has(id)) { H.known.add(id); hostSystem(H, 'joined'); }
       if (Object.keys(H.voice).length) link.conn.send({ t: 'voice', voice: H.voice });
@@ -1295,7 +1344,7 @@
         break;
       }
       case 'typing': hostBroadcast(H, { t: 'rtyping', from }, from); break;
-      case 'profile': if (from !== S.me.id) setProfile(from, op.profile); hostSync(H); break;
+      case 'profile': if (from !== S.me.id) setProfile(from, op.profile); hostShareProfiles(H, [from]); hostSync(H); break;
       case 'voice': {
         if (op.on && !H.muted.has(from)) {
           if (!H.voice[from] && Object.keys(H.voice).length >= MAX_VOICE) return reply('Voice is full (' + MAX_VOICE + ' people max).');
@@ -1333,8 +1382,41 @@
     }
     else if (action === 'unban') { H.banned.delete(id); hostSync(H); }
     else if (action === 'rename') { H.name = String(extra).slice(0, 40); hostSync(H); hostSystem(H, 'renamed the room to ' + H.name); }
+    else if (action === 'image') { H.image = extra || null; hostSync(H); hostSystem(H, extra ? 'changed the room picture' : 'removed the room picture'); }
     else if (action === 'delmsg') hostApply(code, S.me.id, { k: 'del', id });
     else if (action === 'transfer') handOver(code, id);
+  }
+
+  function roomSettings(code) {
+    const H = hosts[code];
+    if (!H) return;
+    let image = H.image || null;
+    const nameIn = el('input', { class: 'input', maxLength: 40, value: H.name });
+    const preview = el('div');
+    const draw = () => preview.replaceChildren(roomIcon({ code, name: nameIn.value || H.name, image, status: 'connected' }, true));
+    draw();
+    nameIn.addEventListener('input', draw);
+    const file = el('input', { type: 'file', accept: 'image/*', hidden: true });
+    file.addEventListener('change', async () => {
+      const f = file.files[0]; file.value = '';
+      if (!f) return;
+      try {
+        const data = await compress(await readAsDataURL(f), 256, 85000, true);
+        if ((await classify(data)) === 'flagged') { toast("That picture can't be used."); return; }
+        image = data; draw();
+      } catch (e) { fail(e, e.message); }
+    });
+    openModal('Room settings', el('div', { class: 'stack' },
+      el('div', { class: 'row' }, preview, el('div', { class: 'stack' },
+        btn('Upload picture', 'btn-sm btn-outline', () => file.click()),
+        btn('Remove picture', 'btn-sm btn-ghost', () => { image = null; draw(); }), file)),
+      el('div', { class: 'field' }, el('label', { text: 'Room name' }), nameIn)),
+    [btn('Cancel', 'btn-ghost', closeModal), btn('Save', 'btn-primary', () => {
+      const n = nameIn.value.trim();
+      if (n && n !== H.name) hostTool(code, 'rename', null, n);
+      if (image !== (H.image || null)) hostTool(code, 'image', null, image);
+      closeModal();
+    })]);
   }
 
   // Pass the room to another online member, then step down.
@@ -1345,7 +1427,7 @@
     hostSystem(H, 'made ' + nameOf(to) + ' the host');
     H.hostId = to;
     if (thenLeave) { delete H.members[S.me.id]; H.order = H.order.filter((x) => x !== S.me.id); }
-    const state = { name: H.name, members: publicState(H).members, order: H.order, muted: [...H.muted], banned: [...H.banned], history: H.history, known: [...H.known], reports: H.reports, handover: true };
+    const state = { name: H.name, image: H.image, members: publicState(H).members, order: H.order, muted: [...H.muted], banned: [...H.banned], history: H.history, known: [...H.known], reports: H.reports, handover: true };
     l.conn.send({ t: 'handover', state });
     hostBroadcast(H, { t: 'hostmove', to }, S.me.id);
     hostSync(H);
@@ -1434,7 +1516,7 @@
   function renderMe() {
     if (!S.me) return;
     $('meAvatar').replaceChildren(avatar(S.me.id, 'sm', true));
-    $('meName').textContent = S.me.name;
+    $('meName').replaceChildren(nameEl(S.me.id));
     $('meCode').textContent = fmtCode(S.me.id);
     $('welcomeName').textContent = S.me.name;
   }
@@ -1497,7 +1579,7 @@
       const sys = last && last.text.startsWith(nameOf(last.from) + ' ');
       const pv = status + (!last ? r.code : sys ? last.text : (last.from === S.me.id ? 'You' : nameOf(last.from)) + ': ' + last.text);
       return convButton({
-        icon: el('span', { class: 'room-icon' + (r.status === 'connected' ? '' : ' dim'), text: (r.name || r.code).slice(0, 1).toUpperCase() }), name: r.name || r.code, preview: pv,
+        icon: roomIcon(r), name: r.name || r.code, preview: pv,
         active: S.conv && S.conv.type === 'room' && S.conv.id === r.code,
         unread: isUnread(roomKey(r.code)), voice: !!(roomVoice[r.code] && Object.keys(roomVoice[r.code]).length),
         onclick: () => openRoom(r.code)
@@ -1737,7 +1819,7 @@
       return el('div', { class: 'conv-start' }, el('strong', { text: nameOf(c.id) }),
         'This is the start of your DMs with ' + nameOf(c.id) + '. Messages go directly between your browsers and are saved only on your devices.');
     }
-    return el('div', { class: 'conv-start' }, el('strong', { text: roomName(c.id) }), 'Welcome to the room. Share code ', el('span', { class: 'code-chip', text: c.id, onclick: copyCode }), ' to invite people.');
+    return el('div', { class: 'conv-start' }, roomIcon(Object.assign({ code: c.id }, S.rooms[c.id] || {}), true), el('strong', { text: roomName(c.id) }), 'Welcome to the room. Share code ', el('span', { class: 'code-chip', text: c.id, onclick: copyCode }), ' to invite people.');
   }
 
   function msgSig(key, m) {
@@ -1764,7 +1846,6 @@
       return el('div', { class: 'msg system', 'data-id': key }, el('div', { class: 'msg-text' }, el('b', { text: nameOf(m.from) }), ' ' + (m.text || '')));
     }
     const mine = m.from === S.me.id;
-    const p = profileOf(m.from);
 
     if (isBlocked(m.from) && !S.revealed.has(key)) {
       return el('div', { class: 'msg system blocked-msg', 'data-id': key },
@@ -1786,7 +1867,7 @@
       body.append(el('div', { class: 'msg-reply', onclick: () => jumpTo(r.id) }, '↳ ', el('b', { text: nameOf(r.from) }), el('span', { text: ' ' + (r.text || 'attachment') })));
     }
     body.append(el('div', { class: 'msg-head' },
-      el('span', { class: 'msg-user', style: { color: (p && p.color) || '#c9beeb' }, text: nameOf(m.from), onclick: () => showProfile(m.from) }),
+      nameEl(m.from, 'msg-user', { onclick: () => showProfile(m.from) }),
       S.conv.type === 'room' && roomHostId() === m.from ? el('span', { class: 'badge', text: 'host' }) : null,
       el('span', { class: 'msg-time', title: new Date(m.ts).toLocaleString(), text: fmtTime(m.ts) })
     ));
@@ -1801,7 +1882,7 @@
         if (isBigEmoji(m.text, m.emoji)) t.classList.add('big');
         if (m.kind === 'action') t.prepend(el('b', { text: nameOf(m.from) + ' ' }));
         if (m.edited) t.append(el('span', { class: 'msg-edited', text: '(edited)' }));
-        body.append(t);
+        body.append(look.text === 'blend' ? blendText(t) : t);
       }
       if (m.sticker) body.append(stickerView(key, m));
       const img = imageBlock(key, m);
@@ -1977,14 +2058,14 @@
     if (c.type === 'dm') {
       const ct = S.contacts[c.id] || {};
       $('convAvatar').replaceChildren(avatar(c.id, null, true));
-      $('convTitle').textContent = nameOf(c.id);
+      $('convTitle').replaceChildren(nameEl(c.id));
       const p = profileOf(c.id);
       const status = S.online[c.id] ? 'online' : ct.lastSeen ? 'last seen ' + fmtAgo(ct.lastSeen) : 'offline';
       $('convSub').replaceChildren(document.createTextNode(status), p && p.bio ? ' · ' + p.bio : '');
       $('membersBtn').classList.add('hidden');
     } else {
       const r = S.rooms[c.id] || {};
-      $('convAvatar').replaceChildren(el('span', { class: 'room-icon', text: (r.name || c.id)[0].toUpperCase() }));
+      $('convAvatar').replaceChildren(roomIcon(Object.assign({ code: c.id }, r)));
       $('convTitle').textContent = r.name || c.id;
       const online = Object.values(r.members || {}).filter((x) => x.online).length;
       const status = r.status === 'connected' ? online + ' online' : r.status === 'offline' ? 'offline' : 'connecting…';
@@ -2070,10 +2151,9 @@
         toolBtn(S.roomMuted[id] ? '🔊' : '🔇', S.roomMuted[id] ? 'Unmute' : 'Mute', () => hostTool(c.id, S.roomMuted[id] ? 'unmute' : 'mute', id)),
         online ? toolBtn('👑', 'Make host', async () => { if (await confirmBox('Make ' + nameOf(id) + ' the host?', 'The room will move to their browser.', 'Transfer')) hostTool(c.id, 'transfer', id); }) : null,
         toolBtn('🚪', 'Kick', async () => { if (await confirmBox('Kick ' + nameOf(id) + '?', "They'll be removed and can't rejoin unless you allow them back.", 'Kick', true)) hostTool(c.id, 'kick', id); })) : null;
-      const p = profileOf(id);
       return el('div', { class: 'member' + (online ? '' : ' offline') },
         el('button', { type: 'button', class: 'member-main', onclick: () => showProfile(id) }, avatar(id, 'sm', true),
-          el('span', { class: 'member-name', style: { color: (p && p.color) || '' }, text: nameOf(id) })),
+          nameEl(id, 'member-name')),
         tags ? el('span', { class: 'member-tags', text: tags }) : null, actions);
     };
     const banned = Object.keys(S.roomBanned);
@@ -2085,7 +2165,7 @@
         host && banned.length ? [el('p', { class: 'side-title', text: 'Kicked' }), banned.map((id) => el('div', { class: 'member' }, avatar(id, 'sm'), el('span', { class: 'member-name', text: nameOf(id) }), toolBtn('↺', 'Allow back', () => hostTool(c.id, 'unban', id))))] : null),
       el('div', { class: 'members-foot' },
         btn('Copy invite link', 'btn-outline', copyCode),
-        host ? btn('Rename room', 'btn-ghost', async () => { const n = await promptBox('Rename room', 'Room name', { max: 40, value: r.name, ok: 'Save' }); if (n) hostTool(c.id, 'rename', null, n); }) : null,
+        host ? btn('Room settings', 'btn-ghost', () => roomSettings(c.id)) : null,
         btn(host ? 'Leave or close room' : 'Leave room', 'btn-ghost', () => leaveRoom(c.id)))
     );
   }
@@ -2126,20 +2206,34 @@
 
   // ---------- Profiles, blocking, reports ----------
 
-  function showProfile(id) {
-    const p = profileOf(id);
-    const me = id === S.me.id;
-    const ct = S.contacts[id];
-    const body = el('div', { class: 'profile' },
-      el('div', { class: 'row' }, avatar(id, 'xl', true), el('div', null,
-        el('p', { class: 'profile-name', style: { color: (p && p.color) || '' }, text: nameOf(id) }),
+  // A profile card: banner, avatar overlapping it, gradient name, code, bio.
+  function profileCard(id) {
+    const p = profileOf(id) || {};
+    const banner = el('div', { class: 'pc-banner' });
+    const img = p.banner && (id === S.me.id ? p.banner : safeSrc(p.banner));
+    if (img) banner.style.backgroundImage = 'url("' + img.replace(/"/g, '') + '")';
+    else if (p.bannerGrad) banner.style.background = 'linear-gradient(135deg, ' + p.bannerGrad[0] + ', ' + p.bannerGrad[1] + ')';
+    else banner.style.background = 'linear-gradient(135deg, ' + (p.color || '#9d00ff') + ', #0d0a12)';
+    return el('div', { class: 'profile-card' },
+      banner,
+      el('div', { class: 'pc-body' },
+        el('div', { class: 'pc-avatar' }, avatar(id, 'xl', true)),
+        nameEl(id, 'profile-name'),
         el('p', { class: 'field-hint profile-code', text: fmtCode(id) }),
-        el('div', { class: 'row' },
+        el('div', { class: 'row pc-badges' },
+          id === S.me.id ? el('span', { class: 'badge badge-mod', text: 'you' }) : null,
           S.globalBlocks[id] ? el('span', { class: 'badge badge-ban', text: 'blocked on this site' }) : null,
           S.blocks[id] ? el('span', { class: 'badge', text: 'blocked' }) : null,
-          isContact(id) ? el('span', { class: 'badge badge-mod', text: 'contact' }) : null))),
-      p && p.bio ? el('p', { class: 'profile-bio', text: p.bio }) : null
-    );
+          isContact(id) ? el('span', { class: 'badge badge-mod', text: 'contact' }) : null),
+        p.bio ? el('div', { class: 'pc-section' }, el('p', { class: 'side-title', text: 'About' }), el('p', { class: 'profile-bio', text: p.bio })) : null));
+  }
+
+  let shownProfile = null;
+  function showProfile(id) {
+    shownProfile = id;
+    const me = id === S.me.id;
+    const ct = S.contacts[id];
+    const body = profileCard(id);
     const actions = me
       ? [btn('Copy my link', 'btn-outline', copyMyCode), btn('Edit profile', 'btn-primary', () => { closeModal(); openSettings(); })]
       : [
@@ -2149,7 +2243,7 @@
             : ct && ct.status === 'outgoing' ? btn('Request sent', 'btn-outline', () => { closeModal(); openDm(id); })
             : btn('Add contact', 'btn-primary', () => { closeModal(); addContact(id).catch((e) => toast(e.message)); })
         ];
-    openModal('Profile', body, actions);
+    openModal('', body, actions, { card: true, onClose: () => { shownProfile = null; } });
   }
 
   async function setBlocked(id, on) {
@@ -2696,7 +2790,14 @@
   function classifyLater(key, src) {
     if (S.nsfw[key]) return;
     S.nsfw[key] = 'checking';
-    classify(src).then((v) => { S.nsfw[key] = v; scheduleRender(false); });
+    classify(src).then((v) => {
+      S.nsfw[key] = v;
+      S.msgNodes.clear();
+      scheduleRender(false);
+      queueRerender();
+      // An open profile card waiting on this picture: redraw it.
+      if (shownProfile && $('modal').classList.contains('visible') && $('modalCard').querySelector('.profile-card')) showProfile(shownProfile);
+    });
   }
 
   // ---------- Image viewer ----------
@@ -3053,7 +3154,7 @@
         return el('div', { class: 'voice-person' + (inThis && voice.speaking[id] ? ' speaking' : ''), 'data-voice-uid': id, title: nameOf(id) + (state && state !== 'connected' ? ' (' + state + ')' : '') },
           avatar(id, 'sm'), el('span', { text: nameOf(id) }), parts[id] && parts[id].muted ? icon('mic-off') : null, state && state !== 'connected' ? el('span', { class: 'voice-state', text: '…' }) : null);
       })),
-      inThis ? voiceControls() : c.type === 'room' ? btn('Join voice', 'btn-sm btn-primary', () => joinRoomVoice(c.id)) : null);
+      inThis ? voiceControls() : c.type === 'room' ? btn('Join voice', 'btn-sm btn-primary', () => joinRoomVoice(c.id)) : '');
     bar.classList.remove('hidden');
   }
 
@@ -3079,75 +3180,51 @@
     queueRerender();
   }
 
-  function openSettings() {
-    const me = S.me;
-    let color = me.color;
-    const nameIn = el('input', { class: 'input', maxLength: 24, value: me.name });
-    const bio = el('textarea', { class: 'input', rows: 2, maxLength: 190, value: me.bio || '', placeholder: 'A little about you' });
-    const avHost = el('div');
-    const drawAv = () => avHost.replaceChildren(avatar(me.id, 'xl'));
-    drawAv();
-    const avInput = el('input', { type: 'file', accept: 'image/*', hidden: true });
-    avInput.addEventListener('change', async () => {
-      const f = avInput.files[0]; avInput.value = '';
-      if (!f) return;
-      try {
-        const data = await compress(await readAsDataURL(f), 128, 60000, true);
-        if ((await classify(data)) === 'flagged') { toast("That picture can't be used."); return; }
-        await saveMe({ avatar: data });
-        drawAv();
-      } catch (err) { fail(err, err.message); }
-    });
-    const sw = el('div', { class: 'swatches' });
-    renderSwatches(sw, color, (c) => { color = c; });
-    const toggle = (label, hint, checked, onchange) => el('label', { class: 'toggle-row' },
-      el('span', null, label, hint ? el('small', { text: hint }) : null),
-      el('input', { type: 'checkbox', checked, onchange: (e) => onchange(e.target.checked, e.target) }));
-    const blockedIds = Object.keys(S.blocks);
+  function openSettings() { openStudio('profile'); }
 
-    const body = el('div', { class: 'settings' },
-      el('p', { class: 'side-title', text: 'Your friend code' }),
-      el('div', { class: 'row' }, el('span', { class: 'big-code small', text: fmtCode(me.id) }), btn('Copy add-me link', 'btn-sm btn-outline', copyMyCode)),
+  const toggleRow = (label, hint, checked, onchange) => el('label', { class: 'toggle-row' },
+    el('span', null, label, hint ? el('small', { text: hint }) : null),
+    el('input', { type: 'checkbox', checked, onchange: (e) => onchange(e.target.checked, e.target) }));
+  const svSec = (title, ...kids) => el('section', { class: 'studio-sec', id: 'sv-' + slug(title) }, el('h3', { class: 'studio-h', text: title }), ...kids);
 
-      el('p', { class: 'side-title', text: 'Profile' }),
-      el('div', { class: 'row' }, avHost, el('div', { class: 'stack' },
-        btn('Upload picture', 'btn-sm btn-outline', () => avInput.click()),
-        me.avatar ? btn('Remove picture', 'btn-sm btn-ghost', async () => { await saveMe({ avatar: null }); drawAv(); }) : null,
-        avInput)),
-      el('div', { class: 'field' }, el('label', { text: 'Name' }), nameIn),
-      el('div', { class: 'field' }, el('label', { text: 'Colour' }), sw),
-      el('div', { class: 'field' }, el('label', { text: 'Bio' }), bio),
-      btn('Save profile', 'btn-primary', async () => {
-        const n = nameIn.value.trim();
-        if (!/^[\p{L}\p{N}_ .'-]{2,24}$/u.test(n)) { toast('Names are 2 to 24 letters or numbers.'); return; }
-        await saveMe({ name: n, color, bio: bio.value.trim() });
-        toast('Profile saved.');
-      }),
+  function sectionNotifications() {
+    return el('div', null,
+      svSec('Alerts',
+        toggleRow('Sounds', 'A soft ping for new messages and calls.', S.settings.sounds, (on) => { S.settings.sounds = on; saveSettings(); }),
+        toggleRow('Desktop alerts', 'While chat is open in a background tab.', S.settings.desktop, async (on) => {
+          S.settings.desktop = on; saveSettings();
+          if (on && 'Notification' in window && Notification.permission === 'default') await Notification.requestPermission();
+        })),
+      el('p', { class: 'field-hint', text: 'Chat is peer-to-peer, so there are no push notifications: nothing can reach you while chat is closed.' }));
+  }
 
-      el('p', { class: 'side-title', text: 'Notifications' }),
-      toggle('Sounds', null, S.settings.sounds, (on) => { S.settings.sounds = on; saveSettings(); }),
-      toggle('Desktop alerts', 'While chat is open in a background tab. There are no push notifications: nothing can reach you when chat is closed.', S.settings.desktop, async (on) => {
-        S.settings.desktop = on; saveSettings();
-        if (on && 'Notification' in window && Notification.permission === 'default') await Notification.requestPermission();
-      }),
+  function sectionEmoji() {
+    const grid = (kind) => {
+      const items = Object.values(S.customs).filter((it) => it.kind === kind);
+      return items.length ? el('div', { class: 'customs-strip' }, items.slice(0, 18).map((it) => el('img', { src: it.data, alt: it.name, title: it.name })))
+        : el('p', { class: 'field-hint', text: kind === 'emoji' ? 'No custom emoji yet.' : 'No custom stickers yet.' });
+    };
+    return el('div', null,
+      svSec('Custom emoji', grid('emoji'), el('div', { class: 'row' }, btn('Manage emoji', 'btn-sm btn-primary', () => openCustomsManager('emoji')))),
+      svSec('Custom stickers', grid('sticker'), el('div', { class: 'row' }, btn('Manage stickers', 'btn-sm btn-primary', () => openCustomsManager('sticker')))));
+  }
 
-      el('p', { class: 'side-title', text: 'Emoji & stickers' }),
-      el('div', { class: 'row' }, btn('My emoji', 'btn-sm btn-outline', () => openCustomsManager('emoji')), btn('My stickers', 'btn-sm btn-outline', () => openCustomsManager('sticker'))),
+  function sectionBlocked() {
+    const ids = Object.keys(S.blocks);
+    return el('div', null,
+      svSec('Blocked people', ids.length ? el('div', null, ids.map((id) => el('div', { class: 'member' }, avatar(id, 'sm'), nameEl(id, 'member-name'),
+        btn('Unblock', 'btn-sm btn-ghost', async () => { await setBlocked(id, false); drawStudio(); }))))
+        : el('p', { class: 'field-hint', text: "You haven't blocked anyone." })),
+      svSec('Privacy', el('p', { class: 'field-hint', text: 'Messages go directly between browsers and are saved only on your devices. People you connect to (contacts, room hosts and people in voice with you) can see your IP address.' })));
+  }
 
-      el('p', { class: 'side-title', text: 'Blocked' }),
-      blockedIds.length ? el('div', null, blockedIds.map((id) => el('div', { class: 'member' }, avatar(id, 'sm'), el('span', { class: 'member-name', text: nameOf(id) }),
-        btn('Unblock', 'btn-sm btn-ghost', async () => { await setBlocked(id, false); openSettings(); }))))
-        : el('p', { class: 'field-hint', text: "You haven't blocked anyone." }),
-
-      el('p', { class: 'side-title', text: 'Your identity' }),
-      el('p', { class: 'field-hint', text: 'Your identity lives only in this browser. Back it up to keep it if you clear your browser data, or to use chat on another device. Keep the file private: anyone with it can be you.' }),
-      el('div', { class: 'row' },
-        btn('Back up', 'btn-sm btn-outline', exportBackup),
-        btn('Restore a backup', 'btn-sm btn-ghost', () => $('importInput').click()),
-        btn('Help', 'btn-sm btn-ghost', showHelp),
-        btn('Delete everything', 'btn-sm btn-accent', resetEverything))
-    );
-    openModal('Settings', body, [btn('Close', 'btn-ghost', closeModal)]);
+  function sectionIdentity() {
+    return el('div', null,
+      svSec('Your friend code', el('div', { class: 'row' }, el('span', { class: 'big-code small', text: fmtCode(S.me.id) }), btn('Copy add-me link', 'btn-sm btn-outline', copyMyCode))),
+      svSec('Backup',
+        el('p', { class: 'field-hint', text: 'Your identity lives only in this browser. Back it up to keep it if you clear your browser data, or to use chat on another device. Keep the file private: anyone with it can be you.' }),
+        el('div', { class: 'row' }, btn('Back up', 'btn-sm btn-primary', exportBackup), btn('Restore a backup', 'btn-sm btn-outline', () => $('importInput').click()), btn('Formatting help', 'btn-sm btn-ghost', showHelp))),
+      svSec('Danger zone', el('div', { class: 'row' }, btn('Delete everything', 'btn-sm btn-accent', resetEverything))));
   }
 
   async function resetEverything() {
@@ -3200,6 +3277,393 @@
       grid, fileIn),
     [btn('Close', 'btn-ghost', closeModal), btn(isEmoji ? 'Add emoji' : 'Add sticker', 'btn-primary', () => fileIn.click())]);
     draw();
+  }
+
+  // ---------- Appearance studio ----------
+  // Your look for /chat only: background, panel transparency, text and accent colour. Saved on
+  // this device. Profile settings (name style, banner, avatar) are shared with the people you talk to.
+
+  const THEMES = [
+    { id: 'baloneys', name: 'Baloneys', stops: ['#12001f', '#3b0764', '#e60065'], angle: 150 },
+    { id: 'midnight', name: 'Midnight', stops: ['#050510', '#111133', '#1d1d5c'], angle: 180 },
+    { id: 'aurora', name: 'Aurora', stops: ['#021b1a', '#0f766e', '#7c3aed'], angle: 135 },
+    { id: 'sunset', name: 'Sunset', stops: ['#1a0612', '#9d174d', '#f59e0b'], angle: 160 },
+    { id: 'ocean', name: 'Ocean', stops: ['#020617', '#0c4a6e', '#22d3ee'], angle: 200 },
+    { id: 'neon', name: 'Neon', stops: ['#0a0014', '#ff00c8', '#00e5ff'], angle: 120 },
+    { id: 'forest', name: 'Forest', stops: ['#030d06', '#14532d', '#84cc16'], angle: 170 },
+    { id: 'candy', name: 'Candy', stops: ['#2a0a2e', '#f472b6', '#a5b4fc'], angle: 135 },
+    { id: 'straya', name: 'Straya', stops: ['#06140a', '#15803d', '#facc15'], angle: 145 },
+    { id: 'mono', name: 'Mono', stops: ['#050505', '#1f1f1f', '#3f3f46'], angle: 180 }
+  ];
+  const ACCENTS = ['#9d00ff', '#e60065', '#7c3aed', '#2563eb', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#a3a3a3'];
+  const NAME_GRADS = [['#9d00ff', '#e60065'], ['#22d3ee', '#a78bfa'], ['#f59e0b', '#ef4444'], ['#34d399', '#3b82f6'], ['#f472b6', '#facc15'], ['#ffffff', '#a1a1aa']];
+  const LOOK_DEFAULT = {
+    bg: 'default', theme: 'baloneys', grad: { stops: ['#12001f', '#3b0764', '#e60065'], angle: 150, three: true },
+    solid: '#0b0b12', imgBlur: 0, imgDim: 35, imgFit: 'cover',
+    panel: 78, glassBlur: 16, text: 'default', textColor: '#ece6ff', accent: '#9d00ff', size: 15
+  };
+
+  let look = loadLook();
+  let lookImage = null;
+  function loadLook() {
+    try { return Object.assign({}, LOOK_DEFAULT, JSON.parse(localStorage.getItem('chat.look') || '{}')); } catch (e) { return Object.assign({}, LOOK_DEFAULT); }
+  }
+  function saveLook() { try { localStorage.setItem('chat.look', JSON.stringify(look)); } catch (e) { /* private mode */ } }
+
+  const gradCss = (g) => 'linear-gradient(' + g.angle + 'deg, ' + (g.three ? g.stops : g.stops.slice(0, 2)).join(', ') + ')';
+
+  function applyLook() {
+    const body = document.body;
+    const bg = $('chatBg');
+    const custom = look.bg !== 'default';
+    body.classList.toggle('themed', custom || look.panel < 100);
+    const glass = look.glassBlur == null ? 16 : look.glassBlur;
+    body.classList.toggle('glass', glass > 0 && look.text !== 'blend');
+    body.style.setProperty('--glass-blur', glass + 'px');
+    bg.className = 'chat-bg' + (custom ? ' on' : '');
+    bg.style.background = '';
+    bg.style.setProperty('--img', 'none');
+    if (look.bg === 'gradient') bg.style.background = gradCss(look.grad);
+    else if (look.bg === 'solid') bg.style.background = look.solid;
+    else if (look.bg === 'image' && lookImage) {
+      bg.style.background = '#000';
+      bg.style.setProperty('--img', 'url("' + lookImage + '")');
+      bg.style.setProperty('--img-fit', look.imgFit === 'tile' ? 'auto' : look.imgFit);
+      bg.style.setProperty('--img-repeat', look.imgFit === 'tile' ? 'repeat' : 'no-repeat');
+      bg.style.setProperty('--img-blur', look.imgBlur + 'px');
+      bg.style.setProperty('--img-dim', String(look.imgDim / 100));
+      bg.classList.add('image');
+    }
+    body.style.setProperty('--panel-a', String(Math.max(0.08, look.panel / 100)));
+    body.style.setProperty('--color-primary', look.accent);
+    body.style.setProperty('--color-accent', look.accent === '#9d00ff' ? '#e60065' : look.accent);
+    body.style.setProperty('--msg-size', look.size + 'px');
+    body.style.setProperty('--msg-color', look.text === 'custom' ? look.textColor : '#ece6ff');
+    body.classList.toggle('blend-text', look.text === 'blend');
+    S.msgNodes.clear();
+    if (S.conv) renderMessages(false);
+  }
+
+  DB.get('lookImage').then((img) => { lookImage = img || null; applyLook(); }).catch(() => applyLook());
+
+  // Colour input with a hex label.
+  function colorInput(value, onchange) {
+    const inp = el('input', { type: 'color', class: 'color-pick', value });
+    const label = el('span', { class: 'color-hex', text: value.toUpperCase() });
+    inp.addEventListener('input', () => { label.textContent = inp.value.toUpperCase(); onchange(inp.value); });
+    return el('label', { class: 'color-field' }, inp, label);
+  }
+
+  function slider(label, min, max, value, unit, onchange) {
+    const out = el('span', { class: 'slider-val', text: value + unit });
+    const inp = el('input', { type: 'range', min, max, value, class: 'slider' });
+    inp.addEventListener('input', () => { out.textContent = inp.value + unit; onchange(Number(inp.value)); });
+    return el('div', { class: 'slider-row' }, el('div', { class: 'slider-head' }, el('span', { text: label }), out), inp);
+  }
+
+  function choice(options, current, onpick) {
+    const wrap = el('div', { class: 'seg' });
+    const draw = (cur) => wrap.replaceChildren(...options.map(([v, label]) => el('button', { type: 'button', class: 'seg-btn' + (v === cur ? ' on' : ''), text: label, onclick: () => { onpick(v); draw(v); } })));
+    draw(current);
+    return wrap;
+  }
+
+  // One long, scrolling settings page. The left column is a set of shortcuts that follow your
+  // scroll position; Appearance shows its own sub-sections while you're in it.
+  const SV_PAGES = [
+    { id: 'profile', group: 'User', label: 'My profile', build: () => studioProfile() },
+    { id: 'identity', group: 'User', label: 'Identity & backup', build: () => sectionIdentity() },
+    { id: 'appearance', group: 'Chat', label: 'Appearance', build: () => el('div', null, studioTheme(), studioText()),
+      subs: [['presets', 'Themes'], ['custom-gradient', 'Gradient'], ['solid-colour', 'Solid colour'], ['your-own-image', 'Image'], ['glass-panels', 'Glass & panels'], ['message-text', 'Text colour'], ['accent-colour', 'Accent'], ['text-size', 'Text size']] },
+    { id: 'notifications', group: 'Chat', label: 'Notifications', build: () => sectionNotifications() },
+    { id: 'emoji', group: 'Chat', label: 'Emoji & stickers', build: () => sectionEmoji() },
+    { id: 'privacy', group: 'Chat', label: 'Privacy & blocked', build: () => sectionBlocked() }
+  ];
+  const TAB_ALIAS = { theme: 'appearance', text: 'sv-message-text' };
+  const slug = (t) => t.toLowerCase().replace(/&/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  let svActive = { page: 'profile', sub: null };
+  function openStudio(tab) {
+    closeModal();
+    const view = $('studio');
+    const wasOpen = view.classList.contains('open');
+    view.classList.add('open');
+    view.setAttribute('aria-hidden', 'false');
+    if (!wasOpen || !view.querySelector('.studio-body')) drawStudio();
+    const target = TAB_ALIAS[tab] || tab || 'profile';
+    requestAnimationFrame(() => svJump(target.startsWith('sv-') ? target : 'svp-' + target, false));
+  }
+  function closeStudio() {
+    const view = $('studio');
+    view.classList.remove('open');
+    view.setAttribute('aria-hidden', 'true');
+    profileDraft = null;
+  }
+  $('studioBtn').addEventListener('click', () => ($('studio').classList.contains('open') ? closeStudio() : openStudio('appearance')));
+  $('studio').addEventListener('mousedown', (e) => { if (e.target === $('studio')) closeStudio(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('studio').classList.contains('open') && !$('modal').classList.contains('visible')) closeStudio(); });
+
+  function svJump(id, smooth) {
+    const body = $('studio').querySelector('.studio-body');
+    const target = body && body.querySelector('#' + CSS.escape(id));
+    if (!target) return;
+    body.scrollTo({ top: target.offsetTop - 12, behavior: smooth ? 'smooth' : 'instant' });
+    svSpy();
+  }
+
+  // Which page (and Appearance sub-section) is at the top of the scroll area?
+  function svSpy() {
+    const body = $('studio').querySelector('.studio-body');
+    if (!body) return;
+    const y = body.scrollTop + 60;
+    let page = SV_PAGES[0].id, sub = null;
+    for (const p of SV_PAGES) { const n = body.querySelector('#svp-' + p.id); if (n && n.offsetTop <= y) page = p.id; }
+    if (body.scrollTop + body.clientHeight >= body.scrollHeight - 4) page = SV_PAGES[SV_PAGES.length - 1].id;
+    const ap = SV_PAGES.find((p) => p.id === 'appearance');
+    if (page === 'appearance') for (const [id] of ap.subs) { const n = body.querySelector('#sv-' + id); if (n && n.offsetTop <= y + 40) sub = id; }
+    if (page === svActive.page && sub === svActive.sub) return;
+    svActive = { page, sub };
+    $('studio').querySelectorAll('.sv-link').forEach((b) => {
+      const on = b.dataset.page === page && (!b.dataset.sub || b.dataset.sub === sub);
+      b.classList.toggle('on', b.dataset.sub ? b.dataset.sub === sub : b.dataset.page === page);
+      if (!b.dataset.sub) b.setAttribute('aria-current', on ? 'true' : 'false');
+    });
+    $('studio').querySelectorAll('.sv-subs').forEach((g) => g.classList.toggle('open', g.dataset.page === page));
+    const title = $('studio').querySelector('.studio-title');
+    if (title) title.textContent = SV_PAGES.find((p) => p.id === page).label;
+  }
+
+  function profileDirty() {
+    if (!profileDraft) return false;
+    const m = S.me, d = profileDraft;
+    return ['name', 'color', 'bio', 'avatar', 'banner'].some((k) => (d[k] || '') !== (m[k] || '')) || JSON.stringify(d.nameGrad || null) !== JSON.stringify(m.nameGrad || null) || JSON.stringify(d.bannerGrad || null) !== JSON.stringify(m.bannerGrad || null);
+  }
+
+  function updateUnsaved() {
+    const bar = $('studio').querySelector('.sv-unsaved');
+    if (bar) bar.classList.toggle('show', profileDirty());
+  }
+
+  function drawStudio() {
+    const old = $('studio').querySelector('.studio-body');
+    const scrollTop = old ? old.scrollTop : 0;
+    const groups = [...new Set(SV_PAGES.map((p) => p.group))];
+    const nav = el('nav', { class: 'sv-nav', 'aria-label': 'Settings sections' },
+      el('div', { class: 'sv-me' }, avatar(S.me.id, 'sm', true), el('div', { class: 'sv-me-text' }, nameEl(S.me.id), el('small', { text: fmtCode(S.me.id) }))),
+      groups.map((g) => el('div', { class: 'sv-group' },
+        el('p', { class: 'sv-group-title', text: g }),
+        SV_PAGES.filter((p) => p.group === g).map((p) => [
+          el('button', { type: 'button', class: 'sv-link' + (svActive.page === p.id ? ' on' : ''), 'data-page': p.id, text: p.label, onclick: () => svJump('svp-' + p.id, true) }),
+          p.subs ? el('div', { class: 'sv-subs' + (svActive.page === p.id ? ' open' : ''), 'data-page': p.id }, p.subs.map(([id, label]) => el('button', {
+            type: 'button', class: 'sv-link sub' + (svActive.sub === id ? ' on' : ''), 'data-page': p.id, 'data-sub': id, text: label, onclick: () => svJump('sv-' + id, true)
+          }))) : null
+        ]))));
+    const pages = SV_PAGES.map((p) => el('div', { class: 'sv-page', id: 'svp-' + p.id },
+      el('div', { class: 'sv-page-head' }, el('h2', { class: 'sv-page-title', text: p.label }),
+        p.id === 'appearance' ? btn('Reset appearance', 'btn-sm btn-ghost', () => { look = Object.assign({}, LOOK_DEFAULT); saveLook(); applyLook(); drawStudio(); }) : null,
+        p.id === 'appearance' ? el('span', { class: 'studio-note', text: 'Only you see this, and only on /chat.' }) : null,
+        p.id === 'profile' ? el('span', { class: 'studio-note', text: 'People you chat with see this.' }) : null),
+      p.build()));
+    const body = el('div', { class: 'studio-body' }, pages, el('div', { class: 'sv-end' }));
+    body.addEventListener('scroll', svSpy, { passive: true });
+    const dirty = profileDirty();
+    $('studio').replaceChildren(el('div', { class: 'sv-panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Settings' },
+      nav,
+      el('div', { class: 'sv-main' },
+        el('div', { class: 'studio-head' },
+          el('div', null, el('p', { class: 'studio-kicker', text: 'Settings' }), el('h2', { class: 'studio-title', text: SV_PAGES.find((p) => p.id === svActive.page).label })),
+          el('button', { class: 'sv-close', type: 'button', 'aria-label': 'Close settings', onclick: closeStudio }, icon('close'), el('small', { text: 'ESC' }))),
+        body,
+        el('div', { class: 'sv-unsaved' + (dirty ? ' show' : '') },
+          el('span', { text: 'Careful, you have unsaved profile changes!' }),
+          el('div', { class: 'row' }, btn('Reset', 'btn-sm btn-ghost', () => { profileDraft = null; drawStudio(); }), btn('Save changes', 'btn-sm btn-primary', saveProfileDraft))))));
+    body.scrollTop = scrollTop;
+    svSpy();
+  }
+
+  function setLook(patch) { Object.assign(look, patch); saveLook(); applyLook(); }
+
+  function studioTheme() {
+    const sec = svSec;
+    const presets = el('div', { class: 'theme-grid' },
+      el('button', { type: 'button', class: 'theme-tile' + (look.bg === 'default' ? ' on' : ''), onclick: () => { setLook({ bg: 'default' }); drawStudio(); } },
+        el('span', { class: 'theme-swatch def' }), el('span', { text: 'Classic' })),
+      THEMES.map((t) => el('button', {
+        type: 'button', class: 'theme-tile' + (look.bg === 'gradient' && look.theme === t.id ? ' on' : ''),
+        onclick: () => { setLook({ bg: 'gradient', theme: t.id, grad: { stops: t.stops.slice(), angle: t.angle, three: true } }); drawStudio(); }
+      }, el('span', { class: 'theme-swatch', style: { background: gradCss({ stops: t.stops, angle: t.angle, three: true }) } }), el('span', { text: t.name }))));
+
+    const g = look.grad;
+    const setGrad = (patch) => setLook({ bg: 'gradient', theme: 'custom', grad: Object.assign({}, look.grad, patch) });
+    const gradBar = el('div', { class: 'grad-bar', style: { background: gradCss(g) } });
+    const redrawBar = () => { gradBar.style.background = gradCss(look.grad); };
+    const stops = el('div', { class: 'grad-stops' },
+      [0, 1, 2].map((i) => (i < 2 || g.three) ? colorInput(g.stops[i] || '#000000', (v) => { const st = look.grad.stops.slice(); st[i] = v; setGrad({ stops: st }); redrawBar(); }) : null),
+      el('button', { type: 'button', class: 'btn btn-sm btn-ghost', text: g.three ? '− Stop' : '+ Stop', onclick: () => { const st = look.grad.stops.slice(); if (st.length < 3) st.push('#e60065'); setGrad({ three: !look.grad.three, stops: st }); drawStudio(); } }));
+
+    const fileIn = el('input', { type: 'file', accept: 'image/*', hidden: true });
+    fileIn.addEventListener('change', async () => {
+      const f = fileIn.files[0]; fileIn.value = '';
+      if (!f) return;
+      try {
+        const raw = await readAsDataURL(f);
+        const data = f.type === 'image/gif' && raw.length < 3000000 ? raw : await compress(raw, 2400, 2500000);
+        await DB.set('lookImage', data);
+        lookImage = data;
+        setLook({ bg: 'image' });
+        drawStudio();
+      } catch (e) { fail(e, e.message); }
+    });
+
+    return el('div', null,
+      sec('Presets', presets),
+      sec('Custom gradient', gradBar, stops,
+        slider('Angle', 0, 360, g.angle, '°', (v) => { setGrad({ angle: v }); redrawBar(); }),
+        look.bg !== 'gradient' || look.theme !== 'custom' ? btn('Use custom gradient', 'btn-sm btn-outline', () => { setGrad({}); drawStudio(); }) : null),
+      sec('Solid colour', el('div', { class: 'row' }, colorInput(look.solid, (v) => setLook({ bg: 'solid', solid: v })),
+        look.bg !== 'solid' ? btn('Use solid colour', 'btn-sm btn-outline', () => { setLook({ bg: 'solid' }); drawStudio(); }) : null)),
+      sec('Your own image',
+        el('div', { class: 'img-pick' + (lookImage ? ' has' : ''), style: lookImage ? { backgroundImage: 'url("' + lookImage + '")' } : {}, onclick: () => fileIn.click() },
+          el('span', { text: lookImage ? 'Change image' : 'Upload an image or GIF' })),
+        fileIn,
+        lookImage ? el('div', { class: 'row' },
+          look.bg !== 'image' ? btn('Use image', 'btn-sm btn-primary', () => { setLook({ bg: 'image' }); drawStudio(); }) : null,
+          btn('Remove image', 'btn-sm btn-ghost', async () => { await DB.del('lookImage'); lookImage = null; if (look.bg === 'image') setLook({ bg: 'default' }); else applyLook(); drawStudio(); })) : null,
+        lookImage ? choice([['cover', 'Fill'], ['contain', 'Fit'], ['tile', 'Tile']], look.imgFit, (v) => setLook({ imgFit: v })) : null,
+        lookImage ? slider('Background blur', 0, 40, look.imgBlur, 'px', (v) => setLook({ imgBlur: v })) : null,
+        lookImage ? slider('Darken', 0, 90, look.imgDim, '%', (v) => setLook({ imgDim: v })) : null),
+      sec('Glass & panels',
+        slider('Panel opacity', 10, 100, look.panel, '%', (v) => setLook({ panel: v })),
+        slider('Glass blur', 0, 30, look.glassBlur == null ? 16 : look.glassBlur, 'px', (v) => setLook({ glassBlur: v })),
+        el('p', { class: 'field-hint', text: 'Glass blur frosts the sidebars and top bar over your background. Lower the panel opacity to see more of it.' })));
+  }
+
+  function studioText() {
+    const sec = svSec;
+    const modes = [['default', 'Default', 'Soft white, easy to read.'], ['custom', 'Custom colour', 'Pick any colour.'], ['blend', 'Blend', 'Inverts what’s behind it, then goes greyscale so it melts into your background.']];
+    return el('div', null,
+      sec('Message text',
+        el('div', { class: 'mode-cards' }, modes.map(([v, label, hint]) => el('button', {
+          type: 'button', class: 'mode-card' + (look.text === v ? ' on' : '') + (v === 'blend' ? ' blend-demo' : ''),
+          onclick: () => { setLook({ text: v }); drawStudio(); }
+        }, el('b', { text: label }), el('small', { text: hint })))),
+        look.text === 'custom' ? colorInput(look.textColor, (v) => setLook({ textColor: v })) : null,
+        look.text === 'blend' && look.glassBlur ? el('p', { class: 'field-hint', text: 'Frosted glass is paused while Blend is on, so the text can see your background.' }) : null),
+      sec('Accent colour',
+        el('div', { class: 'swatches' }, ACCENTS.map((c) => el('button', { type: 'button', class: 'swatch' + (c === look.accent ? ' selected' : ''), style: { background: c }, 'aria-label': 'Accent ' + c, onclick: () => { setLook({ accent: c }); drawStudio(); } }))),
+        colorInput(look.accent, (v) => setLook({ accent: v }))),
+      sec('Text size', slider('Messages', 13, 19, look.size, 'px', (v) => setLook({ size: v }))),
+      sec('Preview', el('div', { class: 'studio-preview' }, previewMsg('Seany', 'this looks sick 🔥'), previewMsg(S.me.name, 'right?? **bold** and ||spoilers|| too'))));
+  }
+
+  function previewMsg(name, text) {
+    const t = el('div', { class: 'msg-text' }, formatText(text));
+    return el('div', { class: 'msg pv' }, el('div', { class: 'avatar', style: { background: '#9d00ff' }, text: name[0] }),
+      el('div', { class: 'msg-body' }, el('div', { class: 'msg-head' }, el('span', { class: 'msg-user', text: name })), look.text === 'blend' ? blendText(t) : t));
+  }
+
+  // Blend mode: the text is drawn twice. The first copy inverts the background (difference);
+  // the second, stacked exactly on top, drains the colour out (saturation), leaving grey.
+  function blendText(node) {
+    const a = el('div', { class: 'blend-a' }, ...node.childNodes);
+    const b = a.cloneNode(true);
+    b.className = 'blend-b';
+    b.setAttribute('aria-hidden', 'true');
+    node.replaceChildren(a, b);
+    node.classList.add('blend');
+    return node;
+  }
+
+  // --- profile tab ---
+
+  let profileDraft = null;
+  function draft() {
+    if (!profileDraft) {
+      const m = S.me;
+      profileDraft = { name: m.name, color: m.color, bio: m.bio || '', avatar: m.avatar || null, banner: m.banner || null, nameGrad: m.nameGrad ? m.nameGrad.slice() : null, bannerGrad: m.bannerGrad ? m.bannerGrad.slice() : null };
+    }
+    return profileDraft;
+  }
+
+  async function saveProfileDraft() {
+    const d = draft();
+    const n = d.name.trim();
+    if (!/^[\p{L}\p{N}_ .'-]{2,24}$/u.test(n)) { toast('Names are 2 to 24 letters or numbers.'); return; }
+    await saveMe({ name: n, color: d.color, bio: d.bio.trim().slice(0, 190), avatar: d.avatar, banner: d.banner, nameGrad: d.nameGrad, bannerGrad: d.bannerGrad });
+    profileDraft = null;
+    toast('Profile saved.');
+    drawStudio();
+  }
+
+  function studioProfile() {
+    const d = draft();
+    const sec = svSec;
+    // Preview uses the draft as if it were saved.
+    const saved = Object.assign({}, S.me);
+    Object.assign(S.me, d);
+    const card = profileCard(S.me.id);
+    Object.assign(S.me, saved);
+    const redraw = () => drawStudio();
+
+    const pick = (maxSide, budget, square, apply) => {
+      const inp = el('input', { type: 'file', accept: 'image/*', hidden: true });
+      inp.addEventListener('change', async () => {
+        const f = inp.files[0]; inp.value = '';
+        if (!f) return;
+        try {
+          const raw = await readAsDataURL(f);
+          const data = square ? await compress(raw, maxSide, budget, true) : await compressBanner(raw);
+          if ((await classify(data)) === 'flagged') { toast("That picture can't be used."); return; }
+          apply(data); redraw();
+        } catch (e) { fail(e, e.message); }
+      });
+      return inp;
+    };
+    const avIn = pick(128, 60000, true, (v) => { d.avatar = v; });
+    const bnIn = pick(0, 0, false, (v) => { d.banner = v; });
+    const nameIn = el('input', { class: 'input', maxLength: 24, value: d.name, oninput: (e) => { d.name = e.target.value; updateUnsaved(); } });
+    const bio = el('textarea', { class: 'input', rows: 3, maxLength: 190, value: d.bio, placeholder: 'A little about you', oninput: (e) => { d.bio = e.target.value; updateUnsaved(); } });
+
+    return el('div', null,
+      el('div', { class: 'studio-card' }, card),
+      el('p', { class: 'field-hint', text: 'People you chat with see your profile. Save to share changes.' }),
+      sec('Name', nameIn),
+      sec('Name style',
+        choice([['solid', 'Solid'], ['gradient', 'Gradient + glow']], d.nameGrad ? 'gradient' : 'solid', (v) => { d.nameGrad = v === 'gradient' ? (d.nameGrad || NAME_GRADS[0].slice()) : null; redraw(); }),
+        d.nameGrad
+          ? el('div', null,
+              el('div', { class: 'grad-presets' }, NAME_GRADS.map((pair) => el('button', { type: 'button', class: 'grad-chip' + (pair[0] === d.nameGrad[0] && pair[1] === d.nameGrad[1] ? ' on' : ''), style: { background: 'linear-gradient(90deg, ' + pair[0] + ', ' + pair[1] + ')' }, 'aria-label': 'Gradient', onclick: () => { d.nameGrad = pair.slice(); redraw(); } }))),
+              el('div', { class: 'row' }, colorInput(d.nameGrad[0], (v) => { d.nameGrad[0] = v; updateUnsaved(); }), colorInput(d.nameGrad[1], (v) => { d.nameGrad[1] = v; updateUnsaved(); }), btn('Apply', 'btn-sm btn-ghost', redraw)))
+          : el('div', null,
+              el('div', { class: 'swatches' }, COLORS.map((c) => el('button', { type: 'button', class: 'swatch' + (c === d.color ? ' selected' : ''), style: { background: c }, 'aria-label': 'Colour ' + c, onclick: () => { d.color = c; redraw(); } }))),
+              el('div', { class: 'row' }, colorInput(d.color, (v) => { d.color = v; updateUnsaved(); }), btn('Apply', 'btn-sm btn-ghost', redraw)))),
+      sec('Avatar', el('div', { class: 'row' }, btn(d.avatar ? 'Change avatar' : 'Upload avatar', 'btn-sm btn-outline', () => avIn.click()), d.avatar ? btn('Remove', 'btn-sm btn-ghost', () => { d.avatar = null; redraw(); }) : null, avIn)),
+      sec('Banner',
+        choice([['none', 'Default'], ['gradient', 'Gradient'], ['image', 'Image']], d.banner ? 'image' : d.bannerGrad ? 'gradient' : 'none', (v) => {
+          if (v === 'none') { d.banner = null; d.bannerGrad = null; redraw(); }
+          else if (v === 'gradient') { d.banner = null; d.bannerGrad = d.bannerGrad || ['#9d00ff', '#e60065']; redraw(); }
+          else bnIn.click();
+        }), bnIn,
+        d.bannerGrad && !d.banner ? el('div', { class: 'row' }, colorInput(d.bannerGrad[0], (v) => { d.bannerGrad[0] = v; updateUnsaved(); }), colorInput(d.bannerGrad[1], (v) => { d.bannerGrad[1] = v; updateUnsaved(); }), btn('Apply', 'btn-sm btn-ghost', redraw)) : null,
+        d.banner ? el('div', { class: 'row' }, btn('Change image', 'btn-sm btn-outline', () => bnIn.click()), btn('Remove', 'btn-sm btn-ghost', () => { d.banner = null; redraw(); })) : null),
+      sec('About me', bio));
+  }
+
+  // Banners: 680x240, cropped from the middle.
+  async function compressBanner(src) {
+    const img = await loadImage(src);
+    const W = 680, H = 240;
+    const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+    const sw = W / scale, sh = H / scale;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    cv.getContext('2d').drawImage(img, (img.naturalWidth - sw) / 2, (img.naturalHeight - sh) / 2, sw, sh, 0, 0, W, H);
+    for (const q of [0.8, 0.65, 0.5, 0.35]) {
+      let out = cv.toDataURL('image/webp', q);
+      if (!out.startsWith('data:image/webp')) out = cv.toDataURL('image/jpeg', q);
+      if (out.length < 160000) return out;
+    }
+    throw new Error('That banner is too large.');
   }
 
   // ---------- Add contact ----------

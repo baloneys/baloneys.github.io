@@ -1284,3 +1284,30 @@ body.accent-grad :is(.side-title, .studio-kicker, .emoji-cat) { width: fit-conte
 .accent-picker { display: grid; gap: 8px; }
 body.accent-grad :is(.btn-primary, .send-btn) { background-image: linear-gradient(135deg, var(--ag1), var(--ag2)); }
 body.accent-grad :is(.btn-primary, .send-btn):hover { filter: brightness(1.1); }
+
+/* ---------- Room card: banner picture and minimise ---------- */
+
+.room-start { position: relative; }
+.room-banner, .rs-hero { background-position: center; background-size: cover; background-repeat: no-repeat; }
+.room-banner.has-img::after { background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.3)); }
+.rs-hero.has-img { background-size: cover; background-position: center; }
+.room-banner, .room-start-body, .room-start-body .room-icon.big, .room-start-name { transition: height 0.25s ease, width 0.25s ease, margin 0.25s ease, font-size 0.25s ease, padding 0.25s ease; }
+
+.room-card-toggle {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  display: grid; place-items: center; width: 30px; height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35); color: #fff; cursor: pointer;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.room-card-toggle:hover { background: rgba(0, 0, 0, 0.55); transform: scale(1.06); }
+.room-card-chev { width: 8px; height: 8px; margin-top: 4px; border-top: 2px solid currentColor; border-left: 2px solid currentColor; transform: rotate(45deg); transition: transform 0.25s ease, margin 0.25s ease; }
+.room-start.min .room-card-chev { margin-top: -4px; transform: rotate(225deg); }
+
+.room-start.min .room-banner { height: 52px; }
+.room-start.min .room-start-body { display: flex; align-items: center; gap: 12px; padding: 8px var(--spacing-lg) 10px 14px; }
+.room-start.min .room-start-body .room-icon.big { width: 44px; height: 44px; margin: -30px 0 0; border-width: 3px; border-radius: 14px; font-size: 1.05rem; }
+.room-start.min .room-start-name { margin: 0; font-size: 1rem; }
+.room-start.min .room-desc, .room-start.min .room-start-welcome { display: none; }
+.room-start.min .room-card-toggle { top: 11px; width: 28px; height: 28px; }

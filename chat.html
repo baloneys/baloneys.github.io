@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <title>chat | baloneys</title>
-    <meta name="description" content="baloneys chat: DMs, rooms and voice." />
+    <meta name="description" content="baloneys chat: peer-to-peer DMs, rooms and voice." />
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#050505" />
     <link rel="canonical" href="https://kanaris-beans.com/chat" />
@@ -29,8 +29,9 @@
     <link rel="stylesheet" href="home.css" />
     <link rel="stylesheet" href="chat.css" />
 
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
     <script src="site.js" defer></script>
-    <script type="module" src="chat.js"></script>
+    <script src="chat.js" defer></script>
   </head>
   <body class="chat-body">
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -87,39 +88,32 @@
     </div>
 
     <main id="main" class="chat-root">
+      <div class="net-banner hidden" id="netBanner" role="status"></div>
       <div class="boot" id="boot"><div class="boot-dot"></div><span>connecting…</span></div>
 
-      <!-- Sign in / sign up -->
+      <!-- First visit: make an identity -->
       <section class="auth-wrap hidden" id="authView" aria-labelledby="authTitle">
         <div class="auth-card">
           <h1 class="auth-title" id="authTitle">chat</h1>
-          <p class="auth-sub">Just a username and password. No email needed.</p>
-          <div class="tabs" role="tablist">
-            <button class="tab active" type="button" role="tab" aria-selected="true" data-auth-tab="in">Sign in</button>
-            <button class="tab" type="button" role="tab" aria-selected="false" data-auth-tab="up">Sign up</button>
-          </div>
+          <p class="auth-sub">Peer-to-peer: messages go straight between browsers and are saved only on your devices. No account, email or password.</p>
           <form id="authForm" novalidate>
             <div class="field">
-              <label for="authUser">Username</label>
-              <input class="input" id="authUser" name="username" autocomplete="username" maxlength="20" spellcheck="false" autocapitalize="off" required />
-              <p class="field-hint up-only hidden">3 to 20 letters, numbers or underscores.</p>
+              <label for="authUser">Your name</label>
+              <input class="input" id="authUser" name="nickname" autocomplete="nickname" maxlength="24" spellcheck="false" required />
+              <p class="field-hint">You can change it later. Your friend code is what makes you unique.</p>
             </div>
             <div class="field">
-              <label for="authPass">Password</label>
-              <input class="input" id="authPass" name="password" type="password" autocomplete="current-password" minlength="6" required />
-              <p class="field-hint up-only hidden">At least 8 characters. There's no email, so it can't be reset if you forget it.</p>
-            </div>
-            <div class="field up-only hidden">
               <label>Colour</label>
               <div class="swatches" id="authSwatches"></div>
             </div>
-            <label class="check up-only hidden">
+            <label class="check">
               <input type="checkbox" id="authAgree" />
               <span>I'm 13 or older and I'll follow the <a href="terms.html" target="_blank" rel="noopener">rules</a>. No nudity, no harassment, nothing illegal.</span>
             </label>
             <p class="form-error" id="authError" role="alert"></p>
-            <button class="btn btn-primary btn-block" type="submit" id="authSubmit">Sign in</button>
+            <button class="btn btn-primary btn-block" type="submit" id="authSubmit">Start chatting</button>
           </form>
+          <p class="auth-alt">Used chat before? <button class="link-btn" type="button" id="importBtn">Restore a backup</button></p>
         </div>
       </section>
 
@@ -127,12 +121,14 @@
       <div class="app hidden" id="appView">
         <aside class="side" aria-label="Conversations">
           <div class="side-actions">
-            <button class="btn btn-sm btn-primary" type="button" id="newDmBtn">New DM</button>
+            <button class="btn btn-sm btn-primary" type="button" id="newDmBtn">Add contact</button>
             <button class="btn btn-sm btn-outline" type="button" id="createRoomBtn">Create room</button>
             <button class="btn btn-sm btn-outline" type="button" id="joinRoomBtn">Join room</button>
           </div>
           <div class="side-scroll">
-            <p class="side-title">Direct messages</p>
+            <p class="side-title hidden" id="requestTitle">Requests</p>
+            <div id="requestList"></div>
+            <p class="side-title">Contacts</p>
             <div id="dmList"></div>
             <p class="side-title">Rooms</p>
             <div id="roomList"></div>
@@ -140,8 +136,7 @@
           <div class="voice-dock hidden" id="voiceDock"></div>
           <div class="me-bar">
             <div id="meAvatar"></div>
-            <span class="me-name" id="meName"></span>
-            <button class="icon-btn hidden" type="button" id="modBtn" title="Moderation" aria-label="Moderation"><svg><use href="#i-shield"/></svg><span class="mod-count hidden" id="modCount"></span></button>
+            <span class="me-text"><span class="me-name" id="meName"></span><button class="me-code" type="button" id="meCode" title="Copy your add-me link"></button></span>
             <button class="icon-btn" type="button" id="settingsBtn" title="Settings" aria-label="Settings"><svg><use href="#i-gear"/></svg></button>
           </div>
         </aside>
@@ -149,12 +144,13 @@
         <section class="main" id="mainPane" aria-live="polite">
           <div class="welcome" id="welcome">
             <h2>hey <span id="welcomeName"></span></h2>
-            <p>Pick a conversation, start a DM or hop into a room.</p>
+            <p>Add a friend with their code, or start a room and share its code.</p>
             <div class="welcome-actions">
-              <button class="btn btn-primary" type="button" data-act="new-dm">New DM</button>
+              <button class="btn btn-primary" type="button" data-act="new-dm">Add contact</button>
               <button class="btn btn-outline" type="button" data-act="create-room">Create room</button>
               <button class="btn btn-outline" type="button" data-act="join-room">Join with code</button>
             </div>
+            <button class="btn btn-ghost btn-sm" type="button" data-act="copy-code">Copy my add-me link</button>
           </div>
 
           <div class="conv-view hidden" id="convView">
@@ -209,5 +205,6 @@
     <div class="toasts" id="toasts" aria-live="polite"></div>
     <div id="voiceAudio" hidden></div>
     <input type="file" id="fileInput" accept="image/*" multiple hidden />
+    <input type="file" id="importInput" accept="application/json,.json" hidden />
   </body>
 </html>

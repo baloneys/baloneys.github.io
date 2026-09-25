@@ -1,0 +1,4 @@
+{
+  "_comment": "Friend codes blocked on /chat for everyone. Add \"ABCD-EFGH-JKLM-NPQR\": \"reason\" and commit. See CHAT.md.",
+  "blocked": {}
+}

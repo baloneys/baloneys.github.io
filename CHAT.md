@@ -13,6 +13,7 @@ Everything runs in visitors' browsers.
 | **Rooms** | One member's browser hosts the room (as `bchat-room-CODE`), relays messages, keeps the last 150 messages for people who join, and enforces mute, kick and bans. If the host leaves or closes the tab, another member takes over automatically. A room exists while at least one member has chat open. |
 | **Voice** | Peer-to-peer WebRTC audio. DMs are 1-to-1 calls; rooms connect everyone in voice to everyone else (up to 8 people). |
 | **Finding each other** | Browsers use [PeerJS](https://peerjs.com/)'s free public broker (`0.peerjs.com`) only to find each other and exchange connection details. Messages, images and audio never go through it. |
+| **Customisation** | Settings (gear) and the palette button open a glass settings panel. Appearance options are backgrounds (gradients, solid colour, or your own image with blur and darkening), glass and panel opacity, message text colour (including *Blend*), accent colour and text size. They're saved in this browser only. Profile options are name colour or gradient-with-glow, avatar, banner and bio, and go to contacts and room members. Room hosts can set a room picture. |
 | **Backups** | Settings → *Back up* downloads a file with your identity (including the private key), contacts and rooms. *Restore a backup* on another device or after clearing data. Keep that file private: anyone with it can be you. |
 
 ## Safety without a server

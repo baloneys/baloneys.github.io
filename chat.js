@@ -3407,7 +3407,7 @@
   const LOOK_DEFAULT = {
     bg: 'default', theme: 'baloneys', grad: { stops: ['#12001f', '#3b0764', '#e60065'], angle: 150, three: true },
     solid: '#0b0b12', imgBlur: 0, imgDim: 35, imgFit: 'cover',
-    panel: 78, glassBlur: 16, text: 'default', textColor: '#ece6ff', accent: '#9d00ff', size: 15
+    panel: 78, glassBlur: 16, text: 'default', textColor: '#ece6ff', accent: '#9d00ff', accentGrad: null, size: 15
   };
 
   let look = loadLook();
@@ -3457,9 +3457,14 @@
     }
     if (room && room.theme) { bg.style.background = roomGradCss(room.theme); bg.style.setProperty('--img', 'none'); bg.classList.remove('image'); }
     body.style.setProperty('--panel-a', String(Math.max(0.08, look.panel / 100)));
-    const accent = (room && room.accent) || look.accent;
+    // A room's own accent wins; otherwise your accent can be a gradient (accented text only, no glow).
+    const grad = !(room && room.accent) && isHexPair(look.accentGrad) ? look.accentGrad : null;
+    body.classList.toggle('accent-grad', !!grad);
+    if (grad) { body.style.setProperty('--ag1', grad[0]); body.style.setProperty('--ag2', grad[1]); body.style.setProperty('--gradient-brand', 'linear-gradient(to right, ' + grad[0] + ', ' + grad[1] + ')'); }
+    else body.style.removeProperty('--gradient-brand');
+    const accent = (room && room.accent) || (grad ? grad[0] : look.accent);
     body.style.setProperty('--color-primary', accent);
-    body.style.setProperty('--color-accent', accent === '#9d00ff' ? '#e60065' : accent);
+    body.style.setProperty('--color-accent', grad && !(room && room.accent) ? grad[1] : accent === '#9d00ff' ? '#e60065' : accent);
     body.style.setProperty('--msg-size', look.size + 'px');
     body.style.setProperty('--msg-color', look.text === 'custom' ? look.textColor : '#ece6ff');
     body.classList.toggle('blend-text', look.text === 'blend');
@@ -3676,8 +3681,21 @@
         look.text === 'custom' ? colorInput(look.textColor, (v) => setLook({ textColor: v })) : null,
         look.text === 'blend' && look.glassBlur ? el('p', { class: 'field-hint', text: 'Frosted glass is paused while Blend is on, so the text can see your background.' }) : null),
       sec('Accent colour',
-        el('div', { class: 'swatches' }, ACCENTS.map((c) => el('button', { type: 'button', class: 'swatch' + (c === look.accent ? ' selected' : ''), style: { background: c }, 'aria-label': 'Accent ' + c, onclick: () => { setLook({ accent: c }); drawStudio(); } }))),
-        colorInput(look.accent, (v) => setLook({ accent: v }))),
+        choice([['solid', 'Solid'], ['gradient', 'Gradient']], look.accentGrad ? 'gradient' : 'solid', (v) => {
+          setLook({ accentGrad: v === 'gradient' ? (look.accentGrad || (isHexPair(S.me.nameGrad) ? S.me.nameGrad.slice(0, 2) : NAME_GRADS[0].slice())) : null });
+          drawStudio();
+        }),
+        look.accentGrad ? [
+          el('div', { class: 'grad-presets' },
+            NAME_GRADS.map((pair) => el('button', { type: 'button', class: 'grad-chip' + (pair[0] === look.accentGrad[0] && pair[1] === look.accentGrad[1] ? ' on' : ''), style: { background: 'linear-gradient(90deg, ' + pair[0] + ', ' + pair[1] + ')' }, 'aria-label': 'Accent gradient ' + pair.join(' to '), onclick: () => { setLook({ accentGrad: pair.slice() }); drawStudio(); } }))),
+          el('div', { class: 'grad-stops' },
+            [0, 1].map((i) => colorInput(look.accentGrad[i], (v) => { const g = look.accentGrad.slice(); g[i] = v; setLook({ accentGrad: g }); })),
+            isHexPair(S.me.nameGrad) ? btn('Match my name', 'btn-sm btn-ghost', () => { setLook({ accentGrad: S.me.nameGrad.slice(0, 2) }); drawStudio(); }) : null),
+          el('p', { class: 'accent-grad-demo', text: 'Section titles and outlined buttons use this' })
+        ] : [
+          el('div', { class: 'swatches' }, ACCENTS.map((c) => el('button', { type: 'button', class: 'swatch' + (c === look.accent ? ' selected' : ''), style: { background: c }, 'aria-label': 'Accent ' + c, onclick: () => { setLook({ accent: c }); drawStudio(); } }))),
+          colorInput(look.accent, (v) => setLook({ accent: v }))
+        ]),
       sec('Text size', slider('Messages', 13, 19, look.size, 'px', (v) => setLook({ size: v }))),
       sec('Preview', el('div', { class: 'studio-preview' }, previewMsg('Seany', 'this looks sick 🔥'), previewMsg(S.me.name, 'right?? **bold** and ||spoilers|| too'))));
   }

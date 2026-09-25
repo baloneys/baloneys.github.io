@@ -1066,6 +1066,7 @@
         break;
       }
       case 'room': applyRoomState(code, d.room); break;
+      case 'rbanner': saveRoom(code, { banner: cleanBanner(d.banner) }); S.msgNodes.clear(); if (S.conv && S.conv.id === code) scheduleRender(false); break;
       case 'profiles':
         if (d.profiles && typeof d.profiles === 'object') for (const id of Object.keys(d.profiles).slice(0, MAX_ROOM + 5)) if (id !== S.me.id && /^[a-z2-9]{16}$/.test(id)) setProfile(id, d.profiles[id]);
         break;
@@ -1122,7 +1123,9 @@
       image: typeof st.image === 'string' && st.image.length < 90000 && DATA_IMG_RE.test(st.image) ? st.image : null,
       hostId: typeof st.hostId === 'string' ? st.hostId : '',
       members, order: list(st.order), muted: list(st.muted), banned: list(st.banned),
-      ...roomLook(st)
+      ...roomLook(st),
+      // The banner picture arrives separately; a missing key means it was removed.
+      ...(st.bannerKey ? {} : { banner: null })
     });
     S.msgNodes.clear();
     queueRerender();
@@ -1142,6 +1145,8 @@
     return { stops, angle: Math.max(0, Math.min(360, Number(t.angle) || 0)) };
   }
   // What a host can customise, as carried in room state and handovers.
+  const ROOM_BANNER_MAX = 200000;
+  const cleanBanner = (b) => (typeof b === 'string' && b.length < ROOM_BANNER_MAX && DATA_IMG_RE.test(b) ? b : null);
   const roomLook = (x) => ({ nicks: cleanNicks(x.nicks), desc: cleanDesc(x.desc), theme: cleanRoomTheme(x.theme), accent: isHex(x.accent) ? x.accent : null, accent2: isHex(x.accent) && isHex(x.accent2) ? x.accent2 : null });
 
   function memberOnClosed(link) {
@@ -1204,7 +1209,7 @@
   async function localRoomState(code) {
     const r = S.rooms[code] || {};
     const history = await DB.recent(roomKey(code), ROOM_HISTORY);
-    return Object.assign({ name: r.name || code, image: r.image || null, members: r.members || {}, order: r.order || [], muted: r.muted || [], banned: r.banned || [], history, known: r.order || [] }, roomLook(r));
+    return Object.assign({ name: r.name || code, image: r.image || null, banner: r.banner || null, members: r.members || {}, order: r.order || [], muted: r.muted || [], banned: r.banned || [], history, known: r.order || [] }, roomLook(r));
   }
 
   async function hostRoom(code, statePromise, fresh) {
@@ -1217,6 +1222,7 @@
       known: new Set(state.known || []), history: (state.history || []).slice(-ROOM_HISTORY), voice: {}, reports: state.reports || [], claiming: true
     };
     Object.assign(H, roomLook(state));
+    H.banner = cleanBanner(state.banner);
     hosts[code] = H;
     peer.on('open', () => {
       H.claiming = false;
@@ -1259,7 +1265,7 @@
       const p = id === S.me.id ? myProfile() : (S.profiles[id] || {});
       members[id] = Object.assign(lightProfile(p), { online: H.members[id].online, joinedAt: H.members[id].joinedAt });
     }
-    return Object.assign({ name: H.name, image: H.image || null, hostId: H.hostId, members, order: H.order, muted: [...H.muted], banned: [...H.banned] }, roomLook(H));
+    return Object.assign({ name: H.name, image: H.image || null, hostId: H.hostId, members, order: H.order, muted: [...H.muted], banned: [...H.banned], bannerKey: H.banner ? imgKey(H.banner) : null }, roomLook(H));
   }
 
   function fullProfile(id) { return id === S.me.id ? myProfile() : S.profiles[id] || null; }
@@ -1303,6 +1309,7 @@
       if (!H.members[id]) { H.members[id] = { joinedAt: Date.now(), online: true }; H.order.push(id); }
       H.members[id].online = true;
       link.conn.send({ t: 'welcome', room: publicState(H), history: H.history.slice(-100) });
+      if (H.banner) link.conn.send({ t: 'rbanner', banner: H.banner });
       hostShareProfiles(H, Object.keys(H.members).filter((m) => m !== id), link);
       hostShareProfiles(H, [id]);
       hostSync(H);
@@ -1420,6 +1427,13 @@
     else if (action === 'rename') { H.name = String(extra).slice(0, 40); hostSync(H); hostSystem(H, 'renamed the room to ' + H.name); }
     else if (action === 'image') { H.image = extra || null; hostSync(H); hostSystem(H, extra ? 'changed the room picture' : 'removed the room picture'); }
     else if (action === 'nick') setNick(H, id, extra, S.me.id);
+    else if (action === 'banner') {
+      H.banner = cleanBanner(extra);
+      saveRoom(code, { banner: H.banner });
+      hostBroadcast(H, { t: 'rbanner', banner: H.banner }, S.me.id);
+      hostSync(H);
+      hostSystem(H, H.banner ? 'changed the room banner' : 'removed the room banner');
+    }
     else if (action === 'look') {
       const x = roomLook(Object.assign({}, H, extra));
       const changed = x.desc !== H.desc || JSON.stringify(x.theme) !== JSON.stringify(H.theme) || x.accent !== H.accent || x.accent2 !== H.accent2;
@@ -1447,6 +1461,7 @@
   }
 
   // The room banner: its theme if it has one, otherwise a soft wash of the accent gradient.
+  const roomBannerImg = (code, r) => (r && r.banner ? (iHost(code) ? r.banner : safeSrc(r.banner)) : null);
   const roomBannerCss = (r, acc) => (r && r.theme ? roomGradCss(r.theme)
     : 'radial-gradient(120% 140% at 0% 0%, ' + acc[0] + 'cc, transparent 60%), radial-gradient(120% 140% at 100% 100%, ' + acc[1] + 'aa, transparent 55%), linear-gradient(135deg, ' + acc[0] + '55, ' + acc[1] + '44), #0b0b12');
   const roomGradCss = (t) => 'linear-gradient(' + t.angle + 'deg, ' + t.stops.join(', ') + ')';
@@ -1456,6 +1471,17 @@
     if (!H) return;
     closeModal();
     let image = H.image || null;
+    let banner = H.banner || null;
+    const bannerFile = el('input', { type: 'file', accept: 'image/*', hidden: true });
+    bannerFile.addEventListener('change', async () => {
+      const f = bannerFile.files[0]; bannerFile.value = '';
+      if (!f) return;
+      try {
+        const data = await compressBanner(await readAsDataURL(f), 1200, 320, 190000);
+        if ((await classify(data)) === 'flagged') { toast("That banner can't be used."); return; }
+        banner = data; draw();
+      } catch (e) { fail(e, e.message); }
+    });
     const d = { name: H.name, desc: H.desc || '', theme: H.theme ? { stops: H.theme.stops.slice(), angle: H.theme.angle } : null, accent: roomAccent(H) };
     const file = el('input', { type: 'file', accept: 'image/*', hidden: true });
     file.addEventListener('change', async () => {
@@ -1470,9 +1496,11 @@
     const wrap = el('div', { class: 'room-studio' });
     const preview = () => {
       const acc = d.accent || lookAccent();
-      return el('div', { class: 'rs-hero', style: { background: roomBannerCss({ theme: d.theme }, acc) } },
+      const hero = el('div', { class: 'rs-hero', style: { background: roomBannerCss({ theme: d.theme }, acc) } },
         el('div', { class: 'rs-hero-inner' }, roomIcon({ code, name: d.name || H.name, image, status: 'connected' }, true),
           el('div', null, el('strong', { class: 'rs-name grad-text', style: { '--ag1': acc[0], '--ag2': acc[1] }, text: d.name || H.name }), el('p', { class: 'rs-desc', text: d.desc || 'No description yet' }))));
+      if (banner) { hero.style.backgroundImage = 'url("' + banner + '")'; hero.classList.add('has-img'); }
+      return hero;
     };
     const heroBox = el('div');
     const redrawHero = () => heroBox.replaceChildren(preview());
@@ -1499,7 +1527,10 @@
       wrap.replaceChildren(heroBox,
         el('div', { class: 'row rs-pic' },
           btn(image ? 'Change picture' : 'Upload picture', 'btn-sm btn-outline', () => file.click()),
-          image ? btn('Remove picture', 'btn-sm btn-ghost', () => { image = null; draw(); }) : null, file),
+          image ? btn('Remove picture', 'btn-sm btn-ghost', () => { image = null; draw(); }) : null, file,
+          btn(banner ? 'Change banner' : 'Upload banner', 'btn-sm btn-outline', () => bannerFile.click()),
+          banner ? btn('Remove banner', 'btn-sm btn-ghost', () => { banner = null; draw(); }) : null, bannerFile),
+        el('p', { class: 'field-hint', text: 'Banner images cover the room theme at the top of the room. Wide pictures work best.' }),
         el('div', { class: 'field' }, el('label', { text: 'Room name' }), nameIn),
         el('div', { class: 'field' }, el('label', { text: 'Description' }), descIn),
         el('div', { class: 'field' }, el('label', { text: 'Room theme' }), el('p', { class: 'field-hint', text: 'Members see this background while they’re in the room (unless they turn room themes off).' }), themes, custom),
@@ -1511,6 +1542,7 @@
       const n = d.name.trim();
       if (n && n !== H.name) hostTool(code, 'rename', null, n);
       if (image !== (H.image || null)) hostTool(code, 'image', null, image);
+      if (banner !== (H.banner || null)) hostTool(code, 'banner', null, banner);
       hostTool(code, 'look', null, { desc: d.desc, theme: d.theme, accent: d.accent ? d.accent[0] : null, accent2: d.accent ? d.accent[1] : null });
       closeModal();
     })], { wide: true });
@@ -1524,7 +1556,7 @@
     hostSystem(H, 'made ' + nameOf(to) + ' the host');
     H.hostId = to;
     if (thenLeave) { delete H.members[S.me.id]; H.order = H.order.filter((x) => x !== S.me.id); }
-    const state = Object.assign({ name: H.name, image: H.image, members: publicState(H).members, order: H.order, muted: [...H.muted], banned: [...H.banned], history: H.history, known: [...H.known], reports: H.reports, handover: true }, roomLook(H));
+    const state = Object.assign({ name: H.name, image: H.image, banner: H.banner || null, members: publicState(H).members, order: H.order, muted: [...H.muted], banned: [...H.banned], history: H.history, known: [...H.known], reports: H.reports, handover: true }, roomLook(H));
     l.conn.send({ t: 'handover', state });
     hostBroadcast(H, { t: 'hostmove', to }, S.me.id);
     hostSync(H);
@@ -1921,13 +1953,28 @@
     }
     const r = S.rooms[c.id] || {};
     const acc = (look.roomThemes !== false && roomAccent(r)) || lookAccent();
-    return el('div', { class: 'conv-start room-start' },
-      el('div', { class: 'room-banner', style: { background: roomBannerCss(look.roomThemes !== false ? r : {}, acc) } }),
+    const img = roomBannerImg(c.id, r);
+    const banner = el('div', { class: 'room-banner' + (img ? ' has-img' : ''), style: { background: roomBannerCss(look.roomThemes !== false ? r : {}, acc) } });
+    if (img) banner.style.backgroundImage = 'url("' + img.replace(/"/g, '') + '")';
+    const code = c.id;
+    const card = el('div', { class: 'conv-start room-start' + (r.cardMin ? ' min' : '') },
+      banner,
+      el('button', {
+        type: 'button', class: 'room-card-toggle', title: r.cardMin ? 'Expand' : 'Minimise', 'aria-label': r.cardMin ? 'Expand room card' : 'Minimise room card', 'aria-expanded': String(!r.cardMin),
+        onclick: () => {
+          const min = !card.classList.contains('min');
+          card.classList.toggle('min', min);
+          saveRoom(code, { cardMin: min });
+          const b = card.querySelector('.room-card-toggle');
+          b.title = min ? 'Expand' : 'Minimise'; b.setAttribute('aria-label', min ? 'Expand room card' : 'Minimise room card'); b.setAttribute('aria-expanded', String(!min));
+        }
+      }, el('span', { class: 'room-card-chev', 'aria-hidden': 'true' })),
       el('div', { class: 'room-start-body' },
         roomIcon(Object.assign({ code: c.id }, r), true),
         el('strong', { class: 'room-start-name' }, roomName(c.id)),
         r.desc ? el('p', { class: 'room-desc', text: r.desc }) : null,
-        el('span', null, 'Welcome to the room. Share code ', el('span', { class: 'code-chip', text: c.id, onclick: copyCode }), ' to invite people.')));
+        el('span', { class: 'room-start-welcome' }, 'Welcome to the room. Share code ', el('span', { class: 'code-chip', text: c.id, onclick: copyCode }), ' to invite people.')));
+    return card;
   }
 
   function msgSig(key, m) {
@@ -3831,9 +3878,8 @@
   }
 
   // Banners: 680x240, cropped from the middle.
-  async function compressBanner(src) {
+  async function compressBanner(src, W = 680, H = 240, budget = 160000) {
     const img = await loadImage(src);
-    const W = 680, H = 240;
     const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
     const sw = W / scale, sh = H / scale;
     const cv = document.createElement('canvas');
@@ -3842,7 +3888,7 @@
     for (const q of [0.8, 0.65, 0.5, 0.35]) {
       let out = cv.toDataURL('image/webp', q);
       if (!out.startsWith('data:image/webp')) out = cv.toDataURL('image/jpeg', q);
-      if (out.length < 160000) return out;
+      if (out.length < budget) return out;
     }
     throw new Error('That banner is too large.');
   }

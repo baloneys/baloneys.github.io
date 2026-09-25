@@ -152,7 +152,12 @@
   const roomKey = (code) => 'room_' + code;
 
   const profileOf = (id) => (id === (S.me && S.me.id) ? S.me : S.profiles[id]) || null;
-  const nameOf = (id) => { const p = profileOf(id); return (p && p.name) || (id ? fmtCode(id).slice(0, 9) : '…'); };
+  // A room nickname wins inside that room; everywhere else people go by their profile name.
+  const nickIn = (id, code) => { const r = code && S.rooms[code]; return (r && r.nicks && r.nicks[id]) || ''; };
+  const realName = (id) => { const p = profileOf(id); return (p && p.name) || (id ? fmtCode(id).slice(0, 9) : '…'); };
+  const nameOf = (id, code) => nickIn(id, code) || realName(id);
+  const roomOf = () => (S.conv && S.conv.type === 'room' ? S.conv.id : null);
+  const cleanNick = (n) => (typeof n === 'string' ? n.replace(/[^\p{L}\p{N}\p{Emoji_Presentation}_ .'!?-]/gu, '').trim().slice(0, 24) : '');
   const isBlocked = (id) => !!S.blocks[id] || !!S.globalBlocks[id];
   const isContact = (id) => S.contacts[id] && S.contacts[id].status === 'accepted';
 
@@ -339,9 +344,10 @@
   }
 
   // A person's name in their colour, or their gradient with a soft glow.
-  function nameEl(id, cls, extra) {
+  function nameEl(id, cls, extra, code) {
     const p = profileOf(id) || {};
-    const span = el('span', Object.assign({ class: 'uname' + (cls ? ' ' + cls : ''), text: nameOf(id) }, extra || {}));
+    const nick = nickIn(id, code);
+    const span = el('span', Object.assign({ class: 'uname' + (cls ? ' ' + cls : '') + (nick ? ' nick' : ''), text: nick || realName(id), title: nick ? realName(id) : undefined }, extra || {}));
     if (p.nameGrad) {
       span.classList.add('grad');
       span.style.setProperty('--g1', p.nameGrad[0]);
@@ -943,7 +949,7 @@
     if (viewing) { S.msgs.set(m.id, m); scheduleRender(true); }
     if (m.from !== S.me.id && m.kind !== 'system' && !isBlocked(m.from) && (!viewing || document.hidden)) {
       const where = m.conv.startsWith('room_') ? ' in ' + roomName(m.conv.slice(5)) : '';
-      notify(nameOf(m.from) + where, preview(m) || 'New message', m.conv.startsWith('dm_') ? '#dm/' + m.from : '#room/' + m.conv.slice(5));
+      notify(nameOf(m.from, m.conv.startsWith('room_') ? m.conv.slice(5) : null) + where, preview(m) || 'New message', m.conv.startsWith('dm_') ? '#dm/' + m.from : '#room/' + m.conv.slice(5));
     }
   }
 
@@ -979,7 +985,7 @@
   }
 
   function saveRoom(code, patch) {
-    S.rooms[code] = Object.assign(S.rooms[code] || { code, name: code, joinedAt: Date.now(), members: {}, order: [], muted: [], banned: [] }, patch);
+    S.rooms[code] = Object.assign(S.rooms[code] || { code, name: code, joinedAt: Date.now(), members: {}, order: [], muted: [], banned: [], nicks: {} }, patch);
     persist('rooms');
     queueRerender();
     return S.rooms[code];
@@ -1115,10 +1121,28 @@
       name: typeof st.name === 'string' ? st.name.slice(0, 40) : code,
       image: typeof st.image === 'string' && st.image.length < 90000 && DATA_IMG_RE.test(st.image) ? st.image : null,
       hostId: typeof st.hostId === 'string' ? st.hostId : '',
-      members, order: list(st.order), muted: list(st.muted), banned: list(st.banned)
+      members, order: list(st.order), muted: list(st.muted), banned: list(st.banned),
+      nicks: cleanNicks(st.nicks), desc: cleanDesc(st.desc), theme: cleanRoomTheme(st.theme), accent: isHex(st.accent) ? st.accent : null
     });
+    S.msgNodes.clear();
+    queueRerender();
     if (S.conv && S.conv.type === 'room' && S.conv.id === code) applyRoomMeta(S.rooms[code]);
   }
+
+  function cleanNicks(n) {
+    const out = {};
+    if (n && typeof n === 'object') for (const id of Object.keys(n).slice(0, 200)) { const v = cleanNick(n[id]); if (v && /^[a-z2-9]{16}$/.test(id)) out[id] = v; }
+    return out;
+  }
+  const cleanDesc = (d) => (typeof d === 'string' ? d.replace(/\s+/g, ' ').trim().slice(0, 140) : '');
+  function cleanRoomTheme(t) {
+    if (!t || typeof t !== 'object' || !Array.isArray(t.stops)) return null;
+    const stops = t.stops.filter(isHex).slice(0, 3);
+    if (stops.length < 2) return null;
+    return { stops, angle: Math.max(0, Math.min(360, Number(t.angle) || 0)) };
+  }
+  // What a host can customise, as carried in room state and handovers.
+  const roomLook = (x) => ({ nicks: cleanNicks(x.nicks), desc: cleanDesc(x.desc), theme: cleanRoomTheme(x.theme), accent: isHex(x.accent) ? x.accent : null });
 
   function memberOnClosed(link) {
     const code = link.room;
@@ -1180,7 +1204,7 @@
   async function localRoomState(code) {
     const r = S.rooms[code] || {};
     const history = await DB.recent(roomKey(code), ROOM_HISTORY);
-    return { name: r.name || code, image: r.image || null, members: r.members || {}, order: r.order || [], muted: r.muted || [], banned: r.banned || [], history, known: r.order || [] };
+    return Object.assign({ name: r.name || code, image: r.image || null, members: r.members || {}, order: r.order || [], muted: r.muted || [], banned: r.banned || [], history, known: r.order || [] }, roomLook(r));
   }
 
   async function hostRoom(code, statePromise, fresh) {
@@ -1192,6 +1216,7 @@
       members: {}, order: [], muted: new Set(state.muted || []), banned: new Set(state.banned || []),
       known: new Set(state.known || []), history: (state.history || []).slice(-ROOM_HISTORY), voice: {}, reports: state.reports || [], claiming: true
     };
+    Object.assign(H, roomLook(state));
     hosts[code] = H;
     peer.on('open', () => {
       H.claiming = false;
@@ -1225,7 +1250,7 @@
         else connectRoom(code);
       } else if (err && err.type !== 'peer-unavailable') console.warn('room host error', err.type);
     });
-    peer.on('disconnected', () => { if (!peer.destroyed) setTimeout(() => peer.reconnect(), 1500); });
+    peer.on('disconnected', () => { if (!peer.destroyed) setTimeout(() => { if (!peer.destroyed) peer.reconnect(); }, 1500); });
   }
 
   function publicState(H) {
@@ -1234,7 +1259,7 @@
       const p = id === S.me.id ? myProfile() : (S.profiles[id] || {});
       members[id] = Object.assign(lightProfile(p), { online: H.members[id].online, joinedAt: H.members[id].joinedAt });
     }
-    return { name: H.name, image: H.image || null, hostId: H.hostId, members, order: H.order, muted: [...H.muted], banned: [...H.banned] };
+    return Object.assign({ name: H.name, image: H.image || null, hostId: H.hostId, members, order: H.order, muted: [...H.muted], banned: [...H.banned] }, roomLook(H));
   }
 
   function fullProfile(id) { return id === S.me.id ? myProfile() : S.profiles[id] || null; }
@@ -1345,6 +1370,7 @@
       }
       case 'typing': hostBroadcast(H, { t: 'rtyping', from }, from); break;
       case 'profile': if (from !== S.me.id) setProfile(from, op.profile); hostShareProfiles(H, [from]); hostSync(H); break;
+      case 'nick': setNick(H, from, op.nick, from); break;
       case 'voice': {
         if (op.on && !H.muted.has(from)) {
           if (!H.voice[from] && Object.keys(H.voice).length >= MAX_VOICE) return reply('Voice is full (' + MAX_VOICE + ' people max).');
@@ -1368,6 +1394,16 @@
 
   // --- host tools ---
 
+  function setNick(H, id, nick, by) {
+    const n = cleanNick(nick);
+    if ((H.nicks[id] || '') === n) return;
+    const before = nameOf(id, H.code);
+    if (n) H.nicks[id] = n; else delete H.nicks[id];
+    hostSync(H);
+    const who = by === id ? 'changed their nickname' : 'changed ' + before + '’s nickname';
+    hostPost(H, { id: randomId(12), from: by, ts: Date.now(), kind: 'system', text: n ? who + ' to ' + n : (by === id ? 'cleared their nickname' : 'cleared ' + before + '’s nickname') });
+  }
+
   function hostTool(code, action, id, extra) {
     const H = hosts[code];
     if (!H) return;
@@ -1383,19 +1419,41 @@
     else if (action === 'unban') { H.banned.delete(id); hostSync(H); }
     else if (action === 'rename') { H.name = String(extra).slice(0, 40); hostSync(H); hostSystem(H, 'renamed the room to ' + H.name); }
     else if (action === 'image') { H.image = extra || null; hostSync(H); hostSystem(H, extra ? 'changed the room picture' : 'removed the room picture'); }
+    else if (action === 'nick') setNick(H, id, extra, S.me.id);
+    else if (action === 'look') {
+      const x = roomLook(Object.assign({}, H, extra));
+      const changed = x.desc !== H.desc || JSON.stringify(x.theme) !== JSON.stringify(H.theme) || x.accent !== H.accent;
+      Object.assign(H, { desc: x.desc, theme: x.theme, accent: x.accent });
+      if (changed) { hostSync(H); hostSystem(H, 'customised the room'); }
+    }
     else if (action === 'delmsg') hostApply(code, S.me.id, { k: 'del', id });
     else if (action === 'transfer') handOver(code, id);
   }
 
+  function editNick(code, id) {
+    const mine = id === S.me.id;
+    if (!mine && !iHost(code)) return;
+    const input = el('input', { class: 'input', maxLength: 24, value: nickIn(id, code), placeholder: realName(id) });
+    const save = (v) => {
+      closeModal();
+      if (mine) { if (!roomSend(code, { k: 'nick', nick: v })) toast("You're not connected to the room."); }
+      else hostTool(code, 'nick', id, v);
+    };
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); save(input.value); } });
+    openModal(mine ? 'Your nickname in ' + roomName(code) : 'Nickname for ' + realName(id), el('div', { class: 'stack' },
+      el('p', { class: 'field-hint', text: mine ? 'Only this room sees it. Everywhere else you’re still ' + realName(id) + '.' : 'Only shows in this room. Leave it empty to go back to ' + realName(id) + '.' }),
+      el('div', { class: 'field' }, el('label', { text: 'Nickname' }), input)),
+    [btn('Cancel', 'btn-ghost', closeModal), nickIn(id, code) ? btn('Reset', 'btn-outline', () => save('')) : null, btn('Save', 'btn-primary', () => save(input.value))].filter(Boolean));
+  }
+
+  const roomGradCss = (t) => 'linear-gradient(' + t.angle + 'deg, ' + t.stops.join(', ') + ')';
+
   function roomSettings(code) {
     const H = hosts[code];
     if (!H) return;
+    closeModal();
     let image = H.image || null;
-    const nameIn = el('input', { class: 'input', maxLength: 40, value: H.name });
-    const preview = el('div');
-    const draw = () => preview.replaceChildren(roomIcon({ code, name: nameIn.value || H.name, image, status: 'connected' }, true));
-    draw();
-    nameIn.addEventListener('input', draw);
+    const d = { name: H.name, desc: H.desc || '', theme: H.theme ? { stops: H.theme.stops.slice(), angle: H.theme.angle } : null, accent: H.accent || null };
     const file = el('input', { type: 'file', accept: 'image/*', hidden: true });
     file.addEventListener('change', async () => {
       const f = file.files[0]; file.value = '';
@@ -1406,17 +1464,53 @@
         image = data; draw();
       } catch (e) { fail(e, e.message); }
     });
-    openModal('Room settings', el('div', { class: 'stack' },
-      el('div', { class: 'row' }, preview, el('div', { class: 'stack' },
-        btn('Upload picture', 'btn-sm btn-outline', () => file.click()),
-        btn('Remove picture', 'btn-sm btn-ghost', () => { image = null; draw(); }), file)),
-      el('div', { class: 'field' }, el('label', { text: 'Room name' }), nameIn)),
-    [btn('Cancel', 'btn-ghost', closeModal), btn('Save', 'btn-primary', () => {
-      const n = nameIn.value.trim();
+    const wrap = el('div', { class: 'room-studio' });
+    const preview = () => {
+      const hero = el('div', { class: 'rs-hero', style: { background: d.theme ? roomGradCss(d.theme) : 'linear-gradient(135deg, #1a1030, #0b0b12)' } },
+        el('div', { class: 'rs-hero-inner' }, roomIcon({ code, name: d.name || H.name, image, status: 'connected' }, true),
+          el('div', null, el('strong', { class: 'rs-name', style: d.accent ? { color: d.accent } : {}, text: d.name || H.name }), el('p', { class: 'rs-desc', text: d.desc || 'No description yet' }))));
+      return hero;
+    };
+    const heroBox = el('div');
+    const redrawHero = () => heroBox.replaceChildren(preview());
+    function draw() {
+      redrawHero();
+      const nameIn = el('input', { class: 'input', maxLength: 40, value: d.name });
+      nameIn.addEventListener('input', () => { d.name = nameIn.value; redrawHero(); });
+      const descIn = el('textarea', { class: 'input', maxLength: 140, rows: 2, placeholder: 'What’s this room about?' });
+      descIn.value = d.desc;
+      descIn.addEventListener('input', () => { d.desc = descIn.value; redrawHero(); });
+      const themes = el('div', { class: 'theme-grid small' },
+        el('button', { type: 'button', class: 'theme-tile' + (!d.theme ? ' on' : ''), onclick: () => { d.theme = null; draw(); } }, el('span', { class: 'theme-swatch def' }), el('span', { text: 'None' })),
+        THEMES.map((t) => el('button', {
+          type: 'button', class: 'theme-tile' + (d.theme && d.theme.stops.join() === t.stops.join() ? ' on' : ''),
+          onclick: () => { d.theme = { stops: t.stops.slice(), angle: t.angle }; draw(); }
+        }, el('span', { class: 'theme-swatch', style: { background: roomGradCss(t) } }), el('span', { text: t.name }))));
+      const custom = d.theme ? el('div', { class: 'stack' },
+        el('div', { class: 'grad-stops' }, d.theme.stops.map((c, i) => colorInput(c, (v) => { d.theme.stops[i] = v; redrawHero(); })),
+          el('button', { type: 'button', class: 'btn btn-sm btn-ghost', text: d.theme.stops.length > 2 ? '− Stop' : '+ Stop', onclick: () => { if (d.theme.stops.length > 2) d.theme.stops.pop(); else d.theme.stops.push('#e60065'); draw(); } })),
+        slider('Angle', 0, 360, d.theme.angle, '°', (v) => { d.theme.angle = v; redrawHero(); })) : null;
+      const accents = el('div', { class: 'swatches' },
+        el('button', { type: 'button', class: 'swatch none' + (!d.accent ? ' selected' : ''), 'aria-label': 'No room accent', title: 'Use each person’s own accent', onclick: () => { d.accent = null; draw(); } }),
+        ACCENTS.map((c) => el('button', { type: 'button', class: 'swatch' + (c === d.accent ? ' selected' : ''), style: { background: c }, 'aria-label': 'Accent ' + c, onclick: () => { d.accent = c; draw(); } })));
+      wrap.replaceChildren(heroBox,
+        el('div', { class: 'row rs-pic' },
+          btn(image ? 'Change picture' : 'Upload picture', 'btn-sm btn-outline', () => file.click()),
+          image ? btn('Remove picture', 'btn-sm btn-ghost', () => { image = null; draw(); }) : null, file),
+        el('div', { class: 'field' }, el('label', { text: 'Room name' }), nameIn),
+        el('div', { class: 'field' }, el('label', { text: 'Description' }), descIn),
+        el('div', { class: 'field' }, el('label', { text: 'Room theme' }), el('p', { class: 'field-hint', text: 'Members see this background while they’re in the room (unless they turn room themes off).' }), themes, custom),
+        el('div', { class: 'field' }, el('label', { text: 'Room accent' }), accents, d.accent ? colorInput(d.accent, (v) => { d.accent = v; redrawHero(); }) : null));
+    }
+    draw();
+    openModal('Room settings', wrap, [btn('Cancel', 'btn-ghost', closeModal), btn('Save', 'btn-primary', () => {
+      if (!hosts[code]) { closeModal(); return; }
+      const n = d.name.trim();
       if (n && n !== H.name) hostTool(code, 'rename', null, n);
       if (image !== (H.image || null)) hostTool(code, 'image', null, image);
+      hostTool(code, 'look', null, { desc: d.desc, theme: d.theme, accent: d.accent });
       closeModal();
-    })]);
+    })], { wide: true });
   }
 
   // Pass the room to another online member, then step down.
@@ -1427,7 +1521,7 @@
     hostSystem(H, 'made ' + nameOf(to) + ' the host');
     H.hostId = to;
     if (thenLeave) { delete H.members[S.me.id]; H.order = H.order.filter((x) => x !== S.me.id); }
-    const state = { name: H.name, image: H.image, members: publicState(H).members, order: H.order, muted: [...H.muted], banned: [...H.banned], history: H.history, known: [...H.known], reports: H.reports, handover: true };
+    const state = Object.assign({ name: H.name, image: H.image, members: publicState(H).members, order: H.order, muted: [...H.muted], banned: [...H.banned], history: H.history, known: [...H.known], reports: H.reports, handover: true }, roomLook(H));
     l.conn.send({ t: 'handover', state });
     hostBroadcast(H, { t: 'hostmove', to }, S.me.id);
     hostSync(H);
@@ -1577,7 +1671,7 @@
       const last = meta && meta.last;
       const status = r.status === 'connected' ? '' : r.status === 'offline' ? 'Offline · ' : 'Connecting… · ';
       const sys = last && last.text.startsWith(nameOf(last.from) + ' ');
-      const pv = status + (!last ? r.code : sys ? last.text : (last.from === S.me.id ? 'You' : nameOf(last.from)) + ': ' + last.text);
+      const pv = status + (!last ? r.code : sys ? last.text : (last.from === S.me.id ? 'You' : nameOf(last.from, r.code)) + ': ' + last.text);
       return convButton({
         icon: roomIcon(r), name: r.name || r.code, preview: pv,
         active: S.conv && S.conv.type === 'room' && S.conv.id === r.code,
@@ -1650,6 +1744,7 @@
     $('appView').classList.remove('in-conv', 'with-members');
     $('membersPane').classList.add('hidden');
     queueRerender();
+    paintRoomLook();
   }
 
   // ---------- Opening conversations ----------
@@ -1698,6 +1793,7 @@
     renderConvBanner();
     renderConvHead();
     if (S.showMembers) renderMembers();
+    paintRoomLook();
   }
 
   async function enterConv() {
@@ -1713,6 +1809,7 @@
     renderConvBanner();
     if (S.showMembers) renderMembers(); else { $('membersPane').classList.add('hidden'); $('appView').classList.remove('with-members'); }
     renderVoice();
+    paintRoomLook();
     await loadMessages();
     if (window.innerWidth > 760) setTimeout(() => $('composerInput').focus(), 0);
   }
@@ -1819,7 +1916,11 @@
       return el('div', { class: 'conv-start' }, el('strong', { text: nameOf(c.id) }),
         'This is the start of your DMs with ' + nameOf(c.id) + '. Messages go directly between your browsers and are saved only on your devices.');
     }
-    return el('div', { class: 'conv-start' }, roomIcon(Object.assign({ code: c.id }, S.rooms[c.id] || {}), true), el('strong', { text: roomName(c.id) }), 'Welcome to the room. Share code ', el('span', { class: 'code-chip', text: c.id, onclick: copyCode }), ' to invite people.');
+    const r = S.rooms[c.id] || {};
+    return el('div', { class: 'conv-start room-start' + (r.theme ? ' themed-room' : ''), style: r.theme ? { '--room-grad': roomGradCss(r.theme) } : {} },
+      roomIcon(Object.assign({ code: c.id }, r), true), el('strong', { text: roomName(c.id) }),
+      r.desc ? el('p', { class: 'room-desc', text: r.desc }) : null,
+      el('span', null, 'Welcome to the room. Share code ', el('span', { class: 'code-chip', text: c.id, onclick: copyCode }), ' to invite people.'));
   }
 
   function msgSig(key, m) {
@@ -1843,7 +1944,7 @@
 
   function buildMsg(key, m) {
     if (m.kind === 'system') {
-      return el('div', { class: 'msg system', 'data-id': key }, el('div', { class: 'msg-text' }, el('b', { text: nameOf(m.from) }), ' ' + (m.text || '')));
+      return el('div', { class: 'msg system', 'data-id': key }, el('div', { class: 'msg-text' }, nameEl(m.from, 'sys-name'), ' ' + (m.text || '')));
     }
     const mine = m.from === S.me.id;
 
@@ -1852,8 +1953,8 @@
         el('div', { class: 'msg-text' }, 'Message from someone you blocked. ', el('button', { class: 'link-btn', type: 'button', text: 'Show', onclick: () => { S.revealed.add(key); S.msgNodes.delete(key); scheduleRender(false); } })));
     }
 
-    const myName = S.me.name.toLowerCase().replace(/\s+/g, '_');
-    const mentioned = !mine && m.text && new RegExp('(^|[^\\w])@' + myName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\w])', 'i').test(m.text);
+    const myNames = [S.me.name, nickIn(S.me.id, roomOf())].filter(Boolean).map((n) => n.toLowerCase().replace(/\s+/g, '_').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const mentioned = !mine && m.text && new RegExp('(^|[^\\w])@(' + myNames.join('|') + ')(?![\\w])', 'i').test(m.text);
     const node = el('div', { class: 'msg' + (m.kind === 'action' ? ' action' : '') + (mentioned ? ' mentioned' : ''), 'data-id': key });
 
     const av = avatar(m.from, 'lg');
@@ -1864,10 +1965,10 @@
     const body = el('div', { class: 'msg-body' });
     if (m.replyTo) {
       const r = m.replyTo;
-      body.append(el('div', { class: 'msg-reply', onclick: () => jumpTo(r.id) }, '↳ ', el('b', { text: nameOf(r.from) }), el('span', { text: ' ' + (r.text || 'attachment') })));
+      body.append(el('div', { class: 'msg-reply', onclick: () => jumpTo(r.id) }, '↳ ', el('b', { text: nameOf(r.from, roomOf()) }), el('span', { text: ' ' + (r.text || 'attachment') })));
     }
     body.append(el('div', { class: 'msg-head' },
-      nameEl(m.from, 'msg-user', { onclick: () => showProfile(m.from) }),
+      nameEl(m.from, 'msg-user', { onclick: () => showProfile(m.from) }, roomOf()),
       S.conv.type === 'room' && roomHostId() === m.from ? el('span', { class: 'badge', text: 'host' }) : null,
       el('span', { class: 'msg-time', title: new Date(m.ts).toLocaleString(), text: fmtTime(m.ts) })
     ));
@@ -1880,7 +1981,7 @@
       } else if (m.text) {
         const t = el('div', { class: 'msg-text' }, formatText(m.text, m.emoji));
         if (isBigEmoji(m.text, m.emoji)) t.classList.add('big');
-        if (m.kind === 'action') t.prepend(el('b', { text: nameOf(m.from) + ' ' }));
+        if (m.kind === 'action') t.prepend(el('b', { text: nameOf(m.from, roomOf()) + ' ' }));
         if (m.edited) t.append(el('span', { class: 'msg-edited', text: '(edited)' }));
         body.append(look.text === 'blend' ? blendText(t) : t);
       }
@@ -1971,6 +2072,8 @@
     const lower = name.toLowerCase();
     if (S.me.name.toLowerCase().replace(/\s+/g, '_') === lower) return S.me.id;
     for (const id in S.profiles) if ((S.profiles[id].name || '').toLowerCase().replace(/\s+/g, '_') === lower) return id;
+    const r = S.rooms[roomOf()];
+    if (r && r.nicks) for (const id in r.nicks) if (r.nicks[id].toLowerCase().replace(/\s+/g, '_') === lower) return id;
     return null;
   }
 
@@ -1984,7 +2087,7 @@
         frag.append(el('a', { href: m[1], target: '_blank', rel: 'noopener noreferrer nofollow ugc', text: m[1] }));
       } else if (m[2]) {
         const uid = userByName(m[2]);
-        if (uid) frag.append(el('span', { class: 'mention' + (uid === S.me.id ? ' me' : ''), text: '@' + nameOf(uid), onclick: () => showProfile(uid) }));
+        if (uid) frag.append(el('span', { class: 'mention' + (uid === S.me.id ? ' me' : ''), text: '@' + nameOf(uid, roomOf()), onclick: () => showProfile(uid) }));
         else frag.append(m[0]);
       } else if (m[3]) {
         const custom = findCustomEmoji(emoji, m[3]);
@@ -2069,7 +2172,7 @@
       $('convTitle').textContent = r.name || c.id;
       const online = Object.values(r.members || {}).filter((x) => x.online).length;
       const status = r.status === 'connected' ? online + ' online' : r.status === 'offline' ? 'offline' : 'connecting…';
-      $('convSub').replaceChildren(el('span', { class: 'code-chip', title: 'Copy invite link', text: c.id, onclick: copyCode }), ' ' + status + (iHost(c.id) ? ' · you’re hosting' : ''));
+      $('convSub').replaceChildren(el('span', { class: 'code-chip', title: 'Copy invite link', text: c.id, onclick: copyCode }), ' ' + status + (iHost(c.id) ? ' · you’re hosting' : '') + (r.desc ? ' · ' + r.desc : ''));
       $('membersBtn').classList.remove('hidden');
       $('membersBtn').classList.toggle('active', S.showMembers);
     }
@@ -2110,7 +2213,7 @@
     const c = S.conv;
     if (!c) return;
     const ids = c.type === 'dm' ? [c.id] : Object.keys(S.typing);
-    const who = ids.filter((id) => id !== S.me.id && now - (S.typing[id] || 0) < 6000 && !isBlocked(id)).map(nameOf);
+    const who = ids.filter((id) => id !== S.me.id && now - (S.typing[id] || 0) < 6000 && !isBlocked(id)).map((id) => nameOf(id, roomOf()));
     $('typing').textContent = !who.length ? '' : who.length === 1 ? who[0] + ' is typing…' : who.length < 4 ? who.join(', ') + ' are typing…' : 'Several people are typing…';
   }
   setInterval(() => { if (S.conv) renderTyping(); }, 3000);
@@ -2143,18 +2246,19 @@
     const r = S.rooms[c.id] || {};
     const host = iHost(c.id);
     const H = hosts[c.id];
-    const ids = Object.keys(r.members || {}).sort((a, b) => (b === r.hostId) - (a === r.hostId) || (r.members[b].online ? 1 : 0) - (r.members[a].online ? 1 : 0) || nameOf(a).localeCompare(nameOf(b)));
+    const ids = Object.keys(r.members || {}).sort((a, b) => (b === r.hostId) - (a === r.hostId) || (r.members[b].online ? 1 : 0) - (r.members[a].online ? 1 : 0) || nameOf(a, c.id).localeCompare(nameOf(b, c.id)));
     const row = (id) => {
       const online = r.members[id].online;
       const tags = [id === r.hostId ? 'host' : '', S.roomMuted[id] ? 'muted' : '', online ? '' : 'offline'].filter(Boolean).join(' · ');
-      const actions = host && id !== S.me.id ? el('div', { class: 'member-actions' },
+      const nickBtn = id === S.me.id || host ? toolBtn('✏️', id === S.me.id ? 'Change my nickname' : 'Change nickname', () => editNick(c.id, id)) : null;
+      const actions = host && id !== S.me.id ? el('div', { class: 'member-actions' }, nickBtn,
         toolBtn(S.roomMuted[id] ? '🔊' : '🔇', S.roomMuted[id] ? 'Unmute' : 'Mute', () => hostTool(c.id, S.roomMuted[id] ? 'unmute' : 'mute', id)),
         online ? toolBtn('👑', 'Make host', async () => { if (await confirmBox('Make ' + nameOf(id) + ' the host?', 'The room will move to their browser.', 'Transfer')) hostTool(c.id, 'transfer', id); }) : null,
         toolBtn('🚪', 'Kick', async () => { if (await confirmBox('Kick ' + nameOf(id) + '?', "They'll be removed and can't rejoin unless you allow them back.", 'Kick', true)) hostTool(c.id, 'kick', id); })) : null;
       return el('div', { class: 'member' + (online ? '' : ' offline') },
         el('button', { type: 'button', class: 'member-main', onclick: () => showProfile(id) }, avatar(id, 'sm', true),
-          nameEl(id, 'member-name')),
-        tags ? el('span', { class: 'member-tags', text: tags }) : null, actions);
+          el('span', { class: 'member-names' }, nameEl(id, 'member-name', null, c.id), nickIn(id, c.id) ? el('small', { class: 'member-real', text: realName(id) }) : null)),
+        tags ? el('span', { class: 'member-tags', text: tags }) : null, actions || (nickBtn ? el('div', { class: 'member-actions' }, nickBtn) : null));
     };
     const banned = Object.keys(S.roomBanned);
     const reports = H ? H.reports : [];
@@ -2162,7 +2266,7 @@
       el('div', { class: 'members-scroll' },
         el('p', { class: 'side-title', text: 'Members · ' + ids.length }), ids.map(row),
         host && reports.length ? [el('p', { class: 'side-title', text: 'Reports · ' + reports.length }), reports.map((rep) => reportCard(c.id, rep))] : null,
-        host && banned.length ? [el('p', { class: 'side-title', text: 'Kicked' }), banned.map((id) => el('div', { class: 'member' }, avatar(id, 'sm'), el('span', { class: 'member-name', text: nameOf(id) }), toolBtn('↺', 'Allow back', () => hostTool(c.id, 'unban', id))))] : null),
+        host && banned.length ? [el('p', { class: 'side-title', text: 'Kicked' }), banned.map((id) => el('div', { class: 'member' }, avatar(id, 'sm'), nameEl(id, 'member-name'), toolBtn('↺', 'Allow back', () => hostTool(c.id, 'unban', id))))] : null),
       el('div', { class: 'members-foot' },
         btn('Copy invite link', 'btn-outline', copyCode),
         host ? btn('Room settings', 'btn-ghost', () => roomSettings(c.id)) : null,
@@ -2198,6 +2302,8 @@
     } else {
       items.push(btn('Copy invite link', 'btn-outline btn-block', () => { closeModal(); copyCode(); }));
       items.push(btn('Members', 'btn-outline btn-block', () => { closeModal(); S.showMembers = true; renderMembers(); renderConvHead(); }));
+      items.push(btn(nickIn(S.me.id, c.id) ? 'Change my nickname' : 'Set a nickname', 'btn-outline btn-block', () => editNick(c.id, S.me.id)));
+      if (iHost(c.id)) items.push(btn('Room settings', 'btn-outline btn-block', () => roomSettings(c.id)));
       items.push(btn(iHost(c.id) ? 'Leave or close room' : 'Leave room', 'btn-outline btn-block', () => { closeModal(); leaveRoom(c.id); }));
     }
     items.push(btn('Formatting help', 'btn-ghost btn-block', () => { closeModal(); showHelp(); }));
@@ -2219,6 +2325,7 @@
       el('div', { class: 'pc-body' },
         el('div', { class: 'pc-avatar' }, avatar(id, 'xl', true)),
         nameEl(id, 'profile-name'),
+        nickIn(id, roomOf()) ? el('p', { class: 'pc-nick', text: 'Goes by ' }, el('b', { text: nickIn(id, roomOf()) }), ' in ' + roomName(roomOf())) : null,
         el('p', { class: 'field-hint profile-code', text: fmtCode(id) }),
         el('div', { class: 'row pc-badges' },
           id === S.me.id ? el('span', { class: 'badge badge-mod', text: 'you' }) : null,
@@ -2353,7 +2460,7 @@
     const bars = [];
     if (S.reply) {
       bars.push(el('div', { class: 'bar' },
-        el('span', { class: 'bar-text' }, 'Replying to ', el('b', { text: nameOf(S.reply.from) }), ' ' + (S.reply.text || '')),
+        el('span', { class: 'bar-text' }, 'Replying to ', el('b', { text: nameOf(S.reply.from, roomOf()) }), ' ' + (S.reply.text || '')),
         el('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Cancel reply', onclick: () => { S.reply = null; renderBars(); } }, icon('close'))));
     }
     S.pendingImages.forEach((p, i) => {
@@ -2667,7 +2774,7 @@
     const m = /(^|\s)@([A-Za-z0-9_]{0,20})$/.exec(before);
     if (!m) { if (popKind === 'mention') closePopover(); return; }
     const q = m[2].toLowerCase();
-    const list = mentionCandidates().filter((u) => mentionName(u).toLowerCase().startsWith(q)).slice(0, 8);
+    const list = mentionCandidates().filter((u) => mentionName(u).toLowerCase().startsWith(q) || nickIn(u, roomOf()).toLowerCase().replace(/\s+/g, '_').startsWith(q)).slice(0, 8);
     if (!list.length) { if (popKind === 'mention') closePopover(); return; }
     mentionState = { start: pos - m[2].length - 1, list, sel: 0 };
     drawMentions();
@@ -2677,7 +2784,7 @@
     openPopover('mention', el('div', null, st.list.map((u, i) => el('button', {
       class: 'mention-item' + (i === st.sel ? ' selected' : ''), type: 'button',
       onmousedown: (e) => { e.preventDefault(); pickMention(u); }
-    }, avatar(u, 'sm'), el('span', { text: nameOf(u) })))));
+    }, avatar(u, 'sm'), nameEl(u, null, null, roomOf()), nickIn(u, roomOf()) ? el('small', { class: 'mention-real', text: '@' + mentionName(u) }) : null))));
     mentionState = st;
   }
   function pickMention(uid) {
@@ -3151,8 +3258,8 @@
       el('div', { class: 'voice-people' }, ids.map((id) => {
         const entry = inThis && voice.calls.get(id);
         const state = id === S.me.id || !inThis ? '' : entry ? entry.state : 'connecting';
-        return el('div', { class: 'voice-person' + (inThis && voice.speaking[id] ? ' speaking' : ''), 'data-voice-uid': id, title: nameOf(id) + (state && state !== 'connected' ? ' (' + state + ')' : '') },
-          avatar(id, 'sm'), el('span', { text: nameOf(id) }), parts[id] && parts[id].muted ? icon('mic-off') : null, state && state !== 'connected' ? el('span', { class: 'voice-state', text: '…' }) : null);
+        return el('div', { class: 'voice-person' + (inThis && voice.speaking[id] ? ' speaking' : ''), 'data-voice-uid': id, title: nameOf(id, voice && voice.scope === 'room' ? voice.id : roomOf()) + (state && state !== 'connected' ? ' (' + state + ')' : '') },
+          avatar(id, 'sm'), nameEl(id, 'voice-name', null, c.type === 'room' ? c.id : null), parts[id] && parts[id].muted ? icon('mic-off') : null, state && state !== 'connected' ? el('span', { class: 'voice-state', text: '…' }) : null);
       })),
       inThis ? voiceControls() : c.type === 'room' ? btn('Join voice', 'btn-sm btn-primary', () => joinRoomVoice(c.id)) : '');
     bar.classList.remove('hidden');
@@ -3312,15 +3419,29 @@
 
   const gradCss = (g) => 'linear-gradient(' + g.angle + 'deg, ' + (g.three ? g.stops : g.stops.slice(0, 2)).join(', ') + ')';
 
+  // The room you're in can bring its own background and accent (unless you've turned room themes off).
+  function activeRoomLook() {
+    const r = look.roomThemes !== false && S.rooms[roomOf()];
+    return r && (r.theme || r.accent) ? r : null;
+  }
+  let lastRoomLook = '';
+  function paintRoomLook() {
+    const r = activeRoomLook();
+    const key = r ? JSON.stringify([r.theme, r.accent]) : '';
+    if (key !== lastRoomLook) applyLook();
+  }
+
   function applyLook() {
     const body = document.body;
+    const room = activeRoomLook();
+    lastRoomLook = room ? JSON.stringify([room.theme, room.accent]) : '';
     const bg = $('chatBg');
     const custom = look.bg !== 'default';
-    body.classList.toggle('themed', custom || look.panel < 100);
+    body.classList.toggle('themed', custom || !!(room && room.theme) || look.panel < 100);
     const glass = look.glassBlur == null ? 16 : look.glassBlur;
     body.classList.toggle('glass', glass > 0 && look.text !== 'blend');
     body.style.setProperty('--glass-blur', glass + 'px');
-    bg.className = 'chat-bg' + (custom ? ' on' : '');
+    bg.className = 'chat-bg' + (custom || (room && room.theme) ? ' on' : '');
     bg.style.background = '';
     bg.style.setProperty('--img', 'none');
     if (look.bg === 'gradient') bg.style.background = gradCss(look.grad);
@@ -3334,9 +3455,11 @@
       bg.style.setProperty('--img-dim', String(look.imgDim / 100));
       bg.classList.add('image');
     }
+    if (room && room.theme) { bg.style.background = roomGradCss(room.theme); bg.style.setProperty('--img', 'none'); bg.classList.remove('image'); }
     body.style.setProperty('--panel-a', String(Math.max(0.08, look.panel / 100)));
-    body.style.setProperty('--color-primary', look.accent);
-    body.style.setProperty('--color-accent', look.accent === '#9d00ff' ? '#e60065' : look.accent);
+    const accent = (room && room.accent) || look.accent;
+    body.style.setProperty('--color-primary', accent);
+    body.style.setProperty('--color-accent', accent === '#9d00ff' ? '#e60065' : accent);
     body.style.setProperty('--msg-size', look.size + 'px');
     body.style.setProperty('--msg-color', look.text === 'custom' ? look.textColor : '#ece6ff');
     body.classList.toggle('blend-text', look.text === 'blend');
@@ -3374,7 +3497,7 @@
     { id: 'profile', group: 'User', label: 'My profile', build: () => studioProfile() },
     { id: 'identity', group: 'User', label: 'Identity & backup', build: () => sectionIdentity() },
     { id: 'appearance', group: 'Chat', label: 'Appearance', build: () => el('div', null, studioTheme(), studioText()),
-      subs: [['presets', 'Themes'], ['custom-gradient', 'Gradient'], ['solid-colour', 'Solid colour'], ['your-own-image', 'Image'], ['glass-panels', 'Glass & panels'], ['message-text', 'Text colour'], ['accent-colour', 'Accent'], ['text-size', 'Text size']] },
+      subs: [['presets', 'Themes'], ['custom-gradient', 'Gradient'], ['solid-colour', 'Solid colour'], ['your-own-image', 'Image'], ['glass-panels', 'Glass & panels'], ['room-themes', 'Room themes'], ['message-text', 'Text colour'], ['accent-colour', 'Accent'], ['text-size', 'Text size']] },
     { id: 'notifications', group: 'Chat', label: 'Notifications', build: () => sectionNotifications() },
     { id: 'emoji', group: 'Chat', label: 'Emoji & stickers', build: () => sectionEmoji() },
     { id: 'privacy', group: 'Chat', label: 'Privacy & blocked', build: () => sectionBlocked() }
@@ -3535,7 +3658,10 @@
       sec('Glass & panels',
         slider('Panel opacity', 10, 100, look.panel, '%', (v) => setLook({ panel: v })),
         slider('Glass blur', 0, 30, look.glassBlur == null ? 16 : look.glassBlur, 'px', (v) => setLook({ glassBlur: v })),
-        el('p', { class: 'field-hint', text: 'Glass blur frosts the sidebars and top bar over your background. Lower the panel opacity to see more of it.' })));
+        el('p', { class: 'field-hint', text: 'Glass blur frosts the sidebars and top bar over your background. Lower the panel opacity to see more of it.' })),
+      sec('Room themes',
+        choice([['on', 'Show room themes'], ['off', 'Always use mine']], look.roomThemes === false ? 'off' : 'on', (v) => setLook({ roomThemes: v === 'on' })),
+        el('p', { class: 'field-hint', text: 'Room hosts can give their room a background and accent colour. Turn this off to keep your own look everywhere.' })));
   }
 
   function studioText() {

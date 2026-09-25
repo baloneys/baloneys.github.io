@@ -978,3 +978,28 @@ body.chat-body {
 body.chat-body { -webkit-tap-highlight-color: transparent; }
 .pop-head .link-btn { flex: none; font-size: var(--font-size-xs); white-space: nowrap; }
 .pop-head .emoji-search { flex: 1; min-width: 0; }
+
+/* ---------- Peer-to-peer additions ---------- */
+
+.net-banner {
+  position: fixed; top: 5rem; left: 50%; transform: translateX(-50%); z-index: 1500;
+  max-width: min(560px, calc(100vw - 32px)); padding: 8px 14px;
+  border: 1px solid rgba(255, 209, 102, 0.4); border-radius: var(--border-radius-md);
+  background: rgba(40, 32, 10, 0.95); color: #ffe3a3; font-size: var(--font-size-sm); text-align: center;
+}
+.auth-alt { margin: var(--spacing-lg) 0 0; color: var(--color-on-surface-secondary); font-size: var(--font-size-sm); text-align: center; }
+.me-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.me-code { align-self: flex-start; padding: 0; color: var(--color-on-surface-secondary); font-family: var(--font-family-heading); font-size: 0.66rem; letter-spacing: 0.06em; cursor: pointer; }
+.me-code:hover { color: #e3c2ff; }
+.request { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: var(--border-radius-md); background: color-mix(in srgb, var(--color-primary) 10%, transparent); margin-bottom: 4px; }
+.request-text { flex: 1; min-width: 0; display: flex; flex-direction: column; font-size: var(--font-size-sm); }
+.request-text small { color: var(--color-on-surface-secondary); font-family: var(--font-family-heading); font-size: 0.62rem; }
+.request .btn { padding: 4px 10px; font-size: var(--font-size-xs); }
+.room-icon.dim { opacity: 0.45; }
+.member.offline { opacity: 0.55; }
+.msg-status { margin-top: 2px; color: #ffd166; font-size: 0.7rem; }
+.profile-code { font-family: var(--font-family-heading); letter-spacing: 0.06em; margin: 0 0 4px; }
+.big-code.small { margin: 0; font-size: 1.05rem; letter-spacing: 0.12em; }
+.banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
+.banner .btn { padding: 3px 10px; font-size: var(--font-size-xs); }
+@media (max-width: 760px) { .net-banner { top: 0.5rem; } }

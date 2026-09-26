@@ -1,0 +1,200 @@
+[nsfw] Everyone points at the person with the strongest opinion about flirty banter. Most-picked chooses the next spinner.
+[relationship] Everyone points at the person with the strongest opinion about cuddling. Most-picked chooses the next spinner.
+[relationship] Everyone points at the person with the strongest opinion about confidence. Most-picked chooses the next spinner.
+[nsfw] Everyone points at the person with the strongest opinion about spicy photos. Most-picked chooses the next spinner.
+[nsfw] Everyone points at the person with the strongest opinion about fantasies. Most-picked chooses the next spinner.
+[nsfw] Everyone points at the person with the strongest opinion about telling someone what you want. Most-picked chooses the next spinner.
+[relationship] Everyone points at the person with the strongest opinion about first kisses. Most-picked chooses the next spinner.
+Everyone points at the person with the strongest opinion about consent check-ins. Most-picked chooses the next spinner.
+<player> picks <rem_player>. You have ten seconds to agree on one rule about romantic tension.
+[nsfw] <player> picks <rem_player>. You have ten seconds to agree on one rule about friends-with-benefits boundaries.
+[nsfw] <player> picks <rem_player>. You have ten seconds to agree on one rule about being flirted with in VR.
+[nsfw] <player> picks <rem_player>. You have ten seconds to agree on one rule about sexual humour.
+[nsfw] <player> picks <rem_player>. You have ten seconds to agree on one rule about sexy voices.
+[nsfw] <player> picks <rem_player>. You have ten seconds to agree on one rule about private-instance flirting.
+[relationship] <player> picks <rem_player>. You have ten seconds to agree on one rule about emotional attraction.
+[nsfw] <player> picks <rem_player>. You have ten seconds to agree on one rule about turn-offs.
+[relationship] The group votes on who would take romantic confidence most seriously. Winner gets a ridiculous title until the next spin.
+The group votes on who would take sexual chemistry most seriously. Winner gets a ridiculous title until the next spin.
+The group votes on who would take sexual boundaries most seriously. Winner gets a ridiculous title until the next spin.
+[relationship] The group votes on who would take shyness most seriously. Winner gets a ridiculous title until the next spin.
+[relationship] The group votes on who would take pet names most seriously. Winner gets a ridiculous title until the next spin.
+[nsfw] The group votes on who would take being propositioned most seriously. Winner gets a ridiculous title until the next spin.
+[nsfw] The group votes on who would take setting limits most seriously. Winner gets a ridiculous title until the next spin.
+[relationship] The group votes on who would take slow-burn tension most seriously. Winner gets a ridiculous title until the next spin.
+[nsfw] First person to give a convincing hot take about ERP etiquette chooses who spins next.
+[nsfw] First person to give a convincing hot take about physical attraction chooses who spins next.
+[nsfw] First person to give a convincing hot take about dating-app flirting chooses who spins next.
+First person to give a convincing hot take about voice attraction chooses who spins next.
+First person to give a convincing hot take about knowing when flirting is mutual chooses who spins next.
+[nsfw] First person to give a convincing hot take about prolonged eye contact chooses who spins next.
+[nsfw] First person to give a convincing hot take about avatar body language chooses who spins next.
+[nsfw] First person to give a convincing hot take about sexting chooses who spins next.
+[nsfw] Last person to react to the phrase “fantasies” must give the group a dramatic one-sentence review of it.
+[nsfw] Last person to react to the phrase “telling someone what you want” must give the group a dramatic one-sentence review of it.
+[relationship] Last person to react to the phrase “first kisses” must give the group a dramatic one-sentence review of it.
+[nsfw] Last person to react to the phrase “consent check-ins” must give the group a dramatic one-sentence review of it.
+[nsfw] Last person to react to the phrase “playful teasing” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “hookup expectations” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “making the first move” must give the group a dramatic one-sentence review of it.
+[relationship] Last person to react to the phrase “casual versus serious chemistry” must give the group a dramatic one-sentence review of it.
+[nsfw] <player> chooses two people to debate sexy voices for ten seconds. The group declares a winner.
+[nsfw] <player> chooses two people to debate private-instance flirting for ten seconds. The group declares a winner.
+[relationship] <player> chooses two people to debate emotional attraction for ten seconds. The group declares a winner.
+[nsfw] <player> chooses two people to debate turn-offs for ten seconds. The group declares a winner.
+[nsfw] <player> chooses two people to debate kissing styles for ten seconds. The group declares a winner.
+[nsfw] <player> chooses two people to debate flirty banter for ten seconds. The group declares a winner.
+[relationship] <player> chooses two people to debate cuddling for ten seconds. The group declares a winner.
+<player> chooses two people to debate confidence for ten seconds. The group declares a winner.
+Everyone who likes pet names raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[nsfw] Everyone who likes being propositioned raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[nsfw] Everyone who likes setting limits raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[relationship] Everyone who likes slow-burn tension raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[nsfw] Everyone who likes aftercare raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[relationship] Everyone who likes romantic tension raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[nsfw] Everyone who likes friends-with-benefits boundaries raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[nsfw] Everyone who likes being flirted with in VR raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[nsfw] Everyone who dislikes knowing when flirting is mutual points at someone who probably loves it. That person spins next.
+Everyone who dislikes prolonged eye contact points at someone who probably loves it. That person spins next.
+Everyone who dislikes avatar body language points at someone who probably loves it. That person spins next.
+[nsfw] Everyone who dislikes sexting points at someone who probably loves it. That person spins next.
+[nsfw] Everyone who dislikes turn-ons points at someone who probably loves it. That person spins next.
+[relationship] Everyone who dislikes romantic confidence points at someone who probably loves it. That person spins next.
+[nsfw] Everyone who dislikes sexual chemistry points at someone who probably loves it. That person spins next.
+[nsfw] Everyone who dislikes sexual boundaries points at someone who probably loves it. That person spins next.
+[nsfw] The spinner must assign <rem_player> an achievement title related to playful teasing.
+[nsfw] The spinner must assign <rem_player> an achievement title related to hookup expectations.
+[relationship] The spinner must assign <rem_player> an achievement title related to making the first move.
+The spinner must assign <rem_player> an achievement title related to casual versus serious chemistry.
+The spinner must assign <rem_player> an achievement title related to bold compliments.
+[nsfw] The spinner must assign <rem_player> an achievement title related to ERP etiquette.
+[nsfw] The spinner must assign <rem_player> an achievement title related to physical attraction.
+[nsfw] The spinner must assign <rem_player> an achievement title related to dating-app flirting.
+[nsfw] Everyone gives kissing styles a score using only hand gestures. The most unusual score chooses the next spinner.
+[nsfw] Everyone gives flirty banter a score using only hand gestures. The most unusual score chooses the next spinner.
+[relationship] Everyone gives cuddling a score using only hand gestures. The most unusual score chooses the next spinner.
+[relationship] Everyone gives confidence a score using only hand gestures. The most unusual score chooses the next spinner.
+[nsfw] Everyone gives spicy photos a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives fantasies a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives telling someone what you want a score using only hand gestures. The most unusual score chooses the next spinner.
+[relationship] Everyone gives first kisses a score using only hand gestures. The most unusual score chooses the next spinner.
+[nsfw] <player> and <rem_player> must invent the worst possible slogan for aftercare.
+[relationship] <player> and <rem_player> must invent the worst possible slogan for romantic tension.
+[nsfw] <player> and <rem_player> must invent the worst possible slogan for friends-with-benefits boundaries.
+[nsfw] <player> and <rem_player> must invent the worst possible slogan for being flirted with in VR.
+[nsfw] <player> and <rem_player> must invent the worst possible slogan for sexual humour.
+[nsfw] <player> and <rem_player> must invent the worst possible slogan for sexy voices.
+[nsfw] <player> and <rem_player> must invent the worst possible slogan for private-instance flirting.
+<player> and <rem_player> must invent the worst possible slogan for emotional attraction.
+The group chooses one person to explain turn-ons like they've never heard of it before.
+[relationship] The group chooses one person to explain romantic confidence like they've never heard of it before.
+[nsfw] The group chooses one person to explain sexual chemistry like they've never heard of it before.
+[nsfw] The group chooses one person to explain sexual boundaries like they've never heard of it before.
+[relationship] The group chooses one person to explain shyness like they've never heard of it before.
+[relationship] The group chooses one person to explain pet names like they've never heard of it before.
+[nsfw] The group chooses one person to explain being propositioned like they've never heard of it before.
+[nsfw] The group chooses one person to explain setting limits like they've never heard of it before.
+[nsfw] Anyone who has a strong opinion about bold compliments must make a dramatic pose. <player> picks the best one.
+Anyone who has a strong opinion about ERP etiquette must make a dramatic pose. <player> picks the best one.
+Anyone who has a strong opinion about physical attraction must make a dramatic pose. <player> picks the best one.
+[nsfw] Anyone who has a strong opinion about dating-app flirting must make a dramatic pose. <player> picks the best one.
+[nsfw] Anyone who has a strong opinion about voice attraction must make a dramatic pose. <player> picks the best one.
+[nsfw] Anyone who has a strong opinion about knowing when flirting is mutual must make a dramatic pose. <player> picks the best one.
+[nsfw] Anyone who has a strong opinion about prolonged eye contact must make a dramatic pose. <player> picks the best one.
+[nsfw] Anyone who has a strong opinion about avatar body language must make a dramatic pose. <player> picks the best one.
+[nsfw] The spinner names one thing that would make spicy photos better. <rem_player> must make it worse.
+[nsfw] The spinner names one thing that would make fantasies better. <rem_player> must make it worse.
+[nsfw] The spinner names one thing that would make telling someone what you want better. <rem_player> must make it worse.
+The spinner names one thing that would make first kisses better. <rem_player> must make it worse.
+The spinner names one thing that would make consent check-ins better. <rem_player> must make it worse.
+[nsfw] The spinner names one thing that would make playful teasing better. <rem_player> must make it worse.
+[nsfw] The spinner names one thing that would make hookup expectations better. <rem_player> must make it worse.
+[relationship] The spinner names one thing that would make making the first move better. <rem_player> must make it worse.
+[nsfw] Everyone points at the person most likely to become weirdly competitive about sexual humour. They host the next spin.
+[nsfw] Everyone points at the person most likely to become weirdly competitive about sexy voices. They host the next spin.
+[nsfw] Everyone points at the person most likely to become weirdly competitive about private-instance flirting. They host the next spin.
+[relationship] Everyone points at the person most likely to become weirdly competitive about emotional attraction. They host the next spin.
+[nsfw] Everyone points at the person most likely to become weirdly competitive about turn-offs. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about kissing styles. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about flirty banter. They host the next spin.
+[relationship] Everyone points at the person most likely to become weirdly competitive about cuddling. They host the next spin.
+[relationship] <player> chooses <rem_player>. One must praise shyness; the other must roast it.
+[relationship] <player> chooses <rem_player>. One must praise pet names; the other must roast it.
+[nsfw] <player> chooses <rem_player>. One must praise being propositioned; the other must roast it.
+[nsfw] <player> chooses <rem_player>. One must praise setting limits; the other must roast it.
+[relationship] <player> chooses <rem_player>. One must praise slow-burn tension; the other must roast it.
+[nsfw] <player> chooses <rem_player>. One must praise aftercare; the other must roast it.
+[relationship] <player> chooses <rem_player>. One must praise romantic tension; the other must roast it.
+<player> chooses <rem_player>. One must praise friends-with-benefits boundaries; the other must roast it.
+The group invents a fake award for voice attraction. The spinner decides who in the room wins it.
+[nsfw] The group invents a fake award for knowing when flirting is mutual. The spinner decides who in the room wins it.
+[nsfw] The group invents a fake award for prolonged eye contact. The spinner decides who in the room wins it.
+[nsfw] The group invents a fake award for avatar body language. The spinner decides who in the room wins it.
+[nsfw] The group invents a fake award for sexting. The spinner decides who in the room wins it.
+[nsfw] The group invents a fake award for turn-ons. The spinner decides who in the room wins it.
+[relationship] The group invents a fake award for romantic confidence. The spinner decides who in the room wins it.
+[nsfw] The group invents a fake award for sexual chemistry. The spinner decides who in the room wins it.
+[nsfw] First person to make <player> laugh with a joke about consent check-ins becomes the next spinner.
+First person to make <player> laugh with a joke about playful teasing becomes the next spinner.
+First person to make <player> laugh with a joke about hookup expectations becomes the next spinner.
+[relationship] First person to make <player> laugh with a joke about making the first move becomes the next spinner.
+[relationship] First person to make <player> laugh with a joke about casual versus serious chemistry becomes the next spinner.
+[nsfw] First person to make <player> laugh with a joke about bold compliments becomes the next spinner.
+[nsfw] First person to make <player> laugh with a joke about ERP etiquette becomes the next spinner.
+[nsfw] First person to make <player> laugh with a joke about physical attraction becomes the next spinner.
+[nsfw] Everyone points at who would be the best person to introduce a newcomer to turn-offs. They choose the next spinner.
+[nsfw] Everyone points at who would be the best person to introduce a newcomer to kissing styles. They choose the next spinner.
+[nsfw] Everyone points at who would be the best person to introduce a newcomer to flirty banter. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to cuddling. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to confidence. They choose the next spinner.
+[nsfw] Everyone points at who would be the best person to introduce a newcomer to spicy photos. They choose the next spinner.
+[nsfw] Everyone points at who would be the best person to introduce a newcomer to fantasies. They choose the next spinner.
+[nsfw] Everyone points at who would be the best person to introduce a newcomer to telling someone what you want. They choose the next spinner.
+[relationship] The spinner must turn slow-burn tension into a three-word movie title.
+[nsfw] The spinner must turn aftercare into a three-word movie title.
+[relationship] The spinner must turn romantic tension into a three-word movie title.
+[nsfw] The spinner must turn friends-with-benefits boundaries into a three-word movie title.
+[nsfw] The spinner must turn being flirted with in VR into a three-word movie title.
+The spinner must turn sexual humour into a three-word movie title.
+The spinner must turn sexy voices into a three-word movie title.
+[nsfw] The spinner must turn private-instance flirting into a three-word movie title.
+[nsfw] <player> and <rem_player> have five seconds to pose like they're advertising sexting.
+[nsfw] <player> and <rem_player> have five seconds to pose like they're advertising turn-ons.
+[relationship] <player> and <rem_player> have five seconds to pose like they're advertising romantic confidence.
+[nsfw] <player> and <rem_player> have five seconds to pose like they're advertising sexual chemistry.
+[nsfw] <player> and <rem_player> have five seconds to pose like they're advertising sexual boundaries.
+[relationship] <player> and <rem_player> have five seconds to pose like they're advertising shyness.
+[relationship] <player> and <rem_player> have five seconds to pose like they're advertising pet names.
+<player> and <rem_player> have five seconds to pose like they're advertising being propositioned.
+The room votes: overrated, underrated, or correctly rated — casual versus serious chemistry. The smallest voting group chooses the next spinner.
+[nsfw] The room votes: overrated, underrated, or correctly rated — bold compliments. The smallest voting group chooses the next spinner.
+[nsfw] The room votes: overrated, underrated, or correctly rated — ERP etiquette. The smallest voting group chooses the next spinner.
+[nsfw] The room votes: overrated, underrated, or correctly rated — physical attraction. The smallest voting group chooses the next spinner.
+[nsfw] The room votes: overrated, underrated, or correctly rated — dating-app flirting. The smallest voting group chooses the next spinner.
+[nsfw] The room votes: overrated, underrated, or correctly rated — voice attraction. The smallest voting group chooses the next spinner.
+[nsfw] The room votes: overrated, underrated, or correctly rated — knowing when flirting is mutual. The smallest voting group chooses the next spinner.
+[nsfw] The room votes: overrated, underrated, or correctly rated — prolonged eye contact. The smallest voting group chooses the next spinner.
+[relationship] The spinner chooses someone to give a fake public-service announcement about confidence.
+The spinner chooses someone to give a fake public-service announcement about spicy photos.
+The spinner chooses someone to give a fake public-service announcement about fantasies.
+[nsfw] The spinner chooses someone to give a fake public-service announcement about telling someone what you want.
+[relationship] The spinner chooses someone to give a fake public-service announcement about first kisses.
+[nsfw] The spinner chooses someone to give a fake public-service announcement about consent check-ins.
+[nsfw] The spinner chooses someone to give a fake public-service announcement about playful teasing.
+[nsfw] The spinner chooses someone to give a fake public-service announcement about hookup expectations.
+[nsfw] Everyone points at who would complain about being flirted with in VR first. They must defend it for ten seconds.
+[nsfw] Everyone points at who would complain about sexual humour first. They must defend it for ten seconds.
+[nsfw] Everyone points at who would complain about sexy voices first. They must defend it for ten seconds.
+Everyone points at who would complain about private-instance flirting first. They must defend it for ten seconds.
+Everyone points at who would complain about emotional attraction first. They must defend it for ten seconds.
+[nsfw] Everyone points at who would complain about turn-offs first. They must defend it for ten seconds.
+[nsfw] Everyone points at who would complain about kissing styles first. They must defend it for ten seconds.
+[nsfw] Everyone points at who would complain about flirty banter first. They must defend it for ten seconds.
+[nsfw] <player> assigns <rem_player> a temporary nickname inspired by sexual boundaries until the next spin.
+[relationship] <player> assigns <rem_player> a temporary nickname inspired by shyness until the next spin.
+[relationship] <player> assigns <rem_player> a temporary nickname inspired by pet names until the next spin.
+[nsfw] <player> assigns <rem_player> a temporary nickname inspired by being propositioned until the next spin.
+[nsfw] <player> assigns <rem_player> a temporary nickname inspired by setting limits until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by slow-burn tension until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by aftercare until the next spin.
+[relationship] <player> assigns <rem_player> a temporary nickname inspired by romantic tension until the next spin.

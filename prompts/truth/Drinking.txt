@@ -1,0 +1,200 @@
+{truth}[drinking] <player>, what's your strongest opinion about beer?
+{dare}[drinking] Defend beer for fifteen seconds like your reputation depends on it.
+{truth}[drinking] What's your strongest opinion about house parties?
+{dare}[drinking] Defend house parties for fifteen seconds like your reputation depends on it.
+{truth}[drinking] What's your strongest opinion about water breaks?
+{dare}[drinking] Defend water breaks for fifteen seconds like your reputation depends on it.
+{truth}[relationship] What's your strongest opinion about drunk texting?
+{dare}[relationship] <player>, defend drunk texting for fifteen seconds like your reputation depends on it.
+{truth}[drinking] What's your strongest opinion about morning-after routines?
+{dare}[drinking] Defend morning-after routines for fifteen seconds like your reputation depends on it.
+{truth}[drinking] What part of hangover food gets more hype than it deserves?
+{dare}[drinking] Roast drinking games, then immediately give it one sincere compliment.
+{truth}[drinking] <player>, what part of fancy cocktails gets more hype than it deserves?
+{dare} Roast toasts, then immediately give it one sincere compliment.
+{truth}[drinking] What part of mixers gets more hype than it deserves?
+{dare} Roast getting home after a night out, then immediately give it one sincere compliment.
+{truth} What part of cocktail names gets more hype than it deserves?
+{dare}[social] Roast being the sober friend, then immediately give it one sincere compliment.
+{truth} What part of the first drink of the night gets more hype than it deserves?
+{dare}[drinking] <player>, roast wine, then immediately give it one sincere compliment.
+{truth}[relationship] What part of drunk flirting deserves way more love?
+{dare}[drinking] Explain bar snacks like you're presenting a serious university lecture.
+{truth}[drinking] What part of knowing when to stop deserves way more love?
+{dare}[drinking] Explain sharing drinks like you're presenting a serious university lecture.
+{truth}[relationship] <player>, what part of tipsy confidence deserves way more love?
+{dare}[drinking] Explain beer like you're presenting a serious university lecture.
+{truth}[drinking] What part of cocktails deserves way more love?
+{dare}[drinking] Explain house parties like you're presenting a serious university lecture.
+{truth}[drinking] What part of late-night food deserves way more love?
+{dare}[drinking] Explain water breaks like you're presenting a serious university lecture.
+{truth}[drinking] If you could change one thing about sharing drinks, what would it be?
+{dare}[drinking] <player>, sell the first drink of the night to the group like a suspicious late-night infomercial.
+{truth}[drinking] If you could change one thing about beer, what would it be?
+{dare} Sell pub nights to the group like a suspicious late-night infomercial.
+{truth}[drinking] If you could change one thing about house parties, what would it be?
+{dare} Sell drinking games to the group like a suspicious late-night infomercial.
+{truth} <player>, if you could change one thing about water breaks, what would it be?
+{dare}[drinking] Sell toasts to the group like a suspicious late-night infomercial.
+{truth} If you could change one thing about drunk texting, what would it be?
+{dare}[drinking] Sell getting home after a night out to the group like a suspicious late-night infomercial.
+{truth}[drinking] What's your personal rule when it comes to shots?
+{dare}[social] Give karaoke the most ridiculous slogan you can invent.
+{truth}[drinking] What's your personal rule when it comes to hangover food?
+{dare}[drinking] <player>, give buying rounds the most ridiculous slogan you can invent.
+{truth}[drinking] What's your personal rule when it comes to fancy cocktails?
+{dare}[drinking] Give bar snacks the most ridiculous slogan you can invent.
+{truth}[drinking] What's your personal rule when it comes to mixers?
+{dare}[drinking] Give sharing drinks the most ridiculous slogan you can invent.
+{truth}[drinking] <player>, what's your personal rule when it comes to cocktail names?
+{dare}[drinking] Give beer the most ridiculous slogan you can invent.
+{truth}[drinking] What would make you instantly lose interest in designated drivers?
+{dare}[drinking] Describe mixers in exactly five words.
+{truth}[relationship] What would make you instantly lose interest in drunk flirting?
+{dare} Describe cocktail names in exactly five words.
+{truth}[drinking] What would make you instantly lose interest in knowing when to stop?
+{dare} <player>, describe the first drink of the night in exactly five words.
+{truth} What would make you instantly lose interest in tipsy confidence?
+{dare}[drinking] Describe pub nights in exactly five words.
+{truth} What would make you instantly lose interest in cocktails?
+{dare}[drinking] Describe drinking games in exactly five words.
+{truth}[drinking] <player>, what's the ideal version of bar snacks for you?
+{dare}[social] Pretend you're a world-famous expert on party stories and give one piece of terrible advice.
+{truth}[drinking] What's the ideal version of sharing drinks for you?
+{dare}[drinking] Pretend you're a world-famous expert on mixed drinks and give one piece of terrible advice.
+{truth}[drinking] What's the ideal version of beer for you?
+{dare}[social] Pretend you're a world-famous expert on karaoke and give one piece of terrible advice.
+{truth}[drinking] What's the ideal version of house parties for you?
+{dare}[drinking] <player>, pretend you're a world-famous expert on buying rounds and give one piece of terrible advice.
+{truth}[drinking] What's the ideal version of water breaks for you?
+{dare}[drinking] Pretend you're a world-famous expert on bar snacks and give one piece of terrible advice.
+{truth}[relationship] What do people usually misunderstand about night-out flirting?
+{dare}[drinking] Turn hangover food into the title of an imaginary reality show.
+{truth}[drinking] <player>, what do people usually misunderstand about shots?
+{dare} Turn fancy cocktails into the title of an imaginary reality show.
+{truth}[drinking] What do people usually misunderstand about hangover food?
+{dare} Turn mixers into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about fancy cocktails?
+{dare}[drinking] Turn cocktail names into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about mixers?
+{dare}[drinking] <player>, turn the first drink of the night into the title of an imaginary reality show.
+{truth}[drinking] What's the pettiest argument you could genuinely have about VR drinking worlds?
+{dare}[drinking] Give <rem_player> a nickname inspired by pacing yourself. Keep it playful.
+{truth}[drinking] What's the pettiest argument you could genuinely have about designated drivers?
+{dare}[social] Give <rem_player> a nickname inspired by pub trivia. Keep it playful.
+{truth}[relationship] <player>, what's the pettiest argument you could genuinely have about drunk flirting?
+{dare}[social] Give <rem_player> a nickname inspired by party stories. Keep it playful.
+{truth}[drinking] What's the pettiest argument you could genuinely have about knowing when to stop?
+{dare}[drinking] Give <rem_player> a nickname inspired by mixed drinks. Keep it playful.
+{truth}[relationship] What's the pettiest argument you could genuinely have about tipsy confidence?
+{dare}[social] Give <rem_player> a nickname inspired by karaoke. Keep it playful.
+{truth}[drinking] How seriously do you actually take buying rounds?
+{dare}[relationship] <player>, invent an achievement someone could unlock for being way too invested in night-out flirting.
+{truth}[drinking] How seriously do you actually take bar snacks?
+{dare} Invent an achievement someone could unlock for being way too invested in shots.
+{truth}[drinking] How seriously do you actually take sharing drinks?
+{dare} Invent an achievement someone could unlock for being way too invested in hangover food.
+{truth} <player>, how seriously do you actually take beer?
+{dare}[drinking] Invent an achievement someone could unlock for being way too invested in fancy cocktails.
+{truth} How seriously do you actually take house parties?
+{dare}[drinking] Invent an achievement someone could unlock for being way too invested in mixers.
+{truth}[social] What's one opinion about party playlists you'd defend even if the room disagreed?
+{dare}[drinking] Pitch late-night food as if it were a new video-game mechanic.
+{truth}[relationship] What's one opinion about night-out flirting you'd defend even if the room disagreed?
+{dare}[drinking] <player>, pitch cheap drinks as if it were a new video-game mechanic.
+{truth}[drinking] What's one opinion about shots you'd defend even if the room disagreed?
+{dare}[drinking] Pitch pacing yourself as if it were a new video-game mechanic.
+{truth}[drinking] What's one opinion about hangover food you'd defend even if the room disagreed?
+{dare}[social] Pitch pub trivia as if it were a new video-game mechanic.
+{truth}[drinking] <player>, what's one opinion about fancy cocktails you'd defend even if the room disagreed?
+{dare}[social] Pitch party stories as if it were a new video-game mechanic.
+{truth}[drinking] What kind of person takes wine far too seriously?
+{dare}[social] Make up a harmless conspiracy theory about oversharing after a few drinks.
+{truth}[drinking] What kind of person takes VR drinking worlds far too seriously?
+{dare} Make up a harmless conspiracy theory about party playlists.
+{truth}[drinking] What kind of person takes designated drivers far too seriously?
+{dare} <player>, make up a harmless conspiracy theory about night-out flirting.
+{truth} What kind of person takes drunk flirting far too seriously?
+{dare}[drinking] Make up a harmless conspiracy theory about shots.
+{truth} What kind of person takes knowing when to stop far too seriously?
+{dare}[drinking] Make up a harmless conspiracy theory about hangover food.
+{truth}[social] <player>, what's something about karaoke you pretend not to care about but definitely notice?
+{dare}[relationship] Explain tipsy confidence in your most dramatic movie-trailer voice.
+{truth}[drinking] What's something about buying rounds you pretend not to care about but definitely notice?
+{dare}[drinking] Explain cocktails in your most dramatic movie-trailer voice.
+{truth}[drinking] What's something about bar snacks you pretend not to care about but definitely notice?
+{dare}[drinking] Explain late-night food in your most dramatic movie-trailer voice.
+{truth}[drinking] What's something about sharing drinks you pretend not to care about but definitely notice?
+{dare}[drinking] <player>, explain cheap drinks in your most dramatic movie-trailer voice.
+{truth}[drinking] What's something about beer you pretend not to care about but definitely notice?
+{dare}[drinking] Explain pacing yourself in your most dramatic movie-trailer voice.
+{truth}[social] If you had to introduce someone new to oversharing after a few drinks, what would you warn them about first?
+{dare}[drinking] Create a one-sentence advertisement for pre-drinks aimed specifically at <rem_player>.
+{truth}[social] <player>, if you had to introduce someone new to party playlists, what would you warn them about first?
+{dare} Create a one-sentence advertisement for bartenders aimed specifically at <rem_player>.
+{truth}[relationship] If you had to introduce someone new to night-out flirting, what would you warn them about first?
+{dare} Create a one-sentence advertisement for oversharing after a few drinks aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to shots, what would you warn them about first?
+{dare}[social] Create a one-sentence advertisement for party playlists aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to hangover food, what would you warn them about first?
+{dare}[relationship] <player>, create a one-sentence advertisement for night-out flirting aimed specifically at <rem_player>.
+{truth}[social] What would make being the sober friend immediately better for you?
+{dare}[relationship] Act out the face of someone discovering drunk flirting for the first time.
+{truth}[drinking] What would make wine immediately better for you?
+{dare}[drinking] Act out the face of someone discovering knowing when to stop for the first time.
+{truth}[drinking] <player>, what would make VR drinking worlds immediately better for you?
+{dare}[relationship] Act out the face of someone discovering tipsy confidence for the first time.
+{truth}[drinking] What would make designated drivers immediately better for you?
+{dare}[drinking] Act out the face of someone discovering cocktails for the first time.
+{truth}[relationship] What would make drunk flirting immediately better for you?
+{dare}[drinking] Act out the face of someone discovering late-night food for the first time.
+{truth}[drinking] If <rem_player> strongly disagreed with you about mixed drinks, how long would the argument last?
+{dare}[social] <player>, give a ten-second motivational speech about surviving being the group caretaker.
+{truth}[social] If <rem_player> strongly disagreed with you about karaoke, how long would the argument last?
+{dare} Give a ten-second motivational speech about surviving cider.
+{truth}[drinking] If <rem_player> strongly disagreed with you about buying rounds, how long would the argument last?
+{dare} Give a ten-second motivational speech about surviving pre-drinks.
+{truth} <player>, if <rem_player> strongly disagreed with you about bar snacks, how long would the argument last?
+{dare}[drinking] Give a ten-second motivational speech about surviving bartenders.
+{truth} If <rem_player> strongly disagreed with you about sharing drinks, how long would the argument last?
+{dare}[social] Give a ten-second motivational speech about surviving oversharing after a few drinks.
+{truth}[drinking] What does your taste in bartenders probably reveal about you?
+{dare}[drinking] Turn VR drinking worlds into a fake warning label and read it aloud.
+{truth}[social] What does your taste in oversharing after a few drinks probably reveal about you?
+{dare}[drinking] <player>, turn designated drivers into a fake warning label and read it aloud.
+{truth}[social] What does your taste in party playlists probably reveal about you?
+{dare}[relationship] Turn drunk flirting into a fake warning label and read it aloud.
+{truth}[relationship] What does your taste in night-out flirting probably reveal about you?
+{dare}[drinking] Turn knowing when to stop into a fake warning label and read it aloud.
+{truth}[drinking] <player>, what does your taste in shots probably reveal about you?
+{dare}[relationship] Turn tipsy confidence into a fake warning label and read it aloud.
+{truth}[drinking] What's your biggest green flag when getting home after a night out is involved?
+{dare}[relationship] Describe drunk texting like it's an extremely rare collectible.
+{truth}[social] What's your biggest green flag when being the sober friend is involved?
+{dare} Describe morning-after routines like it's an extremely rare collectible.
+{truth}[drinking] What's your biggest green flag when wine is involved?
+{dare} <player>, describe being the group caretaker like it's an extremely rare collectible.
+{truth} What's your biggest green flag when VR drinking worlds is involved?
+{dare}[drinking] Describe cider like it's an extremely rare collectible.
+{truth} What's your biggest green flag when designated drivers is involved?
+{dare}[drinking] Describe pre-drinks like it's an extremely rare collectible.
+{truth}[social] <player>, what's your biggest red flag when party stories is involved?
+{dare}[social] Let <rem_player> choose whether you must praise or roast being the sober friend for ten seconds.
+{truth}[drinking] What's your biggest red flag when mixed drinks is involved?
+{dare}[drinking] Let <rem_player> choose whether you must praise or roast wine for ten seconds.
+{truth}[social] What's your biggest red flag when karaoke is involved?
+{dare}[drinking] Let <rem_player> choose whether you must praise or roast VR drinking worlds for ten seconds.
+{truth}[drinking] What's your biggest red flag when buying rounds is involved?
+{dare}[drinking] <player>, let <rem_player> choose whether you must praise or roast designated drivers for ten seconds.
+{truth}[drinking] What's your biggest red flag when bar snacks is involved?
+{dare}[relationship] Let <rem_player> choose whether you must praise or roast drunk flirting for ten seconds.
+{truth}[drinking] If you had to trust <rem_player> to make one decision for you about pre-drinks, what would you let them choose?
+{dare}[drinking] Invent a ceremonial title for the person in the group who cares most about house parties.
+{truth}[drinking] <player>, if you had to trust <rem_player> to make one decision for you about bartenders, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about water breaks.
+{truth}[social] If you had to trust <rem_player> to make one decision for you about oversharing after a few drinks, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about drunk texting.
+{truth} If you had to trust <rem_player> to make one decision for you about party playlists, what would you let them choose?
+{dare}[drinking] Invent a ceremonial title for the person in the group who cares most about morning-after routines.
+{truth} If you had to trust <rem_player> to make one decision for you about night-out flirting, what would you let them choose?
+{dare}[social] <player>, invent a ceremonial title for the person in the group who cares most about being the group caretaker.

@@ -1,0 +1,200 @@
+{truth}[social] <player>, what's your strongest opinion about Vegemite?
+{dare}[social] Defend Vegemite for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about bin chickens?
+{dare}[social] Defend bin chickens for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about long Australian road trips?
+{dare}[social] Defend long Australian road trips for fifteen seconds like your reputation depends on it.
+{truth}[drinking] What's your strongest opinion about country-town pubs?
+{dare}[drinking] <player>, defend country-town pubs for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about state rivalries?
+{dare}[social] Defend state rivalries for fifteen seconds like your reputation depends on it.
+{truth}[social] What part of footy culture gets more hype than it deserves?
+{dare} Roast forty-degree summer days, then immediately give it one sincere compliment.
+{truth}[social] <player>, what part of Milo gets more hype than it deserves?
+{dare} Roast Coles versus Woolies, then immediately give it one sincere compliment.
+{truth} What part of barbecue etiquette gets more hype than it deserves?
+{dare} Roast coffee culture, then immediately give it one sincere compliment.
+{truth} What part of late-night Macca's gets more hype than it deserves?
+{dare}[relationship] Roast beach-date ideas, then immediately give it one sincere compliment.
+{truth} What part of the phrase 'yeah, nah' gets more hype than it deserves?
+{dare}[social] <player>, roast Bunnings sausage sizzles, then immediately give it one sincere compliment.
+{truth}[social] What part of Aussie nicknames deserves way more love?
+{dare}[social] Explain thongs as footwear like you're presenting a serious university lecture.
+{truth}[social] What part of calling everyone mate deserves way more love?
+{dare}[relationship] Explain Aussie flirting like you're presenting a serious university lecture.
+{truth}[relationship] <player>, what part of Australian accents deserves way more love?
+{dare}[social] Explain Vegemite like you're presenting a serious university lecture.
+{truth}[drinking] What part of servo food deserves way more love?
+{dare}[social] Explain bin chickens like you're presenting a serious university lecture.
+{truth}[social] What part of backyard cricket deserves way more love?
+{dare}[social] Explain long Australian road trips like you're presenting a serious university lecture.
+{truth}[relationship] If you could change one thing about Aussie flirting, what would it be?
+{dare} <player>, sell the phrase 'yeah, nah' to the group like a suspicious late-night infomercial.
+{truth}[social] If you could change one thing about Vegemite, what would it be?
+{dare} Sell magpies to the group like a suspicious late-night infomercial.
+{truth} If you could change one thing about bin chickens, what would it be?
+{dare} Sell forty-degree summer days to the group like a suspicious late-night infomercial.
+{truth} <player>, if you could change one thing about long Australian road trips, what would it be?
+{dare}[social] Sell Coles versus Woolies to the group like a suspicious late-night infomercial.
+{truth} If you could change one thing about country-town pubs, what would it be?
+{dare}[social] Sell coffee culture to the group like a suspicious late-night infomercial.
+{truth}[social] What's your personal rule when it comes to Australian slang?
+{dare}[social] Give Melbourne weather the most ridiculous slogan you can invent.
+{truth}[social] What's your personal rule when it comes to footy culture?
+{dare}[social] <player>, give Kmart trips the most ridiculous slogan you can invent.
+{truth}[social] What's your personal rule when it comes to Milo?
+{dare}[social] Give thongs as footwear the most ridiculous slogan you can invent.
+{truth}[social] What's your personal rule when it comes to barbecue etiquette?
+{dare}[relationship] Give Aussie flirting the most ridiculous slogan you can invent.
+{truth}[drinking] <player>, what's your personal rule when it comes to late-night Macca's?
+{dare}[social] Give Vegemite the most ridiculous slogan you can invent.
+{truth}[drinking] What would make you instantly lose interest in pub meals?
+{dare} Describe barbecue etiquette in exactly five words.
+{truth}[social] What would make you instantly lose interest in Aussie nicknames?
+{dare} Describe late-night Macca's in exactly five words.
+{truth} What would make you instantly lose interest in calling everyone mate?
+{dare} <player>, describe the phrase 'yeah, nah' in exactly five words.
+{truth} What would make you instantly lose interest in Australian accents?
+{dare}[social] Describe magpies in exactly five words.
+{truth} What would make you instantly lose interest in servo food?
+{dare}[social] Describe forty-degree summer days in exactly five words.
+{truth}[social] <player>, what's the ideal version of thongs as footwear for you?
+{dare}[drinking] Pretend you're a world-famous expert on house-party etiquette and give one piece of terrible advice.
+{truth}[relationship] What's the ideal version of Aussie flirting for you?
+{dare}[social] Pretend you're a world-famous expert on summer Christmas and give one piece of terrible advice.
+{truth}[social] What's the ideal version of Vegemite for you?
+{dare}[social] Pretend you're a world-famous expert on Melbourne weather and give one piece of terrible advice.
+{truth}[social] What's the ideal version of bin chickens for you?
+{dare}[social] <player>, pretend you're a world-famous expert on Kmart trips and give one piece of terrible advice.
+{truth}[social] What's the ideal version of long Australian road trips for you?
+{dare}[social] Pretend you're a world-famous expert on thongs as footwear and give one piece of terrible advice.
+{truth}[drinking] What do people usually misunderstand about festival culture?
+{dare} Turn footy culture into the title of an imaginary reality show.
+{truth}[social] <player>, what do people usually misunderstand about Australian slang?
+{dare} Turn Milo into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about footy culture?
+{dare} Turn barbecue etiquette into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about Milo?
+{dare}[drinking] Turn late-night Macca's into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about barbecue etiquette?
+{dare}[social] <player>, turn the phrase 'yeah, nah' into the title of an imaginary reality show.
+{truth}[social] What's the pettiest argument you could genuinely have about huntsman spiders?
+{dare}[social] Give <rem_player> a nickname inspired by public holidays. Keep it playful.
+{truth}[drinking] What's the pettiest argument you could genuinely have about pub meals?
+{dare}[relationship] Give <rem_player> a nickname inspired by meeting someone at the pub. Keep it playful.
+{truth}[social] <player>, what's the pettiest argument you could genuinely have about Aussie nicknames?
+{dare}[drinking] Give <rem_player> a nickname inspired by house-party etiquette. Keep it playful.
+{truth}[social] What's the pettiest argument you could genuinely have about calling everyone mate?
+{dare}[social] Give <rem_player> a nickname inspired by summer Christmas. Keep it playful.
+{truth}[relationship] What's the pettiest argument you could genuinely have about Australian accents?
+{dare}[social] Give <rem_player> a nickname inspired by Melbourne weather. Keep it playful.
+{truth}[social] How seriously do you actually take Kmart trips?
+{dare} <player>, invent an achievement someone could unlock for being way too invested in festival culture.
+{truth}[social] How seriously do you actually take thongs as footwear?
+{dare} Invent an achievement someone could unlock for being way too invested in Australian slang.
+{truth} How seriously do you actually take Aussie flirting?
+{dare} Invent an achievement someone could unlock for being way too invested in footy culture.
+{truth} <player>, how seriously do you actually take Vegemite?
+{dare}[social] Invent an achievement someone could unlock for being way too invested in Milo.
+{truth} How seriously do you actually take bin chickens?
+{dare}[social] Invent an achievement someone could unlock for being way too invested in barbecue etiquette.
+{truth}[relationship] What's one opinion about dating in a small Australian town you'd defend even if the room disagreed?
+{dare}[social] Pitch backyard cricket as if it were a new video-game mechanic.
+{truth}[drinking] What's one opinion about festival culture you'd defend even if the room disagreed?
+{dare}[social] <player>, pitch Tim Tams as if it were a new video-game mechanic.
+{truth}[social] What's one opinion about Australian slang you'd defend even if the room disagreed?
+{dare}[social] Pitch public holidays as if it were a new video-game mechanic.
+{truth}[social] What's one opinion about footy culture you'd defend even if the room disagreed?
+{dare}[relationship] Pitch meeting someone at the pub as if it were a new video-game mechanic.
+{truth}[social] <player>, what's one opinion about Milo you'd defend even if the room disagreed?
+{dare}[drinking] Pitch house-party etiquette as if it were a new video-game mechanic.
+{truth}[social] What kind of person takes Bunnings sausage sizzles far too seriously?
+{dare} Make up a harmless conspiracy theory about swearing as punctuation.
+{truth}[social] What kind of person takes huntsman spiders far too seriously?
+{dare} Make up a harmless conspiracy theory about dating in a small Australian town.
+{truth} What kind of person takes pub meals far too seriously?
+{dare} <player>, make up a harmless conspiracy theory about festival culture.
+{truth} What kind of person takes Aussie nicknames far too seriously?
+{dare}[social] Make up a harmless conspiracy theory about Australian slang.
+{truth} What kind of person takes calling everyone mate far too seriously?
+{dare}[social] Make up a harmless conspiracy theory about footy culture.
+{truth}[social] <player>, what's something about Melbourne weather you pretend not to care about but definitely notice?
+{dare}[relationship] Explain Australian accents in your most dramatic movie-trailer voice.
+{truth}[social] What's something about Kmart trips you pretend not to care about but definitely notice?
+{dare}[drinking] Explain servo food in your most dramatic movie-trailer voice.
+{truth}[social] What's something about thongs as footwear you pretend not to care about but definitely notice?
+{dare}[social] Explain backyard cricket in your most dramatic movie-trailer voice.
+{truth}[relationship] What's something about Aussie flirting you pretend not to care about but definitely notice?
+{dare}[social] <player>, explain Tim Tams in your most dramatic movie-trailer voice.
+{truth}[social] What's something about Vegemite you pretend not to care about but definitely notice?
+{dare}[social] Explain public holidays in your most dramatic movie-trailer voice.
+{truth}[social] If you had to introduce someone new to swearing as punctuation, what would you warn them about first?
+{dare} Create a one-sentence advertisement for beach etiquette aimed specifically at <rem_player>.
+{truth}[relationship] <player>, if you had to introduce someone new to dating in a small Australian town, what would you warn them about first?
+{dare} Create a one-sentence advertisement for Shapes flavours aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to festival culture, what would you warn them about first?
+{dare} Create a one-sentence advertisement for swearing as punctuation aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to Australian slang, what would you warn them about first?
+{dare}[relationship] Create a one-sentence advertisement for dating in a small Australian town aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to footy culture, what would you warn them about first?
+{dare}[drinking] <player>, create a one-sentence advertisement for festival culture aimed specifically at <rem_player>.
+{truth}[relationship] What would make beach-date ideas immediately better for you?
+{dare}[social] Act out the face of someone discovering Aussie nicknames for the first time.
+{truth}[social] What would make Bunnings sausage sizzles immediately better for you?
+{dare}[social] Act out the face of someone discovering calling everyone mate for the first time.
+{truth}[social] <player>, what would make huntsman spiders immediately better for you?
+{dare}[relationship] Act out the face of someone discovering Australian accents for the first time.
+{truth}[drinking] What would make pub meals immediately better for you?
+{dare}[drinking] Act out the face of someone discovering servo food for the first time.
+{truth}[social] What would make Aussie nicknames immediately better for you?
+{dare}[social] Act out the face of someone discovering backyard cricket for the first time.
+{truth}[social] If <rem_player> strongly disagreed with you about summer Christmas, how long would the argument last?
+{dare} <player>, give a ten-second motivational speech about surviving pub-date ideas.
+{truth}[social] If <rem_player> strongly disagreed with you about Melbourne weather, how long would the argument last?
+{dare} Give a ten-second motivational speech about surviving chicken salt.
+{truth} If <rem_player> strongly disagreed with you about Kmart trips, how long would the argument last?
+{dare} Give a ten-second motivational speech about surviving beach etiquette.
+{truth} <player>, if <rem_player> strongly disagreed with you about thongs as footwear, how long would the argument last?
+{dare}[social] Give a ten-second motivational speech about surviving Shapes flavours.
+{truth} If <rem_player> strongly disagreed with you about Aussie flirting, how long would the argument last?
+{dare}[social] Give a ten-second motivational speech about surviving swearing as punctuation.
+{truth}[social] What does your taste in Shapes flavours probably reveal about you?
+{dare}[social] Turn huntsman spiders into a fake warning label and read it aloud.
+{truth}[social] What does your taste in swearing as punctuation probably reveal about you?
+{dare}[drinking] <player>, turn pub meals into a fake warning label and read it aloud.
+{truth}[relationship] What does your taste in dating in a small Australian town probably reveal about you?
+{dare}[social] Turn Aussie nicknames into a fake warning label and read it aloud.
+{truth}[drinking] What does your taste in festival culture probably reveal about you?
+{dare}[social] Turn calling everyone mate into a fake warning label and read it aloud.
+{truth}[social] <player>, what does your taste in Australian slang probably reveal about you?
+{dare}[relationship] Turn Australian accents into a fake warning label and read it aloud.
+{truth}[social] What's your biggest green flag when coffee culture is involved?
+{dare} Describe country-town pubs like it's an extremely rare collectible.
+{truth}[relationship] What's your biggest green flag when beach-date ideas is involved?
+{dare} Describe state rivalries like it's an extremely rare collectible.
+{truth} What's your biggest green flag when Bunnings sausage sizzles is involved?
+{dare} <player>, describe pub-date ideas like it's an extremely rare collectible.
+{truth} What's your biggest green flag when huntsman spiders is involved?
+{dare}[social] Describe chicken salt like it's an extremely rare collectible.
+{truth} What's your biggest green flag when pub meals is involved?
+{dare}[social] Describe beach etiquette like it's an extremely rare collectible.
+{truth}[drinking] <player>, what's your biggest red flag when house-party etiquette is involved?
+{dare}[relationship] Let <rem_player> choose whether you must praise or roast beach-date ideas for ten seconds.
+{truth}[social] What's your biggest red flag when summer Christmas is involved?
+{dare}[social] Let <rem_player> choose whether you must praise or roast Bunnings sausage sizzles for ten seconds.
+{truth}[social] What's your biggest red flag when Melbourne weather is involved?
+{dare}[social] Let <rem_player> choose whether you must praise or roast huntsman spiders for ten seconds.
+{truth}[social] What's your biggest red flag when Kmart trips is involved?
+{dare}[drinking] <player>, let <rem_player> choose whether you must praise or roast pub meals for ten seconds.
+{truth}[social] What's your biggest red flag when thongs as footwear is involved?
+{dare}[social] Let <rem_player> choose whether you must praise or roast Aussie nicknames for ten seconds.
+{truth}[social] If you had to trust <rem_player> to make one decision for you about beach etiquette, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about bin chickens.
+{truth}[social] <player>, if you had to trust <rem_player> to make one decision for you about Shapes flavours, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about long Australian road trips.
+{truth} If you had to trust <rem_player> to make one decision for you about swearing as punctuation, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about country-town pubs.
+{truth} If you had to trust <rem_player> to make one decision for you about dating in a small Australian town, what would you let them choose?
+{dare}[social] Invent a ceremonial title for the person in the group who cares most about state rivalries.
+{truth} If you had to trust <rem_player> to make one decision for you about festival culture, what would you let them choose?
+{dare}[relationship] <player>, invent a ceremonial title for the person in the group who cares most about pub-date ideas.

@@ -1,0 +1,200 @@
+[social] Everyone points at the person with the strongest opinion about avatar shopping. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about face tracking. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about dance worlds. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about instance hopping. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about VR hardware. Most-picked chooses the next spinner.
+[nsfw] Everyone points at the person with the strongest opinion about NSFW avatar toggles. Most-picked chooses the next spinner.
+Everyone points at the person with the strongest opinion about public instances. Most-picked chooses the next spinner.
+Everyone points at the person with the strongest opinion about Unity avatar work. Most-picked chooses the next spinner.
+<player> picks <rem_player>. You have ten seconds to agree on one rule about mute and block etiquette.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about avatar toggles.
+[relationship] <player> picks <rem_player>. You have ten seconds to agree on one rule about flirting through avatar movement.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about VRChat group drama.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about status colours.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about group instances.
+[relationship] <player> picks <rem_player>. You have ten seconds to agree on one rule about matching avatars.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about public-instance chaos.
+The group votes on who would take ERP boundaries most seriously. Winner gets a ridiculous title until the next spin.
+The group votes on who would take mirror culture most seriously. Winner gets a ridiculous title until the next spin.
+The group votes on who would take phantom touch most seriously. Winner gets a ridiculous title until the next spin.
+[drinking] The group votes on who would take drinking worlds most seriously. Winner gets a ridiculous title until the next spin.
+[social] The group votes on who would take late-night VRChat most seriously. Winner gets a ridiculous title until the next spin.
+[social] The group votes on who would take world favourites most seriously. Winner gets a ridiculous title until the next spin.
+[nsfw] The group votes on who would take private-instance flirting most seriously. Winner gets a ridiculous title until the next spin.
+[social] The group votes on who would take private instances most seriously. Winner gets a ridiculous title until the next spin.
+[social] First person to give a convincing hot take about friends lists chooses who spins next.
+[social] First person to give a convincing hot take about avatar gestures chooses who spins next.
+First person to give a convincing hot take about VRChat photography chooses who spins next.
+First person to give a convincing hot take about VRChat situationships chooses who spins next.
+First person to give a convincing hot take about falling asleep with friends in VR chooses who spins next.
+[social] First person to give a convincing hot take about full-body tracking chooses who spins next.
+[relationship] First person to give a convincing hot take about sleep worlds chooses who spins next.
+[social] First person to give a convincing hot take about bios and status messages chooses who spins next.
+[social] Last person to react to the phrase “VR hardware” must give the group a dramatic one-sentence review of it.
+[nsfw] Last person to react to the phrase “NSFW avatar toggles” must give the group a dramatic one-sentence review of it.
+[social] Last person to react to the phrase “public instances” must give the group a dramatic one-sentence review of it.
+[social] Last person to react to the phrase “Unity avatar work” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “recognising people by voice” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “VR relationships” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “cuddling in VR” must give the group a dramatic one-sentence review of it.
+[drinking] Last person to react to the phrase “VR drinking-game nights” must give the group a dramatic one-sentence review of it.
+[social] <player> chooses two people to debate status colours for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate group instances for ten seconds. The group declares a winner.
+[relationship] <player> chooses two people to debate matching avatars for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate public-instance chaos for ten seconds. The group declares a winner.
+[relationship] <player> chooses two people to debate meeting VR friends in real life for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate avatar shopping for ten seconds. The group declares a winner.
+<player> chooses two people to debate face tracking for ten seconds. The group declares a winner.
+<player> chooses two people to debate dance worlds for ten seconds. The group declares a winner.
+Everyone who likes late-night VRChat raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes world favourites raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[nsfw] Everyone who likes private-instance flirting raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes private instances raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes avatar performance ranks raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes mute and block etiquette raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes avatar toggles raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[relationship] Everyone who likes flirting through avatar movement raises a hand. <player> chooses one of them to set a harmless rule for one round.
+Everyone who dislikes falling asleep with friends in VR points at someone who probably loves it. That person spins next.
+Everyone who dislikes full-body tracking points at someone who probably loves it. That person spins next.
+Everyone who dislikes sleep worlds points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes bios and status messages points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes social batteries in VR points at someone who probably loves it. That person spins next.
+[nsfw] Everyone who dislikes ERP boundaries points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes mirror culture points at someone who probably loves it. That person spins next.
+[nsfw] Everyone who dislikes phantom touch points at someone who probably loves it. That person spins next.
+[relationship] The spinner must assign <rem_player> an achievement title related to recognising people by voice.
+[relationship] The spinner must assign <rem_player> an achievement title related to VR relationships.
+The spinner must assign <rem_player> an achievement title related to cuddling in VR.
+The spinner must assign <rem_player> an achievement title related to VR drinking-game nights.
+The spinner must assign <rem_player> an achievement title related to world hopping.
+[social] The spinner must assign <rem_player> an achievement title related to friends lists.
+[social] The spinner must assign <rem_player> an achievement title related to avatar gestures.
+[social] The spinner must assign <rem_player> an achievement title related to VRChat photography.
+[relationship] Everyone gives meeting VR friends in real life a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives avatar shopping a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives face tracking a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives dance worlds a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives instance hopping a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives VR hardware a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives NSFW avatar toggles a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives public instances a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] <player> and <rem_player> must invent the worst possible slogan for avatar performance ranks.
+[social] <player> and <rem_player> must invent the worst possible slogan for mute and block etiquette.
+[social] <player> and <rem_player> must invent the worst possible slogan for avatar toggles.
+[relationship] <player> and <rem_player> must invent the worst possible slogan for flirting through avatar movement.
+[social] <player> and <rem_player> must invent the worst possible slogan for VRChat group drama.
+[social] <player> and <rem_player> must invent the worst possible slogan for status colours.
+<player> and <rem_player> must invent the worst possible slogan for group instances.
+<player> and <rem_player> must invent the worst possible slogan for matching avatars.
+The group chooses one person to explain social batteries in VR like they've never heard of it before.
+[nsfw] The group chooses one person to explain ERP boundaries like they've never heard of it before.
+[social] The group chooses one person to explain mirror culture like they've never heard of it before.
+[nsfw] The group chooses one person to explain phantom touch like they've never heard of it before.
+[drinking] The group chooses one person to explain drinking worlds like they've never heard of it before.
+[social] The group chooses one person to explain late-night VRChat like they've never heard of it before.
+[social] The group chooses one person to explain world favourites like they've never heard of it before.
+[nsfw] The group chooses one person to explain private-instance flirting like they've never heard of it before.
+Anyone who has a strong opinion about world hopping must make a dramatic pose. <player> picks the best one.
+Anyone who has a strong opinion about friends lists must make a dramatic pose. <player> picks the best one.
+Anyone who has a strong opinion about avatar gestures must make a dramatic pose. <player> picks the best one.
+[social] Anyone who has a strong opinion about VRChat photography must make a dramatic pose. <player> picks the best one.
+[relationship] Anyone who has a strong opinion about VRChat situationships must make a dramatic pose. <player> picks the best one.
+[relationship] Anyone who has a strong opinion about falling asleep with friends in VR must make a dramatic pose. <player> picks the best one.
+[social] Anyone who has a strong opinion about full-body tracking must make a dramatic pose. <player> picks the best one.
+[relationship] Anyone who has a strong opinion about sleep worlds must make a dramatic pose. <player> picks the best one.
+[social] The spinner names one thing that would make instance hopping better. <rem_player> must make it worse.
+[social] The spinner names one thing that would make VR hardware better. <rem_player> must make it worse.
+The spinner names one thing that would make NSFW avatar toggles better. <rem_player> must make it worse.
+The spinner names one thing that would make public instances better. <rem_player> must make it worse.
+The spinner names one thing that would make Unity avatar work better. <rem_player> must make it worse.
+[relationship] The spinner names one thing that would make recognising people by voice better. <rem_player> must make it worse.
+[relationship] The spinner names one thing that would make VR relationships better. <rem_player> must make it worse.
+[relationship] The spinner names one thing that would make cuddling in VR better. <rem_player> must make it worse.
+[social] Everyone points at the person most likely to become weirdly competitive about VRChat group drama. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about status colours. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about group instances. They host the next spin.
+[relationship] Everyone points at the person most likely to become weirdly competitive about matching avatars. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about public-instance chaos. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about meeting VR friends in real life. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about avatar shopping. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about face tracking. They host the next spin.
+[drinking] <player> chooses <rem_player>. One must praise drinking worlds; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise late-night VRChat; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise world favourites; the other must roast it.
+[nsfw] <player> chooses <rem_player>. One must praise private-instance flirting; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise private instances; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise avatar performance ranks; the other must roast it.
+<player> chooses <rem_player>. One must praise mute and block etiquette; the other must roast it.
+<player> chooses <rem_player>. One must praise avatar toggles; the other must roast it.
+The group invents a fake award for VRChat situationships. The spinner decides who in the room wins it.
+[relationship] The group invents a fake award for falling asleep with friends in VR. The spinner decides who in the room wins it.
+[social] The group invents a fake award for full-body tracking. The spinner decides who in the room wins it.
+[relationship] The group invents a fake award for sleep worlds. The spinner decides who in the room wins it.
+[social] The group invents a fake award for bios and status messages. The spinner decides who in the room wins it.
+[social] The group invents a fake award for social batteries in VR. The spinner decides who in the room wins it.
+[nsfw] The group invents a fake award for ERP boundaries. The spinner decides who in the room wins it.
+[social] The group invents a fake award for mirror culture. The spinner decides who in the room wins it.
+First person to make <player> laugh with a joke about Unity avatar work becomes the next spinner.
+First person to make <player> laugh with a joke about recognising people by voice becomes the next spinner.
+First person to make <player> laugh with a joke about VR relationships becomes the next spinner.
+[relationship] First person to make <player> laugh with a joke about cuddling in VR becomes the next spinner.
+[drinking] First person to make <player> laugh with a joke about VR drinking-game nights becomes the next spinner.
+[social] First person to make <player> laugh with a joke about world hopping becomes the next spinner.
+[social] First person to make <player> laugh with a joke about friends lists becomes the next spinner.
+[social] First person to make <player> laugh with a joke about avatar gestures becomes the next spinner.
+[social] Everyone points at who would be the best person to introduce a newcomer to public-instance chaos. They choose the next spinner.
+[relationship] Everyone points at who would be the best person to introduce a newcomer to meeting VR friends in real life. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to avatar shopping. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to face tracking. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to dance worlds. They choose the next spinner.
+[social] Everyone points at who would be the best person to introduce a newcomer to instance hopping. They choose the next spinner.
+[social] Everyone points at who would be the best person to introduce a newcomer to VR hardware. They choose the next spinner.
+[nsfw] Everyone points at who would be the best person to introduce a newcomer to NSFW avatar toggles. They choose the next spinner.
+[social] The spinner must turn private instances into a three-word movie title.
+[social] The spinner must turn avatar performance ranks into a three-word movie title.
+[social] The spinner must turn mute and block etiquette into a three-word movie title.
+[social] The spinner must turn avatar toggles into a three-word movie title.
+The spinner must turn flirting through avatar movement into a three-word movie title.
+The spinner must turn VRChat group drama into a three-word movie title.
+The spinner must turn status colours into a three-word movie title.
+[social] The spinner must turn group instances into a three-word movie title.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising bios and status messages.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising social batteries in VR.
+[nsfw] <player> and <rem_player> have five seconds to pose like they're advertising ERP boundaries.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising mirror culture.
+[nsfw] <player> and <rem_player> have five seconds to pose like they're advertising phantom touch.
+[drinking] <player> and <rem_player> have five seconds to pose like they're advertising drinking worlds.
+<player> and <rem_player> have five seconds to pose like they're advertising late-night VRChat.
+<player> and <rem_player> have five seconds to pose like they're advertising world favourites.
+The room votes: overrated, underrated, or correctly rated — VR drinking-game nights. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — world hopping. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — friends lists. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — avatar gestures. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — VRChat photography. The smallest voting group chooses the next spinner.
+[relationship] The room votes: overrated, underrated, or correctly rated — VRChat situationships. The smallest voting group chooses the next spinner.
+[relationship] The room votes: overrated, underrated, or correctly rated — falling asleep with friends in VR. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — full-body tracking. The smallest voting group chooses the next spinner.
+The spinner chooses someone to give a fake public-service announcement about dance worlds.
+The spinner chooses someone to give a fake public-service announcement about instance hopping.
+The spinner chooses someone to give a fake public-service announcement about VR hardware.
+[nsfw] The spinner chooses someone to give a fake public-service announcement about NSFW avatar toggles.
+[social] The spinner chooses someone to give a fake public-service announcement about public instances.
+[social] The spinner chooses someone to give a fake public-service announcement about Unity avatar work.
+[relationship] The spinner chooses someone to give a fake public-service announcement about recognising people by voice.
+[relationship] The spinner chooses someone to give a fake public-service announcement about VR relationships.
+[relationship] Everyone points at who would complain about flirting through avatar movement first. They must defend it for ten seconds.
+[social] Everyone points at who would complain about VRChat group drama first. They must defend it for ten seconds.
+Everyone points at who would complain about status colours first. They must defend it for ten seconds.
+Everyone points at who would complain about group instances first. They must defend it for ten seconds.
+Everyone points at who would complain about matching avatars first. They must defend it for ten seconds.
+[social] Everyone points at who would complain about public-instance chaos first. They must defend it for ten seconds.
+[relationship] Everyone points at who would complain about meeting VR friends in real life first. They must defend it for ten seconds.
+[social] Everyone points at who would complain about avatar shopping first. They must defend it for ten seconds.
+[nsfw] <player> assigns <rem_player> a temporary nickname inspired by phantom touch until the next spin.
+[drinking] <player> assigns <rem_player> a temporary nickname inspired by drinking worlds until the next spin.
+[social] <player> assigns <rem_player> a temporary nickname inspired by late-night VRChat until the next spin.
+[social] <player> assigns <rem_player> a temporary nickname inspired by world favourites until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by private-instance flirting until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by private instances until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by avatar performance ranks until the next spin.
+[social] <player> assigns <rem_player> a temporary nickname inspired by mute and block etiquette until the next spin.

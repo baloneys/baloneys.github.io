@@ -1,0 +1,200 @@
+{truth}[social] <player>, what's your strongest opinion about avatar shopping?
+{dare}[social] Defend avatar shopping for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about face tracking?
+{dare}[social] Defend face tracking for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about dance worlds?
+{dare}[social] Defend dance worlds for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about instance hopping?
+{dare}[social] <player>, defend instance hopping for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about VR hardware?
+{dare}[social] Defend VR hardware for fifteen seconds like your reputation depends on it.
+{truth}[social] What part of friends lists gets more hype than it deserves?
+{dare} Roast sleep worlds, then immediately give it one sincere compliment.
+{truth}[social] <player>, what part of avatar gestures gets more hype than it deserves?
+{dare} Roast bios and status messages, then immediately give it one sincere compliment.
+{truth} What part of VRChat photography gets more hype than it deserves?
+{dare} Roast social batteries in VR, then immediately give it one sincere compliment.
+{truth} What part of VRChat situationships gets more hype than it deserves?
+{dare}[nsfw] Roast ERP boundaries, then immediately give it one sincere compliment.
+{truth} What part of falling asleep with friends in VR gets more hype than it deserves?
+{dare}[social] <player>, roast mirror culture, then immediately give it one sincere compliment.
+{truth}[social] What part of late-night VRChat deserves way more love?
+{dare}[social] Explain public-instance chaos like you're presenting a serious university lecture.
+{truth}[social] What part of world favourites deserves way more love?
+{dare}[relationship] Explain meeting VR friends in real life like you're presenting a serious university lecture.
+{truth}[nsfw] <player>, what part of private-instance flirting deserves way more love?
+{dare}[social] Explain avatar shopping like you're presenting a serious university lecture.
+{truth}[social] What part of private instances deserves way more love?
+{dare}[social] Explain face tracking like you're presenting a serious university lecture.
+{truth}[social] What part of avatar performance ranks deserves way more love?
+{dare}[social] Explain dance worlds like you're presenting a serious university lecture.
+{truth}[relationship] If you could change one thing about meeting VR friends in real life, what would it be?
+{dare} <player>, sell falling asleep with friends in VR to the group like a suspicious late-night infomercial.
+{truth}[social] If you could change one thing about avatar shopping, what would it be?
+{dare} Sell full-body tracking to the group like a suspicious late-night infomercial.
+{truth} If you could change one thing about face tracking, what would it be?
+{dare} Sell sleep worlds to the group like a suspicious late-night infomercial.
+{truth} <player>, if you could change one thing about dance worlds, what would it be?
+{dare}[social] Sell bios and status messages to the group like a suspicious late-night infomercial.
+{truth} If you could change one thing about instance hopping, what would it be?
+{dare}[social] Sell social batteries in VR to the group like a suspicious late-night infomercial.
+{truth}[social] What's your personal rule when it comes to world hopping?
+{dare}[social] Give group instances the most ridiculous slogan you can invent.
+{truth}[social] What's your personal rule when it comes to friends lists?
+{dare}[relationship] <player>, give matching avatars the most ridiculous slogan you can invent.
+{truth}[social] What's your personal rule when it comes to avatar gestures?
+{dare}[social] Give public-instance chaos the most ridiculous slogan you can invent.
+{truth}[social] What's your personal rule when it comes to VRChat photography?
+{dare}[relationship] Give meeting VR friends in real life the most ridiculous slogan you can invent.
+{truth}[relationship] <player>, what's your personal rule when it comes to VRChat situationships?
+{dare}[social] Give avatar shopping the most ridiculous slogan you can invent.
+{truth}[drinking] What would make you instantly lose interest in drinking worlds?
+{dare} Describe VRChat photography in exactly five words.
+{truth}[social] What would make you instantly lose interest in late-night VRChat?
+{dare} Describe VRChat situationships in exactly five words.
+{truth} What would make you instantly lose interest in world favourites?
+{dare} <player>, describe falling asleep with friends in VR in exactly five words.
+{truth} What would make you instantly lose interest in private-instance flirting?
+{dare}[social] Describe full-body tracking in exactly five words.
+{truth} What would make you instantly lose interest in private instances?
+{dare}[relationship] Describe sleep worlds in exactly five words.
+{truth}[social] <player>, what's the ideal version of public-instance chaos for you?
+{dare}[social] Pretend you're a world-famous expert on VRChat group drama and give one piece of terrible advice.
+{truth}[relationship] What's the ideal version of meeting VR friends in real life for you?
+{dare}[social] Pretend you're a world-famous expert on status colours and give one piece of terrible advice.
+{truth}[social] What's the ideal version of avatar shopping for you?
+{dare}[social] Pretend you're a world-famous expert on group instances and give one piece of terrible advice.
+{truth}[social] What's the ideal version of face tracking for you?
+{dare}[relationship] <player>, pretend you're a world-famous expert on matching avatars and give one piece of terrible advice.
+{truth}[social] What's the ideal version of dance worlds for you?
+{dare}[social] Pretend you're a world-famous expert on public-instance chaos and give one piece of terrible advice.
+{truth}[drinking] What do people usually misunderstand about VR drinking-game nights?
+{dare} Turn friends lists into the title of an imaginary reality show.
+{truth}[social] <player>, what do people usually misunderstand about world hopping?
+{dare} Turn avatar gestures into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about friends lists?
+{dare} Turn VRChat photography into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about avatar gestures?
+{dare}[relationship] Turn VRChat situationships into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about VRChat photography?
+{dare}[relationship] <player>, turn falling asleep with friends in VR into the title of an imaginary reality show.
+{truth}[nsfw] What's the pettiest argument you could genuinely have about phantom touch?
+{dare}[social] Give <rem_player> a nickname inspired by avatar toggles. Keep it playful.
+{truth}[drinking] What's the pettiest argument you could genuinely have about drinking worlds?
+{dare}[relationship] Give <rem_player> a nickname inspired by flirting through avatar movement. Keep it playful.
+{truth}[social] <player>, what's the pettiest argument you could genuinely have about late-night VRChat?
+{dare}[social] Give <rem_player> a nickname inspired by VRChat group drama. Keep it playful.
+{truth}[social] What's the pettiest argument you could genuinely have about world favourites?
+{dare}[social] Give <rem_player> a nickname inspired by status colours. Keep it playful.
+{truth}[nsfw] What's the pettiest argument you could genuinely have about private-instance flirting?
+{dare}[social] Give <rem_player> a nickname inspired by group instances. Keep it playful.
+{truth}[relationship] How seriously do you actually take matching avatars?
+{dare} <player>, invent an achievement someone could unlock for being way too invested in VR drinking-game nights.
+{truth}[social] How seriously do you actually take public-instance chaos?
+{dare} Invent an achievement someone could unlock for being way too invested in world hopping.
+{truth} How seriously do you actually take meeting VR friends in real life?
+{dare} Invent an achievement someone could unlock for being way too invested in friends lists.
+{truth} <player>, how seriously do you actually take avatar shopping?
+{dare}[social] Invent an achievement someone could unlock for being way too invested in avatar gestures.
+{truth} How seriously do you actually take face tracking?
+{dare}[social] Invent an achievement someone could unlock for being way too invested in VRChat photography.
+{truth}[relationship] What's one opinion about cuddling in VR you'd defend even if the room disagreed?
+{dare}[social] Pitch avatar performance ranks as if it were a new video-game mechanic.
+{truth}[drinking] What's one opinion about VR drinking-game nights you'd defend even if the room disagreed?
+{dare}[social] <player>, pitch mute and block etiquette as if it were a new video-game mechanic.
+{truth}[social] What's one opinion about world hopping you'd defend even if the room disagreed?
+{dare}[social] Pitch avatar toggles as if it were a new video-game mechanic.
+{truth}[social] What's one opinion about friends lists you'd defend even if the room disagreed?
+{dare}[relationship] Pitch flirting through avatar movement as if it were a new video-game mechanic.
+{truth}[social] <player>, what's one opinion about avatar gestures you'd defend even if the room disagreed?
+{dare}[social] Pitch VRChat group drama as if it were a new video-game mechanic.
+{truth}[social] What kind of person takes mirror culture far too seriously?
+{dare} Make up a harmless conspiracy theory about VR relationships.
+{truth}[nsfw] What kind of person takes phantom touch far too seriously?
+{dare} Make up a harmless conspiracy theory about cuddling in VR.
+{truth} What kind of person takes drinking worlds far too seriously?
+{dare} <player>, make up a harmless conspiracy theory about VR drinking-game nights.
+{truth} What kind of person takes late-night VRChat far too seriously?
+{dare}[social] Make up a harmless conspiracy theory about world hopping.
+{truth} What kind of person takes world favourites far too seriously?
+{dare}[social] Make up a harmless conspiracy theory about friends lists.
+{truth}[social] <player>, what's something about group instances you pretend not to care about but definitely notice?
+{dare}[nsfw] Explain private-instance flirting in your most dramatic movie-trailer voice.
+{truth}[relationship] What's something about matching avatars you pretend not to care about but definitely notice?
+{dare}[social] Explain private instances in your most dramatic movie-trailer voice.
+{truth}[social] What's something about public-instance chaos you pretend not to care about but definitely notice?
+{dare}[social] Explain avatar performance ranks in your most dramatic movie-trailer voice.
+{truth}[relationship] What's something about meeting VR friends in real life you pretend not to care about but definitely notice?
+{dare}[social] <player>, explain mute and block etiquette in your most dramatic movie-trailer voice.
+{truth}[social] What's something about avatar shopping you pretend not to care about but definitely notice?
+{dare}[social] Explain avatar toggles in your most dramatic movie-trailer voice.
+{truth}[relationship] If you had to introduce someone new to VR relationships, what would you warn them about first?
+{dare} Create a one-sentence advertisement for Unity avatar work aimed specifically at <rem_player>.
+{truth}[relationship] <player>, if you had to introduce someone new to cuddling in VR, what would you warn them about first?
+{dare} Create a one-sentence advertisement for recognising people by voice aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to VR drinking-game nights, what would you warn them about first?
+{dare} Create a one-sentence advertisement for VR relationships aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to world hopping, what would you warn them about first?
+{dare}[relationship] Create a one-sentence advertisement for cuddling in VR aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to friends lists, what would you warn them about first?
+{dare}[drinking] <player>, create a one-sentence advertisement for VR drinking-game nights aimed specifically at <rem_player>.
+{truth}[nsfw] What would make ERP boundaries immediately better for you?
+{dare}[social] Act out the face of someone discovering late-night VRChat for the first time.
+{truth}[social] What would make mirror culture immediately better for you?
+{dare}[social] Act out the face of someone discovering world favourites for the first time.
+{truth}[nsfw] <player>, what would make phantom touch immediately better for you?
+{dare}[nsfw] Act out the face of someone discovering private-instance flirting for the first time.
+{truth}[drinking] What would make drinking worlds immediately better for you?
+{dare}[social] Act out the face of someone discovering private instances for the first time.
+{truth}[social] What would make late-night VRChat immediately better for you?
+{dare}[social] Act out the face of someone discovering avatar performance ranks for the first time.
+{truth}[social] If <rem_player> strongly disagreed with you about status colours, how long would the argument last?
+{dare} <player>, give a ten-second motivational speech about surviving NSFW avatar toggles.
+{truth}[social] If <rem_player> strongly disagreed with you about group instances, how long would the argument last?
+{dare} Give a ten-second motivational speech about surviving public instances.
+{truth} If <rem_player> strongly disagreed with you about matching avatars, how long would the argument last?
+{dare} Give a ten-second motivational speech about surviving Unity avatar work.
+{truth} <player>, if <rem_player> strongly disagreed with you about public-instance chaos, how long would the argument last?
+{dare}[relationship] Give a ten-second motivational speech about surviving recognising people by voice.
+{truth} If <rem_player> strongly disagreed with you about meeting VR friends in real life, how long would the argument last?
+{dare}[relationship] Give a ten-second motivational speech about surviving VR relationships.
+{truth}[relationship] What does your taste in recognising people by voice probably reveal about you?
+{dare}[nsfw] Turn phantom touch into a fake warning label and read it aloud.
+{truth}[relationship] What does your taste in VR relationships probably reveal about you?
+{dare}[drinking] <player>, turn drinking worlds into a fake warning label and read it aloud.
+{truth}[relationship] What does your taste in cuddling in VR probably reveal about you?
+{dare}[social] Turn late-night VRChat into a fake warning label and read it aloud.
+{truth}[drinking] What does your taste in VR drinking-game nights probably reveal about you?
+{dare}[social] Turn world favourites into a fake warning label and read it aloud.
+{truth}[social] <player>, what does your taste in world hopping probably reveal about you?
+{dare}[nsfw] Turn private-instance flirting into a fake warning label and read it aloud.
+{truth}[social] What's your biggest green flag when social batteries in VR is involved?
+{dare} Describe instance hopping like it's an extremely rare collectible.
+{truth}[nsfw] What's your biggest green flag when ERP boundaries is involved?
+{dare} Describe VR hardware like it's an extremely rare collectible.
+{truth} What's your biggest green flag when mirror culture is involved?
+{dare} <player>, describe NSFW avatar toggles like it's an extremely rare collectible.
+{truth} What's your biggest green flag when phantom touch is involved?
+{dare}[social] Describe public instances like it's an extremely rare collectible.
+{truth} What's your biggest green flag when drinking worlds is involved?
+{dare}[social] Describe Unity avatar work like it's an extremely rare collectible.
+{truth}[social] <player>, what's your biggest red flag when VRChat group drama is involved?
+{dare}[nsfw] Let <rem_player> choose whether you must praise or roast ERP boundaries for ten seconds.
+{truth}[social] What's your biggest red flag when status colours is involved?
+{dare}[social] Let <rem_player> choose whether you must praise or roast mirror culture for ten seconds.
+{truth}[social] What's your biggest red flag when group instances is involved?
+{dare}[nsfw] Let <rem_player> choose whether you must praise or roast phantom touch for ten seconds.
+{truth}[relationship] What's your biggest red flag when matching avatars is involved?
+{dare}[drinking] <player>, let <rem_player> choose whether you must praise or roast drinking worlds for ten seconds.
+{truth}[social] What's your biggest red flag when public-instance chaos is involved?
+{dare}[social] Let <rem_player> choose whether you must praise or roast late-night VRChat for ten seconds.
+{truth}[social] If you had to trust <rem_player> to make one decision for you about Unity avatar work, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about face tracking.
+{truth}[relationship] <player>, if you had to trust <rem_player> to make one decision for you about recognising people by voice, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about dance worlds.
+{truth} If you had to trust <rem_player> to make one decision for you about VR relationships, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about instance hopping.
+{truth} If you had to trust <rem_player> to make one decision for you about cuddling in VR, what would you let them choose?
+{dare}[social] Invent a ceremonial title for the person in the group who cares most about VR hardware.
+{truth} If you had to trust <rem_player> to make one decision for you about VR drinking-game nights, what would you let them choose?
+{dare}[nsfw] <player>, invent a ceremonial title for the person in the group who cares most about NSFW avatar toggles.

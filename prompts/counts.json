@@ -1,0 +1,57 @@
+[
+  {
+    "set": "Australian",
+    "truth_or_dare": 200,
+    "truths": 100,
+    "dares": 100,
+    "spin_the_wheel": 200,
+    "td_player_refs": 34,
+    "td_remote_refs": 25,
+    "wheel_player_refs": 72,
+    "wheel_remote_refs": 56
+  },
+  {
+    "set": "VRChat",
+    "truth_or_dare": 200,
+    "truths": 100,
+    "dares": 100,
+    "spin_the_wheel": 200,
+    "td_player_refs": 34,
+    "td_remote_refs": 25,
+    "wheel_player_refs": 72,
+    "wheel_remote_refs": 56
+  },
+  {
+    "set": "NSFW",
+    "truth_or_dare": 200,
+    "truths": 100,
+    "dares": 100,
+    "spin_the_wheel": 200,
+    "td_player_refs": 34,
+    "td_remote_refs": 25,
+    "wheel_player_refs": 72,
+    "wheel_remote_refs": 56
+  },
+  {
+    "set": "Drinking",
+    "truth_or_dare": 200,
+    "truths": 100,
+    "dares": 100,
+    "spin_the_wheel": 200,
+    "td_player_refs": 34,
+    "td_remote_refs": 25,
+    "wheel_player_refs": 72,
+    "wheel_remote_refs": 56
+  },
+  {
+    "set": "Gaming",
+    "truth_or_dare": 200,
+    "truths": 100,
+    "dares": 100,
+    "spin_the_wheel": 200,
+    "td_player_refs": 34,
+    "td_remote_refs": 25,
+    "wheel_player_refs": 72,
+    "wheel_remote_refs": 56
+  }
+]

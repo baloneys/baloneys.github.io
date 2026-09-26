@@ -1,0 +1,200 @@
+[social] Everyone points at the person with the strongest opinion about character creators. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about side quests. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about cosmetics. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about speedrunning. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about PC upgrades. Most-picked chooses the next spinner.
+[drinking] Everyone points at the person with the strongest opinion about game-night drinking. Most-picked chooses the next spinner.
+Everyone points at the person with the strongest opinion about boss fights. Most-picked chooses the next spinner.
+Everyone points at the person with the strongest opinion about co-op games. Most-picked chooses the next spinner.
+<player> picks <rem_player>. You have ten seconds to agree on one rule about gaming backlogs.
+[relationship] <player> picks <rem_player>. You have ten seconds to agree on one rule about NPC romances.
+[relationship] <player> picks <rem_player>. You have ten seconds to agree on one rule about gaming crushes.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about streaming games to friends.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about save scumming.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about RPG builds.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about AAA releases.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about rage quitting.
+The group votes on who would take competitive trash talk most seriously. Winner gets a ridiculous title until the next spin.
+The group votes on who would take difficulty settings most seriously. Winner gets a ridiculous title until the next spin.
+The group votes on who would take ranked multiplayer most seriously. Winner gets a ridiculous title until the next spin.
+[social] The group votes on who would take battle passes most seriously. Winner gets a ridiculous title until the next spin.
+[social] The group votes on who would take strategy guides most seriously. Winner gets a ridiculous title until the next spin.
+[social] The group votes on who would take launch-day bugs most seriously. Winner gets a ridiculous title until the next spin.
+[relationship] The group votes on who would take romance options most seriously. Winner gets a ridiculous title until the next spin.
+[social] The group votes on who would take achievement hunting most seriously. Winner gets a ridiculous title until the next spin.
+[social] First person to give a convincing hot take about survival games chooses who spins next.
+[social] First person to give a convincing hot take about indie games chooses who spins next.
+First person to give a convincing hot take about comfort games chooses who spins next.
+First person to give a convincing hot take about duo partners chooses who spins next.
+First person to give a convincing hot take about choosing a main character chooses who spins next.
+[social] First person to give a convincing hot take about open worlds chooses who spins next.
+[social] First person to give a convincing hot take about inventory management chooses who spins next.
+[social] First person to give a convincing hot take about voice chat chooses who spins next.
+[social] Last person to react to the phrase “PC upgrades” must give the group a dramatic one-sentence review of it.
+[drinking] Last person to react to the phrase “game-night drinking” must give the group a dramatic one-sentence review of it.
+[social] Last person to react to the phrase “boss fights” must give the group a dramatic one-sentence review of it.
+[social] Last person to react to the phrase “co-op games” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “DLC” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “game lore” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “online friendships” must give the group a dramatic one-sentence review of it.
+[social] Last person to react to the phrase “co-op communication” must give the group a dramatic one-sentence review of it.
+[social] <player> chooses two people to debate save scumming for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate RPG builds for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate AAA releases for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate rage quitting for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate guild drama for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate character creators for ten seconds. The group declares a winner.
+<player> chooses two people to debate side quests for ten seconds. The group declares a winner.
+<player> chooses two people to debate cosmetics for ten seconds. The group declares a winner.
+Everyone who likes strategy guides raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes launch-day bugs raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[relationship] Everyone who likes romance options raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes achievement hunting raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes horror games raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes gaming backlogs raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[relationship] Everyone who likes NPC romances raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[relationship] Everyone who likes gaming crushes raises a hand. <player> chooses one of them to set a harmless rule for one round.
+Everyone who dislikes choosing a main character points at someone who probably loves it. That person spins next.
+Everyone who dislikes open worlds points at someone who probably loves it. That person spins next.
+Everyone who dislikes inventory management points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes voice chat points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes controllers points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes competitive trash talk points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes difficulty settings points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes ranked multiplayer points at someone who probably loves it. That person spins next.
+[social] The spinner must assign <rem_player> an achievement title related to DLC.
+[social] The spinner must assign <rem_player> an achievement title related to game lore.
+The spinner must assign <rem_player> an achievement title related to online friendships.
+The spinner must assign <rem_player> an achievement title related to co-op communication.
+The spinner must assign <rem_player> an achievement title related to modding.
+[social] The spinner must assign <rem_player> an achievement title related to survival games.
+[social] The spinner must assign <rem_player> an achievement title related to indie games.
+[social] The spinner must assign <rem_player> an achievement title related to comfort games.
+[social] Everyone gives guild drama a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives character creators a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives side quests a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives cosmetics a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives speedrunning a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives PC upgrades a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives game-night drinking a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives boss fights a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] <player> and <rem_player> must invent the worst possible slogan for horror games.
+[social] <player> and <rem_player> must invent the worst possible slogan for gaming backlogs.
+[relationship] <player> and <rem_player> must invent the worst possible slogan for NPC romances.
+[relationship] <player> and <rem_player> must invent the worst possible slogan for gaming crushes.
+[social] <player> and <rem_player> must invent the worst possible slogan for streaming games to friends.
+[social] <player> and <rem_player> must invent the worst possible slogan for save scumming.
+<player> and <rem_player> must invent the worst possible slogan for RPG builds.
+<player> and <rem_player> must invent the worst possible slogan for AAA releases.
+The group chooses one person to explain controllers like they've never heard of it before.
+[social] The group chooses one person to explain competitive trash talk like they've never heard of it before.
+[social] The group chooses one person to explain difficulty settings like they've never heard of it before.
+[social] The group chooses one person to explain ranked multiplayer like they've never heard of it before.
+[social] The group chooses one person to explain battle passes like they've never heard of it before.
+[social] The group chooses one person to explain strategy guides like they've never heard of it before.
+[social] The group chooses one person to explain launch-day bugs like they've never heard of it before.
+[relationship] The group chooses one person to explain romance options like they've never heard of it before.
+Anyone who has a strong opinion about modding must make a dramatic pose. <player> picks the best one.
+Anyone who has a strong opinion about survival games must make a dramatic pose. <player> picks the best one.
+Anyone who has a strong opinion about indie games must make a dramatic pose. <player> picks the best one.
+[social] Anyone who has a strong opinion about comfort games must make a dramatic pose. <player> picks the best one.
+[relationship] Anyone who has a strong opinion about duo partners must make a dramatic pose. <player> picks the best one.
+[social] Anyone who has a strong opinion about choosing a main character must make a dramatic pose. <player> picks the best one.
+[social] Anyone who has a strong opinion about open worlds must make a dramatic pose. <player> picks the best one.
+[social] Anyone who has a strong opinion about inventory management must make a dramatic pose. <player> picks the best one.
+[social] The spinner names one thing that would make speedrunning better. <rem_player> must make it worse.
+[social] The spinner names one thing that would make PC upgrades better. <rem_player> must make it worse.
+The spinner names one thing that would make game-night drinking better. <rem_player> must make it worse.
+The spinner names one thing that would make boss fights better. <rem_player> must make it worse.
+The spinner names one thing that would make co-op games better. <rem_player> must make it worse.
+[social] The spinner names one thing that would make DLC better. <rem_player> must make it worse.
+[social] The spinner names one thing that would make game lore better. <rem_player> must make it worse.
+[relationship] The spinner names one thing that would make online friendships better. <rem_player> must make it worse.
+[social] Everyone points at the person most likely to become weirdly competitive about streaming games to friends. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about save scumming. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about RPG builds. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about AAA releases. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about rage quitting. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about guild drama. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about character creators. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about side quests. They host the next spin.
+[social] <player> chooses <rem_player>. One must praise battle passes; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise strategy guides; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise launch-day bugs; the other must roast it.
+[relationship] <player> chooses <rem_player>. One must praise romance options; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise achievement hunting; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise horror games; the other must roast it.
+<player> chooses <rem_player>. One must praise gaming backlogs; the other must roast it.
+<player> chooses <rem_player>. One must praise NPC romances; the other must roast it.
+The group invents a fake award for duo partners. The spinner decides who in the room wins it.
+[social] The group invents a fake award for choosing a main character. The spinner decides who in the room wins it.
+[social] The group invents a fake award for open worlds. The spinner decides who in the room wins it.
+[social] The group invents a fake award for inventory management. The spinner decides who in the room wins it.
+[social] The group invents a fake award for voice chat. The spinner decides who in the room wins it.
+[social] The group invents a fake award for controllers. The spinner decides who in the room wins it.
+[social] The group invents a fake award for competitive trash talk. The spinner decides who in the room wins it.
+[social] The group invents a fake award for difficulty settings. The spinner decides who in the room wins it.
+First person to make <player> laugh with a joke about co-op games becomes the next spinner.
+First person to make <player> laugh with a joke about DLC becomes the next spinner.
+First person to make <player> laugh with a joke about game lore becomes the next spinner.
+[relationship] First person to make <player> laugh with a joke about online friendships becomes the next spinner.
+[social] First person to make <player> laugh with a joke about co-op communication becomes the next spinner.
+[social] First person to make <player> laugh with a joke about modding becomes the next spinner.
+[social] First person to make <player> laugh with a joke about survival games becomes the next spinner.
+[social] First person to make <player> laugh with a joke about indie games becomes the next spinner.
+[social] Everyone points at who would be the best person to introduce a newcomer to rage quitting. They choose the next spinner.
+[social] Everyone points at who would be the best person to introduce a newcomer to guild drama. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to character creators. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to side quests. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to cosmetics. They choose the next spinner.
+[social] Everyone points at who would be the best person to introduce a newcomer to speedrunning. They choose the next spinner.
+[social] Everyone points at who would be the best person to introduce a newcomer to PC upgrades. They choose the next spinner.
+[drinking] Everyone points at who would be the best person to introduce a newcomer to game-night drinking. They choose the next spinner.
+[social] The spinner must turn achievement hunting into a three-word movie title.
+[social] The spinner must turn horror games into a three-word movie title.
+[social] The spinner must turn gaming backlogs into a three-word movie title.
+[relationship] The spinner must turn NPC romances into a three-word movie title.
+The spinner must turn gaming crushes into a three-word movie title.
+The spinner must turn streaming games to friends into a three-word movie title.
+The spinner must turn save scumming into a three-word movie title.
+[social] The spinner must turn RPG builds into a three-word movie title.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising voice chat.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising controllers.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising competitive trash talk.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising difficulty settings.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising ranked multiplayer.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising battle passes.
+<player> and <rem_player> have five seconds to pose like they're advertising strategy guides.
+<player> and <rem_player> have five seconds to pose like they're advertising launch-day bugs.
+The room votes: overrated, underrated, or correctly rated — co-op communication. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — modding. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — survival games. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — indie games. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — comfort games. The smallest voting group chooses the next spinner.
+[relationship] The room votes: overrated, underrated, or correctly rated — duo partners. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — choosing a main character. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — open worlds. The smallest voting group chooses the next spinner.
+The spinner chooses someone to give a fake public-service announcement about cosmetics.
+The spinner chooses someone to give a fake public-service announcement about speedrunning.
+The spinner chooses someone to give a fake public-service announcement about PC upgrades.
+[drinking] The spinner chooses someone to give a fake public-service announcement about game-night drinking.
+[social] The spinner chooses someone to give a fake public-service announcement about boss fights.
+[social] The spinner chooses someone to give a fake public-service announcement about co-op games.
+[social] The spinner chooses someone to give a fake public-service announcement about DLC.
+[social] The spinner chooses someone to give a fake public-service announcement about game lore.
+[relationship] Everyone points at who would complain about gaming crushes first. They must defend it for ten seconds.
+[social] Everyone points at who would complain about streaming games to friends first. They must defend it for ten seconds.
+Everyone points at who would complain about save scumming first. They must defend it for ten seconds.
+Everyone points at who would complain about RPG builds first. They must defend it for ten seconds.
+Everyone points at who would complain about AAA releases first. They must defend it for ten seconds.
+[social] Everyone points at who would complain about rage quitting first. They must defend it for ten seconds.
+[social] Everyone points at who would complain about guild drama first. They must defend it for ten seconds.
+[social] Everyone points at who would complain about character creators first. They must defend it for ten seconds.
+[social] <player> assigns <rem_player> a temporary nickname inspired by ranked multiplayer until the next spin.
+[social] <player> assigns <rem_player> a temporary nickname inspired by battle passes until the next spin.
+[social] <player> assigns <rem_player> a temporary nickname inspired by strategy guides until the next spin.
+[social] <player> assigns <rem_player> a temporary nickname inspired by launch-day bugs until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by romance options until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by achievement hunting until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by horror games until the next spin.
+[social] <player> assigns <rem_player> a temporary nickname inspired by gaming backlogs until the next spin.

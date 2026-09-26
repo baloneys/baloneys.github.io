@@ -1,0 +1,200 @@
+{truth}[social] <player>, what's your strongest opinion about character creators?
+{dare}[social] Defend character creators for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about side quests?
+{dare}[social] Defend side quests for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about cosmetics?
+{dare}[social] Defend cosmetics for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about speedrunning?
+{dare}[social] <player>, defend speedrunning for fifteen seconds like your reputation depends on it.
+{truth}[social] What's your strongest opinion about PC upgrades?
+{dare}[social] Defend PC upgrades for fifteen seconds like your reputation depends on it.
+{truth}[social] What part of survival games gets more hype than it deserves?
+{dare} Roast inventory management, then immediately give it one sincere compliment.
+{truth}[social] <player>, what part of indie games gets more hype than it deserves?
+{dare} Roast voice chat, then immediately give it one sincere compliment.
+{truth} What part of comfort games gets more hype than it deserves?
+{dare} Roast controllers, then immediately give it one sincere compliment.
+{truth} What part of duo partners gets more hype than it deserves?
+{dare}[social] Roast competitive trash talk, then immediately give it one sincere compliment.
+{truth} What part of choosing a main character gets more hype than it deserves?
+{dare}[social] <player>, roast difficulty settings, then immediately give it one sincere compliment.
+{truth}[social] What part of strategy guides deserves way more love?
+{dare}[social] Explain rage quitting like you're presenting a serious university lecture.
+{truth}[social] What part of launch-day bugs deserves way more love?
+{dare}[social] Explain guild drama like you're presenting a serious university lecture.
+{truth}[relationship] <player>, what part of romance options deserves way more love?
+{dare}[social] Explain character creators like you're presenting a serious university lecture.
+{truth}[social] What part of achievement hunting deserves way more love?
+{dare}[social] Explain side quests like you're presenting a serious university lecture.
+{truth}[social] What part of horror games deserves way more love?
+{dare}[social] Explain cosmetics like you're presenting a serious university lecture.
+{truth}[social] If you could change one thing about guild drama, what would it be?
+{dare} <player>, sell choosing a main character to the group like a suspicious late-night infomercial.
+{truth}[social] If you could change one thing about character creators, what would it be?
+{dare} Sell open worlds to the group like a suspicious late-night infomercial.
+{truth} If you could change one thing about side quests, what would it be?
+{dare} Sell inventory management to the group like a suspicious late-night infomercial.
+{truth} <player>, if you could change one thing about cosmetics, what would it be?
+{dare}[social] Sell voice chat to the group like a suspicious late-night infomercial.
+{truth} If you could change one thing about speedrunning, what would it be?
+{dare}[social] Sell controllers to the group like a suspicious late-night infomercial.
+{truth}[social] What's your personal rule when it comes to modding?
+{dare}[social] Give RPG builds the most ridiculous slogan you can invent.
+{truth}[social] What's your personal rule when it comes to survival games?
+{dare}[social] <player>, give AAA releases the most ridiculous slogan you can invent.
+{truth}[social] What's your personal rule when it comes to indie games?
+{dare}[social] Give rage quitting the most ridiculous slogan you can invent.
+{truth}[social] What's your personal rule when it comes to comfort games?
+{dare}[social] Give guild drama the most ridiculous slogan you can invent.
+{truth}[relationship] <player>, what's your personal rule when it comes to duo partners?
+{dare}[social] Give character creators the most ridiculous slogan you can invent.
+{truth}[social] What would make you instantly lose interest in battle passes?
+{dare} Describe comfort games in exactly five words.
+{truth}[social] What would make you instantly lose interest in strategy guides?
+{dare} Describe duo partners in exactly five words.
+{truth} What would make you instantly lose interest in launch-day bugs?
+{dare} <player>, describe choosing a main character in exactly five words.
+{truth} What would make you instantly lose interest in romance options?
+{dare}[social] Describe open worlds in exactly five words.
+{truth} What would make you instantly lose interest in achievement hunting?
+{dare}[social] Describe inventory management in exactly five words.
+{truth}[social] <player>, what's the ideal version of rage quitting for you?
+{dare}[social] Pretend you're a world-famous expert on streaming games to friends and give one piece of terrible advice.
+{truth}[social] What's the ideal version of guild drama for you?
+{dare}[social] Pretend you're a world-famous expert on save scumming and give one piece of terrible advice.
+{truth}[social] What's the ideal version of character creators for you?
+{dare}[social] Pretend you're a world-famous expert on RPG builds and give one piece of terrible advice.
+{truth}[social] What's the ideal version of side quests for you?
+{dare}[social] <player>, pretend you're a world-famous expert on AAA releases and give one piece of terrible advice.
+{truth}[social] What's the ideal version of cosmetics for you?
+{dare}[social] Pretend you're a world-famous expert on rage quitting and give one piece of terrible advice.
+{truth}[social] What do people usually misunderstand about co-op communication?
+{dare} Turn survival games into the title of an imaginary reality show.
+{truth}[social] <player>, what do people usually misunderstand about modding?
+{dare} Turn indie games into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about survival games?
+{dare} Turn comfort games into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about indie games?
+{dare}[relationship] Turn duo partners into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about comfort games?
+{dare}[social] <player>, turn choosing a main character into the title of an imaginary reality show.
+{truth}[social] What's the pettiest argument you could genuinely have about ranked multiplayer?
+{dare}[relationship] Give <rem_player> a nickname inspired by NPC romances. Keep it playful.
+{truth}[social] What's the pettiest argument you could genuinely have about battle passes?
+{dare}[relationship] Give <rem_player> a nickname inspired by gaming crushes. Keep it playful.
+{truth}[social] <player>, what's the pettiest argument you could genuinely have about strategy guides?
+{dare}[social] Give <rem_player> a nickname inspired by streaming games to friends. Keep it playful.
+{truth}[social] What's the pettiest argument you could genuinely have about launch-day bugs?
+{dare}[social] Give <rem_player> a nickname inspired by save scumming. Keep it playful.
+{truth}[relationship] What's the pettiest argument you could genuinely have about romance options?
+{dare}[social] Give <rem_player> a nickname inspired by RPG builds. Keep it playful.
+{truth}[social] How seriously do you actually take AAA releases?
+{dare} <player>, invent an achievement someone could unlock for being way too invested in co-op communication.
+{truth}[social] How seriously do you actually take rage quitting?
+{dare} Invent an achievement someone could unlock for being way too invested in modding.
+{truth} How seriously do you actually take guild drama?
+{dare} Invent an achievement someone could unlock for being way too invested in survival games.
+{truth} <player>, how seriously do you actually take character creators?
+{dare}[social] Invent an achievement someone could unlock for being way too invested in indie games.
+{truth} How seriously do you actually take side quests?
+{dare}[social] Invent an achievement someone could unlock for being way too invested in comfort games.
+{truth}[relationship] What's one opinion about online friendships you'd defend even if the room disagreed?
+{dare}[social] Pitch horror games as if it were a new video-game mechanic.
+{truth}[social] What's one opinion about co-op communication you'd defend even if the room disagreed?
+{dare}[social] <player>, pitch gaming backlogs as if it were a new video-game mechanic.
+{truth}[social] What's one opinion about modding you'd defend even if the room disagreed?
+{dare}[relationship] Pitch NPC romances as if it were a new video-game mechanic.
+{truth}[social] What's one opinion about survival games you'd defend even if the room disagreed?
+{dare}[relationship] Pitch gaming crushes as if it were a new video-game mechanic.
+{truth}[social] <player>, what's one opinion about indie games you'd defend even if the room disagreed?
+{dare}[social] Pitch streaming games to friends as if it were a new video-game mechanic.
+{truth}[social] What kind of person takes difficulty settings far too seriously?
+{dare} Make up a harmless conspiracy theory about game lore.
+{truth}[social] What kind of person takes ranked multiplayer far too seriously?
+{dare} Make up a harmless conspiracy theory about online friendships.
+{truth} What kind of person takes battle passes far too seriously?
+{dare} <player>, make up a harmless conspiracy theory about co-op communication.
+{truth} What kind of person takes strategy guides far too seriously?
+{dare}[social] Make up a harmless conspiracy theory about modding.
+{truth} What kind of person takes launch-day bugs far too seriously?
+{dare}[social] Make up a harmless conspiracy theory about survival games.
+{truth}[social] <player>, what's something about RPG builds you pretend not to care about but definitely notice?
+{dare}[relationship] Explain romance options in your most dramatic movie-trailer voice.
+{truth}[social] What's something about AAA releases you pretend not to care about but definitely notice?
+{dare}[social] Explain achievement hunting in your most dramatic movie-trailer voice.
+{truth}[social] What's something about rage quitting you pretend not to care about but definitely notice?
+{dare}[social] Explain horror games in your most dramatic movie-trailer voice.
+{truth}[social] What's something about guild drama you pretend not to care about but definitely notice?
+{dare}[social] <player>, explain gaming backlogs in your most dramatic movie-trailer voice.
+{truth}[social] What's something about character creators you pretend not to care about but definitely notice?
+{dare}[relationship] Explain NPC romances in your most dramatic movie-trailer voice.
+{truth}[social] If you had to introduce someone new to game lore, what would you warn them about first?
+{dare} Create a one-sentence advertisement for co-op games aimed specifically at <rem_player>.
+{truth}[relationship] <player>, if you had to introduce someone new to online friendships, what would you warn them about first?
+{dare} Create a one-sentence advertisement for DLC aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to co-op communication, what would you warn them about first?
+{dare} Create a one-sentence advertisement for game lore aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to modding, what would you warn them about first?
+{dare}[relationship] Create a one-sentence advertisement for online friendships aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to survival games, what would you warn them about first?
+{dare}[social] <player>, create a one-sentence advertisement for co-op communication aimed specifically at <rem_player>.
+{truth}[social] What would make competitive trash talk immediately better for you?
+{dare}[social] Act out the face of someone discovering strategy guides for the first time.
+{truth}[social] What would make difficulty settings immediately better for you?
+{dare}[social] Act out the face of someone discovering launch-day bugs for the first time.
+{truth}[social] <player>, what would make ranked multiplayer immediately better for you?
+{dare}[relationship] Act out the face of someone discovering romance options for the first time.
+{truth}[social] What would make battle passes immediately better for you?
+{dare}[social] Act out the face of someone discovering achievement hunting for the first time.
+{truth}[social] What would make strategy guides immediately better for you?
+{dare}[social] Act out the face of someone discovering horror games for the first time.
+{truth}[social] If <rem_player> strongly disagreed with you about save scumming, how long would the argument last?
+{dare} <player>, give a ten-second motivational speech about surviving game-night drinking.
+{truth}[social] If <rem_player> strongly disagreed with you about RPG builds, how long would the argument last?
+{dare} Give a ten-second motivational speech about surviving boss fights.
+{truth} If <rem_player> strongly disagreed with you about AAA releases, how long would the argument last?
+{dare} Give a ten-second motivational speech about surviving co-op games.
+{truth} <player>, if <rem_player> strongly disagreed with you about rage quitting, how long would the argument last?
+{dare}[social] Give a ten-second motivational speech about surviving DLC.
+{truth} If <rem_player> strongly disagreed with you about guild drama, how long would the argument last?
+{dare}[social] Give a ten-second motivational speech about surviving game lore.
+{truth}[social] What does your taste in DLC probably reveal about you?
+{dare}[social] Turn ranked multiplayer into a fake warning label and read it aloud.
+{truth}[social] What does your taste in game lore probably reveal about you?
+{dare}[social] <player>, turn battle passes into a fake warning label and read it aloud.
+{truth}[relationship] What does your taste in online friendships probably reveal about you?
+{dare}[social] Turn strategy guides into a fake warning label and read it aloud.
+{truth}[social] What does your taste in co-op communication probably reveal about you?
+{dare}[social] Turn launch-day bugs into a fake warning label and read it aloud.
+{truth}[social] <player>, what does your taste in modding probably reveal about you?
+{dare}[relationship] Turn romance options into a fake warning label and read it aloud.
+{truth}[social] What's your biggest green flag when controllers is involved?
+{dare} Describe speedrunning like it's an extremely rare collectible.
+{truth}[social] What's your biggest green flag when competitive trash talk is involved?
+{dare} Describe PC upgrades like it's an extremely rare collectible.
+{truth} What's your biggest green flag when difficulty settings is involved?
+{dare} <player>, describe game-night drinking like it's an extremely rare collectible.
+{truth} What's your biggest green flag when ranked multiplayer is involved?
+{dare}[social] Describe boss fights like it's an extremely rare collectible.
+{truth} What's your biggest green flag when battle passes is involved?
+{dare}[social] Describe co-op games like it's an extremely rare collectible.
+{truth}[social] <player>, what's your biggest red flag when streaming games to friends is involved?
+{dare}[social] Let <rem_player> choose whether you must praise or roast competitive trash talk for ten seconds.
+{truth}[social] What's your biggest red flag when save scumming is involved?
+{dare}[social] Let <rem_player> choose whether you must praise or roast difficulty settings for ten seconds.
+{truth}[social] What's your biggest red flag when RPG builds is involved?
+{dare}[social] Let <rem_player> choose whether you must praise or roast ranked multiplayer for ten seconds.
+{truth}[social] What's your biggest red flag when AAA releases is involved?
+{dare}[social] <player>, let <rem_player> choose whether you must praise or roast battle passes for ten seconds.
+{truth}[social] What's your biggest red flag when rage quitting is involved?
+{dare}[social] Let <rem_player> choose whether you must praise or roast strategy guides for ten seconds.
+{truth}[social] If you had to trust <rem_player> to make one decision for you about co-op games, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about side quests.
+{truth}[social] <player>, if you had to trust <rem_player> to make one decision for you about DLC, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about cosmetics.
+{truth} If you had to trust <rem_player> to make one decision for you about game lore, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about speedrunning.
+{truth} If you had to trust <rem_player> to make one decision for you about online friendships, what would you let them choose?
+{dare}[social] Invent a ceremonial title for the person in the group who cares most about PC upgrades.
+{truth} If you had to trust <rem_player> to make one decision for you about co-op communication, what would you let them choose?
+{dare}[drinking] <player>, invent a ceremonial title for the person in the group who cares most about game-night drinking.

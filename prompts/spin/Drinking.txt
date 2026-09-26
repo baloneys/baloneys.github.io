@@ -1,0 +1,200 @@
+[drinking] Everyone points at the person with the strongest opinion about beer. Most-picked chooses the next spinner.
+[drinking] Everyone points at the person with the strongest opinion about house parties. Most-picked chooses the next spinner.
+[drinking] Everyone points at the person with the strongest opinion about water breaks. Most-picked chooses the next spinner.
+[relationship] Everyone points at the person with the strongest opinion about drunk texting. Most-picked chooses the next spinner.
+[drinking] Everyone points at the person with the strongest opinion about morning-after routines. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about being the group caretaker. Most-picked chooses the next spinner.
+[drinking] Everyone points at the person with the strongest opinion about cider. Most-picked chooses the next spinner.
+Everyone points at the person with the strongest opinion about pre-drinks. Most-picked chooses the next spinner.
+<player> picks <rem_player>. You have ten seconds to agree on one rule about cheap drinks.
+[drinking] <player> picks <rem_player>. You have ten seconds to agree on one rule about pacing yourself.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about pub trivia.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about party stories.
+[drinking] <player> picks <rem_player>. You have ten seconds to agree on one rule about mixed drinks.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about karaoke.
+[drinking] <player> picks <rem_player>. You have ten seconds to agree on one rule about buying rounds.
+[drinking] <player> picks <rem_player>. You have ten seconds to agree on one rule about bar snacks.
+[social] The group votes on who would take being the sober friend most seriously. Winner gets a ridiculous title until the next spin.
+The group votes on who would take wine most seriously. Winner gets a ridiculous title until the next spin.
+The group votes on who would take VR drinking worlds most seriously. Winner gets a ridiculous title until the next spin.
+[drinking] The group votes on who would take designated drivers most seriously. Winner gets a ridiculous title until the next spin.
+[relationship] The group votes on who would take drunk flirting most seriously. Winner gets a ridiculous title until the next spin.
+[drinking] The group votes on who would take knowing when to stop most seriously. Winner gets a ridiculous title until the next spin.
+[relationship] The group votes on who would take tipsy confidence most seriously. Winner gets a ridiculous title until the next spin.
+[drinking] The group votes on who would take cocktails most seriously. Winner gets a ridiculous title until the next spin.
+[drinking] First person to give a convincing hot take about hangover food chooses who spins next.
+[drinking] First person to give a convincing hot take about fancy cocktails chooses who spins next.
+[drinking] First person to give a convincing hot take about mixers chooses who spins next.
+First person to give a convincing hot take about cocktail names chooses who spins next.
+First person to give a convincing hot take about the first drink of the night chooses who spins next.
+[drinking] First person to give a convincing hot take about pub nights chooses who spins next.
+[drinking] First person to give a convincing hot take about drinking games chooses who spins next.
+[drinking] First person to give a convincing hot take about toasts chooses who spins next.
+[drinking] Last person to react to the phrase “morning-after routines” must give the group a dramatic one-sentence review of it.
+[social] Last person to react to the phrase “being the group caretaker” must give the group a dramatic one-sentence review of it.
+[drinking] Last person to react to the phrase “cider” must give the group a dramatic one-sentence review of it.
+[drinking] Last person to react to the phrase “pre-drinks” must give the group a dramatic one-sentence review of it.
+[drinking] Last person to react to the phrase “bartenders” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “oversharing after a few drinks” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “party playlists” must give the group a dramatic one-sentence review of it.
+[relationship] Last person to react to the phrase “night-out flirting” must give the group a dramatic one-sentence review of it.
+[drinking] <player> chooses two people to debate mixed drinks for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate karaoke for ten seconds. The group declares a winner.
+[drinking] <player> chooses two people to debate buying rounds for ten seconds. The group declares a winner.
+[drinking] <player> chooses two people to debate bar snacks for ten seconds. The group declares a winner.
+[drinking] <player> chooses two people to debate sharing drinks for ten seconds. The group declares a winner.
+[drinking] <player> chooses two people to debate beer for ten seconds. The group declares a winner.
+[drinking] <player> chooses two people to debate house parties for ten seconds. The group declares a winner.
+<player> chooses two people to debate water breaks for ten seconds. The group declares a winner.
+Everyone who likes drunk flirting raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[drinking] Everyone who likes knowing when to stop raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[relationship] Everyone who likes tipsy confidence raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[drinking] Everyone who likes cocktails raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[drinking] Everyone who likes late-night food raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[drinking] Everyone who likes cheap drinks raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[drinking] Everyone who likes pacing yourself raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes pub trivia raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[drinking] Everyone who dislikes the first drink of the night points at someone who probably loves it. That person spins next.
+Everyone who dislikes pub nights points at someone who probably loves it. That person spins next.
+Everyone who dislikes drinking games points at someone who probably loves it. That person spins next.
+[drinking] Everyone who dislikes toasts points at someone who probably loves it. That person spins next.
+[drinking] Everyone who dislikes getting home after a night out points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes being the sober friend points at someone who probably loves it. That person spins next.
+[drinking] Everyone who dislikes wine points at someone who probably loves it. That person spins next.
+[drinking] Everyone who dislikes VR drinking worlds points at someone who probably loves it. That person spins next.
+[drinking] The spinner must assign <rem_player> an achievement title related to bartenders.
+[social] The spinner must assign <rem_player> an achievement title related to oversharing after a few drinks.
+[social] The spinner must assign <rem_player> an achievement title related to party playlists.
+The spinner must assign <rem_player> an achievement title related to night-out flirting.
+The spinner must assign <rem_player> an achievement title related to shots.
+[drinking] The spinner must assign <rem_player> an achievement title related to hangover food.
+[drinking] The spinner must assign <rem_player> an achievement title related to fancy cocktails.
+[drinking] The spinner must assign <rem_player> an achievement title related to mixers.
+[drinking] Everyone gives sharing drinks a score using only hand gestures. The most unusual score chooses the next spinner.
+[drinking] Everyone gives beer a score using only hand gestures. The most unusual score chooses the next spinner.
+[drinking] Everyone gives house parties a score using only hand gestures. The most unusual score chooses the next spinner.
+[drinking] Everyone gives water breaks a score using only hand gestures. The most unusual score chooses the next spinner.
+[relationship] Everyone gives drunk texting a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives morning-after routines a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives being the group caretaker a score using only hand gestures. The most unusual score chooses the next spinner.
+[drinking] Everyone gives cider a score using only hand gestures. The most unusual score chooses the next spinner.
+[drinking] <player> and <rem_player> must invent the worst possible slogan for late-night food.
+[drinking] <player> and <rem_player> must invent the worst possible slogan for cheap drinks.
+[drinking] <player> and <rem_player> must invent the worst possible slogan for pacing yourself.
+[social] <player> and <rem_player> must invent the worst possible slogan for pub trivia.
+[social] <player> and <rem_player> must invent the worst possible slogan for party stories.
+[drinking] <player> and <rem_player> must invent the worst possible slogan for mixed drinks.
+[social] <player> and <rem_player> must invent the worst possible slogan for karaoke.
+<player> and <rem_player> must invent the worst possible slogan for buying rounds.
+The group chooses one person to explain getting home after a night out like they've never heard of it before.
+[social] The group chooses one person to explain being the sober friend like they've never heard of it before.
+[drinking] The group chooses one person to explain wine like they've never heard of it before.
+[drinking] The group chooses one person to explain VR drinking worlds like they've never heard of it before.
+[drinking] The group chooses one person to explain designated drivers like they've never heard of it before.
+[relationship] The group chooses one person to explain drunk flirting like they've never heard of it before.
+[drinking] The group chooses one person to explain knowing when to stop like they've never heard of it before.
+[relationship] The group chooses one person to explain tipsy confidence like they've never heard of it before.
+[drinking] Anyone who has a strong opinion about shots must make a dramatic pose. <player> picks the best one.
+Anyone who has a strong opinion about hangover food must make a dramatic pose. <player> picks the best one.
+Anyone who has a strong opinion about fancy cocktails must make a dramatic pose. <player> picks the best one.
+[drinking] Anyone who has a strong opinion about mixers must make a dramatic pose. <player> picks the best one.
+[drinking] Anyone who has a strong opinion about cocktail names must make a dramatic pose. <player> picks the best one.
+[drinking] Anyone who has a strong opinion about the first drink of the night must make a dramatic pose. <player> picks the best one.
+[drinking] Anyone who has a strong opinion about pub nights must make a dramatic pose. <player> picks the best one.
+[drinking] Anyone who has a strong opinion about drinking games must make a dramatic pose. <player> picks the best one.
+[relationship] The spinner names one thing that would make drunk texting better. <rem_player> must make it worse.
+[drinking] The spinner names one thing that would make morning-after routines better. <rem_player> must make it worse.
+[social] The spinner names one thing that would make being the group caretaker better. <rem_player> must make it worse.
+The spinner names one thing that would make cider better. <rem_player> must make it worse.
+The spinner names one thing that would make pre-drinks better. <rem_player> must make it worse.
+[drinking] The spinner names one thing that would make bartenders better. <rem_player> must make it worse.
+[social] The spinner names one thing that would make oversharing after a few drinks better. <rem_player> must make it worse.
+[social] The spinner names one thing that would make party playlists better. <rem_player> must make it worse.
+[social] Everyone points at the person most likely to become weirdly competitive about party stories. They host the next spin.
+[drinking] Everyone points at the person most likely to become weirdly competitive about mixed drinks. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about karaoke. They host the next spin.
+[drinking] Everyone points at the person most likely to become weirdly competitive about buying rounds. They host the next spin.
+[drinking] Everyone points at the person most likely to become weirdly competitive about bar snacks. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about sharing drinks. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about beer. They host the next spin.
+[drinking] Everyone points at the person most likely to become weirdly competitive about house parties. They host the next spin.
+[drinking] <player> chooses <rem_player>. One must praise designated drivers; the other must roast it.
+[relationship] <player> chooses <rem_player>. One must praise drunk flirting; the other must roast it.
+[drinking] <player> chooses <rem_player>. One must praise knowing when to stop; the other must roast it.
+[relationship] <player> chooses <rem_player>. One must praise tipsy confidence; the other must roast it.
+[drinking] <player> chooses <rem_player>. One must praise cocktails; the other must roast it.
+[drinking] <player> chooses <rem_player>. One must praise late-night food; the other must roast it.
+[drinking] <player> chooses <rem_player>. One must praise cheap drinks; the other must roast it.
+<player> chooses <rem_player>. One must praise pacing yourself; the other must roast it.
+The group invents a fake award for cocktail names. The spinner decides who in the room wins it.
+[drinking] The group invents a fake award for the first drink of the night. The spinner decides who in the room wins it.
+[drinking] The group invents a fake award for pub nights. The spinner decides who in the room wins it.
+[drinking] The group invents a fake award for drinking games. The spinner decides who in the room wins it.
+[drinking] The group invents a fake award for toasts. The spinner decides who in the room wins it.
+[drinking] The group invents a fake award for getting home after a night out. The spinner decides who in the room wins it.
+[social] The group invents a fake award for being the sober friend. The spinner decides who in the room wins it.
+[drinking] The group invents a fake award for wine. The spinner decides who in the room wins it.
+[drinking] First person to make <player> laugh with a joke about pre-drinks becomes the next spinner.
+First person to make <player> laugh with a joke about bartenders becomes the next spinner.
+First person to make <player> laugh with a joke about oversharing after a few drinks becomes the next spinner.
+[social] First person to make <player> laugh with a joke about party playlists becomes the next spinner.
+[relationship] First person to make <player> laugh with a joke about night-out flirting becomes the next spinner.
+[drinking] First person to make <player> laugh with a joke about shots becomes the next spinner.
+[drinking] First person to make <player> laugh with a joke about hangover food becomes the next spinner.
+[drinking] First person to make <player> laugh with a joke about fancy cocktails becomes the next spinner.
+[drinking] Everyone points at who would be the best person to introduce a newcomer to bar snacks. They choose the next spinner.
+[drinking] Everyone points at who would be the best person to introduce a newcomer to sharing drinks. They choose the next spinner.
+[drinking] Everyone points at who would be the best person to introduce a newcomer to beer. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to house parties. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to water breaks. They choose the next spinner.
+[relationship] Everyone points at who would be the best person to introduce a newcomer to drunk texting. They choose the next spinner.
+[drinking] Everyone points at who would be the best person to introduce a newcomer to morning-after routines. They choose the next spinner.
+[social] Everyone points at who would be the best person to introduce a newcomer to being the group caretaker. They choose the next spinner.
+[drinking] The spinner must turn cocktails into a three-word movie title.
+[drinking] The spinner must turn late-night food into a three-word movie title.
+[drinking] The spinner must turn cheap drinks into a three-word movie title.
+[drinking] The spinner must turn pacing yourself into a three-word movie title.
+[social] The spinner must turn pub trivia into a three-word movie title.
+The spinner must turn party stories into a three-word movie title.
+The spinner must turn mixed drinks into a three-word movie title.
+[social] The spinner must turn karaoke into a three-word movie title.
+[drinking] <player> and <rem_player> have five seconds to pose like they're advertising toasts.
+[drinking] <player> and <rem_player> have five seconds to pose like they're advertising getting home after a night out.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising being the sober friend.
+[drinking] <player> and <rem_player> have five seconds to pose like they're advertising wine.
+[drinking] <player> and <rem_player> have five seconds to pose like they're advertising VR drinking worlds.
+[drinking] <player> and <rem_player> have five seconds to pose like they're advertising designated drivers.
+[relationship] <player> and <rem_player> have five seconds to pose like they're advertising drunk flirting.
+<player> and <rem_player> have five seconds to pose like they're advertising knowing when to stop.
+The room votes: overrated, underrated, or correctly rated — night-out flirting. The smallest voting group chooses the next spinner.
+[drinking] The room votes: overrated, underrated, or correctly rated — shots. The smallest voting group chooses the next spinner.
+[drinking] The room votes: overrated, underrated, or correctly rated — hangover food. The smallest voting group chooses the next spinner.
+[drinking] The room votes: overrated, underrated, or correctly rated — fancy cocktails. The smallest voting group chooses the next spinner.
+[drinking] The room votes: overrated, underrated, or correctly rated — mixers. The smallest voting group chooses the next spinner.
+[drinking] The room votes: overrated, underrated, or correctly rated — cocktail names. The smallest voting group chooses the next spinner.
+[drinking] The room votes: overrated, underrated, or correctly rated — the first drink of the night. The smallest voting group chooses the next spinner.
+[drinking] The room votes: overrated, underrated, or correctly rated — pub nights. The smallest voting group chooses the next spinner.
+[drinking] The spinner chooses someone to give a fake public-service announcement about water breaks.
+The spinner chooses someone to give a fake public-service announcement about drunk texting.
+The spinner chooses someone to give a fake public-service announcement about morning-after routines.
+[social] The spinner chooses someone to give a fake public-service announcement about being the group caretaker.
+[drinking] The spinner chooses someone to give a fake public-service announcement about cider.
+[drinking] The spinner chooses someone to give a fake public-service announcement about pre-drinks.
+[drinking] The spinner chooses someone to give a fake public-service announcement about bartenders.
+[social] The spinner chooses someone to give a fake public-service announcement about oversharing after a few drinks.
+[social] Everyone points at who would complain about pub trivia first. They must defend it for ten seconds.
+[social] Everyone points at who would complain about party stories first. They must defend it for ten seconds.
+[drinking] Everyone points at who would complain about mixed drinks first. They must defend it for ten seconds.
+Everyone points at who would complain about karaoke first. They must defend it for ten seconds.
+Everyone points at who would complain about buying rounds first. They must defend it for ten seconds.
+[drinking] Everyone points at who would complain about bar snacks first. They must defend it for ten seconds.
+[drinking] Everyone points at who would complain about sharing drinks first. They must defend it for ten seconds.
+[drinking] Everyone points at who would complain about beer first. They must defend it for ten seconds.
+[drinking] <player> assigns <rem_player> a temporary nickname inspired by VR drinking worlds until the next spin.
+[drinking] <player> assigns <rem_player> a temporary nickname inspired by designated drivers until the next spin.
+[relationship] <player> assigns <rem_player> a temporary nickname inspired by drunk flirting until the next spin.
+[drinking] <player> assigns <rem_player> a temporary nickname inspired by knowing when to stop until the next spin.
+[relationship] <player> assigns <rem_player> a temporary nickname inspired by tipsy confidence until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by cocktails until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by late-night food until the next spin.
+[drinking] <player> assigns <rem_player> a temporary nickname inspired by cheap drinks until the next spin.

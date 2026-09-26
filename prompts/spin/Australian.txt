@@ -1,0 +1,200 @@
+[social] Everyone points at the person with the strongest opinion about Vegemite. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about bin chickens. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about long Australian road trips. Most-picked chooses the next spinner.
+[drinking] Everyone points at the person with the strongest opinion about country-town pubs. Most-picked chooses the next spinner.
+[social] Everyone points at the person with the strongest opinion about state rivalries. Most-picked chooses the next spinner.
+[relationship] Everyone points at the person with the strongest opinion about pub-date ideas. Most-picked chooses the next spinner.
+Everyone points at the person with the strongest opinion about chicken salt. Most-picked chooses the next spinner.
+Everyone points at the person with the strongest opinion about beach etiquette. Most-picked chooses the next spinner.
+<player> picks <rem_player>. You have ten seconds to agree on one rule about Tim Tams.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about public holidays.
+[relationship] <player> picks <rem_player>. You have ten seconds to agree on one rule about meeting someone at the pub.
+[drinking] <player> picks <rem_player>. You have ten seconds to agree on one rule about house-party etiquette.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about summer Christmas.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about Melbourne weather.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about Kmart trips.
+[social] <player> picks <rem_player>. You have ten seconds to agree on one rule about thongs as footwear.
+The group votes on who would take beach-date ideas most seriously. Winner gets a ridiculous title until the next spin.
+The group votes on who would take Bunnings sausage sizzles most seriously. Winner gets a ridiculous title until the next spin.
+The group votes on who would take huntsman spiders most seriously. Winner gets a ridiculous title until the next spin.
+[drinking] The group votes on who would take pub meals most seriously. Winner gets a ridiculous title until the next spin.
+[social] The group votes on who would take Aussie nicknames most seriously. Winner gets a ridiculous title until the next spin.
+[social] The group votes on who would take calling everyone mate most seriously. Winner gets a ridiculous title until the next spin.
+[relationship] The group votes on who would take Australian accents most seriously. Winner gets a ridiculous title until the next spin.
+[drinking] The group votes on who would take servo food most seriously. Winner gets a ridiculous title until the next spin.
+[social] First person to give a convincing hot take about footy culture chooses who spins next.
+[social] First person to give a convincing hot take about Milo chooses who spins next.
+First person to give a convincing hot take about barbecue etiquette chooses who spins next.
+First person to give a convincing hot take about late-night Macca's chooses who spins next.
+First person to give a convincing hot take about the phrase 'yeah, nah' chooses who spins next.
+[social] First person to give a convincing hot take about magpies chooses who spins next.
+[social] First person to give a convincing hot take about forty-degree summer days chooses who spins next.
+[social] First person to give a convincing hot take about Coles versus Woolies chooses who spins next.
+[social] Last person to react to the phrase “state rivalries” must give the group a dramatic one-sentence review of it.
+[relationship] Last person to react to the phrase “pub-date ideas” must give the group a dramatic one-sentence review of it.
+[social] Last person to react to the phrase “chicken salt” must give the group a dramatic one-sentence review of it.
+[social] Last person to react to the phrase “beach etiquette” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “Shapes flavours” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “swearing as punctuation” must give the group a dramatic one-sentence review of it.
+Last person to react to the phrase “dating in a small Australian town” must give the group a dramatic one-sentence review of it.
+[drinking] Last person to react to the phrase “festival culture” must give the group a dramatic one-sentence review of it.
+[social] <player> chooses two people to debate summer Christmas for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate Melbourne weather for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate Kmart trips for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate thongs as footwear for ten seconds. The group declares a winner.
+[relationship] <player> chooses two people to debate Aussie flirting for ten seconds. The group declares a winner.
+[social] <player> chooses two people to debate Vegemite for ten seconds. The group declares a winner.
+<player> chooses two people to debate bin chickens for ten seconds. The group declares a winner.
+<player> chooses two people to debate long Australian road trips for ten seconds. The group declares a winner.
+Everyone who likes Aussie nicknames raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes calling everyone mate raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[relationship] Everyone who likes Australian accents raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[drinking] Everyone who likes servo food raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes backyard cricket raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes Tim Tams raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[social] Everyone who likes public holidays raises a hand. <player> chooses one of them to set a harmless rule for one round.
+[relationship] Everyone who likes meeting someone at the pub raises a hand. <player> chooses one of them to set a harmless rule for one round.
+Everyone who dislikes the phrase 'yeah, nah' points at someone who probably loves it. That person spins next.
+Everyone who dislikes magpies points at someone who probably loves it. That person spins next.
+Everyone who dislikes forty-degree summer days points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes Coles versus Woolies points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes coffee culture points at someone who probably loves it. That person spins next.
+[relationship] Everyone who dislikes beach-date ideas points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes Bunnings sausage sizzles points at someone who probably loves it. That person spins next.
+[social] Everyone who dislikes huntsman spiders points at someone who probably loves it. That person spins next.
+[social] The spinner must assign <rem_player> an achievement title related to Shapes flavours.
+[social] The spinner must assign <rem_player> an achievement title related to swearing as punctuation.
+The spinner must assign <rem_player> an achievement title related to dating in a small Australian town.
+The spinner must assign <rem_player> an achievement title related to festival culture.
+The spinner must assign <rem_player> an achievement title related to Australian slang.
+[social] The spinner must assign <rem_player> an achievement title related to footy culture.
+[social] The spinner must assign <rem_player> an achievement title related to Milo.
+[social] The spinner must assign <rem_player> an achievement title related to barbecue etiquette.
+[relationship] Everyone gives Aussie flirting a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives Vegemite a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives bin chickens a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives long Australian road trips a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives country-town pubs a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives state rivalries a score using only hand gestures. The most unusual score chooses the next spinner.
+Everyone gives pub-date ideas a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] Everyone gives chicken salt a score using only hand gestures. The most unusual score chooses the next spinner.
+[social] <player> and <rem_player> must invent the worst possible slogan for backyard cricket.
+[social] <player> and <rem_player> must invent the worst possible slogan for Tim Tams.
+[social] <player> and <rem_player> must invent the worst possible slogan for public holidays.
+[relationship] <player> and <rem_player> must invent the worst possible slogan for meeting someone at the pub.
+[drinking] <player> and <rem_player> must invent the worst possible slogan for house-party etiquette.
+[social] <player> and <rem_player> must invent the worst possible slogan for summer Christmas.
+<player> and <rem_player> must invent the worst possible slogan for Melbourne weather.
+<player> and <rem_player> must invent the worst possible slogan for Kmart trips.
+The group chooses one person to explain coffee culture like they've never heard of it before.
+[relationship] The group chooses one person to explain beach-date ideas like they've never heard of it before.
+[social] The group chooses one person to explain Bunnings sausage sizzles like they've never heard of it before.
+[social] The group chooses one person to explain huntsman spiders like they've never heard of it before.
+[drinking] The group chooses one person to explain pub meals like they've never heard of it before.
+[social] The group chooses one person to explain Aussie nicknames like they've never heard of it before.
+[social] The group chooses one person to explain calling everyone mate like they've never heard of it before.
+[relationship] The group chooses one person to explain Australian accents like they've never heard of it before.
+Anyone who has a strong opinion about Australian slang must make a dramatic pose. <player> picks the best one.
+Anyone who has a strong opinion about footy culture must make a dramatic pose. <player> picks the best one.
+Anyone who has a strong opinion about Milo must make a dramatic pose. <player> picks the best one.
+[social] Anyone who has a strong opinion about barbecue etiquette must make a dramatic pose. <player> picks the best one.
+[drinking] Anyone who has a strong opinion about late-night Macca's must make a dramatic pose. <player> picks the best one.
+[social] Anyone who has a strong opinion about the phrase 'yeah, nah' must make a dramatic pose. <player> picks the best one.
+[social] Anyone who has a strong opinion about magpies must make a dramatic pose. <player> picks the best one.
+[social] Anyone who has a strong opinion about forty-degree summer days must make a dramatic pose. <player> picks the best one.
+[drinking] The spinner names one thing that would make country-town pubs better. <rem_player> must make it worse.
+[social] The spinner names one thing that would make state rivalries better. <rem_player> must make it worse.
+The spinner names one thing that would make pub-date ideas better. <rem_player> must make it worse.
+The spinner names one thing that would make chicken salt better. <rem_player> must make it worse.
+The spinner names one thing that would make beach etiquette better. <rem_player> must make it worse.
+[social] The spinner names one thing that would make Shapes flavours better. <rem_player> must make it worse.
+[social] The spinner names one thing that would make swearing as punctuation better. <rem_player> must make it worse.
+[relationship] The spinner names one thing that would make dating in a small Australian town better. <rem_player> must make it worse.
+[drinking] Everyone points at the person most likely to become weirdly competitive about house-party etiquette. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about summer Christmas. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about Melbourne weather. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about Kmart trips. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about thongs as footwear. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about Aussie flirting. They host the next spin.
+Everyone points at the person most likely to become weirdly competitive about Vegemite. They host the next spin.
+[social] Everyone points at the person most likely to become weirdly competitive about bin chickens. They host the next spin.
+[drinking] <player> chooses <rem_player>. One must praise pub meals; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise Aussie nicknames; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise calling everyone mate; the other must roast it.
+[relationship] <player> chooses <rem_player>. One must praise Australian accents; the other must roast it.
+[drinking] <player> chooses <rem_player>. One must praise servo food; the other must roast it.
+[social] <player> chooses <rem_player>. One must praise backyard cricket; the other must roast it.
+<player> chooses <rem_player>. One must praise Tim Tams; the other must roast it.
+<player> chooses <rem_player>. One must praise public holidays; the other must roast it.
+The group invents a fake award for late-night Macca's. The spinner decides who in the room wins it.
+[social] The group invents a fake award for the phrase 'yeah, nah'. The spinner decides who in the room wins it.
+[social] The group invents a fake award for magpies. The spinner decides who in the room wins it.
+[social] The group invents a fake award for forty-degree summer days. The spinner decides who in the room wins it.
+[social] The group invents a fake award for Coles versus Woolies. The spinner decides who in the room wins it.
+[social] The group invents a fake award for coffee culture. The spinner decides who in the room wins it.
+[relationship] The group invents a fake award for beach-date ideas. The spinner decides who in the room wins it.
+[social] The group invents a fake award for Bunnings sausage sizzles. The spinner decides who in the room wins it.
+First person to make <player> laugh with a joke about beach etiquette becomes the next spinner.
+First person to make <player> laugh with a joke about Shapes flavours becomes the next spinner.
+First person to make <player> laugh with a joke about swearing as punctuation becomes the next spinner.
+[relationship] First person to make <player> laugh with a joke about dating in a small Australian town becomes the next spinner.
+[drinking] First person to make <player> laugh with a joke about festival culture becomes the next spinner.
+[social] First person to make <player> laugh with a joke about Australian slang becomes the next spinner.
+[social] First person to make <player> laugh with a joke about footy culture becomes the next spinner.
+[social] First person to make <player> laugh with a joke about Milo becomes the next spinner.
+[social] Everyone points at who would be the best person to introduce a newcomer to thongs as footwear. They choose the next spinner.
+[relationship] Everyone points at who would be the best person to introduce a newcomer to Aussie flirting. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to Vegemite. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to bin chickens. They choose the next spinner.
+Everyone points at who would be the best person to introduce a newcomer to long Australian road trips. They choose the next spinner.
+[drinking] Everyone points at who would be the best person to introduce a newcomer to country-town pubs. They choose the next spinner.
+[social] Everyone points at who would be the best person to introduce a newcomer to state rivalries. They choose the next spinner.
+[relationship] Everyone points at who would be the best person to introduce a newcomer to pub-date ideas. They choose the next spinner.
+[drinking] The spinner must turn servo food into a three-word movie title.
+[social] The spinner must turn backyard cricket into a three-word movie title.
+[social] The spinner must turn Tim Tams into a three-word movie title.
+[social] The spinner must turn public holidays into a three-word movie title.
+The spinner must turn meeting someone at the pub into a three-word movie title.
+The spinner must turn house-party etiquette into a three-word movie title.
+The spinner must turn summer Christmas into a three-word movie title.
+[social] The spinner must turn Melbourne weather into a three-word movie title.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising Coles versus Woolies.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising coffee culture.
+[relationship] <player> and <rem_player> have five seconds to pose like they're advertising beach-date ideas.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising Bunnings sausage sizzles.
+[social] <player> and <rem_player> have five seconds to pose like they're advertising huntsman spiders.
+[drinking] <player> and <rem_player> have five seconds to pose like they're advertising pub meals.
+<player> and <rem_player> have five seconds to pose like they're advertising Aussie nicknames.
+<player> and <rem_player> have five seconds to pose like they're advertising calling everyone mate.
+The room votes: overrated, underrated, or correctly rated — festival culture. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — Australian slang. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — footy culture. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — Milo. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — barbecue etiquette. The smallest voting group chooses the next spinner.
+[drinking] The room votes: overrated, underrated, or correctly rated — late-night Macca's. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — the phrase 'yeah, nah'. The smallest voting group chooses the next spinner.
+[social] The room votes: overrated, underrated, or correctly rated — magpies. The smallest voting group chooses the next spinner.
+The spinner chooses someone to give a fake public-service announcement about long Australian road trips.
+The spinner chooses someone to give a fake public-service announcement about country-town pubs.
+The spinner chooses someone to give a fake public-service announcement about state rivalries.
+[relationship] The spinner chooses someone to give a fake public-service announcement about pub-date ideas.
+[social] The spinner chooses someone to give a fake public-service announcement about chicken salt.
+[social] The spinner chooses someone to give a fake public-service announcement about beach etiquette.
+[social] The spinner chooses someone to give a fake public-service announcement about Shapes flavours.
+[social] The spinner chooses someone to give a fake public-service announcement about swearing as punctuation.
+[relationship] Everyone points at who would complain about meeting someone at the pub first. They must defend it for ten seconds.
+[drinking] Everyone points at who would complain about house-party etiquette first. They must defend it for ten seconds.
+Everyone points at who would complain about summer Christmas first. They must defend it for ten seconds.
+Everyone points at who would complain about Melbourne weather first. They must defend it for ten seconds.
+Everyone points at who would complain about Kmart trips first. They must defend it for ten seconds.
+[social] Everyone points at who would complain about thongs as footwear first. They must defend it for ten seconds.
+[relationship] Everyone points at who would complain about Aussie flirting first. They must defend it for ten seconds.
+[social] Everyone points at who would complain about Vegemite first. They must defend it for ten seconds.
+[social] <player> assigns <rem_player> a temporary nickname inspired by huntsman spiders until the next spin.
+[drinking] <player> assigns <rem_player> a temporary nickname inspired by pub meals until the next spin.
+[social] <player> assigns <rem_player> a temporary nickname inspired by Aussie nicknames until the next spin.
+[social] <player> assigns <rem_player> a temporary nickname inspired by calling everyone mate until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by Australian accents until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by servo food until the next spin.
+<player> assigns <rem_player> a temporary nickname inspired by backyard cricket until the next spin.
+[social] <player> assigns <rem_player> a temporary nickname inspired by Tim Tams until the next spin.

@@ -1,0 +1,200 @@
+{truth}[nsfw] <player>, what's your strongest opinion about flirty banter?
+{dare}[nsfw] Defend flirty banter for fifteen seconds like your reputation depends on it.
+{truth}[relationship] What's your strongest opinion about cuddling?
+{dare}[relationship] Defend cuddling for fifteen seconds like your reputation depends on it.
+{truth}[relationship] What's your strongest opinion about confidence?
+{dare}[relationship] Defend confidence for fifteen seconds like your reputation depends on it.
+{truth}[nsfw] What's your strongest opinion about spicy photos?
+{dare}[nsfw] <player>, defend spicy photos for fifteen seconds like your reputation depends on it.
+{truth}[nsfw] What's your strongest opinion about fantasies?
+{dare}[nsfw] Defend fantasies for fifteen seconds like your reputation depends on it.
+{truth}[nsfw] What part of ERP etiquette gets more hype than it deserves?
+{dare}[nsfw] Roast avatar body language, then immediately give it one sincere compliment.
+{truth}[nsfw] <player>, what part of physical attraction gets more hype than it deserves?
+{dare} Roast sexting, then immediately give it one sincere compliment.
+{truth}[nsfw] What part of dating-app flirting gets more hype than it deserves?
+{dare} Roast turn-ons, then immediately give it one sincere compliment.
+{truth} What part of voice attraction gets more hype than it deserves?
+{dare}[relationship] Roast romantic confidence, then immediately give it one sincere compliment.
+{truth} What part of knowing when flirting is mutual gets more hype than it deserves?
+{dare}[nsfw] <player>, roast sexual chemistry, then immediately give it one sincere compliment.
+{truth}[relationship] What part of pet names deserves way more love?
+{dare}[nsfw] Explain turn-offs like you're presenting a serious university lecture.
+{truth}[nsfw] What part of being propositioned deserves way more love?
+{dare}[nsfw] Explain kissing styles like you're presenting a serious university lecture.
+{truth}[nsfw] <player>, what part of setting limits deserves way more love?
+{dare}[nsfw] Explain flirty banter like you're presenting a serious university lecture.
+{truth}[relationship] What part of slow-burn tension deserves way more love?
+{dare}[relationship] Explain cuddling like you're presenting a serious university lecture.
+{truth}[nsfw] What part of aftercare deserves way more love?
+{dare}[relationship] Explain confidence like you're presenting a serious university lecture.
+{truth}[nsfw] If you could change one thing about kissing styles, what would it be?
+{dare}[nsfw] <player>, sell knowing when flirting is mutual to the group like a suspicious late-night infomercial.
+{truth}[nsfw] If you could change one thing about flirty banter, what would it be?
+{dare} Sell prolonged eye contact to the group like a suspicious late-night infomercial.
+{truth}[relationship] If you could change one thing about cuddling, what would it be?
+{dare} Sell avatar body language to the group like a suspicious late-night infomercial.
+{truth} <player>, if you could change one thing about confidence, what would it be?
+{dare}[nsfw] Sell sexting to the group like a suspicious late-night infomercial.
+{truth} If you could change one thing about spicy photos, what would it be?
+{dare}[nsfw] Sell turn-ons to the group like a suspicious late-night infomercial.
+{truth}[nsfw] What's your personal rule when it comes to bold compliments?
+{dare}[nsfw] Give private-instance flirting the most ridiculous slogan you can invent.
+{truth}[nsfw] What's your personal rule when it comes to ERP etiquette?
+{dare}[relationship] <player>, give emotional attraction the most ridiculous slogan you can invent.
+{truth}[nsfw] What's your personal rule when it comes to physical attraction?
+{dare}[nsfw] Give turn-offs the most ridiculous slogan you can invent.
+{truth}[nsfw] What's your personal rule when it comes to dating-app flirting?
+{dare}[nsfw] Give kissing styles the most ridiculous slogan you can invent.
+{truth}[nsfw] <player>, what's your personal rule when it comes to voice attraction?
+{dare}[nsfw] Give flirty banter the most ridiculous slogan you can invent.
+{truth}[relationship] What would make you instantly lose interest in shyness?
+{dare}[nsfw] Describe dating-app flirting in exactly five words.
+{truth}[relationship] What would make you instantly lose interest in pet names?
+{dare} Describe voice attraction in exactly five words.
+{truth}[nsfw] What would make you instantly lose interest in being propositioned?
+{dare} <player>, describe knowing when flirting is mutual in exactly five words.
+{truth} What would make you instantly lose interest in setting limits?
+{dare}[nsfw] Describe prolonged eye contact in exactly five words.
+{truth} What would make you instantly lose interest in slow-burn tension?
+{dare}[nsfw] Describe avatar body language in exactly five words.
+{truth}[nsfw] <player>, what's the ideal version of turn-offs for you?
+{dare}[nsfw] Pretend you're a world-famous expert on sexual humour and give one piece of terrible advice.
+{truth}[nsfw] What's the ideal version of kissing styles for you?
+{dare}[nsfw] Pretend you're a world-famous expert on sexy voices and give one piece of terrible advice.
+{truth}[nsfw] What's the ideal version of flirty banter for you?
+{dare}[nsfw] Pretend you're a world-famous expert on private-instance flirting and give one piece of terrible advice.
+{truth}[relationship] What's the ideal version of cuddling for you?
+{dare}[relationship] <player>, pretend you're a world-famous expert on emotional attraction and give one piece of terrible advice.
+{truth}[relationship] What's the ideal version of confidence for you?
+{dare}[nsfw] Pretend you're a world-famous expert on turn-offs and give one piece of terrible advice.
+{truth}[relationship] What do people usually misunderstand about casual versus serious chemistry?
+{dare}[nsfw] Turn ERP etiquette into the title of an imaginary reality show.
+{truth}[nsfw] <player>, what do people usually misunderstand about bold compliments?
+{dare} Turn physical attraction into the title of an imaginary reality show.
+{truth}[nsfw] What do people usually misunderstand about ERP etiquette?
+{dare} Turn dating-app flirting into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about physical attraction?
+{dare}[nsfw] Turn voice attraction into the title of an imaginary reality show.
+{truth} What do people usually misunderstand about dating-app flirting?
+{dare}[nsfw] <player>, turn knowing when flirting is mutual into the title of an imaginary reality show.
+{truth}[nsfw] What's the pettiest argument you could genuinely have about sexual boundaries?
+{dare}[nsfw] Give <rem_player> a nickname inspired by friends-with-benefits boundaries. Keep it playful.
+{truth}[relationship] What's the pettiest argument you could genuinely have about shyness?
+{dare}[nsfw] Give <rem_player> a nickname inspired by being flirted with in VR. Keep it playful.
+{truth}[relationship] <player>, what's the pettiest argument you could genuinely have about pet names?
+{dare}[nsfw] Give <rem_player> a nickname inspired by sexual humour. Keep it playful.
+{truth}[nsfw] What's the pettiest argument you could genuinely have about being propositioned?
+{dare}[nsfw] Give <rem_player> a nickname inspired by sexy voices. Keep it playful.
+{truth}[nsfw] What's the pettiest argument you could genuinely have about setting limits?
+{dare}[nsfw] Give <rem_player> a nickname inspired by private-instance flirting. Keep it playful.
+{truth}[relationship] How seriously do you actually take emotional attraction?
+{dare}[relationship] <player>, invent an achievement someone could unlock for being way too invested in casual versus serious chemistry.
+{truth}[nsfw] How seriously do you actually take turn-offs?
+{dare} Invent an achievement someone could unlock for being way too invested in bold compliments.
+{truth}[nsfw] How seriously do you actually take kissing styles?
+{dare} Invent an achievement someone could unlock for being way too invested in ERP etiquette.
+{truth} <player>, how seriously do you actually take flirty banter?
+{dare}[nsfw] Invent an achievement someone could unlock for being way too invested in physical attraction.
+{truth} How seriously do you actually take cuddling?
+{dare}[nsfw] Invent an achievement someone could unlock for being way too invested in dating-app flirting.
+{truth}[relationship] What's one opinion about making the first move you'd defend even if the room disagreed?
+{dare}[nsfw] Pitch aftercare as if it were a new video-game mechanic.
+{truth}[relationship] What's one opinion about casual versus serious chemistry you'd defend even if the room disagreed?
+{dare}[relationship] <player>, pitch romantic tension as if it were a new video-game mechanic.
+{truth}[nsfw] What's one opinion about bold compliments you'd defend even if the room disagreed?
+{dare}[nsfw] Pitch friends-with-benefits boundaries as if it were a new video-game mechanic.
+{truth}[nsfw] What's one opinion about ERP etiquette you'd defend even if the room disagreed?
+{dare}[nsfw] Pitch being flirted with in VR as if it were a new video-game mechanic.
+{truth}[nsfw] <player>, what's one opinion about physical attraction you'd defend even if the room disagreed?
+{dare}[nsfw] Pitch sexual humour as if it were a new video-game mechanic.
+{truth}[nsfw] What kind of person takes sexual chemistry far too seriously?
+{dare}[nsfw] Make up a harmless conspiracy theory about hookup expectations.
+{truth}[nsfw] What kind of person takes sexual boundaries far too seriously?
+{dare} Make up a harmless conspiracy theory about making the first move.
+{truth}[relationship] What kind of person takes shyness far too seriously?
+{dare} <player>, make up a harmless conspiracy theory about casual versus serious chemistry.
+{truth} What kind of person takes pet names far too seriously?
+{dare}[nsfw] Make up a harmless conspiracy theory about bold compliments.
+{truth} What kind of person takes being propositioned far too seriously?
+{dare}[nsfw] Make up a harmless conspiracy theory about ERP etiquette.
+{truth}[nsfw] <player>, what's something about private-instance flirting you pretend not to care about but definitely notice?
+{dare}[nsfw] Explain setting limits in your most dramatic movie-trailer voice.
+{truth}[relationship] What's something about emotional attraction you pretend not to care about but definitely notice?
+{dare}[relationship] Explain slow-burn tension in your most dramatic movie-trailer voice.
+{truth}[nsfw] What's something about turn-offs you pretend not to care about but definitely notice?
+{dare}[nsfw] Explain aftercare in your most dramatic movie-trailer voice.
+{truth}[nsfw] What's something about kissing styles you pretend not to care about but definitely notice?
+{dare}[relationship] <player>, explain romantic tension in your most dramatic movie-trailer voice.
+{truth}[nsfw] What's something about flirty banter you pretend not to care about but definitely notice?
+{dare}[nsfw] Explain friends-with-benefits boundaries in your most dramatic movie-trailer voice.
+{truth}[nsfw] If you had to introduce someone new to hookup expectations, what would you warn them about first?
+{dare}[nsfw] Create a one-sentence advertisement for consent check-ins aimed specifically at <rem_player>.
+{truth}[relationship] <player>, if you had to introduce someone new to making the first move, what would you warn them about first?
+{dare} Create a one-sentence advertisement for playful teasing aimed specifically at <rem_player>.
+{truth}[relationship] If you had to introduce someone new to casual versus serious chemistry, what would you warn them about first?
+{dare} Create a one-sentence advertisement for hookup expectations aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to bold compliments, what would you warn them about first?
+{dare}[relationship] Create a one-sentence advertisement for making the first move aimed specifically at <rem_player>.
+{truth} If you had to introduce someone new to ERP etiquette, what would you warn them about first?
+{dare}[relationship] <player>, create a one-sentence advertisement for casual versus serious chemistry aimed specifically at <rem_player>.
+{truth}[relationship] What would make romantic confidence immediately better for you?
+{dare}[relationship] Act out the face of someone discovering pet names for the first time.
+{truth}[nsfw] What would make sexual chemistry immediately better for you?
+{dare}[nsfw] Act out the face of someone discovering being propositioned for the first time.
+{truth}[nsfw] <player>, what would make sexual boundaries immediately better for you?
+{dare}[nsfw] Act out the face of someone discovering setting limits for the first time.
+{truth}[relationship] What would make shyness immediately better for you?
+{dare}[relationship] Act out the face of someone discovering slow-burn tension for the first time.
+{truth}[relationship] What would make pet names immediately better for you?
+{dare}[nsfw] Act out the face of someone discovering aftercare for the first time.
+{truth}[nsfw] If <rem_player> strongly disagreed with you about sexy voices, how long would the argument last?
+{dare}[nsfw] <player>, give a ten-second motivational speech about surviving telling someone what you want.
+{truth}[nsfw] If <rem_player> strongly disagreed with you about private-instance flirting, how long would the argument last?
+{dare} Give a ten-second motivational speech about surviving first kisses.
+{truth}[relationship] If <rem_player> strongly disagreed with you about emotional attraction, how long would the argument last?
+{dare} Give a ten-second motivational speech about surviving consent check-ins.
+{truth} <player>, if <rem_player> strongly disagreed with you about turn-offs, how long would the argument last?
+{dare}[nsfw] Give a ten-second motivational speech about surviving playful teasing.
+{truth} If <rem_player> strongly disagreed with you about kissing styles, how long would the argument last?
+{dare}[nsfw] Give a ten-second motivational speech about surviving hookup expectations.
+{truth}[nsfw] What does your taste in playful teasing probably reveal about you?
+{dare}[nsfw] Turn sexual boundaries into a fake warning label and read it aloud.
+{truth}[nsfw] What does your taste in hookup expectations probably reveal about you?
+{dare}[relationship] <player>, turn shyness into a fake warning label and read it aloud.
+{truth}[relationship] What does your taste in making the first move probably reveal about you?
+{dare}[relationship] Turn pet names into a fake warning label and read it aloud.
+{truth}[relationship] What does your taste in casual versus serious chemistry probably reveal about you?
+{dare}[nsfw] Turn being propositioned into a fake warning label and read it aloud.
+{truth}[nsfw] <player>, what does your taste in bold compliments probably reveal about you?
+{dare}[nsfw] Turn setting limits into a fake warning label and read it aloud.
+{truth}[nsfw] What's your biggest green flag when turn-ons is involved?
+{dare}[nsfw] Describe spicy photos like it's an extremely rare collectible.
+{truth}[relationship] What's your biggest green flag when romantic confidence is involved?
+{dare} Describe fantasies like it's an extremely rare collectible.
+{truth}[nsfw] What's your biggest green flag when sexual chemistry is involved?
+{dare} <player>, describe telling someone what you want like it's an extremely rare collectible.
+{truth} What's your biggest green flag when sexual boundaries is involved?
+{dare}[relationship] Describe first kisses like it's an extremely rare collectible.
+{truth} What's your biggest green flag when shyness is involved?
+{dare}[nsfw] Describe consent check-ins like it's an extremely rare collectible.
+{truth}[nsfw] <player>, what's your biggest red flag when sexual humour is involved?
+{dare}[relationship] Let <rem_player> choose whether you must praise or roast romantic confidence for ten seconds.
+{truth}[nsfw] What's your biggest red flag when sexy voices is involved?
+{dare}[nsfw] Let <rem_player> choose whether you must praise or roast sexual chemistry for ten seconds.
+{truth}[nsfw] What's your biggest red flag when private-instance flirting is involved?
+{dare}[nsfw] Let <rem_player> choose whether you must praise or roast sexual boundaries for ten seconds.
+{truth}[relationship] What's your biggest red flag when emotional attraction is involved?
+{dare}[relationship] <player>, let <rem_player> choose whether you must praise or roast shyness for ten seconds.
+{truth}[nsfw] What's your biggest red flag when turn-offs is involved?
+{dare}[relationship] Let <rem_player> choose whether you must praise or roast pet names for ten seconds.
+{truth}[nsfw] If you had to trust <rem_player> to make one decision for you about consent check-ins, what would you let them choose?
+{dare}[relationship] Invent a ceremonial title for the person in the group who cares most about cuddling.
+{truth}[nsfw] <player>, if you had to trust <rem_player> to make one decision for you about playful teasing, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about confidence.
+{truth}[nsfw] If you had to trust <rem_player> to make one decision for you about hookup expectations, what would you let them choose?
+{dare} Invent a ceremonial title for the person in the group who cares most about spicy photos.
+{truth} If you had to trust <rem_player> to make one decision for you about making the first move, what would you let them choose?
+{dare}[nsfw] Invent a ceremonial title for the person in the group who cares most about fantasies.
+{truth} If you had to trust <rem_player> to make one decision for you about casual versus serious chemistry, what would you let them choose?
+{dare}[nsfw] <player>, invent a ceremonial title for the person in the group who cares most about telling someone what you want.

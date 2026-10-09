@@ -31,12 +31,15 @@
     <link rel="stylesheet" href="style.css?v=20261009-3" />
     <link rel="stylesheet" href="home.css?v=20261009-3" />
     <link rel="stylesheet" href="games.css?v=20261009-3" />
-    <link rel="stylesheet" href="tetris.css?v=20261010-7" />
+    <link rel="stylesheet" href="tetris.css?v=20261010-8" />
+    <link rel="stylesheet" href="tetris-social.css?v=20261010-8" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
     <script src="games-common.js?v=20261009-3" defer></script>
     <script src="tetris-bg.js?v=20261009-4" defer></script>
-    <script src="tetris-achievements.js?v=20261010-7" defer></script>
-    <script src="tetris.js?v=20261010-7" defer></script>
+    <script src="tetris-achievements.js?v=20261010-8" defer></script>
+    <script src="tetris-config.js?v=20261010-8" defer></script>
+    <script src="tetris-social.js?v=20261010-8" defer></script>
+    <script src="tetris.js?v=20261010-8" defer></script>
   </head>
   <body>
     <!-- shared icons -->
@@ -212,7 +215,10 @@
         </section>
         <section class="hidden" id="gameView">
           <div class="hud">
-            <div class="hud-group"><span class="hud-stat">Chain clears · 12s to start a streak</span></div>
+            <div class="hud-group">
+              <span class="hud-stat">Chain clears · 12s to start a streak</span>
+              <button class="focus-prompt hidden" id="focusBtn" type="button" aria-pressed="false" title="Toggle focus view (Tab)"><kbd>Tab</kbd><span class="focus-label">Focus your board</span></button>
+            </div>
             <div class="hud-group">
               <button class="btn btn-sm btn-outline" id="hudAch" type="button" title="Achievements">Trophies</button>
               <button class="btn btn-sm btn-outline" id="hudShuffleBg" type="button" title="Shuffle background">Scene</button>

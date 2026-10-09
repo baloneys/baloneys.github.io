@@ -9,6 +9,8 @@
   var G = window.Games;
   var BG = window.TetrisBG || null;
   var ACH = window.TetrisAchievements || { event: function () {}, open: function () {}, count: function () { return { unlocked: 0, total: 0 }; }, onChange: function () {} };
+  // Profiles, friends, invites, XP, leaderboard and lobby finder (tetris-social.js); null when it's off.
+  var SOC = window.TetrisSocial && window.TetrisSocial.enabled ? window.TetrisSocial : null;
   var $ = function (s, r) { return (r || document).querySelector(s); };
 
   /* =================================================================
@@ -620,6 +622,8 @@
     skulls: cleanSkulls(G.Store.get('tetris_skulls', [])),
     // Display only: the fire / lightning outline around the well and the overdrive sparks beside it.
     streakOutlines: G.Store.get('tetris_streak_outlines', 'on'),
+    // Focus view (Tab): your board large in the centre, opponents as minis on both sides.
+    focus: G.Store.get('tetris_focus', 'off') === 'on',
     // vs CPU opponents: [{ name, level }], 1-3 of them
     cpuRoster: (function () {
       var r = G.Store.get('tetris_cpu_roster', null);
@@ -680,6 +684,7 @@
     }
     last = performance.now();
     if (!raf) raf = requestAnimationFrame(loop);
+    if (SOC && mode === 'online') SOC.lobbyChanged();
   }
 
   // Themed backgrounds for what's being played (bits match tetris-bg.js / the VRChat world).
@@ -717,9 +722,11 @@
     stop();
     if (net.session) { net.session.close(); net.session = null; }
     net.role = null;
+    net.code = null;
     game = null;
     renderMenuBest();
     screen('menuPanel');
+    if (SOC) SOC.lobbyChanged();
   }
 
   /* ---------- boards ---------- */
@@ -741,6 +748,8 @@
       nameText.textContent = p.name;
       nameText.title = p.name;
       nameEl.appendChild(nameText);
+      var socCard = p.card || (SOC && isHuman(p) && game.mode !== 'local' ? SOC.card() : null);
+      if (SOC && socCard) SOC.decorateName(nameText, socCard);
       var cv = document.createElement('canvas');
       cv.width = (COLS + SIDE * 2) * CELL;
       cv.height = ROWS * CELL;
@@ -748,13 +757,67 @@
       timers.className = 'hud-timers';
       var stats = document.createElement('div');
       stats.className = 'board-stats';
+      // The field wrapper lets focus view crop opponents' minis down to just the playfield.
+      var field = document.createElement('div');
+      field.className = 'board-field';
+      field.appendChild(cv);
       card.appendChild(head);
       card.appendChild(timers);
-      card.appendChild(cv);
+      card.appendChild(field);
       card.appendChild(stats);
       wrap.appendChild(card);
       p.ui = { card: card, canvas: cv, ctx: cv.getContext('2d'), stats: stats, timers: timers, lives: head.querySelector('.board-lives'), shownTimers: '' };
     });
+    applyFocus();
+  }
+
+  /* ---------- focus view ----------
+     Tab (or the Focus button) puts your own board large in the centre and every opponent into
+     small playfield-only minis on both sides, like Tetris 99. Only offered when exactly one person
+     on this device plays against others (online and vs CPU); the choice is remembered. */
+
+  function focusAvailable() {
+    return !!game && game.players.length > 1 && game.players.filter(isHuman).length === 1;
+  }
+
+  function applyFocus() {
+    var wrap = $('#boards'), btn = $('#focusBtn');
+    if (!wrap || !game) return;
+    var on = focusAvailable() && settings.focus;
+    btn.classList.toggle('hidden', !focusAvailable());
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.querySelector('.focus-label').textContent = on ? 'Show all boards' : 'Focus your board';
+    var cards = game.players.map(function (p) { return p.ui && p.ui.card; }).filter(Boolean);
+    wrap.classList.toggle('focus', on);
+    wrap.textContent = '';
+    if (!on) {
+      cards.forEach(function (c) { c.classList.remove('mini'); wrap.appendChild(c); });
+      return;
+    }
+    var me = game.players.filter(isHuman)[0];
+    var others = game.players.filter(function (p) { return p !== me && p.ui; });
+    // Opponents alternate left/right so both sides fill evenly; a side with many minis uses two columns.
+    var left = document.createElement('div'), right = document.createElement('div'), main = document.createElement('div');
+    left.className = 'focus-side left';
+    right.className = 'focus-side right';
+    main.className = 'focus-main';
+    others.forEach(function (p, i) { p.ui.card.classList.add('mini'); (i % 2 ? right : left).appendChild(p.ui.card); });
+    me.ui.card.classList.remove('mini');
+    main.appendChild(me.ui.card);
+    var perSide = Math.ceil(others.length / 2), cols = perSide > 3 ? 2 : 1;
+    wrap.style.setProperty('--mini-cols', cols);
+    wrap.style.setProperty('--mini-rows', Math.max(2, Math.ceil(perSide / cols)));
+    wrap.appendChild(left);
+    wrap.appendChild(main);
+    wrap.appendChild(right);
+  }
+
+  function toggleFocus() {
+    if (!focusAvailable()) return;
+    settings.focus = !settings.focus;
+    G.Store.set('tetris_focus', settings.focus ? 'on' : 'off');
+    applyFocus();
   }
 
   /* ---------- overlay ---------- */
@@ -890,15 +953,15 @@
     if (isHuman(p)) ACH.event('lock', { cleared: res.cleared, tetris: res.tetris, b2b: res.b2b, combo: p.combo, perfect: res.perfect,
       score: p.score, level: p.level, streak: p.streakLeft > 0 ? p.streak : 0, powers: res.powers,
       birthday: !!p.f.birthday, lightsLines: p.lightsLines || 0 });
-    if (isHuman(p) && BG) {
-      if (res.cleared) {
-        BG.pulse(res.tetris ? 0.8 : 0.3 + Math.min(4, res.cleared) * 0.1);
-        BG.impact(res.tetris ? 1 : 0.45 + Math.min(4, res.cleared) * 0.1);
-      }
-      if (res.tetris || res.levelUp) {
-        var look = BG.milestone();
-        if (look && game.mode === 'online') netSend({ t: 'bg', p: look.p, s: look.s, th: look.th });
-      }
+    if (isHuman(p) && BG && res.cleared) {
+      BG.pulse(res.tetris ? 0.8 : 0.3 + Math.min(4, res.cleared) * 0.1);
+      BG.impact(res.tetris ? 1 : 0.45 + Math.min(4, res.cleared) * 0.1);
+    }
+    // Any player's tetris or level up moves the scene on. Every board simulated on this device counts
+    // (CPUs included); remote players' devices send their own, so each milestone is shown once.
+    if (p.local && BG && (res.tetris || res.levelUp)) {
+      var look = BG.milestone();
+      if (look && game.mode === 'online') netSend({ t: 'bg', p: look.p, s: look.s, th: look.th });
     }
     if (res.attack) sendAttack(p, res.attack);
     sendPowerAttacks(p, res.out);
@@ -1029,13 +1092,31 @@
     finishVersus(winner.name);
   }
 
+  // The leaderboard's record of a versus game: your numbers plus everyone's result. The winner is 1st;
+  // everyone else is placed by score (the game doesn't keep elimination order).
+  function versusRun(me, winnerName) {
+    var plain = function (p) { return p.name.replace(' (you)', ''); };
+    var order = game.players.slice().sort(function (a, b) {
+      var aw = winnerName && plain(a) === winnerName, bw = winnerName && plain(b) === winnerName;
+      return (bw - aw) || (b.score - a.score);
+    });
+    var players = order.map(function (p, i) {
+      var card = p === me && SOC ? SOC.card() : p.card;
+      return { name: plain(p), uid: card ? card.uid : null, cpu: !!p.cpu || (!p.local && !p.card && game.mode === 'cpu'), score: p.score, lines: p.lines, place: i + 1 };
+    });
+    var won = !!winnerName && plain(me) === winnerName;
+    return { online: game.mode === 'online', won: won, versusType: game.versusType, score: me.score, lines: me.lines, level: me.level,
+      elapsed: me.elapsed, skulls: me.skulls.slice(), multiplier: me.multiplier, place: order.indexOf(me) + 1, players: players };
+  }
+
   function finishVersus(winnerName, fromNet) {
     if (!game) return;
     if (!game.reported) {
       game.reported = true;
       var me = game.players.filter(isHuman)[0];
-      if (me) ACH.event('versus', { online: game.mode === 'online', elimination: game.versusType === 'elim',
-        won: game.mode === 'online' && !!winnerName && me.name.replace(' (you)', '') === winnerName });
+      var won = game.mode === 'online' && !!winnerName && !!me && me.name.replace(' (you)', '') === winnerName;
+      if (me) ACH.event('versus', { online: game.mode === 'online', elimination: game.versusType === 'elim', won: won });
+      if (me && SOC && (game.mode === 'online' || game.mode === 'cpu')) SOC.versusFinished(versusRun(me, winnerName));
     }
     game.over = true;
     game.players.forEach(function (p) { if (p.ui) p.ui.card.classList.remove('danger'); });
@@ -1062,6 +1143,7 @@
     game.over = true;
     ACH.event('solo', { finish: p.finish, gameType: p.gameType, elapsed: p.elapsed, score: p.score });
     var ranked = !p.skulls.length;
+    if (SOC) SOC.soloFinished({ gameType: p.gameType, finish: p.finish, elapsed: p.elapsed, score: p.score, lines: p.lines, level: p.level, ranked: ranked, skulls: p.skulls.slice(), multiplier: p.multiplier });
     var title = 'Game over', text, isBest = false;
     if (p.finish === 'sprint' || p.finish === 'dig') {
       var key = p.finish + (ranked ? '' : '_skulls');
@@ -1665,6 +1747,7 @@
     if (!game || $('#gameView').classList.contains('hidden') || e.target.closest('input, textarea')) return;
     var k = keyName(e);
     if ([' ', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].indexOf(k) !== -1) e.preventDefault();
+    if (k === 'tab' && focusAvailable()) { e.preventDefault(); if (!e.repeat) toggleFocus(); return; }
     if ((k === 'p' || k === 'escape') && !game.over) { setPaused(!game.paused); return; }
     if (game.paused || game.over || e.repeat) return;
     game.players.forEach(function (p) {
@@ -1934,7 +2017,7 @@
 
   function myEntry(slot) {
     var pr = G.Profile.get(), pal = myPalette();
-    return { slot: slot, name: pr.name, avatar: pr.avatar, ready: false, pal: [pal.bottom, pal.top], fixed: settings.colour === 'custom' };
+    return { slot: slot, name: pr.name, avatar: pr.avatar, ready: false, pal: [pal.bottom, pal.top], fixed: settings.colour === 'custom', card: SOC ? SOC.card() : null };
   }
 
   function netSend(msg) {
@@ -1952,7 +2035,7 @@
     renderLobby();
   }
 
-  function strip(x) { return { slot: x.slot, name: x.name, avatar: x.avatar, ready: x.ready, pal: x.pal, cpu: x.cpu || null, fixed: !!x.fixed }; }
+  function strip(x) { return { slot: x.slot, name: x.name, avatar: x.avatar, ready: x.ready, pal: x.pal, cpu: x.cpu || null, fixed: !!x.fixed, card: x.card || null }; }
 
   // Host: fill an empty slot with a CPU at the chosen difficulty (the host's browser plays it).
   function hostAddCpu(level, customName, quiet) {
@@ -2001,6 +2084,7 @@
     net.session = G.Net.host('tetris', {
       maxGuests: 3,
       onReady: function (code) {
+        net.code = code;
         $('#lobbyCode').textContent = code;
         G.show($('#lobbyCodeBox'));
         screen('lobbyPanel');
@@ -2030,12 +2114,13 @@
     var code = G.cleanCode($('#joinCode').value);
     if (code.length !== 5) return netError('Lobby codes are 5 characters.');
     net.role = 'guest';
+    net.code = code;
     net.kicked = false;
     setOnlineNotice('Connecting…');
     net.session = G.Net.join('tetris', code, {
       onOpen: function () {
         var me = myEntry(0);
-        net.session.send({ t: 'hi', profile: G.Profile.get(), pal: me.pal, fixed: me.fixed });
+        net.session.send({ t: 'hi', profile: G.Profile.get(), pal: me.pal, fixed: me.fixed, card: me.card });
         G.hide($('#lobbyCodeBox'));
         screen('lobbyPanel');
       },
@@ -2071,6 +2156,7 @@
           var pal = Array.isArray(d.pal) ? safePalette({ bottom: d.pal[0], top: d.pal[1] }) : PALETTES[0];
           entry.pal = [pal.bottom, pal.top];
           entry.fixed = !!d.fixed;
+          entry.card = SOC ? SOC.cleanCard(d.card) : null;
           hostBroadcastLobby();
         }
         break;
@@ -2199,8 +2285,10 @@
         return bot;
       }
       var pr = G.Profile.sanitize({ name: x.name, avatar: x.avatar });
-      return new Player({ id: x.slot, name: mine ? pr.name + ' (you)' : pr.name, avatar: pr.avatar, palette: pal, local: mine,
+      var person = new Player({ id: x.slot, name: mine ? pr.name + ' (you)' : pr.name, avatar: pr.avatar, palette: pal, local: mine,
         controls: KEYS_SOLO, lives: lv, versus: true, skulls: net.cfg.skulls });
+      person.card = SOC ? SOC.cleanCard(x.card) : null;
+      return person;
     });
     net.lobby.forEach(function (x) { x.ready = !!x.cpu; });
     net.myReady = false;
@@ -2263,6 +2351,7 @@
     net.lobby.slice().sort(function (a, b) { return a.slot - b.slot; }).forEach(function (x) {
       var pr = G.Profile.sanitize({ name: x.name, avatar: x.avatar });
       var li = G.lobbyRow(pr, pr.name + (x.slot === 1 ? ' (host)' : '') + (x.slot === net.mySlot ? ' · you' : ''), x.ready ? '✓ Ready' : 'Not ready', x.ready ? 'ready' : 'waiting');
+      if (SOC && x.card) SOC.decorateName(li.querySelector('.lobby-who > span:not(.avatar)'), x.card);
       if (Array.isArray(x.pal)) {
         var sw = document.createElement('span');
         sw.className = 'lobby-swatch';
@@ -2299,6 +2388,7 @@
     $('#lockBtn').textContent = net.cfg.locked ? 'Rules: host only' : 'Rules: everyone';
     renderSkullSummary($('#lobbySkulls'), net.cfg.skulls);
     $('#lobbySkullsBtn').disabled = !editable;
+    if (SOC) SOC.lobbyChanged();
   }
 
   function setOnlineNotice(msg, err) {
@@ -2615,17 +2705,62 @@
     $('#modeCpu').querySelector('span').textContent = 'You against ' + settings.cpuRoster.length + ' computer player' + (settings.cpuRoster.length > 1 ? 's' : '');
   }
 
+  // The name/picture editor on the Online panel; changes reach the lobby (and the social profile).
+  function mountProfileEditor() {
+    G.Profile.mount($('#profileEditor'), function () {
+      profileChanged();
+      if (SOC) SOC.localProfileChanged(G.Profile.get());
+    });
+  }
+
+  function profileChanged() {
+    if (!net.session) return;
+    var pr = G.Profile.get();
+    if (net.role === 'host') {
+      var me = lobbyEntry(1);
+      if (me) { me.name = pr.name; me.avatar = pr.avatar; me.card = SOC ? SOC.card() : null; hostBroadcastLobby(); }
+    } else if (!game) {
+      var e = myEntry(0);
+      net.session.send({ t: 'hi', profile: pr, pal: e.pal, fixed: e.fixed, card: e.card });
+    }
+  }
+
+  function lobbyRules() {
+    var r = net.cfg.vt === 'elim' ? 'Elimination' : 'Last Standing · ' + (net.cfg.lives === 'inf' ? '∞' : net.cfg.lives) + ' lives';
+    if (net.cfg.skulls.length) r += ' · ' + net.cfg.skulls.length + ' skull' + (net.cfg.skulls.length > 1 ? 's' : '');
+    return r;
+  }
+
+  // For tetris-social.js: join by code (invite links, the lobby finder, the bell) and read the current lobby.
+  window.TetrisApp = {
+    join: function (code) {
+      code = G.cleanCode(code);
+      if (code.length !== 5) return;
+      if (game && !game.over && game.mode === 'online') { G.banner('Finish or leave this game first'); return; }
+      if (net.session && net.code === code) { screen(game ? 'gameView' : 'lobbyPanel'); return; }
+      if (game) { stop(); game = null; }
+      if (net.session) { net.session.close(); net.session = null; net.role = null; net.code = null; }
+      screen('onlinePanel');
+      $('#joinCode').value = code;
+      joinLobby();
+    },
+    lobby: function () {
+      if (!net.session || !net.role || !net.code) return null;
+      return { code: net.code, role: net.role, count: net.lobby.length, rules: lobbyRules(), inGame: !!(game && !game.over) };
+    },
+    pause: function () { if (game && !game.over && !game.paused && game.mode !== 'online') setPaused(true); },
+    profileChanged: function () { mountProfileEditor(); profileChanged(); },
+    // the skull list and its pixel icons, for the leaderboard's Skulls filter and run details
+    skulls: function () { return SKULLS.map(function (s) { return { id: s.id, name: s.name, cat: s.cat, eff: s.eff, body: s.body }; }); },
+    skullIcon: function (id) { var s = SKULL_BY_ID[id]; var e = s ? iconEl(s.index) : document.createElement('span'); if (s) e.title = s.name; return e; }
+  };
+
   function init() {
     if (BG) BG.mount($('.game-page'));
     renderSkins();
     Picker.init();
     renderMenuBest();
-    G.Profile.mount($('#profileEditor'), function () {
-      if (net.role === 'host' && net.session) {
-        var me = lobbyEntry(1), pr = G.Profile.get();
-        if (me) { me.name = pr.name; me.avatar = pr.avatar; hostBroadcastLobby(); }
-      }
-    });
+    mountProfileEditor();
 
     G.chips($('#livesChips'), settings.lives, function (v) { settings.lives = v; G.Store.set('tetris_lives', v); });
     G.chips($('#streakOutlineChips'), settings.streakOutlines, function (v) { settings.streakOutlines = v; G.Store.set('tetris_streak_outlines', v); });
@@ -2685,10 +2820,22 @@
     $('#lobbyLeave').addEventListener('click', quitToMenu);
     $('#pauseBtn').addEventListener('click', function () { if (game) setPaused(!game.paused); });
     $('#quitBtn').addEventListener('click', quitToMenu);
+    $('#focusBtn').addEventListener('click', function () { toggleFocus(); this.blur(); });
     G.Sound.bindButton($('#soundBtn'));
     bindTouch();
     G.chatEasterEgg();
     screen('menuPanel');
+    joinFromLink();
+  }
+
+  // Invite links (tetris?join=CODE) open straight into that lobby. The parameter is removed so a reload
+  // doesn't rejoin; anything else in the URL (e.g. ?debug) stays as written.
+  function joinFromLink() {
+    var m = location.search.match(/[?&]join=([A-Za-z0-9]{5})(?:&|$)/);
+    if (!m) return;
+    var rest = location.search.replace(/^\?/, '').split('&').filter(function (kv) { return kv && !/^join=/.test(kv); }).join('&');
+    history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+    window.TetrisApp.join(m[1]);
   }
 
   init();
@@ -2696,6 +2843,8 @@
   // Testing aid, only with ?debug in the URL: lets the console inspect and poke the running game.
   if (/[?&]debug\b/.test(location.search)) window.TetrisDebug = {
     game: function () { return game; }, PU: PU, bg: BG,
+    // end a versus game now with this winner's name (tests results, XP and the leaderboard record)
+    endVersus: function (winnerName) { if (game && !game.over && game.players.length > 1) finishVersus(winnerName); },
     // simulate `seconds` of play at 60 steps a second without drawing (for testing in a background tab)
     advance: function (seconds) {
       for (var k = 0; k < seconds * 60 && game && !game.over && !game.paused; k++) {

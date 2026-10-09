@@ -162,7 +162,9 @@
     save();
     queueToast(BY_ID[id]);
     listeners.forEach(function (fn) { try { fn(); } catch (e) { /* listener errors never block unlocks */ } });
+    unlockListeners.forEach(function (fn) { try { fn(BY_ID[id]); } catch (e) { /* listener errors never block unlocks */ } });
   }
+  var unlockListeners = [];
 
   function addStat(name, n) {
     stats[name] = (stats[name] || 0) + n;
@@ -431,6 +433,13 @@
     open: open,
     count: count,
     onChange: function (fn) { listeners.push(fn); },
-    onOpen: function (fn) { openListeners.push(fn); }
+    onOpen: function (fn) { openListeners.push(fn); },
+    // For player profiles (tetris-social.js): every achievement with its unlock time (0 if locked),
+    // its pixel badge, and a callback per new unlock (used to grant XP and points).
+    list: function () { return LIST.map(function (a) { return Object.assign({ unlocked: unlocks[a.id] || 0 }, a); }); },
+    get: function (id) { return BY_ID[id] || null; },
+    tiers: TIERS,
+    badge: function (id, size, locked) { return BY_ID[id] ? badge(BY_ID[id], !!locked, size) : document.createElement('span'); },
+    onUnlock: function (fn) { unlockListeners.push(fn); }
   };
 })();

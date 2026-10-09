@@ -424,3 +424,58 @@
 .tetris-page .board-lives { flex: none; white-space: nowrap; }
 .tetris-page .board-card .hud-timers { height: 24px; min-height: 24px; overflow: hidden; align-items: center; flex-wrap: nowrap; }
 .tetris-page .board-card .hud-timers span { white-space: nowrap; }
+
+/* ---------- focus view (Tab) ----------
+   Your board large in the centre, opponents as playfield-only minis on both sides (Tetris 99 style).
+   The canvas is 504x560 with a 280px playfield, so a mini shows the canvas at 180% width shifted
+   left by the 112px HOLD panel (40% of the field) and clips the NEXT panel. */
+.focus-prompt {
+  display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 5px;
+  border: 1px solid rgba(220,188,255,.3); border-radius: var(--border-radius-full);
+  background: linear-gradient(135deg, rgba(129,43,205,.28), rgba(15,11,29,.6));
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: #eadfff; font-family: var(--font-family-heading); font-size: var(--font-size-xs);
+  cursor: pointer; animation: focusHint 2.4s ease-in-out 3;
+  transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.focus-prompt kbd {
+  padding: 1px 7px; border: 1px solid rgba(227,207,255,.35); border-bottom-width: 2px; border-radius: 6px;
+  background: rgba(5,7,16,.55); color: #fff; font-family: var(--font-family-heading); font-size: .9em; letter-spacing: .04em;
+}
+.focus-prompt:hover { border-color: #b576ff; box-shadow: 0 0 18px rgba(176,38,255,.35); }
+.focus-prompt.on { background: linear-gradient(135deg, rgba(176,38,255,.55), rgba(90,20,160,.45)); border-color: #c99bff; animation: none; }
+.focus-prompt:focus-visible { outline: 2px solid #c99bff; outline-offset: 2px; }
+@keyframes focusHint {
+  0%, 100% { box-shadow: 0 0 0 rgba(176,38,255,0); }
+  50% { box-shadow: 0 0 22px rgba(176,38,255,.55); border-color: #c99bff; }
+}
+
+.board-field { position: relative; }
+.boards.focus {
+  --fbw: var(--bw, 50vw);
+  --mini: calc((var(--fbw) / 0.9 - var(--mini-rows, 2) * 44px) / var(--mini-rows, 2) / 2);
+  display: flex; justify-content: center; align-items: center; gap: 28px;
+}
+.tetris-page.playing .boards.focus { gap: 28px; }
+.boards.focus .focus-main { width: var(--fbw); flex: none; }
+.boards.focus .focus-side {
+  display: grid; grid-template-columns: repeat(var(--mini-cols, 1), var(--mini));
+  gap: 14px; align-content: center; flex: none; min-width: var(--mini);
+}
+.boards.focus .board-card.mini { gap: 3px; }
+.boards.focus .board-card.mini .hud-timers,
+.boards.focus .board-card.mini .board-stats { display: none; }
+.boards.focus .board-card.mini .board-head { font-size: .68rem; padding: 0 2px 2px; }
+.boards.focus .board-card.mini .board-head .avatar, .boards.focus .board-card.mini .board-head img { display: none; }
+.boards.focus .board-card.mini .board-field { overflow: hidden; border-radius: var(--border-radius-md); }
+.boards.focus .board-card.mini canvas { width: 180%; max-width: none; margin-left: -40%; border-radius: 0; }
+.boards.focus .board-card.mini.out .board-field { opacity: .55; }
+@media (max-width: 760px) {
+  .boards.focus { --fbw: 52vw; --mini: calc((var(--fbw) / 0.9 - var(--mini-rows, 2) * 26px) / var(--mini-rows, 2) / 2); gap: 8px; }
+  .boards.focus .focus-side { gap: 6px; }
+  .boards.focus .board-card.mini .board-head { font-size: .56rem; }
+  .boards.focus .board-card.mini .board-lives { display: none; }
+}
+.boards.focus .board-card.mini .board-head { flex-direction: column; align-items: stretch; gap: 0; line-height: 1.25; }
+.boards.focus .board-card.mini .board-lives { font-size: .9em; min-height: 1.25em; }
+@media (hover: none) and (pointer: coarse) { .focus-prompt kbd { display: none; } .focus-prompt { padding-left: 12px; } }

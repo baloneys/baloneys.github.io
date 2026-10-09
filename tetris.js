@@ -95,10 +95,10 @@
   var LOCK_DELAY = 0.5, MAX_RESETS = 15;
   var DAS = 0.15, ARR = 0.04, SOFT_RATE = 0.035;
 
-  // Streaks: a line clear arms the clock, the second consecutive clear starts the streak. Each clear refills the
-  // window (7 s, +1.5 s per clear, up to 20 s; a Tetris refills to 25 s). Glow from 2x, stronger from 5x, fire from
-  // 10x, and from 20x the whole well burns: red, orange, yellow, green, blue, violet up to 29x, light purple from 30x.
-  var STREAK = { WINDOW: 7, STEP: 1.5, MAX: 20, TETRIS: 25, MIN: 2, STRONG: 5, FIRE: 10, BORDER: 20 };
+  // Website timing: first clear arms 12 seconds; each clear adds 2 seconds to the refill
+  // window up to 30 seconds. A Tetris grants 35 seconds. Non-clearing pieces do not break it.
+  var STREAK = { WINDOW: 12, STEP: 2, MAX: 30, TETRIS: 35, MIN: 2, STRONG: 5, FIRE: 10, BORDER: 20 };
+  var reducedEffects = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Power-ups (blocks that ride on pieces; fire when their row clears).
   var PU = { NONE: 0, STREAK: 1, BOMB: 2, SLOW: 3, DOUBLE: 4, FREEZE: 5, SHELL: 6, CURSE: 7, SKULL: 8, QUAKE: 9, STAR_BOMB: 10 };
@@ -492,6 +492,7 @@
       attack -= cancel;
       G.Sound.beep(tetris ? 988 : 660 + Math.min(4, cleared) * 60, tetris ? 0.3 : 0.12, 'triangle', 0.06);
       this.recordStreak(cleared);
+      if (!reducedEffects && full.length) this.fx.push({ kind: 'clear', rows: full.slice(), streak: this.streak, t: now });
       for (var b = 0; b < boosts; b++) this.streakLeft = Math.min(STREAK_POWER_MAX, this.streakLeft * 2);
     } else {
       this.combo = -1;
@@ -687,7 +688,7 @@
     if (raf) cancelAnimationFrame(raf);
     raf = null;
     held = {};
-    if (BG) { BG.setEnergy(0); BG.setDanger(0); }
+    if (BG) { BG.setEnergy(0); BG.setPressure(0); BG.setDanger(0); }
   }
 
   function quitToMenu() {
@@ -1123,11 +1124,12 @@
     if (!p.ui) return;
     var ctx = p.ui.ctx, ox = SIDE * CELL, now = performance.now();
     var W = p.ui.canvas.width, H = p.ui.canvas.height;
-    ctx.fillStyle = '#050505';
-    ctx.fillRect(0, 0, W, H);
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(4, 5, 12, 0.92)';
+    ctx.fillRect(ox, 0, COLS * CELL, H);
 
     // side panels
-    ctx.fillStyle = '#0d0a12';
+    ctx.fillStyle = 'rgba(14, 10, 26, 0.66)';
     ctx.fillRect(0, 0, ox, H);
     ctx.fillRect(ox + COLS * CELL, 0, SIDE * CELL, H);
     ctx.fillStyle = '#8a7fa8';
@@ -1213,6 +1215,7 @@
     ctx.lineWidth = 2;
     ctx.strokeRect(ox + 1, 1, COLS * CELL - 2, H - 2);
     if (p.streakLeft > 0 && p.streak >= STREAK.BORDER && p.alive) drawBorderFire(ctx, ox, H, now, heat, p.streak);
+    if (p.streakLeft > 0 && p.streak >= 30 && p.alive) drawOverdrive(ctx, p, ox, H, now, heat);
     if (p.streakLeft > 0 && p.streak >= STREAK.MIN && p.alive) drawStreakBadge(ctx, p, ox, now, tier >= 3 ? heat : [0.78, 0.6, 1]);
 
     if (!p.alive) {
@@ -1321,10 +1324,38 @@
     }
   }
 
+  // Extreme streak effects stay beside the well so they never cover the landing area.
+  function drawOverdrive(ctx, p, ox, H, now, col) {
+    var power = clamp01((p.streak - 30) / 40), t = reducedEffects ? 0 : now / 1000;
+    var width = COLS * CELL, count = 12 + Math.floor(power * 20);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, 95, ox, H - 95); ctx.rect(ox + width, 95, ox, H - 95); ctx.clip();
+    ctx.shadowColor = rgb(col, 0.8);
+    ctx.shadowBlur = 8 + power * 12;
+    for (var i = 0; i < count; i++) {
+      var seed = (i * 0.6180339) % 1;
+      var rise = (seed + t * (0.08 + power * 0.09)) % 1;
+      var side = i % 2 ? ox + width : ox;
+      var drift = 8 + seed * 35 + Math.sin(t * 1.7 + i) * 6;
+      var x = side + (i % 2 ? drift : -drift), y = H - rise * (H - 90);
+      ctx.fillStyle = rgb(col, Math.sin(rise * Math.PI) * (0.35 + power * 0.45));
+      ctx.fillRect(x, y, 3 + power * 3, 5 + power * 10);
+    }
+    if (p.streak >= 50) {
+      ctx.strokeStyle = rgb(col, 0.28 + power * 0.2); ctx.lineWidth = 2;
+      for (var j = 0; j < 4; j++) {
+        var phase = (t * 0.18 + j / 4) % 1, spread = 6 + phase * 45;
+        ctx.globalAlpha = 1 - phase;
+        ctx.strokeRect(ox - spread, 100 - spread, width + spread * 2, H - 100 + spread * 2);
+      }
+    }
+    ctx.restore();
+  }
+
   // Floating "STREAK / 12x" badge over the top of the well, popping when the count rises.
   function drawStreakBadge(ctx, p, ox, now, col) {
     if (p.shownStreak !== p.streak) { p.shownStreak = p.streak; p.streakPop = now; }
-    var t = now / 1000, pop = Math.max(0, 1 - (now - (p.streakPop || 0)) / 400);
+    var t = reducedEffects ? 0 : now / 1000, pop = reducedEffects ? 0 : Math.max(0, 1 - (now - (p.streakPop || 0)) / 400);
     var urgency = 1 - clamp01(p.streakLeft / 5);
     var scale = 1 + Math.sin(t * (2 + urgency * 6)) * (0.03 + urgency * 0.06) + pop * pop * 0.45;
     var x = ox + COLS * CELL / 2 + Math.sin(t * 1.3) * 10, y = 70 + Math.sin(t * 1.9 + 0.7) * 8;
@@ -1337,9 +1368,17 @@
     ctx.shadowBlur = 16;
     ctx.fillStyle = rgb(lerp3(col, [1, 1, 1], 0.15));
     ctx.font = '800 13px "JetBrains Mono", monospace';
-    ctx.fillText('STREAK', 0, -22);
+    ctx.fillText(p.streak >= 50 ? 'SUPERNOVA' : p.streak >= 30 ? 'OVERDRIVE' : 'STREAK', 0, -22);
     ctx.font = '800 38px "JetBrains Mono", monospace';
     ctx.fillText(p.streak + 'x', 0, 12);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(255,255,255,0.14)';
+    ctx.fillRect(-46, 24, 92, 4);
+    ctx.fillStyle = rgb(col);
+    ctx.fillRect(-46, 24, 92 * clamp01(p.streakLeft / Math.max(STREAK.TETRIS, p.streakLeft)), 4);
+    ctx.font = '600 10px "JetBrains Mono", monospace';
+    ctx.fillStyle = 'rgba(245,240,255,0.85)';
+    ctx.fillText(Math.ceil(p.streakLeft) + 's', 0, 42);
     ctx.restore();
   }
 
@@ -1349,6 +1388,24 @@
     p.fx.forEach(function (f) {
       var t = (now - f.t) / 750;
       if (t > 1) return;
+      if (f.kind === 'clear') {
+        var col = BG && BG.sceneColor ? BG.sceneColor() : null;
+        col = col || [0.78, 0.6, 1];
+        ctx.save();
+        ctx.globalAlpha = (1 - t) * 0.65;
+        ctx.fillStyle = rgb(col);
+        f.rows.forEach(function (row) {
+          var y = (row + 0.5) * CELL;
+          ctx.fillRect(ox, y - 2, COLS * CELL, 4 * (1 - t));
+          for (var n = 0; n < 12; n++) {
+            var seed = ((n * 17 + row * 11) % 31) / 31;
+            var x = ox + (n + 0.5) / 12 * COLS * CELL;
+            ctx.fillRect(x + (seed - 0.5) * t * 45, y - t * (18 + seed * 35), 3, 3);
+          }
+        });
+        ctx.restore();
+        return;
+      }
       if (f.kind === 'confetti') {
         f.cells.forEach(function (cell) {
           for (var n = 0; n < 3; n++) {

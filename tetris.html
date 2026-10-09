@@ -28,14 +28,14 @@
       button { font: inherit; color: inherit; background: transparent; }
     </style>
     <!-- Bump the version on local assets when deploying Tetris changes so cached files cannot mix releases. -->
-    <link rel="stylesheet" href="style.css?v=20261009-2" />
-    <link rel="stylesheet" href="home.css?v=20261009-2" />
-    <link rel="stylesheet" href="games.css?v=20261009-2" />
-    <link rel="stylesheet" href="tetris.css?v=20261009-2" />
+    <link rel="stylesheet" href="style.css?v=20261009-3" />
+    <link rel="stylesheet" href="home.css?v=20261009-3" />
+    <link rel="stylesheet" href="games.css?v=20261009-3" />
+    <link rel="stylesheet" href="tetris.css?v=20261009-3" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
-    <script src="games-common.js?v=20261009-2" defer></script>
-    <script src="tetris-bg.js?v=20261009-2" defer></script>
-    <script src="tetris.js?v=20261009-2" defer></script>
+    <script src="games-common.js?v=20261009-3" defer></script>
+    <script src="tetris-bg.js?v=20261009-3" defer></script>
+    <script src="tetris.js?v=20261009-3" defer></script>
   </head>
   <body>
     <!-- shared icons -->
@@ -108,6 +108,7 @@
             <button class="chip" data-value="marathon">Marathon</button><button class="chip" data-value="sprint">Sprint 40</button><button class="chip" data-value="ultra">Ultra 2:00</button><button class="chip" data-value="dig">Dig</button><button class="chip" data-value="survival">Survival</button>
           </div>
           <p class="type-note" id="gameTypeNote"></p>
+          <div class="versus-options">
           <div class="option-row" id="versusTypeChips">
             <span class="option-label">Versus rules</span>
             <button class="chip" data-value="last">Last Standing</button><button class="chip" data-value="elim">Elimination</button>
@@ -115,6 +116,7 @@
           <div class="option-row" id="livesChips">
             <span class="option-label">Versus lives</span>
             <button class="chip" data-value="1">1</button><button class="chip" data-value="3">3</button><button class="chip" data-value="5">5</button><button class="chip" data-value="inf">∞</button>
+          </div>
           </div>
           <div class="menu-section">
             <div class="option-row" style="margin-top:0"><span class="option-label">Skulls</span></div>
@@ -198,9 +200,9 @@
         </section>
         <section class="hidden" id="gameView">
           <div class="hud">
-            <div class="hud-group"><span class="hud-stat">chain line clears for a streak · clear lines to send garbage in versus</span></div>
+            <div class="hud-group"><span class="hud-stat">Chain clears · 12s to start a streak</span></div>
             <div class="hud-group">
-              <button class="btn btn-sm btn-outline" id="hudShuffleBg" type="button" title="Shuffle background">BG</button>
+              <button class="btn btn-sm btn-outline" id="hudShuffleBg" type="button" title="Shuffle background">Scene</button>
               <button class="btn btn-sm btn-outline" id="soundBtn" type="button">Sound</button>
               <button class="btn btn-sm btn-outline" id="pauseBtn" type="button">Pause</button>
               <button class="btn btn-sm btn-outline hidden" id="endBtn" type="button">End game</button>
@@ -277,6 +279,6 @@
       </div>
     </footer>
 
-    <script src="site.js?v=20261009-2"></script>
+    <script src="site.js?v=20261009-3"></script>
   </body>
 </html>

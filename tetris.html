@@ -27,14 +27,15 @@
       img, svg, video { display: block; }
       button { font: inherit; color: inherit; background: transparent; }
     </style>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="home.css" />
-    <link rel="stylesheet" href="games.css" />
-    <link rel="stylesheet" href="tetris.css" />
+    <!-- Bump the version on local assets when deploying Tetris changes so cached files cannot mix releases. -->
+    <link rel="stylesheet" href="style.css?v=20261009-2" />
+    <link rel="stylesheet" href="home.css?v=20261009-2" />
+    <link rel="stylesheet" href="games.css?v=20261009-2" />
+    <link rel="stylesheet" href="tetris.css?v=20261009-2" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
-    <script src="games-common.js" defer></script>
-    <script src="tetris-bg.js" defer></script>
-    <script src="tetris.js" defer></script>
+    <script src="games-common.js?v=20261009-2" defer></script>
+    <script src="tetris-bg.js?v=20261009-2" defer></script>
+    <script src="tetris.js?v=20261009-2" defer></script>
   </head>
   <body>
     <!-- shared icons -->
@@ -276,6 +277,6 @@
       </div>
     </footer>
 
-    <script src="site.js"></script>
+    <script src="site.js?v=20261009-2"></script>
   </body>
 </html>

@@ -52,9 +52,9 @@
 .skull-icon {
   display: inline-block;
   width: 48px; height: 48px;
-  background-image: url("tetris-skulls.png?v=20261009-3");
+  background-image: url("tetris-skulls.png?v=20261010-5");
   background-repeat: no-repeat;
-  background-size: 2400% 100%;   /* 24 icons in one strip */
+  background-size: 2500% 100%;   /* 25 icons in one strip */
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   flex: none;

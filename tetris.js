@@ -98,7 +98,7 @@
 
   // Website timing: first clear arms 12 seconds; each clear adds 2 seconds to the refill
   // window up to 30 seconds. A Tetris grants 35 seconds. Non-clearing pieces do not break it.
-  var STREAK = { WINDOW: 12, STEP: 2, MAX: 30, TETRIS: 35, MIN: 2, STRONG: 5, FIRE: 10, BORDER: 20 };
+  var STREAK = { WINDOW: 12, STEP: 2, MAX: 30, TETRIS: 35, MIN: 2, STRONG: 5, FIRE: 10, BORDER: 20, LIGHTNING: 50 };
   var reducedEffects = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Power-ups (blocks that ride on pieces; fire when their row clears).
@@ -145,7 +145,9 @@
     { id: 'pStarBomb', name: 'Star Bomb', cat: 'power', kind: PU.STAR_BOMB, eff: 0.5, body: 'Drops with pieces. When its line clears it scatters six junk blocks over your stack.' },
     { id: 'pFreeze', name: 'Freeze', cat: 'attack', kind: PU.FREEZE, eff: 0, body: 'Versus only. Clear its line to freeze a random opponent for 3.5 seconds.' },
     { id: 'pShell', name: 'Blue Shell', cat: 'attack', kind: PU.SHELL, eff: 0, body: 'Versus only. Clear its line to hit the leader with 3 garbage rows.' },
-    { id: 'pCurse', name: 'Curse', cat: 'attack', kind: PU.CURSE, eff: 0, body: 'Versus only. Plants a skull in an opponent\'s next piece; when it lands they get Haste.' }
+    { id: 'pCurse', name: 'Curse', cat: 'attack', kind: PU.CURSE, eff: 0, body: 'Versus only. Plants a skull in an opponent\'s next piece; when it lands they get Haste.' },
+    // Website-only (not in the VRChat world yet), so it sits at the end of the icon strip.
+    { id: 'noStreaks', name: 'Snuffed Out', cat: 'mod', eff: 0, body: 'Streaks never start: no streak timer, fire, outlines or streak badge. A calm, clean board.' }
   ];
   var SKULL_BY_ID = {};
   SKULLS.forEach(function (s, i) { s.index = i; SKULL_BY_ID[s.id] = s; });
@@ -514,6 +516,7 @@
   };
 
   Player.prototype.recordStreak = function (cleared) {
+    if (this.f.noStreaks) return;
     if (this.streakLeft <= 0) { this.streak = 0; this.streakLines = 0; }
     this.streak = Math.min(99, this.streak + 1);
     this.streakLines += cleared;
@@ -615,6 +618,8 @@
     gameType: G.Store.get('tetris_game_type', GT.MARATHON),
     versusType: G.Store.get('tetris_versus_type', 'last'),  // 'last' (Last Standing) or 'elim' (Elimination)
     skulls: cleanSkulls(G.Store.get('tetris_skulls', [])),
+    // Display only: the fire / lightning outline around the well and the overdrive sparks beside it.
+    streakOutlines: G.Store.get('tetris_streak_outlines', 'on'),
     // vs CPU opponents: [{ name, level }], 1-3 of them
     cpuRoster: (function () {
       var r = G.Store.get('tetris_cpu_roster', null);
@@ -1040,7 +1045,7 @@
     if (game.mode === 'online' && net.role === 'host' && !fromNet) netSend({ t: 'over', winner: winnerName });
     var buttons = [{ label: 'Menu', onClick: quitToMenu }];
     if (game.mode === 'local') buttons.unshift({ label: 'Play again', primary: true, onClick: function () { startLocal(); } });
-    if (game.mode === 'cpu') buttons.unshift({ label: 'Play again', primary: true, onClick: function () { startCpu(); } });
+    if (game.mode === 'cpu') { var watch = game.spectate; buttons.unshift({ label: watch ? 'Watch again' : 'Play again', primary: true, onClick: function () { startCpu(watch); } }); }
     if (game.mode === 'online') buttons.unshift({ label: 'Back to lobby', primary: true, onClick: backToLobby });
     overlay(winnerName ? winnerName + ' wins!' : 'Game ended', scores, buttons);
   }
@@ -1220,17 +1225,6 @@
 
     if (p.frozen > 0) { ctx.fillStyle = 'rgba(180, 230, 255, 0.28)'; ctx.fillRect(ox, 0, COLS * CELL, H); }
 
-    if (p.piece && p.alive) {
-      p.cells(p.piece.x, p.piece.y, p.piece.rot).forEach(function (cell, i) {
-        if (cell[1] < 0) return;
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = blockColor(p, cell[1]);
-        drawBlock(ctx, ox + cell[0] * CELL, cell[1] * CELL, CELL, blockFill(p, cell[1]));
-        ctx.shadowBlur = 0;
-        if (p.piece.power && i === p.piece.powerCell) drawPowerIcon(ctx, ox + cell[0] * CELL, cell[1] * CELL, CELL, p.piece.power, now);
-      });
-    }
-
     drawFx(ctx, p, ox, now);
     drawJunk(ctx, p, ox, now);
 
@@ -1242,9 +1236,13 @@
     ctx.strokeStyle = 'rgba(157, 0, 255, 0.5)';
     ctx.lineWidth = 2;
     ctx.strokeRect(ox + 1, 1, COLS * CELL - 2, H - 2);
-    if (p.streakLeft > 0 && p.streak >= STREAK.BORDER && p.alive) drawBorderFire(ctx, ox, H, now, heat, p.streak);
-    if (p.streakLeft > 0 && p.streak >= 30 && p.alive) drawOverdrive(ctx, p, ox, H, now, heat);
+    var outlines = settings.streakOutlines !== 'off' && p.streakLeft > 0 && p.alive;
+    if (outlines && p.streak >= STREAK.LIGHTNING) drawBorderLightning(ctx, ox, H, now, heat, p.streak);
+    else if (outlines && p.streak >= STREAK.BORDER) drawBorderFire(ctx, ox, H, now, heat, p.streak);
+    if (outlines && p.streak >= 30) drawOverdrive(ctx, p, ox, H, now, heat);
+    if (p.piece && p.alive && tier >= 3) drawDropLane(ctx, p, ox);
     if (p.piece && p.alive && !p.f.noGhost) drawGhost(ctx, p, ox, now);
+    if (p.piece && p.alive) drawActivePiece(ctx, p, ox, now, tier >= 3);
     if (p.streakLeft > 0 && p.streak >= STREAK.MIN && p.alive) drawStreakBadge(ctx, p, ox, now, tier >= 3 ? heat : [0.78, 0.6, 1]);
 
     if (!p.alive) {
@@ -1287,7 +1285,7 @@
 
   // Pixel flames rise off each column from 10x; at 20x they take the scene highlight.
   function drawFlames(ctx, p, ox, now, heat, alpha) {
-    var px = 4, t = Math.floor(now / 70), intensity = 1 + clamp01((p.streak - STREAK.FIRE) / 30) * 1.25;
+    var px = 4, t = Math.floor(now / 70), intensity = 0.8 + clamp01((p.streak - STREAK.FIRE) / 30) * 0.5;
     for (var c = 0; c < COLS; c++) {
       var top = -1;
       for (var r = 0; r < ROWS; r++) if (p.board[r][c]) { top = r; break; }
@@ -1298,25 +1296,26 @@
         var x = ox + c * CELL + k * px, y = top * CELL - h;
         var grad = ctx.createLinearGradient(0, y, 0, top * CELL);
         grad.addColorStop(0, rgb(heat, 0));
-        grad.addColorStop(0.4, rgb(heat, 0.6 * alpha));
-        grad.addColorStop(1, rgb(lerp3(heat, [1, 1, 1], 0.5), 0.85 * alpha));
+        grad.addColorStop(0.45, rgb(heat, 0.42 * alpha));
+        grad.addColorStop(1, rgb(lerp3(heat, [1, 1, 1], 0.5), 0.7 * alpha));
         ctx.fillStyle = grad;
         ctx.fillRect(x, y, px, h);
       }
     }
   }
 
-  // 20x+: every occupied row emits pixel flames. Height and brightness grow with the streak.
+  // 20x+: every exposed block face (open cell above it) gives off small pixel flames. They used to rise off every
+  // row to ~1 cell tall, which buried the stack and the landing spot; now they stay low and only on open edges.
   function drawLineFlames(ctx, p, ox, now, col, alpha) {
     var t = Math.floor(now / 65), power = clamp01((p.streak - STREAK.BORDER) / 25);
-    var height = 9 + power * 20, width = CELL / 3;
+    var height = 6 + power * 8, width = CELL / 3;
     var outer = rgb(col, 0.65), core = rgb(lerp3(col, [1, 1, 1], 0.55), 0.8);
     ctx.save();
-    ctx.globalAlpha = alpha * (0.45 + power * 0.35);
+    ctx.globalAlpha = alpha * (0.35 + power * 0.25);
     ctx.shadowColor = rgb(col, 0.8);
-    ctx.shadowBlur = 5 + power * 12;
+    ctx.shadowBlur = 4 + power * 6;
     for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) {
-      if (!p.board[r][c]) continue;
+      if (!p.board[r][c] || (r > 0 && p.board[r - 1][c])) continue;
       for (var k = 0; k < 3; k++) {
         var flicker = Math.sin(r * 3.7 + c * 7.1 + k * 2.9 + t * 0.8) * 0.5 + 0.5;
         var h = Math.round((0.35 + flicker * 0.65) * height / 3) * 3;
@@ -1341,16 +1340,112 @@
     ctx.strokeRect(ox + 2, 2, w - 4, H - 4);
     ctx.restore();
     for (var i = 0; i < w / px; i++) {
-      var hb = (0.4 + 1.1 * (Math.sin(i * 4.7 + t * 0.9) * 0.5 + 0.5)) * (10 + power * 18);
-      ctx.fillStyle = rgb(lerp3(col, [1, 1, 1], 0.35), 0.75);
+      var hb = (0.4 + 1.1 * (Math.sin(i * 4.7 + t * 0.9) * 0.5 + 0.5)) * (4 + power * 6);
+      ctx.fillStyle = rgb(lerp3(col, [1, 1, 1], 0.35), 0.6);
       ctx.fillRect(ox + i * px, H - hb, px, hb);
     }
+    // Side flames lick outward, away from the well, so they never hide the edge columns.
     for (var j = 0; j < H / px; j++) {
-      var hs = (0.3 + 0.8 * (Math.sin(j * 3.1 - t * 1.1) * 0.5 + 0.5)) * (7 + power * 12);
-      ctx.fillStyle = rgb(col, 0.6);
-      ctx.fillRect(ox, j * px, hs, px);
-      ctx.fillRect(ox + w - hs, j * px, hs, px);
+      var hs = (0.3 + 0.8 * (Math.sin(j * 3.1 - t * 1.1) * 0.5 + 0.5)) * (6 + power * 10);
+      ctx.fillStyle = rgb(col, 0.5);
+      ctx.fillRect(ox - hs, j * px, hs, px);
+      ctx.fillRect(ox + w, j * px, hs, px);
     }
+  }
+
+  // 50x+: the fire outline becomes crackling lightning. Bolts crawl along the well's edge and fork outward;
+  // nothing reaches more than a few pixels inside the well.
+  function boltNoise(n) { var x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+  function perimeterPoint(s, ox, w, H) {
+    var P = 2 * (w + H);
+    s = ((s % P) + P) % P;
+    if (s < w) return [ox + s, 1, 0, -1];
+    if (s < w + H) return [ox + w - 1, s - w, 1, 0];
+    if (s < 2 * w + H) return [ox + w - (s - w - H), H - 1, 0, 1];
+    return [ox + 1, H - (s - 2 * w - H), -1, 0];
+  }
+  function drawBorderLightning(ctx, ox, H, now, col, streak) {
+    var w = COLS * CELL, P = 2 * (w + H), power = clamp01((streak - STREAK.LIGHTNING) / 30);
+    var frame = reducedEffects ? 0 : Math.floor(now / 75), bolts = 5 + Math.round(power * 3);
+    var core = lerp3(col, [1, 1, 1], 0.75);
+    ctx.save();
+    // steady electric rim underneath the bolts
+    ctx.shadowColor = rgb(col, 0.9);
+    ctx.shadowBlur = 14 + power * 10;
+    ctx.strokeStyle = rgb(col, 0.45 + 0.25 * Math.sin(now / 90));
+    ctx.lineWidth = 2;
+    ctx.strokeRect(ox + 1.5, 1.5, w - 3, H - 3);
+    ctx.lineJoin = 'miter';
+    for (var b = 0; b < bolts; b++) {
+      var seed = frame * 13 + b * 7.3;
+      if (boltNoise(seed + 0.5) < 0.18) continue; // flicker: some bolts skip a frame
+      var start = boltNoise(seed) * P, len = (0.12 + boltNoise(seed + 1) * 0.16) * P, steps = Math.max(4, Math.round(len / 14));
+      var pts = [];
+      for (var k = 0; k <= steps; k++) {
+        var q = perimeterPoint(start + len * k / steps, ox, w, H), out = (k === 0 || k === steps) ? 0 : (boltNoise(seed + k * 3.1) * 9 - 2);
+        pts.push([q[0] + q[2] * out, q[1] + q[3] * out]);
+      }
+      for (var pass = 0; pass < 2; pass++) {
+        ctx.beginPath();
+        pts.forEach(function (pt, i) { if (i) ctx.lineTo(pt[0], pt[1]); else ctx.moveTo(pt[0], pt[1]); });
+        ctx.strokeStyle = pass ? rgb(core, 0.95) : rgb(col, 0.7);
+        ctx.lineWidth = pass ? 1.5 : 4;
+        ctx.shadowBlur = pass ? 6 : 16;
+        ctx.stroke();
+      }
+      // one fork jumping outward from the middle of the bolt
+      var mid = pts[Math.floor(pts.length / 2)], mq = perimeterPoint(start + len / 2, ox, w, H), fx = mid[0], fy = mid[1];
+      ctx.beginPath();
+      ctx.moveTo(fx, fy);
+      for (var f = 1; f <= 3; f++) {
+        var reach = f * (6 + power * 6), side = (boltNoise(seed + f * 5.7) - 0.5) * 14;
+        fx = mid[0] + mq[2] * reach + mq[3] * side;
+        fy = mid[1] + mq[3] * reach + mq[2] * side;
+        ctx.lineTo(fx, fy);
+      }
+      ctx.strokeStyle = rgb(core, 0.7);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // On fire, the falling piece's columns get a darker lane down to its landing spot, so it reads through the glow.
+  function drawDropLane(ctx, p, ox) {
+    var cells = p.cells(p.piece.x, p.piece.y, p.piece.rot), minC = COLS, maxC = -1, top = ROWS;
+    cells.forEach(function (c) { minC = Math.min(minC, c[0]); maxC = Math.max(maxC, c[0]); top = Math.min(top, c[1]); });
+    var gy = p.ghostY();
+    var bottom = 0;
+    p.cells(p.piece.x, gy, p.piece.rot).forEach(function (c) { bottom = Math.max(bottom, c[1] + 1); });
+    top = Math.max(0, top);
+    if (bottom <= top) return;
+    var x = ox + minC * CELL, wd = (maxC - minC + 1) * CELL;
+    var g = ctx.createLinearGradient(0, top * CELL, 0, bottom * CELL);
+    g.addColorStop(0, 'rgba(4,2,10,0.12)');
+    g.addColorStop(1, 'rgba(4,2,10,0.42)');
+    ctx.fillStyle = g;
+    ctx.fillRect(x, top * CELL, wd, (bottom - top) * CELL);
+  }
+
+  // The falling piece is drawn last, over every streak effect, with a dark rim so it stays crisp on bright fire.
+  function drawActivePiece(ctx, p, ox, now, onFire) {
+    var cells = p.cells(p.piece.x, p.piece.y, p.piece.rot);
+    if (onFire) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(6,3,14,0.85)';
+      ctx.lineWidth = 3;
+      cells.forEach(function (cell) { if (cell[1] >= 0) ctx.strokeRect(ox + cell[0] * CELL + 0.5, cell[1] * CELL + 0.5, CELL - 1, CELL - 1); });
+      ctx.restore();
+    }
+    cells.forEach(function (cell, i) {
+      if (cell[1] < 0) return;
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = blockColor(p, cell[1]);
+      drawBlock(ctx, ox + cell[0] * CELL, cell[1] * CELL, CELL, blockFill(p, cell[1]));
+      ctx.shadowBlur = 0;
+      if (p.piece.power && i === p.piece.powerCell) drawPowerIcon(ctx, ox + cell[0] * CELL, cell[1] * CELL, CELL, p.piece.power, now);
+    });
+    ctx.globalAlpha = 1;
   }
 
   // Extreme streak effects stay beside the well so they never cover the landing area.
@@ -1629,17 +1724,39 @@
   }
 
   // Versus CPU: you against 1-3 computer players at the chosen difficulty, each with a random colour.
-  function startCpu() {
+  // spectate: the Konami code on the menu. Your seat goes to a CPU too, and the vs CPU roster is padded to at
+  // least three bots, so you watch a CPU vs CPU vs CPU match with your rules, skulls and roster.
+  function startCpu(spectate) {
     var lives = settings.versusType === 'elim' ? 1 : livesValue();
     var opts = { lives: lives, versus: true, skulls: settings.skulls };
-    var players = [new Player(Object.assign({ id: 'me', name: 'You', palette: roundPalette(), local: true, controls: KEYS_SOLO }, opts))];
-    settings.cpuRoster.forEach(function (c, i) {
+    var players = [], roster = settings.cpuRoster.slice();
+    if (spectate) {
+      while (roster.length < 3) roster.push({ name: '', level: 'normal' });
+    } else {
+      players.push(new Player(Object.assign({ id: 'me', name: 'You', palette: roundPalette(), local: true, controls: KEYS_SOLO }, opts)));
+    }
+    roster.forEach(function (c, i) {
       var bot = new Player(Object.assign({ id: 'cpu' + i, name: Cpu.name(c.level, i, c.name), palette: randomPalette(), local: true, controls: Cpu.NO_KEYS }, opts));
       bot.cpu = Cpu.brain(c.level);
       players.push(bot);
     });
     startGame('cpu', players);
+    game.spectate = !!spectate;
   }
+
+  var KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
+  var konamiAt = 0;
+  document.addEventListener('keydown', function (e) {
+    var menu = $('#menuPanel');
+    if (game || !menu || menu.classList.contains('hidden') || e.target.closest('input, textarea, select')) { konamiAt = 0; return; }
+    var k = (e.key || '').toLowerCase();
+    konamiAt = k === KONAMI[konamiAt] ? konamiAt + 1 : (k === KONAMI[0] ? 1 : 0);
+    if (konamiAt === KONAMI.length) {
+      konamiAt = 0;
+      G.Sound.beep(1318, 0.18, 'square', 0.05);
+      startCpu(true);
+    }
+  });
 
   /* =================================================================
      CPU opponents
@@ -2511,6 +2628,7 @@
     });
 
     G.chips($('#livesChips'), settings.lives, function (v) { settings.lives = v; G.Store.set('tetris_lives', v); });
+    G.chips($('#streakOutlineChips'), settings.streakOutlines, function (v) { settings.streakOutlines = v; G.Store.set('tetris_streak_outlines', v); });
     G.chips($('#gameTypeChips'), settings.gameType, function (v) { settings.gameType = v; G.Store.set('tetris_game_type', v); renderMenuBest(); });
     G.chips($('#versusTypeChips'), settings.versusType, function (v) { settings.versusType = v; G.Store.set('tetris_versus_type', v); renderMenuBest(); });
     lobbyChips.lives = G.chips($('#lobbyLivesChips'), net.cfg.lives, function (v) { if (canEditCfg()) changeCfg({ lives: v }); else renderLobby(); });
@@ -2536,7 +2654,7 @@
     $('#achBtn').addEventListener('click', function () { ACH.open(); });
     $('#hudAch').addEventListener('click', function () { ACH.open(); });
     if (ACH.onOpen) ACH.onOpen(function () { if (game && !game.over && !game.paused && game.mode !== 'online') setPaused(true); });
-    $('#modeCpu').addEventListener('click', startCpu);
+    $('#modeCpu').addEventListener('click', function () { startCpu(false); });
     renderCpuRoster();
     $('#cpuAddOpponent').addEventListener('click', function () {
       if (settings.cpuRoster.length >= 3) return;

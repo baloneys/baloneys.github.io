@@ -31,12 +31,12 @@
     <link rel="stylesheet" href="style.css?v=20261009-3" />
     <link rel="stylesheet" href="home.css?v=20261009-3" />
     <link rel="stylesheet" href="games.css?v=20261009-3" />
-    <link rel="stylesheet" href="tetris.css?v=20261010-4" />
+    <link rel="stylesheet" href="tetris.css?v=20261010-6" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
     <script src="games-common.js?v=20261009-3" defer></script>
     <script src="tetris-bg.js?v=20261009-4" defer></script>
-    <script src="tetris-achievements.js?v=20261010-4" defer></script>
-    <script src="tetris.js?v=20261010-4" defer></script>
+    <script src="tetris-achievements.js?v=20261010-6" defer></script>
+    <script src="tetris.js?v=20261010-6" defer></script>
   </head>
   <body>
     <!-- shared icons -->
@@ -129,6 +129,10 @@
             <div class="option-row" style="margin-top:0"><span class="option-label">Skulls</span></div>
             <div class="skull-summary" id="menuSkulls"></div>
             <div class="chip-row"><button class="btn btn-sm btn-outline" id="skullsBtn" type="button">Choose skulls</button><button class="btn btn-sm btn-outline ach-launch" id="achBtn" type="button">Achievements <span class="ach-count" id="achCount"></span></button><button class="btn btn-sm btn-outline" id="shuffleBg" type="button">Shuffle background</button></div>
+          </div>
+          <div class="option-row" id="streakOutlineChips">
+            <span class="option-label">Streak outlines</span>
+            <button class="chip" data-value="on">On</button><button class="chip" data-value="off">Off</button>
           </div>
           <div class="option-row"><span class="option-label">Colour</span></div>
           <div class="skin-row" id="skinRow"></div>

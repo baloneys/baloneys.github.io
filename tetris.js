@@ -98,7 +98,7 @@
 
   // Website timing: first clear arms 12 seconds; each clear adds 2 seconds to the refill
   // window up to 30 seconds. A Tetris grants 35 seconds. Non-clearing pieces do not break it.
-  var STREAK = { WINDOW: 12, STEP: 2, MAX: 30, TETRIS: 35, MIN: 2, STRONG: 5, FIRE: 10, BORDER: 20, LIGHTNING: 50 };
+  var STREAK = { WINDOW: 12, STEP: 2, MAX: 30, TETRIS: 35, MIN: 2, STRONG: 5, FIRE: 10, BORDER: 20, LIGHTNING: 50, CAP: 1000 };
   var reducedEffects = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Power-ups (blocks that ride on pieces; fire when their row clears).
@@ -518,7 +518,7 @@
   Player.prototype.recordStreak = function (cleared) {
     if (this.f.noStreaks) return;
     if (this.streakLeft <= 0) { this.streak = 0; this.streakLines = 0; }
-    this.streak = Math.min(99, this.streak + 1);
+    this.streak = Math.min(STREAK.CAP, this.streak + 1);
     this.streakLines += cleared;
     var win = cleared >= 4 ? STREAK.TETRIS : Math.min(STREAK.MAX, STREAK.WINDOW + STREAK.STEP * (this.streak - 1));
     this.streakLeft = Math.max(this.streakLeft, win);

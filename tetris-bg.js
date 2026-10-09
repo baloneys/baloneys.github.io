@@ -8,7 +8,7 @@
 //   - honours prefers-reduced-motion (one still frame, redrawn only when something changes),
 //   - falls back to a CSS gradient when WebGL is unavailable.
 // It reacts to play: streaks raise its energy, garbage adds pressure, hard drops send shockwaves,
-// line clears pulse through it, and every pattern slowly drifts round the colour wheel.
+// line clears pulse through it, and every pattern shifts through saturated colours while avoiding yellow, beige and brown.
 //
 // API (window.TetrisBG): mount(el), setThemes(mask), milestone(), shuffle() -> {p, s}, show(pattern, seed),
 // setEnergy(0..1), setPressure(0..1), pulse(strength), impact(strength), setDanger(0..1)
@@ -150,10 +150,14 @@
     '  c += u_moon*(foam*0.42+light*light*0.14);',
     '  return c+extra;',
     '}',
-    'vec3 hueShift(vec3 c, float turns){',
-    '  float a = turns*6.2831853; mat3 toY = mat3(0.299,0.596,0.211, 0.587,-0.274,-0.523, 0.114,-0.322,0.312);',
-    '  mat3 toR = mat3(1.0,1.0,1.0, 0.956,-0.272,-1.106, 0.621,-0.647,1.703);',
-    '  vec3 y = toY*c; float s = sin(a), co = cos(a); y.yz = vec2(y.y*co-y.z*s, y.y*s+y.z*co); return max(toR*y, 0.0);',
+    // Drift along the green -> cyan -> blue -> pink -> red arc, reversing before yellow/orange.
+    // A saturation floor also prevents beige/olive accents in the source patterns.
+    'vec3 sceneTint(vec3 c, float turns){',
+    '  c=max(c,0.0); float value=max(max(c.r,c.g),c.b);',
+    '  float source=atan(1.73205*(c.g-c.b),2.0*c.r-c.g-c.b+0.00001)/6.2831853;',
+    '  float hue=0.30+0.70*(0.5+0.5*sin((source+turns)*6.2831853));',
+    '  vec3 spectrum=clamp(abs(fract(hue+vec3(0.0,0.666667,0.333333))*6.0-3.0)-1.0,0.0,1.0);',
+    '  return mix(vec3(1.0),spectrum,0.72)*value;',
     '}',
     'void main(){',
     '  vec2 p = gl_FragCoord.xy/u_res;',
@@ -168,7 +172,7 @@
     '  float ring=exp(-abs(length(shockPos)-(1.0-u_impact)*1.35)*24.0)*u_impact;',
     '  c += u_moon*ring*0.85;',
     '  c += u_dusk*u_pressure*(0.12+0.13*sin(p.y*45.0+u_time*4.0));',
-    '  c = hueShift(c, u_hue);',
+    '  c = sceneTint(c, u_hue);',
     '  c = mix(c, c*vec3(1.25,0.55,0.6), u_danger*0.35+u_pressure*0.12);',
     '  vec2 v = p-0.5; c *= 1.0-dot(v,v)*0.7;',
     '  gl_FragColor = vec4(c, 1.0);',
@@ -309,7 +313,7 @@
     gl.uniform3fv(u.u_deep, S.deep);
     gl.uniform3fv(u.u_dusk, S.dusk);
     gl.uniform3fv(u.u_moon, S.moon);
-    gl.uniform1f(u.u_hue, S.reduced ? 0 : (t * 0.008) % 1); // every background slowly drifts round the wheel
+    gl.uniform1f(u.u_hue, S.reduced ? 0 : (t * 0.008) % 1); // cycle the allowed colour arc without crossing yellow
     gl.uniform1f(u.u_energy, S.energy);
     gl.uniform1f(u.u_pulse, S.pulse);
     gl.uniform1f(u.u_impact, S.impact);
@@ -391,13 +395,11 @@
     // Match the highlight on screen, including palette fades and the shader's slow hue drift.
     sceneColor: function () {
       if (!S.gl) return null;
-      var c = S.moon, y = c[0] * 0.299 + c[1] * 0.587 + c[2] * 0.114;
-      var i = c[0] * 0.596 - c[1] * 0.274 - c[2] * 0.322;
-      var q = c[0] * 0.211 - c[1] * 0.523 + c[2] * 0.312;
-      var a = (S.reduced ? 0 : (performance.now() / 1000 * 0.008) % 1) * Math.PI * 2;
-      var si = Math.sin(a), co = Math.cos(a), ii = i * co - q * si, qq = i * si + q * co;
-      return [y + 0.956 * ii + 0.621 * qq, y - 0.272 * ii - 0.647 * qq, y - 1.106 * ii + 1.703 * qq]
-        .map(function (v) { return Math.max(0, Math.min(1, v)); });
+      var c = S.moon, value = Math.max(c[0], c[1], c[2]);
+      var turns = S.reduced ? 0 : (performance.now() / 1000 * 0.008) % 1;
+      var source = Math.atan2(1.73205 * (c[1] - c[2]), 2 * c[0] - c[1] - c[2] + 0.00001) / (Math.PI * 2);
+      var hue = 0.30 + 0.70 * (0.5 + 0.5 * Math.sin((source + turns) * Math.PI * 2));
+      return hsv(hue % 1, 0.72, value);
     }
   };
   window.TetrisBG = API;

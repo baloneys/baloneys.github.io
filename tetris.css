@@ -1,0 +1,138 @@
+/* tetris.css: Tetris-only styles (skulls, game types, background, streak, host tools). Loaded after games.css. */
+
+/* ---------- animated background (tetris-bg.js) ---------- */
+
+.tetris-page { position: relative; isolation: isolate; }
+.tetris-page > *:not(.tetris-bg) { position: relative; z-index: 1; }
+
+.tetris-bg {
+  /* the whole window, whatever its shape (ultrawide included), behind the page content */
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  opacity: 0.62;
+  pointer-events: none;
+  /* chunky pixels, like the VRChat world's stage (the canvas is only 150 px wide) */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  /* soft vignette so it reads as atmosphere behind the panels */
+  -webkit-mask-image: radial-gradient(ellipse 95% 90% at 50% 45%, #000 52%, transparent 100%);
+  mask-image: radial-gradient(ellipse 95% 90% at 50% 45%, #000 52%, transparent 100%);
+  transition: opacity 0.8s ease;
+}
+.tetris-page.playing .tetris-bg { opacity: 0.75; }
+.tetris-bg.fallback {
+  background: radial-gradient(ellipse at 70% 20%, color-mix(in srgb, var(--color-primary) 35%, transparent), transparent 60%),
+              radial-gradient(ellipse at 20% 80%, color-mix(in srgb, var(--color-accent) 25%, transparent), transparent 60%);
+}
+
+/* the stage lets a little of the background through */
+.tetris-page .tetris-stage { background: rgba(7, 5, 11, 0.72); backdrop-filter: blur(2px); }
+
+/* ---------- menu additions ---------- */
+
+.menu-section { margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--color-border); }
+.chip-row { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-sm); margin-top: var(--spacing-sm); }
+.type-note { margin-top: var(--spacing-sm); text-align: center; color: var(--color-on-surface-secondary); font-size: var(--font-size-xs); }
+
+.skull-summary {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px;
+  margin-top: var(--spacing-sm); min-height: 36px;
+}
+.skull-summary .skull-icon { width: 30px; height: 30px; }
+.multiplier { font-family: var(--font-family-heading); font-weight: 800; color: var(--color-primary); letter-spacing: 0.04em; }
+.multiplier.up { color: #ff8ab0; }
+.multiplier.down { color: #8affb0; }
+
+/* ---------- skulls ---------- */
+
+.skull-icon {
+  display: inline-block;
+  width: 48px; height: 48px;
+  background-image: url("tetris-skulls.png");
+  background-repeat: no-repeat;
+  background-size: 2400% 100%;   /* 24 icons in one strip */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  flex: none;
+}
+
+.skulls-layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: var(--spacing-lg); align-items: start; }
+.skull-group-title {
+  margin: var(--spacing-md) 0 var(--spacing-sm);
+  color: var(--color-on-surface-secondary);
+  font-family: var(--font-family-heading); font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+}
+.skull-group-title:first-child { margin-top: 0; }
+.skull-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
+
+.skull-card {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 4px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface);
+  color: var(--color-on-surface-secondary);
+  font-size: 0.66rem; font-weight: 600; line-height: 1.15; text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.skull-card:hover, .skull-card:focus-visible { border-color: var(--color-primary); transform: translateY(-2px); }
+.skull-card .skull-icon { filter: grayscale(0.85) brightness(0.75); transition: filter 0.15s ease; }
+.skull-card.on {
+  color: #fff;
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 18%, var(--color-surface));
+  box-shadow: 0 10px 30px -18px var(--color-primary);
+}
+.skull-card.on .skull-icon { filter: none; }
+.skull-card .skull-delta { font-family: var(--font-family-heading); font-size: 0.6rem; opacity: 0.8; }
+.skull-card.on .skull-delta { opacity: 1; }
+
+.skull-detail {
+  position: sticky; top: 90px;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-surface);
+  text-align: center;
+}
+.skull-detail .skull-icon { width: 96px; height: 96px; margin: 0 auto var(--spacing-sm); }
+.skull-detail .cat { font-family: var(--font-family-heading); font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-primary); }
+.skull-detail .cat.power { color: #4cc9ff; }
+.skull-detail .cat.attack { color: #ff8a73; }
+.skull-detail h3 { margin: 4px 0 8px; font-family: var(--font-family-heading); font-size: var(--font-size-lg); }
+.skull-detail p { color: var(--color-on-surface-secondary); font-size: var(--font-size-sm); }
+.skull-detail .eff { margin-top: var(--spacing-md); font-family: var(--font-family-heading); font-weight: 700; }
+
+@media (max-width: 760px) {
+  .skulls-layout { grid-template-columns: 1fr; }
+  .skull-detail { position: static; order: -1; }
+}
+
+.cp-stops { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cp-stop { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 8px 6px; border: 1px solid var(--color-border); border-radius: var(--border-radius-md); font-size: 0.72rem; font-weight: 700; cursor: pointer; }
+.cp-stop.active { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 15%, var(--color-surface)); }
+.cp-stop-swatch { width: 16px; height: 16px; flex: none; border-radius: 4px; box-shadow: 0 0 0 1px rgba(255,255,255,0.3); }
+
+/* ---------- game view ---------- */
+
+.board-card { position: relative; transition: filter 0.3s ease; }
+.board-card.danger canvas { animation: dangerPulse 1s ease-in-out infinite; }
+.board-card.danger .board-lives { color: #ff6b6b; }
+@keyframes dangerPulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(255, 60, 80, 0.4), 0 0 24px -6px rgba(255, 40, 60, 0.5); }
+  50% { box-shadow: 0 0 0 2px rgba(255, 60, 80, 0.9), 0 0 36px -2px rgba(255, 40, 60, 0.8); }
+}
+.board-card.out { filter: grayscale(0.7) brightness(0.8); }
+
+.hud-timers { display: flex; gap: 10px; justify-content: center; min-height: 20px; font-family: var(--font-family-heading); font-size: var(--font-size-xs); }
+.hud-timers span { padding: 1px 8px; border-radius: var(--border-radius-full); border: 1px solid var(--color-border); }
+
+.lobby-tools { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-sm); margin-top: var(--spacing-md); }
+.lobby-kick { margin-left: auto; padding: 2px 10px; border: 1px solid #ff6b81; border-radius: var(--border-radius-full); color: #ff8a9a; font-size: 0.7rem; font-weight: 700; }
+.lobby-kick:hover { background: rgba(255, 80, 100, 0.15); }

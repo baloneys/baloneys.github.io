@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tetris | baloneys</title>
-    <meta name="description" content="Tetris: solo marathon, local versus, or online with up to 4 players." />
+    <meta name="description" content="Tetris: five solo game types, skulls, streaks, local versus, or online with up to 4 players." />
     <meta name="theme-color" content="#050505" />
     <meta property="og:title" content="Tetris | baloneys" />
     <meta property="og:description" content="Tetris: solo marathon, local versus, or online with up to 4 players." />
@@ -30,8 +30,10 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="home.css" />
     <link rel="stylesheet" href="games.css" />
+    <link rel="stylesheet" href="tetris.css" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
     <script src="games-common.js" defer></script>
+    <script src="tetris-bg.js" defer></script>
     <script src="tetris.js" defer></script>
   </head>
   <body>
@@ -87,7 +89,7 @@
     </div>
 
     <main id="main">
-      <div class="game-page">
+      <div class="game-page tetris-page">
         <header class="game-head">
           <h1 class="game-title">tetris</h1>
           <p class="game-tagline">falling blocks killed my family</p>
@@ -100,13 +102,31 @@
             <button class="mode-card" id="modeOnline" type="button"><strong>Online</strong><span>2–4 players</span></button>
           </div>
           <p class="notice" id="menuBest"></p>
+          <div class="option-row" id="gameTypeChips">
+            <span class="option-label">Solo game type</span>
+            <button class="chip" data-value="marathon">Marathon</button><button class="chip" data-value="sprint">Sprint 40</button><button class="chip" data-value="ultra">Ultra 2:00</button><button class="chip" data-value="dig">Dig</button><button class="chip" data-value="survival">Survival</button>
+          </div>
+          <p class="type-note" id="gameTypeNote"></p>
+          <div class="option-row" id="versusTypeChips">
+            <span class="option-label">Versus rules</span>
+            <button class="chip" data-value="last">Last Standing</button><button class="chip" data-value="elim">Elimination</button>
+          </div>
           <div class="option-row" id="livesChips">
             <span class="option-label">Versus lives</span>
             <button class="chip" data-value="1">1</button><button class="chip" data-value="3">3</button><button class="chip" data-value="5">5</button><button class="chip" data-value="inf">∞</button>
           </div>
+          <div class="menu-section">
+            <div class="option-row" style="margin-top:0"><span class="option-label">Skulls</span></div>
+            <div class="skull-summary" id="menuSkulls"></div>
+            <div class="chip-row"><button class="btn btn-sm btn-outline" id="skullsBtn" type="button">Choose skulls</button><button class="btn btn-sm btn-outline" id="shuffleBg" type="button">Shuffle background</button></div>
+          </div>
           <div class="option-row"><span class="option-label">Colour</span></div>
           <div class="skin-row" id="skinRow"></div>
           <div class="colour-picker hidden" id="colourPicker">
+            <div class="cp-stops" role="group" aria-label="Custom gradient colours">
+              <button class="cp-stop active" id="cpTopStop" type="button" aria-pressed="true"><span class="cp-stop-swatch"></span>Top colour</button>
+              <button class="cp-stop" id="cpBottomStop" type="button" aria-pressed="false"><span class="cp-stop-swatch"></span>Bottom colour</button>
+            </div>
             <div class="cp-area" id="cpArea"><div class="cp-thumb" id="cpThumb"></div></div>
             <div class="cp-hue" id="cpHue"><div class="cp-hue-thumb" id="cpHueThumb"></div></div>
             <div class="cp-row">
@@ -114,6 +134,27 @@
               <input class="text-input cp-hex" id="cpHex" maxlength="7" aria-label="Hex colour">
               <button class="btn btn-sm btn-primary" id="cpDone" type="button">Done</button>
             </div>
+          </div>
+        </section>
+
+        <section class="panel hidden" id="skullsPanel" style="max-width:960px">
+          <h2 class="panel-title">Skulls</h2>
+          <p class="type-note" style="margin:-8px 0 var(--spacing-lg)">Hard skulls raise your score multiplier, easy ones lower it. Any skull makes a game unranked.</p>
+          <div class="skulls-layout">
+            <div>
+              <h3 class="skull-group-title">Modifiers</h3>
+              <div class="skull-grid" id="skullsMods"></div>
+              <h3 class="skull-group-title">Power-ups · drop with your pieces</h3>
+              <div class="skull-grid" id="skullsPowers"></div>
+              <h3 class="skull-group-title">Versus attacks · versus only</h3>
+              <div class="skull-grid" id="skullsAttacks"></div>
+            </div>
+            <aside class="skull-detail" id="skullDetail" aria-live="polite"></aside>
+          </div>
+          <div class="actions">
+            <span class="multiplier" id="skullsMultiplier"></span>
+            <button class="btn btn-outline" id="skullsClear" type="button">Clear all</button>
+            <button class="btn btn-primary" id="skullsDone" type="button">Done</button>
           </div>
         </section>
 
@@ -136,8 +177,17 @@
             <p class="notice" style="margin-top:0">Share this code (click to copy)</p>
             <span class="lobby-code" id="lobbyCode" title="Copy code">-----</span>
           </div>
-          <div class="option-row hidden" id="lobbyLivesRow"><span class="option-label">Lives</span><span id="lobbyLivesChips" style="display:contents"><button class="chip" data-value="1">1</button><button class="chip" data-value="3">3</button><button class="chip" data-value="5">5</button><button class="chip" data-value="inf">∞</button></span></div>
-          <p class="notice" id="lobbyLivesText"></p>
+          <div id="lobbyRules">
+            <div class="option-row"><span class="option-label">Versus rules</span><span id="lobbyVersusChips" style="display:contents"><button class="chip" data-value="last">Last Standing</button><button class="chip" data-value="elim">Elimination</button></span></div>
+            <div class="option-row" id="lobbyLivesRow"><span class="option-label">Lives</span><span id="lobbyLivesChips" style="display:contents"><button class="chip" data-value="1">1</button><button class="chip" data-value="3">3</button><button class="chip" data-value="5">5</button><button class="chip" data-value="inf">∞</button></span></div>
+            <p class="notice" id="lobbyLivesText"></p>
+            <div class="skull-summary" id="lobbySkulls"></div>
+            <div class="lobby-tools">
+              <button class="btn btn-sm btn-outline" id="lobbySkullsBtn" type="button">Skulls</button>
+              <button class="btn btn-sm btn-outline hidden" id="lockBtn" type="button">Rules: host only</button>
+              <button class="btn btn-sm btn-outline" id="lobbyShuffleBg" type="button">Shuffle background</button>
+            </div>
+          </div>
           <ul class="lobby-players" id="lobbyPlayers"></ul>
           <div class="actions">
             <button class="btn btn-primary" id="readyBtn" type="button">Ready</button>
@@ -147,10 +197,12 @@
         </section>
         <section class="hidden" id="gameView">
           <div class="hud">
-            <div class="hud-group"><span class="hud-stat">clear lines to send garbage in versus</span></div>
+            <div class="hud-group"><span class="hud-stat">chain line clears for a streak · clear lines to send garbage in versus</span></div>
             <div class="hud-group">
+              <button class="btn btn-sm btn-outline" id="hudShuffleBg" type="button" title="Shuffle background">BG</button>
               <button class="btn btn-sm btn-outline" id="soundBtn" type="button">Sound</button>
               <button class="btn btn-sm btn-outline" id="pauseBtn" type="button">Pause</button>
+              <button class="btn btn-sm btn-outline hidden" id="endBtn" type="button">End game</button>
               <button class="btn btn-sm btn-outline" id="quitBtn" type="button">Quit</button>
             </div>
           </div>

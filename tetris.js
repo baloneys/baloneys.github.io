@@ -8,6 +8,7 @@
 
   var G = window.Games;
   var BG = window.TetrisBG || null;
+  var ACH = window.TetrisAchievements || { event: function () {}, open: function () {}, count: function () { return { unlocked: 0, total: 0 }; }, onChange: function () {} };
   var $ = function (s, r) { return (r || document).querySelector(s); };
 
   /* =================================================================
@@ -463,6 +464,7 @@
       }
     }
     var cleared = rowsCleared + bombs;
+    var wasB2b = this.b2b;
     for (var q = 0; q < quakes * QUAKE_ROWS; q++) { this.board.pop(); this.board.unshift(new Array(COLS).fill(0)); cleared++; }
     if (stars) {
       var star = powers.filter(function (p) { return p.kind === PU.STAR_BOMB; })[0];
@@ -504,7 +506,11 @@
 
     this.canHold = true;
     var ok = this.spawn() && !above;
-    return { cleared: cleared, attack: attack, toppedOut: !ok, tetris: tetris, levelUp: levelUp, out: out };
+    if (this.f.lightsOut) this.lightsLines = (this.lightsLines || 0) + cleared;
+    var empty = this.board.every(function (row) { return row.every(function (v) { return !v; }); });
+    var fired = powers.map(function (p) { return p.kind === PU.BOMB ? 'bomb' : p.kind === PU.STAR_BOMB ? 'starbomb' : p.kind === PU.QUAKE ? 'quake' : ''; });
+    return { cleared: cleared, attack: attack, toppedOut: !ok, tetris: tetris, levelUp: levelUp, out: out,
+      b2b: tetris && wasB2b, perfect: cleared > 0 && empty, powers: fired };
   };
 
   Player.prototype.recordStreak = function (cleared) {
@@ -608,7 +614,9 @@
     customBottomHex: G.Store.get('tetris_custom_bottom', null),
     gameType: G.Store.get('tetris_game_type', GT.MARATHON),
     versusType: G.Store.get('tetris_versus_type', 'last'),  // 'last' (Last Standing) or 'elim' (Elimination)
-    skulls: cleanSkulls(G.Store.get('tetris_skulls', []))
+    skulls: cleanSkulls(G.Store.get('tetris_skulls', [])),
+    cpuCount: Math.max(1, Math.min(3, +G.Store.get('tetris_cpu_count', 1) || 1)),
+    cpuLevel: G.Store.get('tetris_cpu_level', 'normal')
   };
   if (!GT_INFO[settings.gameType]) settings.gameType = GT.MARATHON;
   if (settings.versusType !== 'elim') settings.versusType = 'last';
@@ -623,6 +631,9 @@
   var KEYS_SOLO = { left: ['arrowleft', 'a'], right: ['arrowright', 'd'], soft: ['arrowdown', 's'], cw: ['arrowup', 'w', 'x'], ccw: ['z', 'control'], hard: [' '], hold: ['c', 'shift'] };
   var KEYS_P1 = { left: ['a'], right: ['d'], soft: ['s'], cw: ['w'], ccw: ['r'], hard: ['q'], hold: ['e'] };
   var KEYS_P2 = { left: ['arrowleft'], right: ['arrowright'], soft: ['arrowdown'], cw: ['arrowup'], ccw: ['/'], hard: [' '], hold: ['enter'] };
+
+  // A player on this device who is a person (not a CPU): achievements, background energy, touch pad, "mine".
+  function isHuman(p) { return p.local && !p.cpu; }
 
   function livesValue(v) { v = v == null ? settings.lives : v; return v === 'inf' ? Infinity : parseInt(v, 10); }
 
@@ -648,10 +659,12 @@
     screen('gameView');
     hideOverlay();
     $('#help').innerHTML = helpText();
+    players.forEach(function (p) { if (isHuman(p)) ACH.event('start', { skulls: p.skulls.length, multiplier: p.multiplier }); });
     $('#pauseBtn').classList.toggle('hidden', mode === 'online');
     $('#endBtn').classList.toggle('hidden', !(mode === 'online' && net.role === 'host'));
     G.show($('#touchPad'));
     $('#touchPad').classList.toggle('hidden', mode === 'local');
+    $('#help').innerHTML = helpText();
     if (BG) {
       BG.setThemes(themesFor(players.filter(function (p) { return p.local; })[0] || players[0]), mode === 'online');
       if (mode === 'online' && net.bg) BG.show(net.bg.p, net.bg.s, net.bg.th);
@@ -708,7 +721,7 @@
     wrap.className = 'boards n' + game.players.length;
     game.players.forEach(function (p) {
       var card = document.createElement('div');
-      card.className = 'board-card' + (p.local ? ' mine' : '');
+      card.className = 'board-card' + (isHuman(p) ? ' mine' : '') + (p.cpu ? ' cpu' : '');
       var head = document.createElement('div');
       head.className = 'board-head';
       head.innerHTML = '<span class="board-name"></span><span class="board-lives"></span>';
@@ -768,7 +781,8 @@
     var dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     if (game && !game.paused && !game.over) {
-      game.players.forEach(function (p) { if (p.local && p.alive) stepPlayer(p, dt); });
+      game.players.forEach(function (p) { if (p.cpu && p.local && p.alive) Cpu.tick(p, dt); });
+      game.players.forEach(function (p) { if (p.local && p.alive && game && !game.over) stepPlayer(p, dt); });
       game.players.forEach(function (p) { if (!p.local) tickRemote(p, dt); });
       if (game && !game.over && game.versusType === 'elim') tickElimination(now);
       if (game && game.mode === 'online') netTick(now);
@@ -785,7 +799,7 @@
     if (!BG) return;
     var top = 0, pressure = 0;
     game.players.forEach(function (p) {
-      if (!p.local || !p.alive) return;
+      if (!isHuman(p) || !p.alive) return;
       if (p.streakLeft > 0 && p.streak >= STREAK.MIN) top = Math.max(top, p.streak);
       pressure = Math.max(pressure, Math.min(1, p.incoming / 8), p.frozen > 0 ? 0.75 : 0);
     });
@@ -809,6 +823,7 @@
   function stepPlayer(p, dt) {
     // clocks: game time, power-up timers, streak window, skull hazards
     p.elapsed += dt;
+    if (p.gameType === GT.SURVIVAL && p.elapsed >= 180 && !p.survivalAch) { p.survivalAch = true; ACH.event('survival', { elapsed: p.elapsed }); }
     p.slow = Math.max(0, p.slow - dt);
     p.double = Math.max(0, p.double - dt);
     p.haste = Math.max(0, p.haste - dt);
@@ -859,7 +874,10 @@
 
   function afterLock(p, res) {
     if (res.tetris) announce(p.name + ' got a TETRIS!');
-    if (p.local && BG) {
+    if (isHuman(p)) ACH.event('lock', { cleared: res.cleared, tetris: res.tetris, b2b: res.b2b, combo: p.combo, perfect: res.perfect,
+      score: p.score, level: p.level, streak: p.streakLeft > 0 ? p.streak : 0, powers: res.powers,
+      birthday: !!p.f.birthday, lightsLines: p.lightsLines || 0 });
+    if (isHuman(p) && BG) {
       if (res.cleared) {
         BG.pulse(res.tetris ? 0.8 : 0.3 + Math.min(4, res.cleared) * 0.1);
         BG.impact(res.tetris ? 1 : 0.45 + Math.min(4, res.cleared) * 0.1);
@@ -908,6 +926,8 @@
       if (game.mode !== 'online' || t.local) receiveHex(t, kind);
     }
     for (i = 0; i < out.freeze; i++) hex('freeze');
+    if (isHuman(from) && out.freeze) ACH.event('freeze');
+    if (isHuman(from) && out.shell) ACH.event('shell');
     for (i = 0; i < out.curse; i++) hex('curse');
     for (i = 0; i < out.shell; i++) {
       var leader = targets.slice().sort(function (a, b) { return b.score - a.score; })[0];
@@ -931,6 +951,7 @@
       p.spawn();
       p.flash = 0.6;
       G.banner('Second wind!');
+      if (isHuman(p)) ACH.event('secondwind');
       return;
     }
     if (game.mode === 'solo') return endSolo();
@@ -945,7 +966,7 @@
       p.score = Math.max(0, s - 1000);
       G.banner(p.name + ' lost a life');
     }
-    if (game.mode === 'local') checkWinner();
+    if (game.mode === 'local' || game.mode === 'cpu') checkWinner();
     if (game.mode === 'online') { net.dirty = true; hostCheckOnline(); }
   }
 
@@ -958,7 +979,7 @@
     var due = Math.floor(elapsed / ELIM_INTERVAL), left = ELIM_INTERVAL - (elapsed - due * ELIM_INTERVAL);
     var alive = game.players.filter(function (p) { return p.alive; });
     var lowest = alive.slice().sort(function (a, b) { return a.score - b.score; })[0];
-    var decide = game.mode === 'local' || net.role === 'host';
+    var decide = game.mode !== 'online' || net.role === 'host';
     if (decide && due > game.elimCuts && alive.length > 1 && lowest) {
       game.elimCuts = due;
       if (game.mode === 'online') netSend({ t: 'cut', slot: lowest.id });
@@ -984,7 +1005,7 @@
     p.piece = null;
     p.dangerText = '';
     G.banner(p.name + ' was eliminated!');
-    if (game.mode === 'local') checkWinner();
+    if (game.mode === 'local' || game.mode === 'cpu') checkWinner();
     if (game.mode === 'online') { net.dirty = true; hostCheckOnline(); }
   }
 
@@ -997,6 +1018,12 @@
 
   function finishVersus(winnerName, fromNet) {
     if (!game) return;
+    if (!game.reported) {
+      game.reported = true;
+      var me = game.players.filter(isHuman)[0];
+      if (me) ACH.event('versus', { online: game.mode === 'online', elimination: game.versusType === 'elim',
+        won: game.mode === 'online' && !!winnerName && me.name.replace(' (you)', '') === winnerName });
+    }
     game.over = true;
     game.players.forEach(function (p) { if (p.ui) p.ui.card.classList.remove('danger'); });
     var scores = game.players.map(function (p) { return p.name + ': ' + p.score; }).join(' · ');
@@ -1005,6 +1032,7 @@
     if (game.mode === 'online' && net.role === 'host' && !fromNet) netSend({ t: 'over', winner: winnerName });
     var buttons = [{ label: 'Menu', onClick: quitToMenu }];
     if (game.mode === 'local') buttons.unshift({ label: 'Play again', primary: true, onClick: function () { startLocal(); } });
+    if (game.mode === 'cpu') buttons.unshift({ label: 'Play again', primary: true, onClick: function () { startCpu(); } });
     if (game.mode === 'online') buttons.unshift({ label: 'Back to lobby', primary: true, onClick: backToLobby });
     overlay(winnerName ? winnerName + ' wins!' : 'Game ended', scores, buttons);
   }
@@ -1019,6 +1047,7 @@
   function endSolo() {
     var p = game.players[0];
     game.over = true;
+    ACH.event('solo', { finish: p.finish, gameType: p.gameType, elapsed: p.elapsed, score: p.score });
     var ranked = !p.skulls.length;
     var title = 'Game over', text, isBest = false;
     if (p.finish === 'sprint' || p.finish === 'dig') {
@@ -1184,15 +1213,6 @@
     if (p.frozen > 0) { ctx.fillStyle = 'rgba(180, 230, 255, 0.28)'; ctx.fillRect(ox, 0, COLS * CELL, H); }
 
     if (p.piece && p.alive) {
-      if (!p.f.noGhost) {
-        var gy = p.ghostY();
-        p.cells(p.piece.x, gy, p.piece.rot).forEach(function (cell) {
-          if (cell[1] < 0) return;
-          ctx.strokeStyle = 'rgba(199, 125, 255, 0.55)';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(ox + cell[0] * CELL + 3, cell[1] * CELL + 3, CELL - 6, CELL - 6);
-        });
-      }
       p.cells(p.piece.x, p.piece.y, p.piece.rot).forEach(function (cell, i) {
         if (cell[1] < 0) return;
         ctx.shadowBlur = 12;
@@ -1216,6 +1236,7 @@
     ctx.strokeRect(ox + 1, 1, COLS * CELL - 2, H - 2);
     if (p.streakLeft > 0 && p.streak >= STREAK.BORDER && p.alive) drawBorderFire(ctx, ox, H, now, heat, p.streak);
     if (p.streakLeft > 0 && p.streak >= 30 && p.alive) drawOverdrive(ctx, p, ox, H, now, heat);
+    if (p.piece && p.alive && !p.f.noGhost) drawGhost(ctx, p, ox, now);
     if (p.streakLeft > 0 && p.streak >= STREAK.MIN && p.alive) drawStreakBadge(ctx, p, ox, now, tier >= 3 ? heat : [0.78, 0.6, 1]);
 
     if (!p.alive) {
@@ -1349,6 +1370,32 @@
         ctx.strokeRect(ox - spread, 100 - spread, width + spread * 2, H - 100 + spread * 2);
       }
     }
+    ctx.restore();
+  }
+
+  // Landing preview, drawn after the stack, flames, glow and border fire so it always reads: a dark backing line
+  // for contrast, a faint fill, and a bright pulsing outline in the piece's colour.
+  function drawGhost(ctx, p, ox, now) {
+    var gy = p.ghostY();
+    if (gy === p.piece.y) return;
+    var cells = p.cells(p.piece.x, gy, p.piece.rot).filter(function (c) { return c[1] >= 0; });
+    var col = blockColor(p, Math.max(0, Math.min(ROWS - 1, gy + 1)));
+    var pulse = 0.75 + 0.25 * Math.sin(now / 1000 * 5);
+    ctx.save();
+    cells.forEach(function (c) {
+      var x = ox + c[0] * CELL, y = c[1] * CELL;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.fillRect(x + 3, y + 3, CELL - 6, CELL - 6);
+      ctx.strokeStyle = 'rgba(5, 3, 12, 0.85)';
+      ctx.lineWidth = 5;
+      ctx.strokeRect(x + 3.5, y + 3.5, CELL - 7, CELL - 7);
+    });
+    ctx.shadowColor = col;
+    ctx.shadowBlur = 10;
+    ctx.globalAlpha = pulse;
+    ctx.strokeStyle = mix(col, '#ffffff', 0.55);
+    ctx.lineWidth = 2;
+    cells.forEach(function (c) { ctx.strokeRect(ox + c[0] * CELL + 3.5, c[1] * CELL + 3.5, CELL - 7, CELL - 7); });
     ctx.restore();
   }
 
@@ -1539,7 +1586,7 @@
       var btn = e.target.closest('button[data-act]');
       if (!btn || !game) return;
       e.preventDefault();
-      var me = game.players.filter(function (p) { return p.local; })[0];
+      var me = game.players.filter(isHuman)[0];
       if (!me || game.paused || game.over) return;
       var a = btn.dataset.act;
       doAction(me, a);
@@ -1573,6 +1620,168 @@
     startGame('local', [a, b]);
   }
 
+  // Versus CPU: you against 1-3 computer players at the chosen difficulty, each with a random colour.
+  function startCpu() {
+    var lives = settings.versusType === 'elim' ? 1 : livesValue();
+    var opts = { lives: lives, versus: true, skulls: settings.skulls };
+    var players = [new Player(Object.assign({ id: 'me', name: 'You', palette: randomPalette(), local: true, controls: KEYS_SOLO }, opts))];
+    for (var i = 0; i < settings.cpuCount; i++) {
+      var bot = new Player(Object.assign({ id: 'cpu' + i, name: Cpu.name(settings.cpuLevel, i), palette: randomPalette(), local: true, controls: Cpu.NO_KEYS }, opts));
+      bot.cpu = Cpu.brain(settings.cpuLevel);
+      players.push(bot);
+    }
+    startGame('cpu', players);
+  }
+
+  /* =================================================================
+     CPU opponents
+     ================================================================= */
+
+  // A placement-search bot. For the current piece (and the hold piece, from Normal up) it tries every rotation and
+  // column, drops it, clears lines on a copy of the board and scores the result: Pierre Dellacherie's weights
+  // (landing height, rows cleared, row and column transitions, holes, wells). Insane also looks one piece ahead.
+  // It then plays the chosen placement with human-like timing: a pause to "think", then one input at a time.
+  // Lower levels think slower, press slower, sometimes pick a worse spot and don't use hold.
+  var Cpu = (function () {
+    var LEVELS = {
+      easy: { label: 'Easy', think: 0.75, step: 0.22, mistake: 0.3, noise: 1.6, hold: false, hard: true, look: false },
+      normal: { label: 'Normal', think: 0.3, step: 0.1, mistake: 0.12, noise: 0.8, hold: true, hard: true, look: false },
+      hard: { label: 'Hard', think: 0.14, step: 0.05, mistake: 0.04, noise: 0.2, hold: true, hard: true, look: false },
+      insane: { label: 'Insane', think: 0.08, step: 0.03, mistake: 0, noise: 0, hold: true, hard: true, look: true }
+    };
+    var NO_KEYS = { left: [], right: [], soft: [], cw: [], ccw: [], hard: [], hold: [] };
+    var NAMES = ['Blocky', 'Tess', 'Gridlock', 'Spin', 'Cobalt', 'Nova'];
+
+    function cellsOf(type, rot, x, y) {
+      var m = SHAPES[type][rot], out = [];
+      for (var r = 0; r < m.length; r++) for (var c = 0; c < m.length; c++) if (m[r][c]) out.push([x + c, y + r]);
+      return out;
+    }
+
+    function fits(board, cells) {
+      for (var i = 0; i < cells.length; i++) {
+        var x = cells[i][0], y = cells[i][1];
+        if (x < 0 || x >= COLS || y >= ROWS) return false;
+        if (y >= 0 && board[y][x]) return false;
+      }
+      return true;
+    }
+
+    // Every reachable-from-above placement of a piece: { rot, x, y, board (after clears), cleared, cells }.
+    function placements(board, type) {
+      var out = [], rots = type === 'O' ? 1 : (type === 'I' || type === 'S' || type === 'Z' ? 2 : 4);
+      for (var rot = 0; rot < rots; rot++) {
+        for (var x = -2; x < COLS; x++) {
+          var y = -2;
+          if (!fits(board, cellsOf(type, rot, x, y))) continue;
+          while (fits(board, cellsOf(type, rot, x, y + 1))) y++;
+          var cells = cellsOf(type, rot, x, y);
+          if (cells.some(function (c) { return c[1] < 0; })) continue;
+          var b = board.map(function (row) { return row.slice(); });
+          cells.forEach(function (c) { b[c[1]][c[0]] = 1; });
+          var cleared = 0;
+          for (var r = ROWS - 1; r >= 0; r--) {
+            if (b[r].every(function (v) { return v; })) { b.splice(r, 1); b.unshift(new Array(COLS).fill(0)); cleared++; r++; }
+          }
+          out.push({ rot: rot, x: x, y: y, board: b, cleared: cleared, cells: cells });
+        }
+      }
+      return out;
+    }
+
+    function score(pl) {
+      var b = pl.board, rowT = 0, colT = 0, holes = 0, wells = 0, r, c;
+      var land = 0;
+      pl.cells.forEach(function (cell) { land += ROWS - cell[1]; });
+      land /= pl.cells.length;
+      for (r = 0; r < ROWS; r++) {
+        var prev = 1;
+        for (c = 0; c < COLS; c++) { var f = b[r][c] ? 1 : 0; if (f !== prev) rowT++; prev = f; }
+        if (!prev) rowT++;
+      }
+      for (c = 0; c < COLS; c++) {
+        var above = 0, seen = false;
+        for (r = 0; r < ROWS; r++) {
+          var v = b[r][c] ? 1 : 0;
+          if (v !== above) colT++;
+          above = v;
+          if (v) seen = true; else if (seen) holes++;
+        }
+        if (!above) colT++;
+        var depth = 0;
+        for (r = 0; r < ROWS; r++) {
+          var left = c === 0 || b[r][c - 1], right = c === COLS - 1 || b[r][c + 1];
+          if (!b[r][c] && left && right) { depth++; wells += depth; } else depth = 0;
+        }
+      }
+      return -4.5 * land + 3.42 * pl.cleared - 3.22 * rowT - 9.35 * colT - 7.9 * holes - 3.39 * wells;
+    }
+
+    // Best plan for this player now: { hold, rot, x }.
+    function plan(p, lv) {
+      var options = [];
+      function consider(type, viaHold, nextType) {
+        placements(p.board, type).forEach(function (pl) {
+          var v = score(pl);
+          if (lv.look && nextType) {
+            var bestNext = -Infinity;
+            placements(pl.board, nextType).forEach(function (n) { bestNext = Math.max(bestNext, score(n)); });
+            if (bestNext > -Infinity) v = v * 0.5 + bestNext * 0.5;
+          }
+          if (lv.noise) v += (Math.random() - 0.5) * lv.noise * 10;
+          options.push({ hold: viaHold, rot: pl.rot, x: pl.x, v: v });
+        });
+      }
+      consider(p.piece.type, false, p.queue[0]);
+      if (lv.hold && p.canHold && !p.f.noHold) {
+        var alt = p.hold || p.queue[0];
+        if (alt && alt !== p.piece.type) consider(alt, true, p.hold ? p.queue[0] : p.queue[1]);
+      }
+      if (!options.length) return { hold: false, rot: p.piece.rot, x: p.piece.x };
+      options.sort(function (a, b) { return b.v - a.v; });
+      var pick = 0;
+      if (lv.mistake && Math.random() < lv.mistake) pick = Math.min(options.length - 1, 1 + Math.floor(Math.random() * 4));
+      return options[pick];
+    }
+
+    function brain(level) {
+      var lv = LEVELS[level] || LEVELS.normal;
+      return { level: level, lv: lv, plan: null, pieceKey: '', wait: lv.think };
+    }
+
+    // One input every lv.step seconds: hold, then rotate, then slide, then drop.
+    function tick(p, dt) {
+      var b = p.cpu, lv = b.lv;
+      if (!p.piece || p.frozen > 0) return;
+      var key = p.lockedAt + ':' + p.piece.type + ':' + (p.hold || '');
+      if (key !== b.pieceKey) { b.pieceKey = key; b.plan = null; b.wait = lv.think * (0.7 + Math.random() * 0.6); }
+      b.wait -= dt;
+      if (b.wait > 0) return;
+      if (!b.plan) b.plan = plan(p, lv);
+      var pl = b.plan;
+      b.wait = lv.step * (0.75 + Math.random() * 0.5);
+      if (pl.hold) { pl.hold = false; p.holdPiece(); b.pieceKey = p.lockedAt + ':' + p.piece.type + ':' + (p.hold || ''); return; }
+      if (p.piece.rot !== pl.rot) {
+        var cw = (pl.rot - p.piece.rot + 4) % 4;
+        p.rotate(cw === 3 ? -1 : 1);
+        if (p.piece.rot !== pl.rot && cw !== 3 && cw !== 1) return; // half-turn: keep rotating next step
+        return;
+      }
+      var mirror = p.f.mirror ? -1 : 1; // Mirror skull flips the CPU's moves too, so it has to press the other way
+      if (p.piece.x !== pl.x) {
+        var dir = pl.x > p.piece.x ? 1 : -1;
+        if (!p.move(dir * mirror)) b.plan = { hold: false, rot: p.piece.rot, x: p.piece.x }; // blocked: settle here
+        return;
+      }
+      if (lv.hard) afterLock(p, p.hardDrop());
+      else p.softDrop();
+    }
+
+    function name(level, i) { return NAMES[i % NAMES.length] + ' (CPU · ' + (LEVELS[level] || LEVELS.normal).label + ')'; }
+
+    return { LEVELS: LEVELS, NO_KEYS: NO_KEYS, brain: brain, tick: tick, name: name };
+  })();
+
   /* =================================================================
      Online (host relays everything; up to 4 players)
      ================================================================= */
@@ -1605,7 +1814,18 @@
     renderLobby();
   }
 
-  function strip(x) { return { slot: x.slot, name: x.name, avatar: x.avatar, ready: x.ready, pal: x.pal }; }
+  function strip(x) { return { slot: x.slot, name: x.name, avatar: x.avatar, ready: x.ready, pal: x.pal, cpu: x.cpu || null }; }
+
+  // Host: fill an empty slot with a CPU at the chosen difficulty (the host's browser plays it).
+  function hostAddCpu(level) {
+    if (net.role !== 'host' || game) return;
+    var used = net.lobby.map(function (x) { return x.slot; });
+    var slot = [2, 3, 4].filter(function (n) { return used.indexOf(n) === -1; })[0];
+    if (!slot) { G.banner('The lobby is full'); return; }
+    var cpus = net.lobby.filter(function (x) { return x.cpu; }).length;
+    net.lobby.push({ slot: slot, name: Cpu.name(level, cpus), avatar: null, ready: true, cpu: level, pal: [PALETTES[0].bottom, PALETTES[0].top] });
+    hostBroadcastLobby();
+  }
 
   function canEditCfg() { return net.role === 'host' || !net.cfg.locked; }
 
@@ -1642,6 +1862,7 @@
       onJoin: function (conn) {
         var used = net.lobby.map(function (x) { return x.slot; });
         conn.slot = [2, 3, 4].filter(function (s) { return used.indexOf(s) === -1; })[0];
+        if (!conn.slot) { net.session.send(conn, { t: 'full' }); setTimeout(function () { try { conn.close(); } catch (e) { /* closed */ } }, 300); return; }
         net.lobby.push({ slot: conn.slot, name: 'Player ' + conn.slot, avatar: null, ready: false, pal: [PALETTES[0].bottom, PALETTES[0].top] });
         G.Sound.beep(660, 0.1, 'triangle');
         hostBroadcastLobby();
@@ -1782,6 +2003,10 @@
       case 'kick':
         net.kicked = true;
         break;
+      case 'full':
+        net.kicked = false;
+        setOnlineNotice('That lobby is full.', true);
+        break;
       case 'end':
         if (game && !game.over) finishVersus('', true);
         break;
@@ -1813,12 +2038,19 @@
     var lv = net.cfg.vt === 'elim' ? 1 : livesValue(net.cfg.lives);
     var players = list.slice().sort(function (a, b) { return a.slot - b.slot; }).map(function (x) {
       var mine = x.slot === net.mySlot;
-      var pr = G.Profile.sanitize({ name: x.name, avatar: x.avatar });
       var pal = Array.isArray(x.pal) ? { bottom: x.pal[0], top: x.pal[1] } : null;
+      if (x.cpu) {
+        // CPU slots are simulated by the host and arrive on everyone else as normal snapshots
+        var bot = new Player({ id: x.slot, name: String(x.name || 'CPU').slice(0, 40), palette: pal, local: net.role === 'host',
+          controls: Cpu.NO_KEYS, lives: lv, versus: true, skulls: net.cfg.skulls });
+        if (net.role === 'host') bot.cpu = Cpu.brain(x.cpu);
+        return bot;
+      }
+      var pr = G.Profile.sanitize({ name: x.name, avatar: x.avatar });
       return new Player({ id: x.slot, name: mine ? pr.name + ' (you)' : pr.name, avatar: pr.avatar, palette: pal, local: mine,
         controls: KEYS_SOLO, lives: lv, versus: true, skulls: net.cfg.skulls });
     });
-    net.lobby.forEach(function (x) { x.ready = false; });
+    net.lobby.forEach(function (x) { x.ready = !!x.cpu; });
     net.myReady = false;
     startGame('online', players);
   }
@@ -1832,6 +2064,8 @@
 
   function hostKick(slot) {
     if (net.role !== 'host' || slot === 1 || !net.session) return;
+    var entry = lobbyEntry(slot);
+    if (entry && entry.cpu) { net.lobby = net.lobby.filter(function (x) { return x.slot !== slot; }); hostBroadcastLobby(); return; }
     var conn = net.session.conns.filter(function (c) { return c.slot === slot; })[0];
     if (!conn) return;
     net.session.send(conn, { t: 'kick' });
@@ -1845,8 +2079,12 @@
       net.lastSend = now;
       net.dirty = false;
       var s = me.pack();
-      if (net.role === 'host') { net.session.broadcast({ t: 'st', slot: net.mySlot, s: s }); hostCheckOnline(); }
-      else net.session.send({ t: 'st', s: s });
+      if (net.role === 'host') {
+        net.session.broadcast({ t: 'st', slot: net.mySlot, s: s });
+        // the host also publishes the CPUs it runs
+        game.players.forEach(function (p) { if (p.cpu && p.local) net.session.broadcast({ t: 'st', slot: p.id, s: p.pack() }); });
+        hostCheckOnline();
+      } else net.session.send({ t: 'st', s: s });
     }
   }
 
@@ -1883,7 +2121,7 @@
         var kick = document.createElement('button');
         kick.type = 'button';
         kick.className = 'lobby-kick';
-        kick.textContent = 'Kick';
+        kick.textContent = x.cpu ? 'Remove' : 'Kick';
         kick.addEventListener('click', function () { hostKick(x.slot); });
         li.firstChild.appendChild(kick);
       }
@@ -1896,6 +2134,7 @@
     net.myReady = !!(mine && mine.ready);
     $('#readyBtn').textContent = net.myReady ? 'Not ready' : 'Ready';
     $('#startBtn').classList.toggle('hidden', net.role !== 'host');
+    $('#cpuAddRow').classList.toggle('hidden', net.role !== 'host' || net.lobby.length >= 4);
     var editable = canEditCfg(), elim = net.cfg.vt === 'elim';
     $('#lobbyLivesRow').classList.toggle('hidden', elim);
     if (lobbyChips.lives) lobbyChips.lives.set(net.cfg.lives);
@@ -2213,6 +2452,16 @@
     $('#shuffleBg').addEventListener('click', shuffleBackground);
     $('#lobbyShuffleBg').addEventListener('click', shuffleBackground);
     $('#hudShuffleBg').addEventListener('click', shuffleBackground);
+    $('#achBtn').addEventListener('click', function () { ACH.open(); });
+    $('#hudAch').addEventListener('click', function () { ACH.open(); });
+    if (ACH.onOpen) ACH.onOpen(function () { if (game && !game.over && !game.paused && game.mode !== 'online') setPaused(true); });
+    $('#modeCpu').addEventListener('click', startCpu);
+    G.chips($('#cpuCountChips'), String(settings.cpuCount), function (v) { settings.cpuCount = +v; G.Store.set('tetris_cpu_count', +v); });
+    G.chips($('#cpuLevelChips'), settings.cpuLevel, function (v) { settings.cpuLevel = v; G.Store.set('tetris_cpu_level', v); });
+    $('#addCpuBtn').addEventListener('click', function () { hostAddCpu($('#addCpuLevel').value); });
+    var paintAch = function () { var c = ACH.count(); $('#achCount').textContent = c.unlocked + '/' + c.total; };
+    ACH.onChange(paintAch);
+    paintAch();
     $('#endBtn').addEventListener('click', hostEndGame);
     $('#createLobby').addEventListener('click', createLobby);
     $('#joinForm').addEventListener('submit', function (e) { e.preventDefault(); joinLobby(); });
@@ -2237,5 +2486,16 @@
   init();
 
   // Testing aid, only with ?debug in the URL: lets the console inspect and poke the running game.
-  if (/[?&]debug\b/.test(location.search)) window.TetrisDebug = { game: function () { return game; }, PU: PU, bg: BG };
+  if (/[?&]debug\b/.test(location.search)) window.TetrisDebug = {
+    game: function () { return game; }, PU: PU, bg: BG,
+    // simulate `seconds` of play at 60 steps a second without drawing (for testing in a background tab)
+    advance: function (seconds) {
+      for (var k = 0; k < seconds * 60 && game && !game.over && !game.paused; k++) {
+        var dt = 1 / 60;
+        game.players.forEach(function (p) { if (p.cpu && p.local && p.alive) Cpu.tick(p, dt); });
+        game.players.forEach(function (p) { if (p.local && p.alive && game && !game.over) stepPlayer(p, dt); });
+      }
+      return game && game.players.map(function (p) { return p.name + ': ' + p.lines + ' lines ' + p.score + ' pts ' + (p.alive ? 'in' : 'out'); });
+    }
+  };
 })();

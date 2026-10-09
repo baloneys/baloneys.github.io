@@ -31,11 +31,12 @@
     <link rel="stylesheet" href="style.css?v=20261009-3" />
     <link rel="stylesheet" href="home.css?v=20261009-3" />
     <link rel="stylesheet" href="games.css?v=20261009-3" />
-    <link rel="stylesheet" href="tetris.css?v=20261009-3" />
+    <link rel="stylesheet" href="tetris.css?v=20261010-2" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
     <script src="games-common.js?v=20261009-3" defer></script>
     <script src="tetris-bg.js?v=20261009-4" defer></script>
-    <script src="tetris.js?v=20261009-3" defer></script>
+    <script src="tetris-achievements.js?v=20261010-2" defer></script>
+    <script src="tetris.js?v=20261010-2" defer></script>
   </head>
   <body>
     <!-- shared icons -->
@@ -100,6 +101,7 @@
           <div class="mode-grid">
             <button class="mode-card" id="modeSolo" type="button"><strong>Solo</strong><span>Marathon: speeds up every 10 lines</span></button>
             <button class="mode-card" id="modeLocal" type="button"><strong>Versus</strong><span>Two players, one keyboard</span></button>
+            <button class="mode-card" id="modeCpu" type="button"><strong>vs CPU</strong><span>You against 1–3 computer players</span></button>
             <button class="mode-card" id="modeOnline" type="button"><strong>Online</strong><span>2–4 players</span></button>
           </div>
           <p class="notice" id="menuBest"></p>
@@ -118,10 +120,20 @@
             <button class="chip" data-value="1">1</button><button class="chip" data-value="3">3</button><button class="chip" data-value="5">5</button><button class="chip" data-value="inf">∞</button>
           </div>
           </div>
+          <div class="versus-options">
+          <div class="option-row" id="cpuCountChips">
+            <span class="option-label">CPU opponents</span>
+            <button class="chip" data-value="1">1</button><button class="chip" data-value="2">2</button><button class="chip" data-value="3">3</button>
+          </div>
+          <div class="option-row" id="cpuLevelChips">
+            <span class="option-label">CPU difficulty</span>
+            <button class="chip" data-value="easy">Easy</button><button class="chip" data-value="normal">Normal</button><button class="chip" data-value="hard">Hard</button><button class="chip" data-value="insane">Insane</button>
+          </div>
+          </div>
           <div class="menu-section">
             <div class="option-row" style="margin-top:0"><span class="option-label">Skulls</span></div>
             <div class="skull-summary" id="menuSkulls"></div>
-            <div class="chip-row"><button class="btn btn-sm btn-outline" id="skullsBtn" type="button">Choose skulls</button><button class="btn btn-sm btn-outline" id="shuffleBg" type="button">Shuffle background</button></div>
+            <div class="chip-row"><button class="btn btn-sm btn-outline" id="skullsBtn" type="button">Choose skulls</button><button class="btn btn-sm btn-outline ach-launch" id="achBtn" type="button">Achievements <span class="ach-count" id="achCount"></span></button><button class="btn btn-sm btn-outline" id="shuffleBg" type="button">Shuffle background</button></div>
           </div>
           <div class="option-row"><span class="option-label">Colour</span></div>
           <div class="skin-row" id="skinRow"></div>
@@ -188,6 +200,7 @@
             <div class="lobby-tools">
               <button class="btn btn-sm btn-outline" id="lobbySkullsBtn" type="button">Skulls</button>
               <button class="btn btn-sm btn-outline hidden" id="lockBtn" type="button">Rules: host only</button>
+              <span class="cpu-add hidden" id="cpuAddRow"><select class="text-input" id="addCpuLevel" aria-label="CPU difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option><option value="insane">Insane</option></select><button class="btn btn-sm btn-outline" id="addCpuBtn" type="button">Add CPU</button></span>
               <button class="btn btn-sm btn-outline" id="lobbyShuffleBg" type="button">Shuffle background</button>
             </div>
           </div>
@@ -202,6 +215,7 @@
           <div class="hud">
             <div class="hud-group"><span class="hud-stat">Chain clears · 12s to start a streak</span></div>
             <div class="hud-group">
+              <button class="btn btn-sm btn-outline" id="hudAch" type="button" title="Achievements">Trophies</button>
               <button class="btn btn-sm btn-outline" id="hudShuffleBg" type="button" title="Shuffle background">Scene</button>
               <button class="btn btn-sm btn-outline" id="soundBtn" type="button">Sound</button>
               <button class="btn btn-sm btn-outline" id="pauseBtn" type="button">Pause</button>

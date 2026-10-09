@@ -42,11 +42,12 @@
     lock: [60, 66, 66, 255, 231, 231, 255, 0]
   };
 
+  // All in the site's purple; higher tiers are lighter and glow more.
   var TIERS = {
-    bronze: { name: 'Bronze', a: '#f0a36b', b: '#8a4a22', glow: 'rgba(240,150,90,0.55)' },
-    silver: { name: 'Silver', a: '#eef3ff', b: '#7d88a6', glow: 'rgba(210,225,255,0.5)' },
-    gold: { name: 'Gold', a: '#ffe27a', b: '#c07d10', glow: 'rgba(255,205,80,0.6)' },
-    platinum: { name: 'Platinum', a: '#e6d2ff', b: '#7b3cff', glow: 'rgba(185,130,255,0.7)' }
+    bronze: { name: 'Bronze', a: '#c9a2ff', b: '#5b2aa8', glow: 'rgba(160,100,255,0.4)' },
+    silver: { name: 'Silver', a: '#dcc4ff', b: '#6c35c8', glow: 'rgba(175,115,255,0.5)' },
+    gold: { name: 'Gold', a: '#ecdcff', b: '#7d3cff', glow: 'rgba(190,130,255,0.6)' },
+    platinum: { name: 'Platinum', a: '#ffffff', b: '#9b4dff', glow: 'rgba(205,150,255,0.75)' }
   };
 
   var CATEGORIES = [

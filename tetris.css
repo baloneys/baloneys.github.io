@@ -235,10 +235,11 @@
 .ach-badge.locked { filter: saturate(.2) brightness(.7); }
 .ach-badge.locked::before { background: rgba(255,255,255,.14); }
 
-.tier-bronze { --tier-a: #f0a36b; --tier-b: #8a4a22; --tier-glow: rgba(240,150,90,.5); }
-.tier-silver { --tier-a: #eef3ff; --tier-b: #7d88a6; --tier-glow: rgba(210,225,255,.45); }
-.tier-gold { --tier-a: #ffe27a; --tier-b: #c07d10; --tier-glow: rgba(255,205,80,.55); }
-.tier-platinum { --tier-a: #e6d2ff; --tier-b: #7b3cff; --tier-glow: rgba(185,130,255,.65); }
+/* every tier is purple (lighter and glowier as it climbs); the tier is named in text */
+.tier-bronze { --tier-a: #c9a2ff; --tier-b: #5b2aa8; --tier-glow: rgba(160,100,255,.4); }
+.tier-silver { --tier-a: #dcc4ff; --tier-b: #6c35c8; --tier-glow: rgba(175,115,255,.5); }
+.tier-gold { --tier-a: #ecdcff; --tier-b: #7d3cff; --tier-glow: rgba(190,130,255,.6); }
+.tier-platinum { --tier-a: #ffffff; --tier-b: #9b4dff; --tier-glow: rgba(205,150,255,.75); }
 
 /* ---------- toast ---------- */
 
@@ -380,3 +381,46 @@
 .ach-body::-webkit-scrollbar { width: 8px; }
 .ach-body::-webkit-scrollbar-thumb { background: rgba(181,118,255,.45); border-radius: 999px; }
 .ach-body::-webkit-scrollbar-track { background: transparent; }
+
+/* vs CPU roster */
+.cpu-roster { display: grid; gap: 8px; max-width: 520px; margin: 10px auto 0; }
+.cpu-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 8px; align-items: center;
+  padding: 8px 10px; border: 1px solid rgba(227,207,255,.14); border-radius: 12px; background: rgba(10,9,22,.4); }
+.cpu-row-tag { font-family: var(--font-family-heading); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: #c9a2ff; }
+.cpu-row .text-input { min-width: 0; padding: 6px 10px; font-size: .82rem; }
+.cpu-row select.text-input { width: auto; }
+.cpu-row-del { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(255,255,255,.14); color: #fff; cursor: pointer; }
+.cpu-row-del:hover:not(:disabled) { background: rgba(255,90,120,.18); border-color: #ff6b81; }
+.cpu-row-del:disabled { opacity: .3; cursor: default; }
+.cpu-add input.text-input { width: 160px; padding: 4px 8px; font-size: .8rem; }
+@media (max-width: 480px) { .cpu-row { grid-template-columns: 1fr auto auto; } .cpu-row-tag { display: none; } }
+
+/* ---------- play area sizing ----------
+   While playing, the page drops the 1200px content cap and each board is sized from the
+   viewport height (canvas is 504x560, so width = height * 0.9). ~345px covers the nav, title,
+   HUD, stage padding and each card's name/timer/stats rows. Wide screens (21:9, 32:9) grow the
+   boards until they fill the height; narrower screens shrink the columns to fit the width. */
+@media (min-width: 761px) {
+  .tetris-page.playing { max-width: none; padding-left: 24px; padding-right: 24px; }
+  .tetris-page.playing #gameView {
+    --bw: max(240px, calc((100vh - 345px) * 0.9));
+    display: grid; grid-template-columns: minmax(0, max-content); justify-content: center;
+  }
+  @supports (height: 100dvh) { .tetris-page.playing #gameView { --bw: max(240px, calc((100dvh - 345px) * 0.9)); } }
+  .tetris-page.playing .hud { max-width: none; width: 100%; }
+  .tetris-page.playing .tetris-stage { max-width: none; width: 100%; }
+  .tetris-page.playing .boards { gap: 24px; }
+  .tetris-page.playing .boards.n1 { grid-template-columns: minmax(0, var(--bw)); }
+  .tetris-page.playing .boards.n2 { grid-template-columns: repeat(2, minmax(0, var(--bw))); }
+  .tetris-page.playing .boards.n3 { grid-template-columns: repeat(3, minmax(0, var(--bw))); }
+  .tetris-page.playing .boards.n4 { grid-template-columns: repeat(4, minmax(0, var(--bw))); }
+}
+
+/* Board header: long names (CPU labels) truncate instead of wrapping beside the timer,
+   and the timer row has a fixed height so every canvas lines up. */
+.tetris-page .board-head { gap: 8px; min-width: 0; }
+.tetris-page .board-name { display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; }
+.tetris-page .board-name-text { overflow: hidden; text-overflow: ellipsis; }
+.tetris-page .board-lives { flex: none; white-space: nowrap; }
+.tetris-page .board-card .hud-timers { height: 24px; min-height: 24px; overflow: hidden; align-items: center; flex-wrap: nowrap; }
+.tetris-page .board-card .hud-timers span { white-space: nowrap; }

@@ -615,8 +615,12 @@
     gameType: G.Store.get('tetris_game_type', GT.MARATHON),
     versusType: G.Store.get('tetris_versus_type', 'last'),  // 'last' (Last Standing) or 'elim' (Elimination)
     skulls: cleanSkulls(G.Store.get('tetris_skulls', [])),
-    cpuCount: Math.max(1, Math.min(3, +G.Store.get('tetris_cpu_count', 1) || 1)),
-    cpuLevel: G.Store.get('tetris_cpu_level', 'normal')
+    // vs CPU opponents: [{ name, level }], 1-3 of them
+    cpuRoster: (function () {
+      var r = G.Store.get('tetris_cpu_roster', null);
+      if (!Array.isArray(r) || !r.length) r = [{ name: '', level: G.Store.get('tetris_cpu_level', 'normal') }];
+      return r.slice(0, 3).map(function (x) { return { name: String((x && x.name) || '').slice(0, 20), level: (x && x.level) || 'normal' }; });
+    })()
   };
   if (!GT_INFO[settings.gameType]) settings.gameType = GT.MARATHON;
   if (settings.versusType !== 'elim') settings.versusType = 'last';
@@ -727,7 +731,11 @@
       head.innerHTML = '<span class="board-name"></span><span class="board-lives"></span>';
       var nameEl = head.querySelector('.board-name');
       if (p.avatar) nameEl.appendChild(G.Profile.avatar({ name: p.name, avatar: p.avatar }, 22));
-      nameEl.appendChild(document.createTextNode(p.name));
+      var nameText = document.createElement('span');
+      nameText.className = 'board-name-text';
+      nameText.textContent = p.name;
+      nameText.title = p.name;
+      nameEl.appendChild(nameText);
       var cv = document.createElement('canvas');
       cv.width = (COLS + SIDE * 2) * CELL;
       cv.height = ROWS * CELL;
@@ -1615,7 +1623,7 @@
   function startLocal() {
     var lives = settings.versusType === 'elim' ? 1 : livesValue();
     var opts = { local: true, lives: lives, versus: true, skulls: settings.skulls };
-    var a = new Player(Object.assign({ id: 'p1', name: 'Player 1', palette: randomPalette(), controls: KEYS_P1 }, opts));
+    var a = new Player(Object.assign({ id: 'p1', name: 'Player 1', palette: roundPalette(), controls: KEYS_P1 }, opts));
     var b = new Player(Object.assign({ id: 'p2', name: 'Player 2', palette: randomPalette(), controls: KEYS_P2 }, opts));
     startGame('local', [a, b]);
   }
@@ -1624,12 +1632,12 @@
   function startCpu() {
     var lives = settings.versusType === 'elim' ? 1 : livesValue();
     var opts = { lives: lives, versus: true, skulls: settings.skulls };
-    var players = [new Player(Object.assign({ id: 'me', name: 'You', palette: randomPalette(), local: true, controls: KEYS_SOLO }, opts))];
-    for (var i = 0; i < settings.cpuCount; i++) {
-      var bot = new Player(Object.assign({ id: 'cpu' + i, name: Cpu.name(settings.cpuLevel, i), palette: randomPalette(), local: true, controls: Cpu.NO_KEYS }, opts));
-      bot.cpu = Cpu.brain(settings.cpuLevel);
+    var players = [new Player(Object.assign({ id: 'me', name: 'You', palette: roundPalette(), local: true, controls: KEYS_SOLO }, opts))];
+    settings.cpuRoster.forEach(function (c, i) {
+      var bot = new Player(Object.assign({ id: 'cpu' + i, name: Cpu.name(c.level, i, c.name), palette: randomPalette(), local: true, controls: Cpu.NO_KEYS }, opts));
+      bot.cpu = Cpu.brain(c.level);
       players.push(bot);
-    }
+    });
     startGame('cpu', players);
   }
 
@@ -1643,12 +1651,15 @@
   // It then plays the chosen placement with human-like timing: a pause to "think", then one input at a time.
   // Lower levels think slower, press slower, sometimes pick a worse spot and don't use hold.
   var Cpu = (function () {
+    // Normal is tuned to an average player (about 40 pieces a minute, the odd misplacement, little hold use).
+    // Ultra hard is the ceiling: quick and tidy, but still beatable.
     var LEVELS = {
-      easy: { label: 'Easy', think: 0.75, step: 0.22, mistake: 0.3, noise: 1.6, hold: false, hard: true, look: false },
-      normal: { label: 'Normal', think: 0.3, step: 0.1, mistake: 0.12, noise: 0.8, hold: true, hard: true, look: false },
-      hard: { label: 'Hard', think: 0.14, step: 0.05, mistake: 0.04, noise: 0.2, hold: true, hard: true, look: false },
-      insane: { label: 'Insane', think: 0.08, step: 0.03, mistake: 0, noise: 0, hold: true, hard: true, look: true }
+      easy: { label: 'Easy', think: 1.1, step: 0.3, mistake: 0.38, noise: 2.2, hold: false, hard: false, look: false },
+      normal: { label: 'Normal', think: 0.75, step: 0.2, mistake: 0.22, noise: 1.4, hold: false, hard: true, look: false },
+      hard: { label: 'Hard', think: 0.48, step: 0.14, mistake: 0.15, noise: 1.0, hold: true, hard: true, look: false },
+      ultra: { label: 'Ultra hard', think: 0.3, step: 0.1, mistake: 0.12, noise: 0.8, hold: true, hard: true, look: false }
     };
+    function levelOf(key) { return key === 'insane' ? 'ultra' : (LEVELS[key] ? key : 'normal'); }
     var NO_KEYS = { left: [], right: [], soft: [], cw: [], ccw: [], hard: [], hold: [] };
     var NAMES = ['Blocky', 'Tess', 'Gridlock', 'Spin', 'Cobalt', 'Nova'];
 
@@ -1745,7 +1756,8 @@
     }
 
     function brain(level) {
-      var lv = LEVELS[level] || LEVELS.normal;
+      level = levelOf(level);
+      var lv = LEVELS[level];
       return { level: level, lv: lv, plan: null, pieceKey: '', wait: lv.think };
     }
 
@@ -1777,9 +1789,13 @@
       else p.softDrop();
     }
 
-    function name(level, i) { return NAMES[i % NAMES.length] + ' (CPU · ' + (LEVELS[level] || LEVELS.normal).label + ')'; }
+    // A CPU's shown name: the player's choice (cleaned up), or a default, tagged with its difficulty.
+    function name(level, i, custom) {
+      var base = String(custom || '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, 20) || NAMES[i % NAMES.length];
+      return base + ' · ' + LEVELS[levelOf(level)].label + ' CPU';
+    }
 
-    return { LEVELS: LEVELS, NO_KEYS: NO_KEYS, brain: brain, tick: tick, name: name };
+    return { LEVELS: LEVELS, NO_KEYS: NO_KEYS, brain: brain, tick: tick, name: name, levelOf: levelOf, NAMES: NAMES };
   })();
 
   /* =================================================================
@@ -1794,9 +1810,14 @@
     return settings.colour === 'custom' ? customPalette(settings.customHex, settings.customBottomHex) : (PALETTES[+settings.colour] || PALETTES[0]);
   }
 
+  // A custom colour is a deliberate choice, so it survives the random colours handed out each round.
+  function roundPalette() {
+    return settings.colour === 'custom' ? myPalette() : randomPalette();
+  }
+
   function myEntry(slot) {
     var pr = G.Profile.get(), pal = myPalette();
-    return { slot: slot, name: pr.name, avatar: pr.avatar, ready: false, pal: [pal.bottom, pal.top] };
+    return { slot: slot, name: pr.name, avatar: pr.avatar, ready: false, pal: [pal.bottom, pal.top], fixed: settings.colour === 'custom' };
   }
 
   function netSend(msg) {
@@ -1814,17 +1835,26 @@
     renderLobby();
   }
 
-  function strip(x) { return { slot: x.slot, name: x.name, avatar: x.avatar, ready: x.ready, pal: x.pal, cpu: x.cpu || null }; }
+  function strip(x) { return { slot: x.slot, name: x.name, avatar: x.avatar, ready: x.ready, pal: x.pal, cpu: x.cpu || null, fixed: !!x.fixed }; }
 
   // Host: fill an empty slot with a CPU at the chosen difficulty (the host's browser plays it).
-  function hostAddCpu(level) {
-    if (net.role !== 'host' || game) return;
+  function hostAddCpu(level, customName, quiet) {
+    if (net.role !== 'host' || game) return false;
     var used = net.lobby.map(function (x) { return x.slot; });
     var slot = [2, 3, 4].filter(function (n) { return used.indexOf(n) === -1; })[0];
-    if (!slot) { G.banner('The lobby is full'); return; }
+    if (!slot) { if (!quiet) G.banner('The lobby is full'); return false; }
     var cpus = net.lobby.filter(function (x) { return x.cpu; }).length;
-    net.lobby.push({ slot: slot, name: Cpu.name(level, cpus), avatar: null, ready: true, cpu: level, pal: [PALETTES[0].bottom, PALETTES[0].top] });
-    hostBroadcastLobby();
+    level = Cpu.levelOf(level);
+    net.lobby.push({ slot: slot, name: Cpu.name(level, cpus, customName), avatar: null, ready: true, cpu: level, pal: [PALETTES[0].bottom, PALETTES[0].top] });
+    if (!quiet) hostBroadcastLobby();
+    return true;
+  }
+
+  // Host: every empty slot gets a CPU at the chosen difficulty.
+  function hostFillCpus(level) {
+    var added = 0;
+    while (hostAddCpu(level, '', true)) added++;
+    if (added) hostBroadcastLobby(); else G.banner('The lobby is full');
   }
 
   function canEditCfg() { return net.role === 'host' || !net.cfg.locked; }
@@ -1888,7 +1918,7 @@
     net.session = G.Net.join('tetris', code, {
       onOpen: function () {
         var me = myEntry(0);
-        net.session.send({ t: 'hi', profile: G.Profile.get(), pal: me.pal });
+        net.session.send({ t: 'hi', profile: G.Profile.get(), pal: me.pal, fixed: me.fixed });
         G.hide($('#lobbyCodeBox'));
         screen('lobbyPanel');
       },
@@ -1923,6 +1953,7 @@
           entry.avatar = pr.avatar;
           var pal = Array.isArray(d.pal) ? safePalette({ bottom: d.pal[0], top: d.pal[1] }) : PALETTES[0];
           entry.pal = [pal.bottom, pal.top];
+          entry.fixed = !!d.fixed;
           hostBroadcastLobby();
         }
         break;
@@ -2028,7 +2059,11 @@
     if (net.role !== 'host') return;
     if (net.lobby.length < 2) { G.banner('Need at least 2 players'); return; }
     if (!net.lobby.every(function (x) { return x.ready; })) { G.banner('Everyone needs to be ready'); return; }
-    var players = net.lobby.map(function (x) { var s = strip(x), pal = randomPalette(); s.pal = [pal.bottom, pal.top]; return s; });
+    var players = net.lobby.map(function (x) {
+      var s = strip(x);
+      if (!(s.fixed && Array.isArray(s.pal))) { var pal = randomPalette(); s.pal = [pal.bottom, pal.top]; }
+      return s;
+    });
     var msg = { t: 'start', players: players, cfg: net.cfg };
     net.session.broadcast(msg);
     beginOnline(players);
@@ -2417,6 +2452,52 @@
 
   var lobbyChips = {};
 
+  /* ---------- vs CPU roster (menu) ---------- */
+
+  function saveCpuRoster() { G.Store.set('tetris_cpu_roster', settings.cpuRoster); }
+
+  // One row per opponent: name, difficulty, remove. Up to three.
+  function renderCpuRoster() {
+    var box = $('#cpuRoster');
+    box.textContent = '';
+    settings.cpuRoster.forEach(function (c, i) {
+      var row = document.createElement('div');
+      row.className = 'cpu-row';
+      var tag = document.createElement('span');
+      tag.className = 'cpu-row-tag';
+      tag.textContent = 'CPU ' + (i + 1);
+      var name = document.createElement('input');
+      name.className = 'text-input';
+      name.maxLength = 20;
+      name.placeholder = Cpu.NAMES[i % Cpu.NAMES.length];
+      name.value = c.name;
+      name.setAttribute('aria-label', 'Name for CPU ' + (i + 1));
+      name.addEventListener('input', function () { c.name = name.value.slice(0, 20); saveCpuRoster(); });
+      var lvl = document.createElement('select');
+      lvl.className = 'text-input';
+      lvl.setAttribute('aria-label', 'Difficulty for CPU ' + (i + 1));
+      Object.keys(Cpu.LEVELS).forEach(function (k) {
+        var o = document.createElement('option');
+        o.value = k;
+        o.textContent = Cpu.LEVELS[k].label;
+        if (Cpu.levelOf(c.level) === k) o.selected = true;
+        lvl.appendChild(o);
+      });
+      lvl.addEventListener('change', function () { c.level = lvl.value; saveCpuRoster(); });
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'cpu-row-del';
+      del.textContent = '×';
+      del.setAttribute('aria-label', 'Remove CPU ' + (i + 1));
+      del.disabled = settings.cpuRoster.length <= 1;
+      del.addEventListener('click', function () { settings.cpuRoster.splice(i, 1); saveCpuRoster(); renderCpuRoster(); });
+      [tag, name, lvl, del].forEach(function (x) { row.appendChild(x); });
+      box.appendChild(row);
+    });
+    $('#cpuAddOpponent').classList.toggle('hidden', settings.cpuRoster.length >= 3);
+    $('#modeCpu').querySelector('span').textContent = 'You against ' + settings.cpuRoster.length + ' computer player' + (settings.cpuRoster.length > 1 ? 's' : '');
+  }
+
   function init() {
     if (BG) BG.mount($('.game-page'));
     renderSkins();
@@ -2456,9 +2537,18 @@
     $('#hudAch').addEventListener('click', function () { ACH.open(); });
     if (ACH.onOpen) ACH.onOpen(function () { if (game && !game.over && !game.paused && game.mode !== 'online') setPaused(true); });
     $('#modeCpu').addEventListener('click', startCpu);
-    G.chips($('#cpuCountChips'), String(settings.cpuCount), function (v) { settings.cpuCount = +v; G.Store.set('tetris_cpu_count', +v); });
-    G.chips($('#cpuLevelChips'), settings.cpuLevel, function (v) { settings.cpuLevel = v; G.Store.set('tetris_cpu_level', v); });
-    $('#addCpuBtn').addEventListener('click', function () { hostAddCpu($('#addCpuLevel').value); });
+    renderCpuRoster();
+    $('#cpuAddOpponent').addEventListener('click', function () {
+      if (settings.cpuRoster.length >= 3) return;
+      var last = settings.cpuRoster[settings.cpuRoster.length - 1];
+      settings.cpuRoster.push({ name: '', level: last ? last.level : 'normal' });
+      saveCpuRoster();
+      renderCpuRoster();
+    });
+    $('#addCpuBtn').addEventListener('click', function () {
+      if (hostAddCpu($('#addCpuLevel').value, $('#addCpuName').value)) $('#addCpuName').value = '';
+    });
+    $('#fillCpuBtn').addEventListener('click', function () { hostFillCpus($('#addCpuLevel').value); });
     var paintAch = function () { var c = ACH.count(); $('#achCount').textContent = c.unlocked + '/' + c.total; };
     ACH.onChange(paintAch);
     paintAch();

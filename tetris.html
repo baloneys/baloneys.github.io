@@ -31,12 +31,12 @@
     <link rel="stylesheet" href="style.css?v=20261009-3" />
     <link rel="stylesheet" href="home.css?v=20261009-3" />
     <link rel="stylesheet" href="games.css?v=20261009-3" />
-    <link rel="stylesheet" href="tetris.css?v=20261010-2" />
+    <link rel="stylesheet" href="tetris.css?v=20261010-4" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
     <script src="games-common.js?v=20261009-3" defer></script>
     <script src="tetris-bg.js?v=20261009-4" defer></script>
-    <script src="tetris-achievements.js?v=20261010-2" defer></script>
-    <script src="tetris.js?v=20261010-2" defer></script>
+    <script src="tetris-achievements.js?v=20261010-4" defer></script>
+    <script src="tetris.js?v=20261010-4" defer></script>
   </head>
   <body>
     <!-- shared icons -->
@@ -120,15 +120,10 @@
             <button class="chip" data-value="1">1</button><button class="chip" data-value="3">3</button><button class="chip" data-value="5">5</button><button class="chip" data-value="inf">∞</button>
           </div>
           </div>
-          <div class="versus-options">
-          <div class="option-row" id="cpuCountChips">
-            <span class="option-label">CPU opponents</span>
-            <button class="chip" data-value="1">1</button><button class="chip" data-value="2">2</button><button class="chip" data-value="3">3</button>
-          </div>
-          <div class="option-row" id="cpuLevelChips">
-            <span class="option-label">CPU difficulty</span>
-            <button class="chip" data-value="easy">Easy</button><button class="chip" data-value="normal">Normal</button><button class="chip" data-value="hard">Hard</button><button class="chip" data-value="insane">Insane</button>
-          </div>
+          <div class="menu-section cpu-section">
+            <div class="option-row" style="margin-top:0"><span class="option-label">vs CPU opponents</span></div>
+            <div class="cpu-roster" id="cpuRoster"></div>
+            <div class="chip-row"><button class="btn btn-sm btn-outline" id="cpuAddOpponent" type="button">+ Add opponent</button></div>
           </div>
           <div class="menu-section">
             <div class="option-row" style="margin-top:0"><span class="option-label">Skulls</span></div>
@@ -200,7 +195,7 @@
             <div class="lobby-tools">
               <button class="btn btn-sm btn-outline" id="lobbySkullsBtn" type="button">Skulls</button>
               <button class="btn btn-sm btn-outline hidden" id="lockBtn" type="button">Rules: host only</button>
-              <span class="cpu-add hidden" id="cpuAddRow"><select class="text-input" id="addCpuLevel" aria-label="CPU difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option><option value="insane">Insane</option></select><button class="btn btn-sm btn-outline" id="addCpuBtn" type="button">Add CPU</button></span>
+              <span class="cpu-add hidden" id="cpuAddRow"><input class="text-input" id="addCpuName" maxlength="20" placeholder="CPU name (optional)" aria-label="CPU name"><select class="text-input" id="addCpuLevel" aria-label="CPU difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option><option value="ultra">Ultra hard</option></select><button class="btn btn-sm btn-outline" id="addCpuBtn" type="button">Add CPU</button><button class="btn btn-sm btn-outline" id="fillCpuBtn" type="button">Fill with CPUs</button></span>
               <button class="btn btn-sm btn-outline" id="lobbyShuffleBg" type="button">Shuffle background</button>
             </div>
           </div>

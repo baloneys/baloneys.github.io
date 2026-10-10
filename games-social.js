@@ -34,9 +34,8 @@
   function App() { return window.GameApp || NO_APP; }
   var MOCK = /[?&]mockdb\b/.test(location.search);
   var ENABLED = MOCK || !!(CFG.url && CFG.anonKey);
-  // The little DM window games embed (chat.html?mini=1) is a chat page inside a game page: the game page's own
-  // dock and bell already cover it, so the embedded copy stays quiet.
-  if (GAME === 'chat' && /[?&]mini/.test(location.search)) ENABLED = false;
+  // The embedded DM window still needs this shared profile and friends service.
+  // Its visual dock is hidden by chat.css in mini mode.
   var SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
   var POLL_MS = 20000, LOBBY_BEAT_MS = 15000;
   var PROFILE_URL = location.origin + location.pathname.replace(/\.html$/, '');
@@ -401,7 +400,7 @@
     notes: [],          // [{ id, kind, from, lobby, read, created_at, profile }]
     pollTimer: null,
     lobby: { publicOn: false, published: null, beat: null },
-    readyFns: []
+    readyFns: [], friendFns: []
   };
   function onReady(fn) { if (S.ready) fn(); else S.readyFns.push(fn); }
   function profileCache() { if (!S.cache) S.cache = {}; return S.cache; }
@@ -415,6 +414,9 @@
       if (App().profileChanged) App().profileChanged();
     }).catch(function (error) { console.warn('[social] profile refresh', error); });
   });
+  window.addEventListener('storage', function (e) {
+    if (e.key === 'chat.game-friends-changed' && S.ready) refreshFriends();
+  });
 
   function start() {
     if (!B) return;
@@ -422,9 +424,12 @@
       return B.getProfile(B.uid());
     }).then(function (row) {
       if (row) return row;
+      // Chat invites a new visitor to create the shared profile in its own window.
+      if (GAME === 'chat') return null;
       var local = G.Profile.get();
       return B.createProfile({ id: B.uid(), name: local.name, avatar: local.avatar, equipped: { banner: 'dusk' } });
     }).then(function (row) {
+      if (!row) return;
       S.me = cleanProfile(row);
       S.ready = true;
       // The game's own name and picture follow the profile (it's what other players see in lobbies).
@@ -541,6 +546,7 @@
         S.friends = list;
         paintDock();
         if (Friends.isOpen()) Friends.render();
+        S.friendFns.forEach(function (fn) { try { fn(S.friends.slice()); } catch (e) { console.warn('[social] friend listener', e); } });
       });
     }).catch(function (e) { console.warn('[social] friends', e); });
   }
@@ -580,16 +586,16 @@
     if (state) return Promise.resolve();
     return B.requestFriend(id).then(function () {
       return B.sendNote(id, 'friend_request');
-    }).then(function () { G.banner('Friend request sent'); return refreshFriends(); })
+    }).then(function () { G.banner('Friend request sent'); return refreshFriends(); }).then(function () { localStorage.setItem('chat.game-friends-changed', String(Date.now())); })
       .catch(function (e) { G.banner(/duplicate/i.test(e.message || '') ? 'Already requested' : 'Couldn\'t send the request'); });
   }
   function acceptFriend(id) {
     return B.acceptFriend(id).then(function () { return B.sendNote(id, 'friend_accept'); })
-      .then(function () { G.banner('Friend added'); return refreshFriends(); })
+      .then(function () { G.banner('Friend added'); return refreshFriends(); }).then(function () { localStorage.setItem('chat.game-friends-changed', String(Date.now())); })
       .catch(function () { G.banner('Couldn\'t accept that request'); });
   }
   function removeFriend(id) {
-    return B.removeFriend(id).then(refreshFriends).catch(function () { G.banner('Couldn\'t remove that friend'); });
+    return B.removeFriend(id).then(refreshFriends).then(function () { localStorage.setItem('chat.game-friends-changed', String(Date.now())); }).catch(function () { G.banner('Couldn\'t remove that friend'); });
   }
 
   function inviteToLobby(id) {
@@ -2238,6 +2244,7 @@
     if (ACH.onUnlock) ACH.onUnlock(function () { syncAchievements(); });
     if (GAMES[GAME]) document.querySelector('.soc-dock').dataset.page = GAME;
     start();
+    if (GAME === 'chat') window.addEventListener('chat:profile-created', function () { if (!S.ready) start(); });
   }
 
   window.GameSocial = window.TetrisSocial = {
@@ -2263,6 +2270,7 @@
     uid: function () { return B && S.ready ? B.uid() : null; },
     me: function () { return S.me; },
     friends: function () { return S.friends.slice(); },
+    onFriendsChange: function (fn) { if (typeof fn === 'function') S.friendFns.push(fn); },
     loadProfiles: function (ids) { return loadProfiles(ids); },
     cleanProfile: cleanProfile,
     ui: { nameSpan: nameSpan, avatarEl: avatarEl, badgeChip: badgeChip, hasBadge: hasBadge, presenceOf: presenceOf, roleNames: ROLE_NAMES },

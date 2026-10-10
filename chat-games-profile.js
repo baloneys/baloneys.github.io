@@ -22,30 +22,35 @@
     })().catch(function (error) { console.warn('[chat games profile]', error); return null; });
     return pending;
   }
-  async function load(identity) {
-    if (!await ready()) return null;
+  async function peek() {
+    if (!await ready()) throw new Error('Profile service is unavailable.');
     var result = await client.from('tetris_profiles').select('*').eq('id', uid).maybeSingle();
     if (result.error) throw result.error;
-    if (result.data) {
-      var profile = result.data;
+    return result.data;
+  }
+  async function create(name) {
+    if (!await ready()) throw new Error('Profile service is unavailable.');
+    var row = { id: uid, name: String(name || 'Player').slice(0, 24), equipped: { banner: 'dusk' } };
+    var result = await client.from('tetris_profiles').insert(row).select().single();
+    if (result.error) {
+      var existing = await peek();
+      if (!existing) throw result.error;
+      return existing;
+    }
+    localStorage.setItem('chat.game-profile-changed', String(Date.now()));
+    window.dispatchEvent(new Event('chat:profile-created'));
+    return result.data;
+  }
+  async function load(identity) {
+    var profile = await peek();
+    if (profile) {
       if (profile.equipped && profile.equipped.chatCode === identity.id) return profile;
-      result = await client.from('tetris_profiles').update({ equipped: Object.assign({}, profile.equipped || {}, { chatCode: identity.id }) }).eq('id', uid).select().single();
+      var result = await client.from('tetris_profiles').update({ equipped: Object.assign({}, profile.equipped || {}, { chatCode: identity.id }) }).eq('id', uid).select().single();
       if (result.error) throw result.error;
       localStorage.setItem('chat.game-profile-changed', String(Date.now()));
       return result.data;
     }
-    var row = { id: uid, name: String(identity.name || 'Player').slice(0, 24), avatar: identity.avatar || null, equipped: { banner: 'dusk', chatCode: identity.id } };
-    result = await client.from('tetris_profiles').insert(row).select().single();
-    if (result.error) {
-      // A game tab may have created the same anonymous profile during this request.
-      result = await client.from('tetris_profiles').select('*').eq('id', uid).single();
-      if (result.error) throw result.error;
-      var merged = Object.assign({}, result.data.equipped || {}, { chatCode: identity.id });
-      result = await client.from('tetris_profiles').update({ equipped: merged }).eq('id', uid).select().single();
-      if (result.error) throw result.error;
-      localStorage.setItem('chat.game-profile-changed', String(Date.now()));
-    }
-    return result.data;
+    return null;
   }
   async function save(patch) {
     if (!await ready()) return null;
@@ -60,5 +65,5 @@
     localStorage.setItem('chat.game-profile-changed', String(Date.now()));
     return result.data;
   }
-  window.ChatGamesProfile = { load: load, save: save };
+  window.ChatGamesProfile = { peek: peek, create: create, load: load, save: save };
 })();

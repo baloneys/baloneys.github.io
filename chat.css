@@ -176,6 +176,7 @@ body.chat-body {
 }
 
 .conv:hover { background: rgba(255, 255, 255, 0.04); }
+.conv-name.profile-link:hover, .conv-name.profile-link:focus-visible { text-decoration: underline; text-decoration-color: var(--color-primary); text-underline-offset: 3px; outline: none; }
 .conv.active { background: color-mix(in srgb, var(--color-primary) 18%, transparent); }
 
 .conv-text { flex: 1; min-width: 0; }
@@ -1029,13 +1030,18 @@ body.mini-chat .chat-root { height: 100%; }
 body.mini-chat .app, body.mini-chat .app.with-members { grid-template-columns: 1fr; }
 body.mini-chat .app.in-conv .side, body.mini-chat .app:not(.in-conv) .main { display: none; }
 body.mini-chat .side { width: 100%; }
-body.mini-chat #roomList, body.mini-chat #roomTitle, body.mini-chat #createRoomBtn, body.mini-chat #joinRoomBtn { display: none !important; }
+body.mini-chat #roomList, body.mini-chat #roomTitle, body.mini-chat #createRoomBtn, body.mini-chat #joinRoomBtn, body.mini-chat .soc-dock { display: none !important; }
 body.mini-chat .members { display: none !important; }
 body.mini-chat .back-btn { display: inline-grid; }
 body.mini-chat .app { background: rgba(12, 7, 25, .66); }
 body.mini-chat .side, body.mini-chat .main { background: rgba(12, 7, 25, .55); }
 body.mini-chat .side-actions { grid-template-columns: 1fr; }
 body.mini-chat .side-actions > :not(#newDmBtn) { display: none; }
+body.mini-chat .auth-wrap { align-items: flex-start; padding: 12px; }
+body.mini-chat .auth-card { max-width: none; padding: 18px; border-radius: 14px; }
+body.mini-chat .auth-title { font-size: 24px; }
+body.mini-chat .auth-sub { margin-bottom: 14px; line-height: 1.4; }
+body.mini-chat .auth-alt { margin-top: 12px; }
 
 body.chat-body.themed { background: transparent; }
 body.chat-body.themed .navigation-wrapper { background: rgba(5, 5, 8, var(--panel-a)); }

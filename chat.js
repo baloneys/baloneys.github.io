@@ -309,8 +309,18 @@
     const pub = await crypto.subtle.exportKey('jwk', kp.publicKey);
     const priv = await crypto.subtle.exportKey('jwk', kp.privateKey);
     const pubClean = { kty: pub.kty, crv: pub.crv, x: pub.x, y: pub.y };
-    return { id: await idFromPub(pubClean), name, color, bio: '', avatar: null, pub: pubClean, priv, createdAt: Date.now() };
+    const id = await idFromPub(pubClean);
+    return { id, name, username: randomUsername(id), color, bio: '', avatar: null, pub: pubClean, priv, createdAt: Date.now() };
   }
+
+  // The full friend code in the suffix makes this handle unique without a username server.
+  // Its readable prefix can change while the identity and contact code stay stable.
+  function randomUsername(id) {
+    const words = ['pixel', 'neon', 'orbit', 'violet', 'nova', 'arcade', 'comet', 'glitch'];
+    const values = new Uint8Array(1); crypto.getRandomValues(values);
+    return words[values[0] % words.length] + '_' + id;
+  }
+  function usernamePrefix(me) { return (me.username || randomUsername(me.id)).slice(0, -(me.id.length + 1)); }
 
   async function loadKey(me) {
     return crypto.subtle.importKey('jwk', me.priv, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
@@ -356,6 +366,7 @@
     p = p || {};
     const out = {
       name: typeof p.name === 'string' ? p.name.replace(/[^\p{L}\p{N}_ .'-]/gu, '').trim().slice(0, 24) || 'someone' : 'someone',
+      username: typeof p.username === 'string' && /^[a-z0-9_]{2,48}$/.test(p.username) ? p.username : '',
       color: typeof p.color === 'string' && /^#[0-9a-fA-F]{6}$/.test(p.color) ? p.color : '#9d00ff',
       bio: typeof p.bio === 'string' ? p.bio.slice(0, 190) : ''
     };
@@ -372,10 +383,10 @@
 
   function myProfile() {
     const m = S.me;
-    return { name: m.name, color: m.color, bio: m.bio || '', avatar: m.avatar || undefined, banner: m.banner || undefined, nameGrad: m.nameGrad || undefined, bannerGrad: m.bannerGrad || undefined, gameData: m.gameData || undefined };
+    return { name: m.name, username: m.username, color: m.color, bio: m.bio || '', avatar: m.avatar || undefined, banner: m.banner || undefined, nameGrad: m.nameGrad || undefined, bannerGrad: m.bannerGrad || undefined, gameData: m.gameData || undefined };
   }
   // Rooms send only this light version on every update; pictures travel once, on join or change.
-  function lightProfile(p) { return p ? { name: p.name, color: p.color, bio: p.bio, nameGrad: p.nameGrad, bannerGrad: p.bannerGrad } : {}; }
+  function lightProfile(p) { return p ? { name: p.name, username: p.username, color: p.color, bio: p.bio, nameGrad: p.nameGrad, bannerGrad: p.bannerGrad } : {}; }
 
   function setProfile(id, p, light) {
     let clean = cleanProfile(p);
@@ -524,6 +535,13 @@
   }
   renderSwatches($('authSwatches'), setupColor, (c) => { setupColor = c; });
 
+  let savedChatIdentity = null;
+  $('authCreate').addEventListener('click', () => {
+    $('authCreate').classList.add('hidden');
+    $('authForm').classList.remove('hidden');
+    $('authUser').focus();
+  });
+
   $('authForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = $('authUser').value.trim();
@@ -533,8 +551,10 @@
     if (!$('authAgree').checked) { err.textContent = 'Please confirm you are 13 or older and agree to the rules.'; return; }
     $('authSubmit').disabled = true;
     try {
-      const me = await createIdentity(name, setupColor);
-      await DB.set('identity', me);
+      if (!window.ChatGamesProfile) throw new Error('Profile service is unavailable.');
+      const profile = await window.ChatGamesProfile.create(name);
+      const me = savedChatIdentity || await createIdentity(profile.name || name, setupColor);
+      if (!savedChatIdentity) await DB.set('identity', me);
       await start(me);
     } catch (ex) { err.textContent = ex.message || "Couldn't create your identity."; }
     finally { $('authSubmit').disabled = false; }
@@ -580,13 +600,31 @@
   async function boot() {
     let me = null;
     try { me = await DB.get('identity'); } catch (e) { $('authError').textContent = e.message; }
+    savedChatIdentity = me;
+    let profile = null;
+    try {
+      if (!window.ChatGamesProfile) throw new Error('Profile service is unavailable.');
+      profile = await window.ChatGamesProfile.peek();
+    } catch (e) {
+      $('boot').classList.add('hidden');
+      $('authView').classList.remove('hidden');
+      $('authCreate').disabled = true;
+      $('authMessage').textContent = 'The profile service is unavailable right now. Please try again later.';
+      $('authError').textContent = e.message || '';
+      return;
+    }
     $('boot').classList.add('hidden');
-    if (!me) { $('authView').classList.remove('hidden'); return; }
+    if (!profile) { $('authView').classList.remove('hidden'); return; }
+    if (!me) {
+      me = await createIdentity(profile.name || 'Player', setupColor);
+      await DB.set('identity', me);
+    }
     await start(me);
   }
 
   async function start(me) {
     S.me = me;
+    if (!S.me.username) { S.me.username = randomUsername(S.me.id); await DB.set('identity', S.me); }
     S.key = await loadKey(me);
     const [contacts, blocks, rooms, meta, customs, profiles] = await Promise.all(['contacts', 'blocks', 'rooms', 'meta', 'customs', 'profiles'].map((k) => DB.get(k)));
     Object.assign(S, { contacts: contacts || {}, blocks: blocks || {}, rooms: rooms || {}, meta: meta || {}, customs: customs || {}, profiles: profiles || {} });
@@ -598,8 +636,46 @@
     renderSidebar();
     claimPeer(!MINI);
     syncGameProfile();
+    const social = window.GameSocial;
+    if (social && social.enabled) syncGameFriends(social.friends());
     route();
   }
+
+  let gameFriends = [];
+  function syncGameFriends(rows) {
+    gameFriends = (Array.isArray(rows) ? rows : []).filter((friend) => friend.status === 'accepted' && friend.profile);
+    if (!S.me) return;
+    let changed = false;
+    const accepted = new Set(gameFriends.map((friend) => friend.id));
+    for (const [id, contact] of Object.entries(S.contacts)) {
+      if (contact.gameId && !accepted.has(contact.gameId)) { delete S.contacts[id]; changed = true; }
+    }
+    for (const friend of gameFriends) {
+      const p = friend.profile;
+      const id = p.equipped && p.equipped.chatCode;
+      if (!/^[a-z2-9]{16}$/.test(id || '') || id === S.me.id) continue;
+      const old = S.contacts[id];
+      if (!old || old.status !== 'accepted' || old.gameId !== friend.id) {
+        S.contacts[id] = Object.assign({}, old || { id, addedAt: Date.now() }, { status: 'accepted', declined: false, gameId: friend.id });
+        changed = true;
+      }
+      // The shared game profile supplies the same name, art and achievements in DMs.
+      const profile = { ...(S.profiles[id] || {}), name: p.name, color: (S.profiles[id] && S.profiles[id].color) || '#9d00ff', bio: p.bio,
+        avatar: p.avatar, banner: p.banner, gameData: cleanGameData(p) };
+      setProfile(id, profile);
+    }
+    if (changed) {
+      persist('contacts');
+      if (ownsPeer()) reconnectAll();
+    }
+    renderSidebar();
+  }
+  window.addEventListener('DOMContentLoaded', () => {
+    const social = window.GameSocial;
+    if (!social || !social.enabled) return;
+    social.onFriendsChange(syncGameFriends);
+    social.ready(() => syncGameFriends(social.friends()));
+  });
 
   let gameProfileBusy = false;
   async function syncGameProfile() {
@@ -1809,7 +1885,7 @@
     if (!S.me) return;
     $('meAvatar').replaceChildren(avatar(S.me.id, 'sm', true));
     $('meName').replaceChildren(nameEl(S.me.id));
-    $('meCode').textContent = fmtCode(S.me.id);
+    $('meCode').textContent = '@' + S.me.username;
     $('welcomeName').textContent = S.me.name;
   }
 
@@ -1827,9 +1903,15 @@
   }
 
   function convButton(opts) {
+    const name = el('span', { class: 'conv-name', text: opts.name });
+    if (opts.onNameClick) {
+      name.classList.add('profile-link');
+      name.title = 'View profile';
+      name.addEventListener('click', (event) => { event.stopPropagation(); opts.onNameClick(); });
+    }
     return el('button', { class: 'conv' + (opts.active ? ' active' : '') + (opts.unread ? ' unread' : ''), type: 'button', onclick: opts.onclick },
       opts.icon,
-      el('span', { class: 'conv-text' }, el('span', { class: 'conv-name', text: opts.name }), el('span', { class: 'conv-preview', text: opts.preview || '' })),
+      el('span', { class: 'conv-text' }, name, el('span', { class: 'conv-preview', text: opts.preview || '' })),
       opts.voice ? el('span', { class: 'voice-live', title: 'Voice active', text: '🔊' }) : null,
       opts.unread ? el('span', { class: 'unread-dot', 'aria-label': 'unread' }) : null
     );
@@ -1854,14 +1936,25 @@
         : c.status === 'outgoing' ? (c.declined ? 'Request not accepted' : 'Request sent')
         : last ? (last.from === S.me.id ? 'You: ' : '') + last.text
         : S.online[c.id] ? 'Online' : 'Say hi';
+      const icon = avatar(c.id, null, true);
+      icon.addEventListener('click', (event) => { event.stopPropagation(); showProfile(c.id); });
+      icon.title = 'View profile';
       return convButton({
-        icon: avatar(c.id, null, true), name: nameOf(c.id), preview: pv,
+        icon, name: nameOf(c.id), preview: pv, onNameClick: () => showProfile(c.id),
         active: S.conv && S.conv.type === 'dm' && S.conv.id === c.id,
         unread: isUnread(dmKey(c.id)), voice: voice && voice.scope === 'dm' && voice.id === c.id,
         onclick: () => openDm(c.id)
       });
     });
     $('dmList').replaceChildren(...(dmNodes.length ? dmNodes : [el('p', { class: 'side-empty', text: 'No contacts yet. Share your friend code or add someone’s.' })]));
+
+    const waiting = gameFriends.filter((f) => !f.profile.equipped || !/^[a-z2-9]{16}$/.test(f.profile.equipped.chatCode || ''));
+    $('gameFriendTitle').classList.toggle('hidden', !waiting.length);
+    $('gameFriendList').replaceChildren(...waiting.map((f) => convButton({
+      icon: el('span', { class: 'avatar', text: (f.profile.name || '?').slice(0, 1).toUpperCase() }),
+      name: f.profile.name || 'Player', preview: 'Chat available when they open it',
+      onclick: () => { if (window.GameSocial) window.GameSocial.openProfile(f.id); }
+    })));
 
     const rooms = Object.values(S.rooms).sort((a, b) => ((S.meta[roomKey(b.code)] || {}).updatedAt || b.joinedAt || 0) - ((S.meta[roomKey(a.code)] || {}).updatedAt || a.joinedAt || 0));
     const roomNodes = rooms.map((r) => {
@@ -2593,7 +2686,7 @@
         el('div', { class: 'pc-avatar' }, avatar(id, 'xl', true)),
         nameEl(id, 'profile-name'),
         nickIn(id, roomOf()) ? el('p', { class: 'pc-nick', text: 'Goes by ' }, el('b', { text: nickIn(id, roomOf()) }), ' in ' + roomName(roomOf())) : null,
-        el('p', { class: 'field-hint profile-code', text: fmtCode(id) }),
+        el('p', { class: 'field-hint profile-code', text: p.username ? '@' + p.username : fmtCode(id) }),
         el('div', { class: 'row pc-badges' },
           id === S.me.id ? el('span', { class: 'badge badge-mod', text: 'you' }) : null,
           S.globalBlocks[id] ? el('span', { class: 'badge badge-ban', text: 'blocked on this site' }) : null,
@@ -3892,7 +3985,7 @@
   function profileDirty() {
     if (!profileDraft) return false;
     const m = S.me, d = profileDraft;
-    return ['name', 'color', 'bio', 'avatar', 'banner'].some((k) => (d[k] || '') !== (m[k] || '')) || JSON.stringify(d.nameGrad || null) !== JSON.stringify(m.nameGrad || null) || JSON.stringify(d.bannerGrad || null) !== JSON.stringify(m.bannerGrad || null);
+    return ['name', 'username', 'color', 'bio', 'avatar', 'banner'].some((k) => (d[k] || '') !== (m[k] || '')) || JSON.stringify(d.nameGrad || null) !== JSON.stringify(m.nameGrad || null) || JSON.stringify(d.bannerGrad || null) !== JSON.stringify(m.bannerGrad || null);
   }
 
   function updateUnsaved() {
@@ -4101,7 +4194,7 @@
   function draft() {
     if (!profileDraft) {
       const m = S.me;
-      profileDraft = { name: m.name, color: m.color, bio: m.bio || '', avatar: m.avatar || null, banner: m.banner || null, nameGrad: m.nameGrad ? m.nameGrad.slice() : null, bannerGrad: m.bannerGrad ? m.bannerGrad.slice() : null };
+      profileDraft = { name: m.name, username: m.username, color: m.color, bio: m.bio || '', avatar: m.avatar || null, banner: m.banner || null, nameGrad: m.nameGrad ? m.nameGrad.slice() : null, bannerGrad: m.bannerGrad ? m.bannerGrad.slice() : null };
     }
     return profileDraft;
   }
@@ -4110,7 +4203,9 @@
     const d = draft();
     const n = d.name.trim();
     if (!/^[\p{L}\p{N}_ .'-]{2,24}$/u.test(n)) { toast('Names are 2 to 24 letters or numbers.'); return; }
-    await saveMe({ name: n, color: d.color, bio: d.bio.trim().slice(0, 190), avatar: d.avatar, banner: d.banner, nameGrad: d.nameGrad, bannerGrad: d.bannerGrad });
+    const prefix = usernamePrefix(d).toLowerCase();
+    if (!/^[a-z0-9_]{2,18}$/.test(prefix)) { toast('Username: use 2 to 18 letters, numbers or underscores.'); return; }
+    await saveMe({ name: n, username: prefix + '_' + S.me.id, color: d.color, bio: d.bio.trim().slice(0, 190), avatar: d.avatar, banner: d.banner, nameGrad: d.nameGrad, bannerGrad: d.bannerGrad });
     profileDraft = null;
     toast('Profile saved.');
     drawStudio();
@@ -4143,12 +4238,14 @@
     const avIn = pick(128, 60000, true, (v) => { d.avatar = v; });
     const bnIn = pick(0, 0, false, (v) => { d.banner = v; });
     const nameIn = el('input', { class: 'input', maxLength: 24, value: d.name, oninput: (e) => { d.name = e.target.value; updateUnsaved(); } });
+    const usernameIn = el('input', { class: 'input', maxLength: 18, value: usernamePrefix(d), spellcheck: false, oninput: (e) => { d.username = e.target.value.toLowerCase() + '_' + S.me.id; updateUnsaved(); } });
     const bio = el('textarea', { class: 'input', rows: 3, maxLength: 190, value: d.bio, placeholder: 'A little about you', oninput: (e) => { d.bio = e.target.value; updateUnsaved(); } });
 
     return el('div', null,
       el('div', { class: 'studio-card' }, card),
       el('p', { class: 'field-hint', text: 'People you chat with see your profile. Save to share changes.' }),
       sec('Name', nameIn),
+      sec('Username', usernameIn, el('p', { class: 'field-hint', text: 'Your handle is @' + S.me.username + '. Its unique code stays the same when you edit this part. Everyone sees your name above.' })),
       sec('Name style',
         choice([['solid', 'Solid'], ['gradient', 'Gradient + glow']], d.nameGrad ? 'gradient' : 'solid', (v) => { d.nameGrad = v === 'gradient' ? (d.nameGrad || NAME_GRADS[0].slice()) : null; redraw(); }),
         d.nameGrad

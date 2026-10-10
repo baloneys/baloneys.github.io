@@ -40,25 +40,25 @@
      ================================================================= */
 
   var CUES = {
-    bpm: 128,
+    bpm: 120,
     offset: 0,      // seconds into the audio where beat 0 falls
     start: 0,       // seconds into the audio where the cinematic begins (beat grid is relative to the file)
-    track: null,    // e.g. 'tetris-cinematic.mp3'; null plays the synthesised placeholder
+    track: 'https://cdn.jsdelivr.net/gh/baloneys/baloneys.github.io@15c5e3b/tetris-cinematic-45.mp3',
     volume: 0.8,
-    end: 95,        // beat the cinematic ends on (95 beats at 128 bpm = 44.5 s)
+    end: 90,        // a 45-second, 120 BPM cut with a fade into the source track's break
     shots: [
       { id: 'rain', beat: 0 },
-      { id: 'title', beat: 8 },
-      { id: 'storm', beat: 16 },
-      { id: 'corridor', beat: 24 },
-      { id: 'pandown', beat: 36 },
-      { id: 'elim', beat: 44 },
-      { id: 'streak', beat: 52 },
-      { id: 'skulls', beat: 64 },
-      { id: 'achievements', beat: 72 },
-      { id: 'follow', beat: 80 },
-      { id: 'clear', beat: 86 },
-      { id: 'finale', beat: 90 }
+      { id: 'storm', beat: 14 },
+      { id: 'corridor', beat: 22 },
+      { id: 'pandown', beat: 32 },
+      { id: 'elim', beat: 39 },
+      { id: 'duel', beat: 45 },
+      { id: 'streak', beat: 51 },
+      { id: 'skulls', beat: 63 },
+      { id: 'achievements', beat: 69 },
+      { id: 'follow', beat: 75 },
+      { id: 'clear', beat: 81 },
+      { id: 'finale', beat: 84 }
     ]
   };
 
@@ -272,7 +272,14 @@
       for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
       this.noise = buf;
       if (CUES.track) {
-        this.el = new window.Audio(CUES.track);
+        this.el = new window.Audio();
+        this.el.crossOrigin = 'anonymous';
+        this.el.addEventListener('error', function () {
+          if (!Audio.el || Audio.el.src.indexOf('cdn.jsdelivr.net') === -1) return;
+          Audio.el.src = 'tetris-cinematic-45.mp3?v=20261010-28';
+          if (Audio.on) Audio.el.play().catch(function () { Cine.needSound(); });
+        });
+        this.el.src = CUES.track;
         this.el.preload = 'auto';
         this.src = ctx.createMediaElementSource(this.el);
         this.src.connect(this.master);
@@ -472,7 +479,8 @@
 
   var Cine = {
     root: null, view: null, world: null, bgCanvas: null, fx: null, fxCtx: null, title: null, fade: null, caption: null,
-    soundBtn: null, hint: null,
+    soundBtn: null, hint: null, siteBg: null, siteBgParent: null, siteBgNext: null, siteBgScene: null,
+    rainCanvas: null, rainCtx: null, pixelCanvas: null, pixelCtx: null, pixelFlash: 0, streakPunch: 0,
     running: false, raf: 0, t: 0, startedAt: 0, clockBase: 0, lastNow: 0,
     shot: -1, shots: null, groups: [], boards: [],
     cam: { x: 0, y: 0, z: 1000, yaw: 0, pitch: 0, roll: 0, fov: 50 },
@@ -488,14 +496,32 @@
     root.setAttribute('aria-modal', 'true');
     root.setAttribute('aria-label', 'Tetris intro cinematic');
     Cine.bgCanvas = el('canvas', 'cine-bg', root);
+    // Borrow the game's actual pixel portal for the storyboard's opening shots.
+    // Put it back after playback so the menu keeps its own background and WebGL context.
+    Cine.siteBg = document.querySelector('.tetris-page > .tetris-bg');
+    if (Cine.siteBg) {
+      Cine.siteBgParent = Cine.siteBg.parentNode;
+      Cine.siteBgNext = Cine.siteBg.nextSibling;
+      root.appendChild(Cine.siteBg);
+      if (window.TetrisBG) {
+        Cine.siteBgScene = window.TetrisBG.snapshot();
+        window.TetrisBG.setCinematicPalette(true);
+        window.TetrisBG.show(13, 36500);
+      }
+    }
+    Cine.rainCanvas = el('canvas', 'cine-rain', root);
+    Cine.rainCtx = Cine.rainCanvas.getContext('2d');
     Cine.view = el('div', 'cine-view', root);
     Cine.world = el('div', 'cine-world', Cine.view);
     Cine.fx = el('canvas', 'cine-fx', root);
     Cine.fxCtx = Cine.fx.getContext('2d');
+    Cine.pixelCanvas = el('canvas', 'cine-pixel-flash', root);
+    Cine.pixelCtx = Cine.pixelCanvas.getContext('2d');
+    Cine.fallingPiece = el('div', 'cine-falling-piece', root);
     Cine.caption = el('div', 'cine-caption', root);
     var title = el('div', 'cine-title', root);
     var word = el('div', 'cine-word', title);
-    'TETRIS'.split('').forEach(function (ch, i) { var s = el('span', 'cine-letter l' + i, word); s.textContent = ch; });
+    'tetris'.split('').forEach(function (ch, i) { var s = el('span', 'cine-letter l' + i, word); s.textContent = ch; });
     var sub = el('div', 'cine-sub', title);
     sub.textContent = 'falling blocks killed my family';
     Cine.title = { box: title, word: word, sub: sub, letters: word.children };
@@ -589,11 +615,16 @@
   /* ---------- boards: real Players, played by real CPUs ---------- */
 
   var BOT_NAMES = ['Blocky', 'Tess', 'Gridlock', 'Spin', 'Cobalt', 'Nova', 'Pixel', 'Stack', 'Drop', 'Lumen', 'Vex', 'Orbit'];
+  var CINE_PALETTES = [
+    { bottom: '#1c073f', top: '#b875ff' }, { bottom: '#071a4f', top: '#48cfff' },
+    { bottom: '#390a42', top: '#ff57c3' }, { bottom: '#101251', top: '#7389ff' },
+    { bottom: '#082d4f', top: '#75f4ff' }
+  ];
   var botCount = 0;
 
   function makePlayer(o) {
     o = o || {};
-    var p = new K.Player({ id: 'cine' + botCount, name: o.name || BOT_NAMES[botCount % BOT_NAMES.length], palette: o.palette || K.randomPalette(),
+    var p = new K.Player({ id: 'cine' + botCount, name: o.name || BOT_NAMES[botCount % BOT_NAMES.length], palette: CINE_PALETTES[botCount % CINE_PALETTES.length],
       local: true, controls: K.NO_KEYS, lives: 1, versus: !!o.versus, skulls: o.skulls || [] });
     botCount++;
     var cv = document.createElement('canvas');
@@ -650,6 +681,16 @@
       for (var c = 0; c < K.COLS; c++) p.board[r][c] = c === hole || Math.random() < (holeChance || 0) ? 0 : K.GARBAGE;
     }
   }
+  function stageStack(p, n) {
+    for (var r = K.ROWS - n; r < K.ROWS; r++) {
+      var gaps = 0;
+      for (var c = 0; c < K.COLS; c++) {
+        if (!p.board[r][c] && hash(r * 53 + c * 17 + botCount * 11) > 0.27) p.board[r][c] = 1 + ((r + c) % 7);
+        if (!p.board[r][c]) gaps++;
+      }
+      if (!gaps) p.board[r][(r * 3 + botCount) % K.COLS] = 0;
+    }
+  }
 
   /* =================================================================
      The shots
@@ -660,10 +701,20 @@
   function makeShots() {
     var S = {};
 
-    S.rain = { pat: 0, update: function (t, u) {
-      var c = Cine.cam; c.x = 0; c.y = 0; c.z = 1000; c.yaw = Math.sin(t * 0.4) * 2; c.pitch = lerp(-3, 4, u); c.roll = 0; c.fov = 50;
-      Cine.fade = 1 - span(u, 0, 0.18);
-    } };
+    S.rain = { pat: 0, enter: function () { S.rain.burst = false; S.rain.shape = -1; }, update: function (t, u) {
+      var c = Cine.cam; c.x = 0; c.y = 0; c.z = 1000; c.yaw = 0; c.pitch = 0; c.roll = 0; c.fov = 50;
+      var fall = span(t, 0.15, 3.25), shape = Math.max(0, Math.min(6, Math.floor(t * 2.8)));
+      if (shape !== S.rain.shape) { S.rain.shape = shape; paintFallingPiece(shape); }
+      Cine.fallingPiece.style.display = fall < 1 ? 'grid' : 'none';
+      Cine.fallingPiece.style.transform = 'translate(-50%, ' + lerp(-18, 95, Math.pow(fall, 1.6)) + 'vh) rotate(' + (fall * 18) + 'deg) scale(' + lerp(0.7, 1.28, fall) + ')';
+      Cine.fallingPiece.style.opacity = clamp01(span(t, 0, 0.4) * (1 - span(t, 2.95, 3.3)));
+      if (t >= 3.2) {
+        titleCard((t - 3.2) / spb(), span(t, 3.2, 7.3));
+        Cine.title.sub.style.opacity = span(t, 5.2, 5.65);
+        if (!S.rain.burst) { S.rain.burst = true; burst(innerWidth / 2, innerHeight / 2, 140); Cine.flash = 0.65; }
+      }
+      Cine.fade = Math.max(1 - span(u, 0, 0.07), span(u, 0.94, 1));
+    }, exit: function () { hideTitle(); Cine.fallingPiece.style.display = 'none'; } };
 
     S.title = { pat: 1, update: function (t, u, lb) {
       var c = Cine.cam; c.yaw = Math.sin(t * 0.7) * 3; c.pitch = Math.cos(t * 0.5) * 2; c.roll = Math.sin(t * 0.3) * 1.5;
@@ -673,36 +724,44 @@
     }, enter: function () { S.title.burst = false; }, exit: function () { hideTitle(); } };
 
     S.storm = { pat: 2, bolts: [0.5, 2, 3.25, 5, 6.5], update: function (t, u, lb) {
-      var c = Cine.cam; c.yaw = Math.sin(t * 0.5) * 3; c.pitch = 6 + Math.sin(t * 0.8) * 1.5; c.roll = 0;
+      var c = Cine.cam; c.x = 0; c.y = 0; c.z = 1200; c.yaw = 0; c.pitch = 0; c.roll = 0; c.fov = 55;
       S.storm.bolts.forEach(function (b, i) {
         if (lb >= b && !S.storm.hit[i]) { S.storm.hit[i] = true; strike(i); }
       });
       Cine.fade = Math.max(1 - span(u, 0, 0.12), span(u, 0.84, 1));
     }, enter: function () { S.storm.hit = []; } };
 
-    // Corridor: live boards line both walls; the camera rushes down the middle.
+    // The portal stays fixed while real game boards launch out of its central bolt toward the viewer.
     S.corridor = { pat: 3, build: function (g) {
-      for (var i = 0; i < 10; i++) {
+      for (var i = 0; i < 8; i++) {
         var left = i % 2 === 0, k = Math.floor(i / 2);
         var p = makePlayer({ warm: 18 + i * 3, speed: 1.6 });
-        boardPlane(g, p, { x: left ? -620 : 620, y: 40, z: -k * 1150 - (left ? 0 : 575), ry: left ? 72 : -72, cull: true });
+        boardPlane(g, p, { x: 0, y: 0, z: -2600, ry: left ? 12 : -12, cull: true, fogMax: 0.16, launchSide: left ? -1 : 1, launchIndex: i });
       }
-    }, update: function (t, u) {
-      var c = Cine.cam, k = easeInOut(u * 0.85 + 0.15 * u * u);
-      c.x = Math.sin(u * 5) * 60; c.y = Math.sin(u * 3) * 30; c.z = lerp(1300, -5200, k);
-      c.yaw = Math.sin(u * 6.5) * 9; c.pitch = Math.sin(u * 4) * 3; c.roll = Math.sin(u * 4.2) * 6; c.fov = lerp(60, 74, smooth(u * 2));
-      Cine.travel = -c.z / 700;
+    }, update: function (t, u, lb) {
+      var c = Cine.cam;
+      c.x = 0; c.y = 0; c.z = 980; c.yaw = 0; c.pitch = 0; c.roll = 0; c.fov = 52;
+      if (lb >= 1 && !S.corridor.hit) { S.corridor.hit = true; strike(0); }
+      S.corridor.group.items.forEach(function (it) {
+        var flight = span(u, it.launchIndex * 0.085, Math.min(0.98, it.launchIndex * 0.085 + 0.5));
+        it.z = lerp(-2600, 870, easeInOut(flight));
+        it.x = it.launchSide * lerp(0, 570 + (it.launchIndex % 3) * 100, easeOut(flight));
+        it.y = lerp(0, (it.launchIndex % 4 - 1.5) * 115, easeOut(flight));
+        it.ry = it.launchSide * lerp(12, 38, flight);
+      });
       Cine.fade = 1 - span(u, 0, 0.04);
-    } };
+    }, enter: function () { S.corridor.hit = false; } };
 
     // Pan down from the sky onto a game in progress.
     S.pandown = { pat: 4, build: function (g) {
       var p = makePlayer({ name: 'You', palette: K.myPalette(), warm: 30, speed: 1.3 });
+      stageStack(p, 6);
       boardPlane(g, p, { x: 0, y: 0, z: 0, hero: true, depth: 3 });
     }, update: function (t, u) {
       var c = Cine.cam, k = easeInOut(span(u, 0, 0.7));
-      c.x = lerp(-120, 0, k); c.y = lerp(-1300, 0, k); c.z = lerp(1100, 760, easeOut(u)); c.pitch = lerp(42, -2, k);
-      c.yaw = lerp(-8, 10, smooth(u)); c.roll = lerp(-4, 0, k); c.fov = 52;
+      c.x = lerp(-95, 35, k); c.y = lerp(-360, 140, k); c.z = lerp(540, 400, easeOut(u));
+      c.roll = lerp(-3, 1, k); c.fov = 50;
+      lookAt(lerp(-40, 35, k), lerp(-225, 180, k), 0);
       Cine.travel = t * 0.5;
     } };
 
@@ -712,13 +771,14 @@
       for (var i = 0; i < 5; i++) {
         var p = makePlayer({ versus: true, warm: 20 + i * 2, speed: i === 3 ? 0.9 : 1.4 });
         if (i === 3) { fillRows(p, 11); p.keepTall = true; }
+        else stageStack(p, 5 + i % 2);
         var a = (i - 2) * 19;
-        boardPlane(g, p, { x: Math.sin(a * D2R) * 1900, y: 0, z: -Math.cos(a * D2R) * 1900 + 1900, ry: -a, danger: i === 3 });
+        boardPlane(g, p, { x: Math.sin(a * D2R) * 1250, y: 0, z: -Math.cos(a * D2R) * 500 + 500, ry: -a * 0.55, danger: i === 3 });
         S.elim.players.push(p);
       }
     }, update: function (t, u, lb) {
       var c = Cine.cam, k = easeInOut(u), from = S.elim.group.items[0], to = S.elim.group.items[3];
-      c.x = lerp(-1500, 700, k); c.y = lerp(-120, -40, k); c.z = lerp(1500, 1250, k); c.roll = lerp(-3, 2, k); c.fov = 55;
+      c.x = lerp(-550, 350, k); c.y = lerp(-55, 35, k); c.z = lerp(1000, 880, k); c.roll = lerp(-2, 1, k); c.fov = 52;
       lookAt(lerp(from.x, to.x, k), 0, lerp(from.z, to.z, k));
       var left = Math.max(0, 9 - Math.floor(lb / 2) * 2);
       S.elim.players.forEach(function (p, i) { p.dangerText = (i === 3 ? 'DANGER 0:0' : 'CUT IN 0:0') + left; });
@@ -726,10 +786,25 @@
       board.el.classList.toggle('danger-on', (lb % 1) < 0.5);
     } };
 
+    // A tight versus cut between the wider elimination reveal and the streak climb.
+    S.duel = { pat: 10, build: function (g) {
+      var a = makePlayer({ name: 'You', palette: K.myPalette(), versus: true, warm: 28, speed: 1.55 });
+      var b = makePlayer({ name: 'Rival', versus: true, warm: 34, speed: 1.75 });
+      stageStack(a, 7); stageStack(b, 8);
+      boardPlane(g, a, { x: -310, y: 0, z: 0, hero: true, depth: 2, ry: 8 });
+      boardPlane(g, b, { x: 310, y: 0, z: 0, hero: true, depth: 2, ry: -8 });
+    }, enter: function () { S.duel.hit = false; }, update: function (t, u, lb) {
+      var c = Cine.cam, k = easeInOut(u);
+      c.x = lerp(-120, 120, k); c.y = lerp(-50, 50, k); c.z = lerp(700, 590, k); c.roll = lerp(-2, 2, k); c.fov = 50;
+      lookAt(lerp(-85, 85, k), 0, 0);
+      if (lb >= 3 && !S.duel.hit) { S.duel.hit = true; strike(2); }
+    } };
+
     // Streak tiers: focus view, the central board dominating, minis either side.
     var TIERS = [[2, 'STREAK'], [5, 'WARMING UP'], [10, 'ON FIRE'], [20, 'RAINBOW ROAD'], [30, 'OVERDRIVE'], [50, 'SUPERNOVA']];
     S.streak = { pat: 6, build: function (g) {
       var hero = makePlayer({ name: 'You', palette: K.myPalette(), warm: 25, speed: 1.5 });
+      stageStack(hero, 7);
       S.streak.hero = hero;
       boardPlane(g, hero, { x: 0, y: 0, z: 0, hero: true, depth: 3 });
       [[-520, -160], [-520, 170], [520, -160], [520, 170], [-820, 5], [820, 5]].forEach(function (xy, i) {
@@ -738,13 +813,16 @@
       });
     }, update: function (t, u) {
       var c = Cine.cam;
-      c.x = Math.sin(u * 3) * 60; c.y = lerp(-20, 10, u); c.z = lerp(1000, 820, easeInOut(u)); c.roll = Math.sin(u * 2.5) * 2; c.fov = 50;
-      lookAt(0, -10, 0); c.yaw += Math.sin(u * 4) * 2;
+      c.x = Math.sin(u * 3) * 24; c.y = lerp(-20, 10, u); c.z = lerp(800, 710, easeInOut(u)) - Cine.streakPunch * 20;
+      c.roll = Math.sin(u * 2.5) * 0.8; c.fov = 50;
+      lookAt(0, -10, 0); c.yaw += Math.sin(u * 4) * 0.8;
       var tier = Math.min(TIERS.length - 1, Math.floor(u * TIERS.length));
       if (tier !== S.streak.tier) {
         S.streak.tier = tier;
         S.streak.hero.lockStreak = TIERS[tier][0];
-        Cine.flash = Math.max(Cine.flash, 0.35); Cine.shake = Math.max(Cine.shake, 0.5);
+        pixelStreakFlash(tier);
+        Cine.streakPunch = 1;
+        Cine.shake = Math.max(Cine.shake, 0.12);
         caption(TIERS[tier][0] + 'x', TIERS[tier][1]);
       }
       Cine.energy = (tier + 1) / TIERS.length;
@@ -844,7 +922,7 @@
       var hit = lb - 1;
       if (hit >= 0 && !S.finale.burst) { S.finale.burst = true; burst(innerWidth / 2, innerHeight / 2, 180); Cine.flash = 0.8; }
       if (hit >= 0) titleCard(hit, 0); else hideTitle();
-      Cine.fade = hit < 0 ? span(lb, 0, 0.75) : Math.max(1 - span(hit, 0, 0.2), span(lb, 4, 5));
+      Cine.fade = hit < 0 ? span(lb, 0, 0.75) : Math.max(1 - span(hit, 0, 0.2), span(lb, 4.7, 5.95));
     }, enter: function () { S.finale.burst = false; }, exit: function () { hideTitle(); } };
 
     // The Tetris shot continues on the follow shot's board, so it shares that shot's planes.
@@ -922,6 +1000,15 @@
 
   /* ---------- title card, captions, fx ---------- */
 
+  var FALL_SHAPES = ['01100110', '01001110', '11000110', '01101100', '11100100', '10001110', '00101110'];
+  function paintFallingPiece(index) {
+    var piece = Cine.fallingPiece, shape = FALL_SHAPES[index % FALL_SHAPES.length];
+    var colors = ['#4ad7ff', '#d26bff', '#ff4dc1', '#5478ff', '#75e7ff', '#b15bff', '#ff69d2'];
+    piece.style.setProperty('--piece-color', colors[index % colors.length]);
+    piece.replaceChildren();
+    for (var i = 0; i < shape.length; i++) el('span', shape[i] === '1' ? 'on' : '', piece);
+  }
+
   function titleCard(lb, u) {
     var t = Cine.title;
     t.box.style.display = 'flex';
@@ -961,9 +1048,9 @@
 
   // Lightning: a jagged bolt from the top with a couple of forks, flickering, and a white flash.
   function strike(i) {
-    var w = innerWidth, h = innerHeight, x = w * (0.2 + hash(i * 3.7 + Cine.seed) * 0.6);
+    var w = innerWidth, h = innerHeight, x = w / 2;
     var pts = [[x, -10]], y = -10;
-    while (y < h * (0.7 + hash(i) * 0.3)) { y += 20 + Math.random() * 35; x += (Math.random() - 0.5) * 70; pts.push([x, y]); }
+    while (y < h + 20) { y += 20 + Math.random() * 35; x += (w / 2 - x) * 0.18 + (Math.random() - 0.5) * 62; pts.push([x, y]); }
     var forks = [];
     for (var f = 0; f < 3; f++) {
       var from = pts[2 + Math.floor(Math.random() * (pts.length - 3))], fp = [from.slice()], fx = from[0], fy = from[1], dir = Math.random() < 0.5 ? -1 : 1;
@@ -972,6 +1059,45 @@
     }
     Cine.bolts.push({ pts: pts, forks: forks, age: 0 });
     Cine.flash = 1; Cine.shake = Math.max(Cine.shake, 0.6);
+    if (window.TetrisBG) { window.TetrisBG.pulse(0.8); window.TetrisBG.impact(0.75); }
+  }
+
+  // Sparse LED rain sits over the real pixel portal, leaving its faceted rings visible.
+  function drawRain(t, opacity) {
+    var cv = Cine.rainCanvas, ctx = Cine.rainCtx, w = 150, h = Math.max(36, Math.round(w * innerHeight / innerWidth));
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    ctx.clearRect(0, 0, w, h);
+    if (opacity <= 0) return;
+    var colors = ['#8b45ed', '#42b8ff', '#f45ab9', '#9b78ff', '#56e7f5'];
+    for (var x = 1; x < w; x += 3) {
+      var seed = hash(x * 1.77), speed = 12 + hash(x * 3.1) * 25;
+      var head = (t * speed + seed * h) % (h + 24) - 12;
+      ctx.fillStyle = colors[Math.floor(hash(x * 5.3) * colors.length)];
+      for (var k = 0; k < 10; k++) {
+        var y = Math.floor(head - k * 3);
+        if (y < 0 || y >= h) continue;
+        ctx.globalAlpha = opacity * (1 - k / 11) * (k ? 0.45 : 0.85);
+        ctx.fillRect(x, y, 1 + (k === 0 ? 1 : 0), k === 0 ? 2 : 1);
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // A quick, transparent 8-bit colour burst on each streak tier; the board stays readable.
+  function pixelStreakFlash(tier) {
+    var cv = Cine.pixelCanvas, ctx = Cine.pixelCtx;
+    cv.width = 64; cv.height = 36;
+    ctx.clearRect(0, 0, 64, 36);
+    var colors = ['#4acbff', '#b875ff', '#ff63cb', '#7b8dff'];
+    for (var y = 0; y < 36; y += 2) for (var x = 0; x < 64; x += 2) {
+      var r = hash(x * 91 + y * 17 + tier * 337);
+      if (r < 0.72) continue;
+      ctx.globalAlpha = (r - 0.72) * 1.7;
+      ctx.fillStyle = colors[(Math.floor(x / 8) + tier) % colors.length];
+      ctx.fillRect(x, y, 2, 2);
+    }
+    ctx.globalAlpha = 1;
+    Cine.pixelFlash = 1;
   }
 
   function drawFx(dt) {
@@ -1049,7 +1175,7 @@
       it.el.style.visibility = vis ? '' : 'hidden';
       if (!vis) return;
       it.el.style.transform = 'translate3d(' + it.x + 'px,' + it.y + 'px,' + it.z + 'px) rotateY(' + it.ry + 'deg) rotateX(' + it.rx + 'deg) rotateZ(' + it.rz + 'deg) scale(' + it.s + ') translate(' + (-it.w / 2) + 'px,' + (-it.h / 2) + 'px)';
-      if (it.fog) it.fog.style.opacity = clamp01((cd.d - 1400) / 3200).toFixed(3);
+      if (it.fog) it.fog.style.opacity = Math.min(it.fogMax == null ? 1 : it.fogMax, clamp01((cd.d - 1400) / 3200)).toFixed(3);
       if (it.gloss) it.gloss.style.backgroundPosition = (50 + (Cine.cam.yaw - it.ry) * 2.5 + cd.x * 0.03).toFixed(1) + '% 0';
     });
   }
@@ -1109,6 +1235,8 @@
     Cine.level += ((lvl == null ? 0.25 + Cine.beat * 0.35 : lvl) - Cine.level) * Math.min(1, dt * 12);
     Cine.flash = Math.max(0, Cine.flash - dt * 3);
     Cine.shake = Math.max(0, Cine.shake - dt * 2.5);
+    Cine.pixelFlash = Math.max(0, Cine.pixelFlash - dt * 4);
+    Cine.streakPunch = Math.max(0, Cine.streakPunch - dt * 3);
     Cine.aberration = Math.max(0, Cine.aberration - dt * 2.5);
 
     Cine.fade = 0;
@@ -1117,7 +1245,14 @@
     var view = applyCamera();
     layoutGroup(shot.group, view, dt);
     drawBoards(shot.group, dt);
-    Bg.draw({ time: t, pat: shot.pat, level: Cine.level, beat: Cine.beat, bt: bt, flash: Cine.flash, energy: Cine.energy, shock: Cine.shock, cam: Cine.cam, travel: Cine.travel });
+    var portalShot = idx < 3 && !!Cine.siteBg;
+    Cine.siteBg && (Cine.siteBg.style.display = portalShot ? '' : 'none');
+    Cine.bgCanvas.style.display = portalShot ? 'none' : '';
+    if (portalShot) {
+      if (window.TetrisBG) window.TetrisBG.setEnergy(clamp01(0.25 + Cine.level * 0.55 + Cine.beat * 0.2));
+    } else Bg.draw({ time: t, pat: shot.pat, level: Cine.level, beat: Cine.beat, bt: bt, flash: Cine.flash, energy: Cine.energy, shock: Cine.shock, cam: Cine.cam, travel: Cine.travel });
+    drawRain(t, idx === 0 ? 1 - span(u, 0.52, 0.75) : 0);
+    Cine.pixelCanvas.style.opacity = (Cine.pixelFlash * 0.3).toFixed(3);
     drawFx(dt);
     Cine.fadeEl.style.opacity = clamp01(Cine.fade).toFixed(3);
     Cine.view.style.filter = Cine.aberration > 0.02
@@ -1168,6 +1303,15 @@
     document.removeEventListener('keydown', onKey, true);
     var root = Cine.root;
     root.classList.add('closing');
+    if (Cine.siteBg && Cine.siteBgParent) {
+      Cine.siteBg.style.display = '';
+      Cine.siteBgParent.insertBefore(Cine.siteBg, Cine.siteBgNext && Cine.siteBgNext.parentNode === Cine.siteBgParent ? Cine.siteBgNext : null);
+      if (window.TetrisBG) {
+        window.TetrisBG.setEnergy(0);
+        window.TetrisBG.setCinematicPalette(false);
+        window.TetrisBG.restore(Cine.siteBgScene);
+      }
+    }
     setTimeout(function () { root.remove(); }, 450);
     document.documentElement.classList.remove('cine-open');
     Cine.groups = []; Cine.shots = null; Cine.bolts = []; Cine.sparks = [];
@@ -1192,6 +1336,6 @@
   }
 
   window.TetrisCinematic = { play: play, skip: finish, playing: function () { return Cine.running; }, CUES: CUES };
-  if (/[?&]cinematic/.test(location.search)) window.TetrisCinematic.state = function () { return Cine; };   // testing aid
+  if (/[?&]cinematic(?:=|&|$)/.test(location.search)) window.TetrisCinematic.state = function () { return Cine; };   // testing aid
   init();
 })();

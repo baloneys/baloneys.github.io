@@ -138,7 +138,7 @@
     { id: 'fuse', name: 'Fuse', cat: 'mod', eff: 0.5, body: 'Go 15 seconds without clearing a line and a garbage row rises.' },
     { id: 'storm', name: 'Thunderstorm', cat: 'mod', eff: 0.75, body: 'A garbage row rises from below every 20 seconds.' },
     { id: 'lightsOut', name: 'Lights Out', cat: 'mod', eff: 1, body: 'Your stack fades into the dark a moment after every lock. Remember where things are.' },
-    { id: 'birthday', name: 'Birthday Party', cat: 'mod', eff: 0, body: 'Block Birthday Party: every line clear bursts into confetti. Purely for fun.' },
+    { id: 'birthday', name: 'Birthday Party', cat: 'mod', eff: 0, body: 'Block Birthday Party: clearing a Tetris bursts into confetti and a playful chime. Purely for fun.' },
     { id: 'pStreak', name: 'Long Streak', cat: 'power', kind: PU.STREAK, eff: -0.1, body: 'Drops with pieces. Clear its line to double your streak timer.' },
     { id: 'pSlow', name: 'Slow Time', cat: 'power', kind: PU.SLOW, eff: -0.25, body: 'Drops with pieces. Clear its line and pieces fall 2.5x slower for 10 seconds.' },
     { id: 'pDouble', name: 'Double Score', cat: 'power', kind: PU.DOUBLE, eff: -0.1, body: 'Drops with pieces. Clear its line for double points for 15 seconds.' },
@@ -452,7 +452,7 @@
     });
     var now = performance.now();
     if (powers.length) this.fx.push({ cells: fxCells, kind: powers[0].kind, t: now });
-    if (this.f.birthday && full.length) {
+    if (this.f.birthday && full.length === 4) {
       var conf = [];
       full.forEach(function (row) { for (var cx = 0; cx < COLS; cx++) conf.push([row, cx]); });
       this.fx.push({ cells: conf, kind: 'confetti', t: now });
@@ -497,8 +497,11 @@
       this.incoming -= cancel;
       attack -= cancel;
       G.Sound.beep(tetris ? 988 : 660 + Math.min(4, cleared) * 60, tetris ? 0.3 : 0.12, 'triangle', 0.06);
+      if (tetris && this.f.birthday) [0, 90, 180, 290].forEach(function (delay, i) {
+        setTimeout(function () { G.Sound.beep([740, 988, 1175, 1568][i], 0.13, i === 3 ? 'triangle' : 'square', 0.045); }, delay);
+      });
       this.recordStreak(cleared);
-      if (!reducedEffects && full.length) this.fx.push({ kind: 'clear', rows: full.slice(), streak: this.streak, t: now });
+      if (!reducedEffects && full.length) this.fx.push({ kind: 'clear', rows: full.slice(), tetris: tetris, streak: this.streak, t: now });
       for (var b = 0; b < boosts; b++) this.streakLeft = Math.min(STREAK_POWER_MAX, this.streakLeft * 2);
     } else {
       this.combo = -1;
@@ -520,7 +523,7 @@
   Player.prototype.recordStreak = function (cleared) {
     if (this.f.noStreaks) return;
     if (this.streakLeft <= 0) { this.streak = 0; this.streakLines = 0; }
-    this.streak = Math.min(STREAK.CAP, this.streak + 1);
+    this.streak = Math.min(STREAK.CAP, this.streak + (cleared >= 4 ? 8 : 1));
     this.streakLines += cleared;
     var win = cleared >= 4 ? STREAK.TETRIS : Math.min(STREAK.MAX, STREAK.WINDOW + STREAK.STEP * (this.streak - 1));
     this.streakLeft = Math.max(this.streakLeft, win);
@@ -1625,17 +1628,22 @@
         var col = BG && BG.sceneColor ? BG.sceneColor() : null;
         col = col || [0.78, 0.6, 1];
         ctx.save();
-        ctx.globalAlpha = (1 - t) * 0.65;
+        ctx.globalAlpha = (1 - t) * (f.tetris ? 0.95 : 0.65);
         ctx.fillStyle = rgb(col);
         f.rows.forEach(function (row) {
           var y = (row + 0.5) * CELL;
-          ctx.fillRect(ox, y - 2, COLS * CELL, 4 * (1 - t));
-          for (var n = 0; n < 12; n++) {
+          ctx.fillRect(ox, y - (f.tetris ? 4 : 2), COLS * CELL, (f.tetris ? 8 : 4) * (1 - t));
+          for (var n = 0; n < (f.tetris ? 22 : 12); n++) {
             var seed = ((n * 17 + row * 11) % 31) / 31;
-            var x = ox + (n + 0.5) / 12 * COLS * CELL;
-            ctx.fillRect(x + (seed - 0.5) * t * 45, y - t * (18 + seed * 35), 3, 3);
+            var x = ox + (n + 0.5) / (f.tetris ? 22 : 12) * COLS * CELL;
+            ctx.fillRect(x + (seed - 0.5) * t * (f.tetris ? 90 : 45), y - t * (18 + seed * (f.tetris ? 85 : 35)), f.tetris ? 5 : 3, f.tetris ? 5 : 3);
           }
         });
+        if (f.tetris) {
+          var sweep = ox + COLS * CELL * Math.min(1, t * 1.6);
+          ctx.globalAlpha = (1 - t) * 0.7;
+          ctx.fillRect(sweep - 5, 0, 10, ROWS * CELL);
+        }
         ctx.restore();
         return;
       }
@@ -1645,7 +1653,7 @@
             var seed = (cell[0] * 13 + cell[1] * 7 + n * 31) % 97 / 97;
             var x = ox + (cell[1] + 0.5 + (seed - 0.5) * 1.6 * t) * CELL;
             var y = (cell[0] + 0.4 - t * 1.6 + t * t * 1.1) * CELL;
-            ctx.fillStyle = hsvHex((seed * 360 + n * 90) % 360, 0.8, 1);
+            ctx.fillStyle = ['#60dfff', '#a46aff', '#ff67ce', '#667dff'][Math.floor(seed * 4)];
             ctx.globalAlpha = 1 - t;
             ctx.fillRect(x, y, 5, 5);
           }

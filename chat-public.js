@@ -13,6 +13,8 @@
 // API (window.ChatPublic): show(), hide()
 (function () {
   'use strict';
+  // The game bubble is a direct-message surface, not the public room.
+  if (/[?&]mini(?:=|&|$)/.test(location.search)) return;
 
   var ROOM = 'public', PAGE_SIZE = 60, REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '🎉', '💀'];
   var LEVEL = { helper: 1, moderator: 2, admin: 3, dev: 4 };

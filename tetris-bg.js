@@ -27,7 +27,7 @@
     'uniform vec4 u_sa; uniform vec4 u_sb;',
     'uniform vec3 u_deep; uniform vec3 u_dusk; uniform vec3 u_moon;',
     'uniform float u_hue; uniform float u_energy; uniform float u_pulse; uniform float u_danger;',
-    'uniform float u_impact; uniform float u_pressure;',
+    'uniform float u_impact; uniform float u_pressure; uniform float u_cinematic;',
     'float crest(float x){ float c = sin(x)*0.5+0.5; c*=c; return c*c; }',
     'float hash(vec2 v){ return fract(sin(dot(v, vec2(12.9898,78.233)))*43758.5453); }',
     'vec3 rainbow(float h){ return clamp(abs(fract(h+vec3(0.0,0.333,0.667))*6.0-3.0)-1.0, 0.0, 1.0); }',
@@ -155,7 +155,8 @@
     'vec3 sceneTint(vec3 c, float turns){',
     '  c=max(c,0.0); float value=max(max(c.r,c.g),c.b);',
     '  float source=atan(1.73205*(c.g-c.b),2.0*c.r-c.g-c.b+0.00001)/6.2831853;',
-    '  float hue=0.30+0.70*(0.5+0.5*sin((source+turns)*6.2831853));',
+    '  float phase=0.5+0.5*sin((source+turns)*6.2831853);',
+    '  float hue=mix(0.30+0.70*phase, 0.54+0.34*phase, u_cinematic);',
     '  vec3 spectrum=clamp(abs(fract(hue+vec3(0.0,0.666667,0.333333))*6.0-3.0)-1.0,0.0,1.0);',
     '  return mix(vec3(1.0),spectrum,0.72)*value;',
     '}',
@@ -196,7 +197,7 @@
     pattern: 0, from: 0, seedA: [0.2, 0.4, 0.6, 0.8], seedB: [0.2, 0.4, 0.6, 0.8], blend: 0, fading: false, fadeT: 0,
     deep: [0, 0, 0], dusk: [0, 0, 0], moon: [0, 0, 0], palFrom: null, palTo: null,
     hue: Math.random(), hueOffset: 0, themes: 0, energy: 0, energyTarget: 0, pulse: 0, impact: 0, pressure: 0, pressureTarget: 0, danger: 0,
-    running: false, visible: true, onscreen: true, last: 0, reduced: false, raf: 0, dirty: true
+    running: false, visible: true, onscreen: true, last: 0, reduced: false, cinematic: false, raf: 0, dirty: true
   };
 
   function palette(h, sat) {
@@ -234,7 +235,7 @@
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     ['u_res', 'u_time', 'u_turn', 'u_pa', 'u_pb', 'u_blend', 'u_sa', 'u_sb', 'u_deep', 'u_dusk', 'u_moon', 'u_hue',
-      'u_energy', 'u_pulse', 'u_impact', 'u_pressure', 'u_danger'].forEach(function (n) { S.u[n] = gl.getUniformLocation(prog, n); });
+      'u_energy', 'u_pulse', 'u_impact', 'u_pressure', 'u_danger', 'u_cinematic'].forEach(function (n) { S.u[n] = gl.getUniformLocation(prog, n); });
     S.gl = gl; S.prog = prog;
     var p = palette(S.hue, 0.7);
     S.deep = p.deep; S.dusk = p.dusk; S.moon = p.moon;
@@ -320,6 +321,7 @@
     gl.uniform1f(u.u_impact, S.impact);
     gl.uniform1f(u.u_pressure, S.pressure);
     gl.uniform1f(u.u_danger, S.danger);
+    gl.uniform1f(u.u_cinematic, S.cinematic ? 1 : 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
@@ -393,6 +395,18 @@
     pulse: function (strength) { S.pulse = Math.min(1, Math.max(S.pulse, strength)); kick(); },
     impact: function (strength) { if (!S.reduced) { S.impact = Math.min(1, Math.max(S.impact, strength)); kick(); } },
     setDanger: function (x) { S.danger = Math.max(0, Math.min(1, x)); kick(); },
+    setCinematicPalette: function (on) { S.cinematic = !!on; kick(); },
+    snapshot: function () {
+      return { pattern: S.pattern, from: S.from, seedA: S.seedA.slice(), seedB: S.seedB.slice(),
+        blend: S.blend, fading: S.fading, fadeT: S.fadeT, hue: S.hue,
+        deep: S.deep.slice(), dusk: S.dusk.slice(), moon: S.moon.slice(),
+        palFrom: S.palFrom, palTo: S.palTo };
+    },
+    restore: function (scene) {
+      if (!scene) return;
+      ['pattern', 'from', 'seedA', 'seedB', 'blend', 'fading', 'fadeT', 'hue', 'deep', 'dusk', 'moon', 'palFrom', 'palTo'].forEach(function (key) { S[key] = scene[key]; });
+      kick();
+    },
     // Match the highlight on screen, including palette fades and the shader's slow hue drift.
     sceneColor: function () {
       if (!S.gl) return null;

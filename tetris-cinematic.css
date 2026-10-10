@@ -10,12 +10,47 @@ html.cine-open, html.cine-open body { overflow: hidden; }
   user-select: none; -webkit-user-select: none;
 }
 .cine.closing { opacity: 0; pointer-events: none; }
+.cine::before {
+  content: ''; position: absolute; inset: -8%; z-index: 2; pointer-events: none;
+  background: radial-gradient(ellipse 28% 35% at 22% 70%, rgba(75, 75, 255, 0.18), transparent 85%),
+              radial-gradient(ellipse 24% 30% at 80% 23%, rgba(255, 56, 195, 0.14), transparent 85%);
+  filter: blur(32px); mix-blend-mode: screen;
+}
+.cine::after {
+  content: ''; position: absolute; inset: -12px 0; z-index: 5; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(4, 1, 15, 0.19) 0 1px, transparent 1px 4px),
+              linear-gradient(180deg, transparent 0 46%, rgba(169, 69, 255, 0.055) 48%, transparent 51%);
+  background-size: 100% 4px, 100% 115%;
+  mix-blend-mode: multiply; opacity: 0.6; animation: cine-vhs-roll 9s linear infinite;
+}
+@keyframes cine-vhs-roll { to { background-position: 0 80px, 0 115%; } }
 
-.cine-bg, .cine-fx, .cine-view { position: absolute; inset: 0; width: 100%; height: 100%; }
-.cine-bg { display: block; }
-.cine-fx { pointer-events: none; }
+.cine-bg, .cine-fx, .cine-view, .cine-rain, .cine-pixel-flash { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cine-bg { display: block; filter: brightness(0.65) saturate(1.18) contrast(1.08); }
+.cine > .tetris-bg {
+  inset: 0; width: 100%; height: 100%; opacity: 1;
+  -webkit-mask-image: none; mask-image: none; transition: none;
+  filter: saturate(1.16) contrast(1.12) brightness(0.82);
+}
+.cine-rain { z-index: 1; pointer-events: none; image-rendering: pixelated; mix-blend-mode: screen; }
+.cine-pixel-flash { z-index: 4; pointer-events: none; image-rendering: pixelated; mix-blend-mode: screen; opacity: 0; }
+.cine-fx { pointer-events: none; filter: drop-shadow(0 0 11px rgba(116, 194, 255, 0.7)) drop-shadow(0 0 30px rgba(207, 83, 255, 0.38)); }
 .cine-view { overflow: hidden; perspective-origin: 50% 50%; pointer-events: none; }
+.cine-view { z-index: 1; }
+.cine-fx { z-index: 3; }
 .cine-world, .cine-group { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; }
+
+.cine-falling-piece {
+  position: absolute; left: 50%; top: 0; width: clamp(100px, 11vw, 180px);
+  display: none; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr);
+  aspect-ratio: 2; pointer-events: none; z-index: 2;
+  filter: drop-shadow(0 0 20px var(--piece-color)) drop-shadow(0 0 65px var(--piece-color));
+}
+.cine-falling-piece span.on {
+  margin: 2px; border: 3px solid #fff; border-radius: 3px;
+  background: color-mix(in srgb, var(--piece-color), transparent 68%);
+  box-shadow: inset 0 0 13px var(--piece-color), 0 0 22px var(--piece-color);
+}
 
 .cine-plane { position: absolute; left: 0; top: 0; transform-origin: 0 0; transform-style: preserve-3d; will-change: transform; }
 
@@ -90,9 +125,9 @@ html.cine-open, html.cine-open body { overflow: hidden; }
 
 .cine-title {
   position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center;
-  pointer-events: none;
+  pointer-events: none; z-index: 4;
 }
-.cine-word { display: flex; gap: 0.02em; font-size: clamp(64px, 15vw, 240px); font-weight: 800; line-height: 1; }
+.cine-word { display: flex; gap: 0.02em; font-size: clamp(64px, 15vw, 240px); font-weight: 800; line-height: 1; letter-spacing: -0.065em; }
 .cine-letter {
   display: inline-block; opacity: 0;
   background: linear-gradient(180deg, #ffffff 0%, #e6c8ff 30%, #b26bff 62%, #5b2bff 100%);
@@ -108,25 +143,27 @@ html.cine-open, html.cine-open body { overflow: hidden; }
 
 .cine-caption {
   position: absolute; left: 6vw; bottom: calc(max(0px, (100vh - 100vw / 2.2) / 2) + 5vh);
-  display: flex; flex-direction: column; opacity: 0; pointer-events: none;
+  display: flex; flex-direction: column; opacity: 0; pointer-events: none; z-index: 4;
 }
 .cine-caption strong { font-size: clamp(44px, 7vw, 110px); line-height: 1; text-shadow: 0 0 30px rgba(255, 80, 200, 0.9); }
 .cine-caption span { font-size: clamp(14px, 1.6vw, 24px); letter-spacing: 0.3em; color: #ffc6f0; }
 .cine-caption.show { animation: cine-caption 0.9s cubic-bezier(.2, 1.6, .4, 1) both; }
 @keyframes cine-caption { from { opacity: 0; transform: translateX(-40px) skewX(-12deg); } to { opacity: 1; transform: none; } }
 
-.cine-bars { position: absolute; left: 0; right: 0; height: max(0px, calc((100vh - 100vw / 2.2) / 2)); background: #000; pointer-events: none; }
-.cine-bars.top { top: 0; }
-.cine-bars.bottom { bottom: 0; }
-.cine-fade { position: absolute; inset: 0; background: #000; opacity: 1; pointer-events: none; }
+.cine-bars { position: absolute; left: 0; right: 0; z-index: 6; height: max(3.2vh, calc((100vh - 100vw / 2.2) / 2)); background: #000; pointer-events: none; }
+.cine-bars.top { top: 0; animation: cine-bar-top 1s cubic-bezier(.19,1,.22,1) .12s both; }
+.cine-bars.bottom { bottom: 0; animation: cine-bar-bottom 1s cubic-bezier(.19,1,.22,1) .12s both; }
+@keyframes cine-bar-top { from { transform: translateY(-102%); } to { transform: translateY(0); } }
+@keyframes cine-bar-bottom { from { transform: translateY(102%); } to { transform: translateY(0); } }
+.cine-fade { position: absolute; inset: 0; z-index: 8; background: #000; opacity: 1; pointer-events: none; }
 .cine-grain {
-  position: absolute; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: overlay;
+  position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0.35; mix-blend-mode: overlay;
   background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.35) 0 1px, transparent 1px 3px);
 }
 
 /* ---------- controls ---------- */
 
-.cine-ui { position: absolute; right: 16px; bottom: 16px; display: flex; gap: 8px; z-index: 2; }
+.cine-ui { position: absolute; right: 16px; bottom: 16px; display: flex; gap: 8px; z-index: 9; }
 .cine-btn {
   padding: 8px 14px; border-radius: 999px; cursor: pointer;
   font: 700 13px/1 var(--font-family-heading, "JetBrains Mono", monospace); letter-spacing: 0.04em; color: #f7f2ff;
@@ -140,7 +177,10 @@ html.cine-open, html.cine-open body { overflow: hidden; }
 @keyframes cine-blink { 50% { opacity: 0.55; } }
 
 @media (max-aspect-ratio: 1/1) {
-  .cine-bars { display: none; }
+  .cine-bars { height: 4vh; }
   .cine-caption { bottom: 18vh; }
   .cine-ui { left: 16px; right: 16px; justify-content: flex-end; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cine-bars, .cine::after { animation: none; }
 }

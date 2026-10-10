@@ -1,0 +1,32 @@
+BALCADE / PONG — 60-SECOND TEMP SOUNDTRACK
+=========================================
+Music: Space Adventure (140 BPM) by MintoDog
+Source: https://opengameart.org/content/space-adventure
+License: Creative Commons Zero (CC0 1.0); attribution not required, appreciated.
+The supplied MP3 was edited, EQ'd, level-adjusted, rearranged and overlaid
+with newly synthesised sound effects created for this package.
+
+CINEMATIC TIMES / SFX
+00:00–00:04  Cabinet approaches through shader; CRT hum, soft synth and electrical hiss.
+00:04–00:07  Lowercase pong logo, pixel chimes; gentle synth swell.
+00:07–00:12  The cabinet fades first; logo holds then fades; near silence; spark.
+00:12–00:18  Musical drop, ball serves toward camera; paddle pings alternate L/R.
+00:18–00:28  Volley speeds up; fast spatial paddle hits and ball streaks.
+00:28–00:37  Multi-court competitive flythrough; independent board/paddle soundscape.
+00:37–00:41  Match point; short musical glitch/drop and large scoring impact.
+00:41–00:52  Quick-fire score/feature panels; soft UI pings and short fly-bys.
+00:52–00:57  Final rally acceleration and score blast; backdrop collapses.
+00:57–01:00  Title and playable menu; cinematic blends into softer loop.
+
+IMPLEMENTATION NOTES
+- Play Balcade_Pong_60s_Master.wav or .mp3 as cinematic.
+- On completion at 60s, start Balcade_Pong_Menu_Seamless_Loop.wav or .ogg at 0.
+- The final 3 seconds of the cinematic contain the loop's last 3 seconds,
+  fading up while the original song fades down, ready for sample-continuous
+  replay from the loop's beginning.
+- Loop length: 13.7142857 seconds (8 bars at 140 BPM), no programmed fade.
+- Use Web Audio AudioBufferSourceNode.loop for gapless browser playback.
+- Fade menu music using GainNode automation when disabled in settings.
+- The WAV music and SFX stems sum to the cinematic master (minor 16-bit quantisation aside).
+- All added effects were generated using synthesis/noise; no third-party sound samples.
+- Preview is a single file of cinematic plus two repeats, for evaluating the seam.

@@ -25,6 +25,19 @@
 
   var state = null;
   var placing = null;
+  var keybinds = window.GameKeybinds.mount({ game: 'battleships', title: 'battleships',
+    groups: [
+      { id: 'place', title: 'Place fleet', actions: [
+        { id: 'up', label: 'Move cursor up', keys: ['arrowup'] }, { id: 'down', label: 'Move cursor down', keys: ['arrowdown'] },
+        { id: 'left', label: 'Move cursor left', keys: ['arrowleft'] }, { id: 'right', label: 'Move cursor right', keys: ['arrowright'] },
+        { id: 'select', label: 'Place or pick up ship', keys: ['enter', ' '] }, { id: 'rotate', label: 'Rotate ship', keys: ['r'] }] },
+      { id: 'battle', title: 'Battle', actions: [
+        { id: 'up', label: 'Move cursor up', keys: ['arrowup'] }, { id: 'down', label: 'Move cursor down', keys: ['arrowdown'] },
+        { id: 'left', label: 'Move cursor left', keys: ['arrowleft'] }, { id: 'right', label: 'Move cursor right', keys: ['arrowright'] },
+        { id: 'fire', label: 'Fire at square', keys: ['enter', ' '] }] }
+    ]
+  });
+  var keyboardCell = { place: [0, 0], battle: [0, 0] };
 
   /* ---------- skulls (vs CPU only; online battles are always straight) ---------- */
   var SKULLS = [
@@ -849,7 +862,21 @@
     });
     $('#placeBack').addEventListener('click', toMenu);
     document.addEventListener('keydown', function (e) {
-      if (!$('#placeView').classList.contains('hidden') && (e.key === 'r' || e.key === 'R') && !e.target.closest('input')) rotatePlacement();
+      if (e.target.closest('input, textarea, select, [contenteditable], button:not(.bs-cell)')) return;
+      var section = !$('#placeView').classList.contains('hidden') ? 'place' : !$('#battleView').classList.contains('hidden') ? 'battle' : null;
+      if (!section || keybinds.isOpen()) return;
+      var grid = section === 'place' ? $('#placeGrid') : $('#enemyGrid');
+      var at = keyboardCell[section], focused = e.target.closest('.bs-cell');
+      if (focused && grid.contains(focused)) { at[0] = +focused.dataset.r; at[1] = +focused.dataset.c; }
+      if (section === 'place' && keybinds.matches(e, section, 'rotate')) { e.preventDefault(); rotatePlacement(); return; }
+      var moves = { up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] };
+      for (var action in moves) if (keybinds.matches(e, section, action)) {
+        e.preventDefault(); at[0] = (at[0] + moves[action][0] + N) % N; at[1] = (at[1] + moves[action][1] + N) % N;
+        cellEl(grid, at[0], at[1]).focus(); return;
+      }
+      if (keybinds.matches(e, section, section === 'place' ? 'select' : 'fire')) {
+        e.preventDefault(); var cell = cellEl(grid, at[0], at[1]); cell.focus(); cell.click();
+      }
     });
 
     $('#againBtn').addEventListener('click', function () {

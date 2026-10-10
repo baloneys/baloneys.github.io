@@ -288,6 +288,15 @@
 
   var game = null;
   var clockTimer = null;
+  var keybinds = window.GameKeybinds.mount({ game: 'chess', title: 'chess',
+    groups: [{ id: 'board', title: 'Board', actions: [
+      { id: 'up', label: 'Move cursor up', keys: ['arrowup'] }, { id: 'down', label: 'Move cursor down', keys: ['arrowdown'] },
+      { id: 'left', label: 'Move cursor left', keys: ['arrowleft'] }, { id: 'right', label: 'Move cursor right', keys: ['arrowright'] },
+      { id: 'select', label: 'Select square / move', keys: ['enter', ' '] },
+      { id: 'flip', label: 'Flip board', keys: ['f'] }, { id: 'undo', label: 'Undo move', keys: ['u'] }
+    ] }]
+  });
+  var keyboardSquare = 0;
 
   /* ---------- skulls (vs CPU only; online and local games are always straight) ---------- */
   var SKULLS = [
@@ -928,6 +937,25 @@
     $('#lobbyLeave').addEventListener('click', toMenu);
 
     $('#flipBtn').addEventListener('click', function () { if (game) { game.flipped = !game.flipped; render(); } });
+    document.addEventListener('keydown', function (e) {
+      if (!game || $('#gameView').classList.contains('hidden') || keybinds.isOpen()) return;
+      if (e.target.closest('input, textarea, select, [contenteditable], button:not(.sq)')) return;
+      var board = $('#board'), focused = e.target.closest('.sq');
+      if (focused && board.contains(focused)) keyboardSquare = Array.prototype.indexOf.call(board.children, focused);
+      var move = { up: -8, down: 8, left: -1, right: 1 };
+      for (var action in move) if (keybinds.matches(e, 'board', action)) {
+        e.preventDefault();
+        var row = Math.floor(keyboardSquare / 8), col = keyboardSquare % 8;
+        if (action === 'up') row = (row + 7) % 8;
+        else if (action === 'down') row = (row + 1) % 8;
+        else if (action === 'left') col = (col + 7) % 8;
+        else col = (col + 1) % 8;
+        keyboardSquare = row * 8 + col; board.children[keyboardSquare].focus(); return;
+      }
+      if (keybinds.matches(e, 'board', 'select')) { e.preventDefault(); board.children[keyboardSquare].focus(); board.children[keyboardSquare].click(); return; }
+      if (keybinds.matches(e, 'board', 'flip')) { e.preventDefault(); $('#flipBtn').click(); return; }
+      if (keybinds.matches(e, 'board', 'undo')) { e.preventDefault(); if (!$('#undoBtn').classList.contains('hidden')) undo(); }
+    });
     $('#undoBtn').addEventListener('click', undo);
     $('#resignBtn').addEventListener('click', resign);
     $('#drawBtn').addEventListener('click', function () {

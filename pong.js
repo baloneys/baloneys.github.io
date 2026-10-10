@@ -48,8 +48,18 @@
   var net = { role: null, session: null, conn: null, myReady: false, theirReady: false, lastSend: 0, lastPad: null, them: null };
 
   var game = null;
+  var filmDemo = false; // A cinematic court borrows the real ball physics without recording a match.
   var raf = null;
   var keys = {};
+  var keybinds = window.GameKeybinds.mount({ game: 'pong', title: 'pong', music: true,
+    groups: [
+      { id: 'solo', title: 'Solo / online', actions: [{ id: 'up', label: 'Paddle up', keys: ['w', 'arrowup'] }, { id: 'down', label: 'Paddle down', keys: ['s', 'arrowdown'] }] },
+      { id: 'p1', title: 'Local · left', actions: [{ id: 'up', label: 'Paddle up', keys: ['w'] }, { id: 'down', label: 'Paddle down', keys: ['s'] }] },
+      { id: 'p2', title: 'Local · right', actions: [{ id: 'up', label: 'Paddle up', keys: ['arrowup'] }, { id: 'down', label: 'Paddle down', keys: ['arrowdown'] }] },
+      { id: 'system', title: 'Game', actions: [{ id: 'pause', label: 'Pause', keys: ['p', 'escape'] }] }
+    ],
+    onOpen: function () { keys = {}; if (game && !game.over && !game.paused && settings.mode !== 'online') setPaused(true); }
+  });
   var pointers = {};
   var skinImages = {};
   var customBalls = G.Store.get('pong_custom_balls', []);
@@ -273,6 +283,7 @@
   var screens = ['menuPanel', 'onlinePanel', 'lobbyPanel', 'gameView'];
   function screen(id) {
     screens.forEach(function (s) { $('#' + s).classList.toggle('hidden', s !== id); });
+    if (window.PongMenuMusic) window.PongMenuMusic.screen(id);
   }
 
   function names() {
@@ -437,12 +448,12 @@
 
   function update(dt) {
     var g = game;
-    var both = ['w', 'arrowup'], bothDown = ['s', 'arrowdown'];
+    var both = keybinds.keys('solo', 'up'), bothDown = keybinds.keys('solo', 'down');
 
     var inv = skull('invert') ? -1 : 1;
     if (settings.mode === 'local') {
-      movePaddle(g.p1, inv * keyDir(['w'], ['s']), dt);
-      movePaddle(g.p2, inv * keyDir(['arrowup'], ['arrowdown']), dt);
+      movePaddle(g.p1, inv * keyDir(keybinds.keys('p1', 'up'), keybinds.keys('p1', 'down')), dt);
+      movePaddle(g.p2, inv * keyDir(keybinds.keys('p2', 'up'), keybinds.keys('p2', 'down')), dt);
     } else if (settings.mode === 'cpu') {
       movePaddle(g.p1, inv * keyDir(both, bothDown), dt);
       cpuMove(dt);
@@ -475,7 +486,7 @@
     g.ball.dy = Math.sin(angle) * start;
     g.curve = 0;
     g.rally = 0;
-    G.Sound.beep(520, 0.06, 'triangle');
+    if (!filmDemo) G.Sound.beep(520, 0.06, 'triangle');
   }
 
   function stepBall(dt) {
@@ -520,6 +531,7 @@
 
     game.rally++;
     game.maxRally = Math.max(game.maxRally, game.rally);
+    if (filmDemo) { burst(b.x, b.y, dir === 1 ? '#28e8ff' : '#ff36c9'); game.shake = 3; return true; }
     if (game.rally > best) { best = game.rally; G.Store.set('pong_best_rally', best); }
     var side = dir === 1 ? 0 : 1, mine = mySide() === side;
     if (mine) game.topSpeed = Math.max(game.topSpeed, b.speed);
@@ -541,10 +553,19 @@
     b.dy = Math.sin(ang) * sp;
   }
 
-  function wallHit() { G.Sound.beep(300, 0.03, 'square', 0.03); }
+  function wallHit() { if (!filmDemo) G.Sound.beep(300, 0.03, 'square', 0.03); }
 
   function point(side) {
     var g = game;
+    if (filmDemo) {
+      g.score[side]++;
+      g.serveDir = side === 0 ? 1 : -1;
+      g.serveTimer = 0.55;
+      g.trail = [];
+      g.ball.dx = g.ball.dy = 0;
+      burst(side === 0 ? W - 10 : 10, g.ball.y, side === 0 ? '#28e8ff' : '#ff36c9', 28);
+      return;
+    }
     g.score[side]++;
     g.serveDir = side === 0 ? 1 : -1;      // serve towards the player who conceded
     if (skull('shrink')) {
@@ -677,6 +698,11 @@
 
   function draw(now) {
     var g = game;
+    drawCourt(ctx, g, now, false);
+  }
+
+  // Also used by the cinematic's isolated demo courts; the live renderer stays authoritative.
+  function drawCourt(ctx, g, now, preview) {
     ctx.save();
     if (g.shake) ctx.translate((Math.random() - 0.5) * g.shake, (Math.random() - 0.5) * g.shake);
 
@@ -703,11 +729,11 @@
     ctx.setLineDash([]);
 
     // paddles
-    paddle(PX, g.p1.y, '#9d00ff', g.p1.h);
-    paddle(W - PX - PW, g.p2.y, '#e60065', g.p2.h);
+    paddle(ctx, PX, g.p1.y, preview ? '#28e8ff' : '#9d00ff', g.p1.h);
+    paddle(ctx, W - PX - PW, g.p2.y, preview ? '#ff36c9' : '#e60065', g.p2.h);
 
     // trail (classic ball only; it would cover custom balls)
-    if (skinInfo(settings.skin).kind === 'classic' && !skull('ghost')) g.trail.forEach(function (t, i) {
+    if ((preview || skinInfo(settings.skin).kind === 'classic') && (preview || !skull('ghost'))) g.trail.forEach(function (t, i) {
       ctx.fillStyle = 'rgba(199, 125, 255,' + (i / g.trail.length) * 0.35 + ')';
       ctx.beginPath();
       ctx.arc(t.x, t.y, BALL_R * (0.4 + 0.6 * i / g.trail.length), 0, Math.PI * 2);
@@ -723,12 +749,12 @@
     ctx.globalAlpha = 1;
 
     // ball
-    var b = g.ball, info = skinInfo(settings.skin);
+    var b = g.ball, info = preview ? { kind: 'classic' } : skinInfo(settings.skin);
     // Ghost Ball: fades out across the middle of the court
-    var ghostA = skull('ghost') ? Math.min(1, Math.abs(b.x - W / 2) / (W * 0.16) - 0.25) : 1;
+    var ghostA = !preview && skull('ghost') ? Math.min(1, Math.abs(b.x - W / 2) / (W * 0.16) - 0.25) : 1;
     ctx.globalAlpha = Math.max(0, ghostA);
-    if (sprite) sprite.style.opacity = String(Math.max(0, ghostA));
-    if (sprite) {
+    if (sprite && !preview) sprite.style.opacity = String(Math.max(0, ghostA));
+    if (sprite && !preview) {
       placeSprite(b);
     } else if (info.kind === 'emoji') {
       ctx.font = Math.round(BALL_R * 4) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
@@ -764,16 +790,56 @@
     ctx.restore();
   }
 
-  function paddle(x, y, color, h) {
+  function cinematicKit() {
+    function make(seed) {
+      var c = document.createElement('canvas');
+      c.width = W; c.height = H;
+      var d = newGame();
+      d.p1.h = d.p2.h = PH;
+      d.serveTimer = 0;
+      d.serveDir = seed % 2 ? -1 : 1;
+      d.score = [seed % 4, (seed * 3) % 4];
+      d.ball.x = W * (0.28 + (seed % 3) * 0.17);
+      d.ball.y = H * (0.27 + (seed % 4) * 0.13);
+      d.ball.speed = BALL_START * 1.55;
+      d.ball.dx = (seed % 2 ? -1 : 1) * d.ball.speed;
+      d.ball.dy = (seed % 3 - 1) * 135 + 65;
+      return { canvas: c, ctx: c.getContext('2d'), state: d, seed: seed };
+    }
+    function advance(court, dt) {
+      var saved = game, wasDemo = filmDemo;
+      game = court.state; filmDemo = true;
+      try {
+        var g = game, speed = 380 * dt;
+        [g.p1, g.p2].forEach(function (p, i) {
+          if (i === 1 && court.cinematicMiss) { p.vy = 0; return; }
+          var aim = g.ball.y + Math.sin(performance.now() / 450 + court.seed + i) * 18 - p.h / 2;
+          var move = Math.max(-speed, Math.min(speed, aim - p.y));
+          p.vy = dt ? move / dt : 0;
+          p.y = Math.max(0, Math.min(H - p.h, p.y + move));
+        });
+        if (g.serveTimer > 0) {
+          g.serveTimer -= dt;
+          g.ball.x = W / 2; g.ball.y = H / 2;
+          if (g.serveTimer <= 0) serve();
+        } else stepBall(dt);
+        updateEffects(dt);
+        drawCourt(court.ctx, g, performance.now(), true);
+      } finally { game = saved; filmDemo = wasDemo; }
+    }
+    return { make: make, advance: advance, width: W, height: H };
+  }
+
+  function paddle(ctx, x, y, color, h) {
     ctx.shadowBlur = 14;
     ctx.shadowColor = color;
     ctx.fillStyle = color;
-    roundRect(x, y, PW, h || PH, 5);
+    roundRect(ctx, x, y, PW, h || PH, 5);
     ctx.fill();
     ctx.shadowBlur = 0;
   }
 
-  function roundRect(x, y, w, h, r) {
+  function roundRect(ctx, x, y, w, h, r) {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.arcTo(x + w, y, x + w, y + h, r);
@@ -798,7 +864,7 @@
     if (game && ['arrowup', 'arrowdown', ' '].indexOf(k) !== -1 && !$('#gameView').classList.contains('hidden')) e.preventDefault();
     if (e.target.closest('input, textarea')) return;
     keys[k] = true;
-    if ((k === 'p' || k === 'escape') && game && !game.over && !$('#gameView').classList.contains('hidden')) setPaused(!game.paused);
+    if (keybinds.matches(e, 'system', 'pause') && game && !game.over && !$('#gameView').classList.contains('hidden')) setPaused(!game.paused);
   });
   document.addEventListener('keyup', function (e) { keys[e.key.toLowerCase()] = false; });
   window.addEventListener('blur', function () {
@@ -850,9 +916,9 @@
   // Keyboard input overrides a stale mouse target.
   document.addEventListener('keydown', function (e) {
     if (!game) return;
-    if (['w', 's', 'arrowup', 'arrowdown'].indexOf(e.key.toLowerCase()) !== -1) {
+    if (['up', 'down'].some(function (a) { return keybinds.matches(e, settings.mode === 'local' ? 'p1' : 'solo', a) || keybinds.matches(e, settings.mode === 'local' ? 'p2' : 'solo', a); })) {
       if (settings.mode === 'local') {
-        if (e.key.toLowerCase() === 'w' || e.key.toLowerCase() === 's') game.p1.target = null;
+        if (keybinds.matches(e, 'p1', 'up') || keybinds.matches(e, 'p1', 'down')) game.p1.target = null;
         else game.p2.target = null;
       } else {
         game.p1.target = null;
@@ -879,7 +945,7 @@
 
   function guestUpdate(dt) {
     var g = game;
-    movePaddle(g.p2, keyDir(['w', 'arrowup'], ['s', 'arrowdown']), dt);
+    movePaddle(g.p2, keyDir(keybinds.keys('solo', 'up'), keybinds.keys('solo', 'down')), dt);
     // Extrapolate the ball between host updates so it moves smoothly.
     if (!g.over && (g.ball.dx || g.ball.dy)) {
       g.ball.x += g.ball.dx * dt;
@@ -1169,6 +1235,7 @@
 
   // For games-social.js: join by code (invite links, the lobby finder, the bell) and read the current lobby.
   window.GameApp = window.PongApp = {
+    cinematicKit: cinematicKit,
     join: function (code) {
       code = G.cleanCode(code);
       if (code.length !== 5) return;

@@ -2273,7 +2273,7 @@
     onFriendsChange: function (fn) { if (typeof fn === 'function') S.friendFns.push(fn); },
     loadProfiles: function (ids) { return loadProfiles(ids); },
     cleanProfile: cleanProfile,
-    ui: { nameSpan: nameSpan, avatarEl: avatarEl, badgeChip: badgeChip, hasBadge: hasBadge, presenceOf: presenceOf, roleNames: ROLE_NAMES },
+    ui: { nameSpan: nameSpan, avatarEl: avatarEl, badgeChip: badgeChip, bannerStyle: bannerStyle, levelBar: levelBar, hasBadge: hasBadge, presenceOf: presenceOf, roleNames: ROLE_NAMES },
     sendNote: function (to, kind) { return S.ready ? B.sendNote(to, kind) : Promise.resolve(); },
     openFriends: function () { Friends.open(); }
   };

@@ -1,0 +1,89 @@
+/* Pong cinematic: the gameplay and environment are painted live, with lightweight VHS finishing. */
+html.pong-cine-open, html.pong-cine-open body { overflow: hidden; }
+.pong-cine { position: fixed; inset: 0; z-index: 9000; overflow: hidden; background: #05030b; color: #f7efff; font-family: "JetBrains Mono", monospace; transition: opacity .35s ease; }
+.pong-cine.closing { opacity: 0 !important; pointer-events: none; }
+.pong-cine.letting-go { pointer-events: none; }
+.pong-cine-stage { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.pong-cine-bloom { position: absolute; inset: 0; z-index: 3; pointer-events: none; mix-blend-mode: screen; opacity: .34; background: radial-gradient(ellipse at 50% 48%, transparent 8%, rgba(142,34,255,.14) 55%, rgba(255,38,171,.18) 100%); filter: blur(24px); }
+.pong-cine-vhs { position: absolute; inset: -6px; z-index: 4; pointer-events: none; opacity: .52; background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0,0,0,.2) 2px 3px, transparent 3px 5px), linear-gradient(90deg, rgba(24,210,255,.07), transparent 12% 88%, rgba(255,20,160,.07)); box-shadow: inset 0 0 130px 45px rgba(0,0,0,.62); animation: pong-vhs-drift 4s steps(8,end) infinite; }
+.pong-cine-view { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; perspective-origin: 50% 50%; }
+.pong-cine-world { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; }
+.pong-cine-impact-flash { position: absolute; inset: 0; z-index: 5; opacity: 0; pointer-events: none; background: radial-gradient(circle at 50% 50%,rgba(255,255,255,.9),rgba(255,55,207,.38) 24%,transparent 64%); mix-blend-mode: screen; }
+.pong-cine-plane { position: absolute; left: 0; top: 0; transform-origin: 0 0; transform-style: preserve-3d; backface-visibility: hidden; will-change: transform; }
+.pong-cine-court { box-sizing: border-box; padding-top: 40px; background: rgba(4,3,13,.95); border: 3px solid rgba(40,232,255,.82); box-shadow: 0 0 35px rgba(40,232,255,.65), 0 0 110px rgba(151,42,255,.3); }
+.pong-cine-court:nth-child(even) { border-color: rgba(255,54,201,.88); box-shadow: 0 0 35px rgba(255,54,201,.65), 0 0 110px rgba(151,42,255,.3); }
+.pong-cine-court-head { position: absolute; inset: 0 0 auto; height: 40px; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; gap: 14px; color: #fff; font: 800 18px "JetBrains Mono", monospace; letter-spacing: .08em; text-shadow: 0 0 15px #ff36c9; }
+.pong-cine-court-face { position: relative; width: 800px; height: 500px; overflow: hidden; filter: brightness(1.2) contrast(1.08) saturate(1.25); }
+.pong-cine-court-face canvas { width: 800px; height: 500px; display: block; }
+.pong-cine-court-gloss { position: absolute; inset: 0; background: linear-gradient(118deg, transparent 37%, rgba(255,255,255,.09) 49%, transparent 60%); mix-blend-mode: screen; }
+.pong-cine-transit-head { display: grid; place-items: center; background: transparent; filter: drop-shadow(0 0 7px #fff) drop-shadow(0 0 19px #aa3cff); }
+.pong-cine-transit-head > span, .pong-cine-transit-head > img { display: block; width: 58px !important; height: 58px !important; max-width: none; object-fit: contain; font-size: 50px; line-height: 58px; text-align: center; }
+.pong-cine-transit-ember { image-rendering: pixelated; background: var(--flame); box-shadow: 0 0 4px var(--flame); clip-path: polygon(50% 0,72% 29%,86% 14%,86% 50%,100% 64%,78% 100%,22% 100%,0 64%,14% 45%,14% 22%,34% 34%); }
+.pong-cine-landing { position: absolute; z-index: 3; left: 50%; top: 50%; width: 1px; height: 1px; pointer-events: none; }
+.pong-cine-landing-ring { position: absolute; left: -50px; top: -50px; width: 100px; height: 100px; border: 8px solid #fff; border-radius: 50%; box-shadow: 0 0 30px #fff, 0 0 70px #ff36c9, inset 0 0 35px #28e8ff; }
+.pong-cine-landing i { position: absolute; width: 16px; height: 16px; box-shadow: 0 0 16px #ff36c9; }
+.pong-cine-point-burst { position: absolute; z-index: 2; left: 50%; top: 53%; white-space: nowrap; opacity: 0; font: 900 76px "JetBrains Mono", monospace; letter-spacing: .09em; color: #fff; text-shadow: 0 0 12px #fff, 0 0 35px #ff36c9, 0 0 80px #ff36c9; }
+.pong-cine-feature { box-sizing: border-box; overflow: hidden; }
+.pong-cine-feature .cine-panel-title { font-size: 50px; }
+.pong-cine-feature.cine-ach .cine-grid { grid-template-columns: repeat(6,1fr); gap: 16px; }
+.pong-cine-feature.cine-ach .cine-card { min-height: 165px; }
+.pong-cine-feature.cine-ach .cine-card-name { font-size: 16px; }
+.pong-cine-feature .soc-card { margin-top: 18px; background: rgba(14,9,32,.84); }
+.pong-cine-feature .soc-banner { height: 170px; }
+.pong-cine-feature .soc-card-top { height: 62px; }
+.pong-cine-feature .soc-card-main { padding: 22px 30px 28px; }
+.pong-cine-feature .soc-name { font-size: 34px; }
+.pong-cine-feature .soc-level { margin-top: 24px; }
+.pong-cine-feature .cine-panel-label { font-size: 18px; margin-top: 24px; }
+.pong-cine-feature .cine-sw { width: 56px; height: 56px; }
+.pong-cine-feature .game-chat-head { margin: 16px -8px 20px; border-radius: 14px; }
+.pong-cine-chat-list, .pong-cine-friends-list { display: flex; flex-direction: column; gap: 14px; margin-top: 28px; }
+.pong-cine-chat-contact { display: flex; align-items: center; gap: 18px; padding: 16px 22px; border: 1px solid rgba(190,120,255,.35); border-radius: 12px; background: rgba(111,43,155,.16); font-size: 24px; }
+.pong-cine-chat-contact > span:last-child { margin-left: auto; color: #9ce9ff; font-size: 18px; }
+.pong-cine-chat-action { margin: 10px 0 24px; padding: 15px 22px; border-radius: 12px; background: linear-gradient(95deg,#ce18f7,#fb3bbb); color: #fff; text-align: center; font: 800 22px "JetBrains Mono", monospace; box-shadow: 0 0 28px rgba(224,46,255,.45); }
+.pong-cine-chat-public { display: flex; align-items: center; gap: 16px; padding: 18px 16px; border: 1px solid rgba(157,90,255,.4); border-radius: 14px; background: rgba(55,28,94,.35); font-size: 24px; }
+.pong-cine-chat-public-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 15px; background: #a72dff; color: white; box-shadow: 0 0 22px #a72dff; font-size: 36px; }
+.pong-cine-feature .soc-empty { font-size: 22px; }
+.pong-cine-feature .cine-friend { height: 90px; }
+.pong-cine-invite-card { display: flex; align-items: center; gap: 24px; padding: 25px 28px; border: 1px solid rgba(180,110,255,.5); border-radius: 16px; background: rgba(100,46,157,.24); box-shadow: 0 0 35px rgba(174,66,255,.2); }
+.pong-cine-invite-identity { display: flex; flex-direction: column; gap: 8px; }
+.pong-cine-invite-identity .soc-name { font-size: 30px; }
+.pong-cine-invite-identity small { font-size: 18px; color: #cdb7ea; }
+.pong-cine-invite-button { align-self: flex-start; padding: 15px 24px; border: 2px solid #f338d6; border-radius: 10px; color: #fff; background: #af1ccf; font-size: 20px; font-weight: 800; box-shadow: 0 0 30px rgba(243,56,214,.45); }
+.pong-cine-real-menu { margin: 0; box-sizing: border-box; overflow: hidden; background: rgba(22,10,45,.95); box-shadow: 0 0 0 2px #b878ff, 0 0 80px rgba(157,0,255,.48); }
+.pong-cine-real-menu .cine-hl { box-shadow: 0 0 0 3px #fff, 0 0 45px #ff36c9 !important; transform: translateY(-4px) scale(1.05); }
+.pong-cine-feature .gskull-wrap { margin-top: 20px; }
+.pong-cine-feature .gskull { pointer-events: none; }
+@media (max-width: 600px) {
+  .pong-cine-feature .cine-panel-title { font-size: 66px; }
+  .pong-cine-feature .soc-name { font-size: 54px; }
+  .pong-cine-feature .soc-card-meta { font-size: 26px; }
+  .pong-cine-feature .soc-lv-pill { font-size: 24px; }
+  .pong-cine-invite-identity small { font-size: 26px; }
+}
+.pong-cine-vhs::after { content: ''; position: absolute; inset: 0; opacity: .3; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.48' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E"); animation: pong-vhs-grain .22s steps(3,end) infinite; }
+@keyframes pong-vhs-drift { 0%,100% { transform: translateX(0); } 48% { transform: translateX(1px); } 50% { transform: translateX(-1px); } }
+@keyframes pong-vhs-grain { from { transform: translate(0,0); } to { transform: translate(2px,-2px); } }
+.pong-cine-bar { position: absolute; left: 0; right: 0; z-index: 5; height: max(3.2vh, calc((100vh - 100vw / 2.2) / 2)); background: #000; pointer-events: none; }
+.pong-cine-bar.top { top: 0; animation: pong-bar-top 1s cubic-bezier(.19,1,.22,1) .12s both; }
+.pong-cine-bar.bottom { bottom: 0; animation: pong-bar-bottom 1s cubic-bezier(.19,1,.22,1) .12s both; }
+@keyframes pong-bar-top { from { transform: translateY(-102%); } to { transform: translateY(0); } }
+@keyframes pong-bar-bottom { from { transform: translateY(102%); } to { transform: translateY(0); } }
+.pong-cine-ui { position: absolute; z-index: 8; bottom: 16px; left: 20px; right: 20px; display: flex; align-items: end; justify-content: space-between; gap: 12px; pointer-events: none; font-size: 11px; }
+.pong-cine-credit { color: rgba(225,188,255,.8); text-shadow: 0 0 12px #180020; }
+.pong-cine-actions { display: flex; gap: 6px; pointer-events: auto; }
+.pong-cine-actions button { border: 1px solid rgba(220,151,255,.55); border-radius: 6px; padding: 8px 12px; background: rgba(12,6,25,.78); color: #f8eaff; font: 700 11px "JetBrains Mono",monospace; cursor: pointer; backdrop-filter: blur(8px); }
+.pong-cine-actions button:hover, .pong-cine-actions button:focus-visible { border-color: #ff3bcf; background: rgba(120,20,145,.85); outline: 2px solid rgba(40,232,255,.7); outline-offset: 2px; }
+.pong-cine-hint { color: #7eefff !important; animation: pong-hint-pulse 2s infinite; }
+.pong-cine-hint[hidden] { display: none; }
+.pong-cine-skip { background: rgba(111,0,146,.82) !important; }
+@keyframes pong-hint-pulse { 50% { box-shadow: 0 0 18px rgba(40,232,255,.45); } }
+.pong-music-btn { position: fixed; left: 16px; bottom: 16px; z-index: 60; display: flex; align-items: center; gap: 9px; padding: 10px 15px; border: 1px solid rgba(197,130,255,.65); border-radius: 99px; background: rgba(12,6,26,.82); color: #f7efff; font: 700 13px "JetBrains Mono",monospace; box-shadow: 0 0 24px rgba(157,0,255,.36); backdrop-filter: blur(10px); cursor: pointer; }
+.pong-music-btn[hidden], html.pong-cine-open .pong-music-btn { display: none; }
+.pong-music-btn:hover, .pong-music-btn:focus-visible { border-color: #ff36c9; background: rgba(100,14,140,.9); outline: 2px solid #28e8ff; outline-offset: 2px; }
+.pong-music-eq { color: #ff36c9; letter-spacing: -3px; transform: scaleX(.75); }
+.pong-music-btn.live .pong-music-eq { animation: pong-eq .6s steps(3,end) infinite; }
+.pong-music-btn.off .pong-music-eq { color: #75658b; }
+@keyframes pong-eq { 50% { transform: scaleX(.75) scaleY(.55); } }
+@media (max-width: 650px) { .pong-cine-bar { height: 3.5vh; } .pong-cine-ui { left: 9px; right: 9px; bottom: 12px; flex-direction: column; align-items: stretch; } .pong-cine-credit { font-size: 9px; } .pong-cine-actions { justify-content: flex-end; } .pong-cine-actions button { padding: 8px; font-size: 10px; } }
+@media (prefers-reduced-motion: reduce) { .pong-cine-vhs, .pong-cine-vhs::after, .pong-cine-bar, .pong-music-btn.live .pong-music-eq { animation: none; } }

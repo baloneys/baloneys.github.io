@@ -647,6 +647,20 @@
   var KEYS_SOLO = { left: ['arrowleft', 'a'], right: ['arrowright', 'd'], soft: ['arrowdown', 's'], cw: ['arrowup', 'w', 'x'], ccw: ['z', 'control'], hard: [' '], hold: ['c', 'shift'] };
   var KEYS_P1 = { left: ['a'], right: ['d'], soft: ['s'], cw: ['w'], ccw: ['r'], hard: ['q'], hold: ['e'] };
   var KEYS_P2 = { left: ['arrowleft'], right: ['arrowright'], soft: ['arrowdown'], cw: ['arrowup'], ccw: ['/'], hard: [' '], hold: ['enter'] };
+  function bindingGroup(id, title, map) {
+    var names = { left: 'Move left', right: 'Move right', soft: 'Soft drop', cw: 'Rotate clockwise', ccw: 'Rotate counterclockwise', hard: 'Hard drop', hold: 'Hold piece' };
+    return { id: id, title: title, actions: Object.keys(map).map(function (action) { return { id: action, label: names[action], keys: map[action].slice() }; }) };
+  }
+  var keybinds = window.GameKeybinds.mount({ game: 'tetris', title: 'tetris', music: true,
+    groups: [bindingGroup('solo', 'Solo / CPU / online', KEYS_SOLO), bindingGroup('p1', 'Versus · left', KEYS_P1), bindingGroup('p2', 'Versus · right', KEYS_P2),
+      { id: 'system', title: 'Game', actions: [{ id: 'pause', label: 'Pause', keys: ['p', 'escape'] }, { id: 'focus', label: 'Focus board', keys: ['tab'] }] }],
+    onChange: function (binds) {
+      [['solo', KEYS_SOLO], ['p1', KEYS_P1], ['p2', KEYS_P2]].forEach(function (pair) {
+        Object.keys(pair[1]).forEach(function (action) { pair[1][action] = binds.keys(pair[0], action); });
+      });
+    },
+    onOpen: function () { if (game && !game.over && !game.paused && game.mode !== 'online') setPaused(true); }
+  });
 
   // A player on this device who is a person (not a CPU): achievements, background energy, touch pad, "mine".
   function isHuman(p) { return p.local && !p.cpu; }
@@ -1757,8 +1771,8 @@
     if (!game || $('#gameView').classList.contains('hidden') || e.target.closest('input, textarea')) return;
     var k = keyName(e);
     if ([' ', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].indexOf(k) !== -1) e.preventDefault();
-    if (k === 'tab' && focusAvailable()) { e.preventDefault(); if (!e.repeat) toggleFocus(); return; }
-    if ((k === 'p' || k === 'escape') && !game.over) { setPaused(!game.paused); return; }
+    if (keybinds.matches(e, 'system', 'focus') && focusAvailable()) { e.preventDefault(); if (!e.repeat) toggleFocus(); return; }
+    if (keybinds.matches(e, 'system', 'pause') && !game.over) { setPaused(!game.paused); return; }
     if (game.paused || game.over || e.repeat) return;
     game.players.forEach(function (p) {
       if (!p.local) return;

@@ -35,7 +35,10 @@ each other's public lobbies. Clear it with `localStorage.removeItem('tetris_mock
 
 Everyone is signed in anonymously in the background; the account lives in that browser
 (`localStorage` key `tetris-auth`). Clearing site data or switching browsers starts a new profile.
-Linking an email so a profile can move between devices is not built yet.
+To use one account on several devices, link them with a QR code: chat › Settings › Devices & sync › Show QR code,
+then scan it on the other device. This needs `migrations/2026-10-11-device-links.sql` (run once): a linked device
+acts as the account it's linked to (every rule asks `tetris_me()` instead of `auth.uid()`). Each device keeps its
+own chat code, listed on the profile as `equipped.chatDevices`, so friends can pick which device to message.
 
 ## Known limits
 

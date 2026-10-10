@@ -1787,8 +1787,9 @@
     drawSpark(t);
     // VHS: the chromatic split and tearing grow with hits and speed; a calm floor of it is always there
     // (the last shot settles: no split while the live menu fades in, which also keeps that hand-over smooth)
-    var ab = Math.min(1.4, 0.12 + Cine.aberration), off = (ab * 5).toFixed(1);
-    Cine.stage.style.filter = Cine.ending ? '' : 'drop-shadow(' + off + 'px 0 0 rgba(255,0,110,0.5)) drop-shadow(-' + off + 'px 0 0 rgba(0,220,255,0.45))';
+    // (two full-screen drop-shadows are costly, so the split is only on during hits and fast moves, never idling)
+    var ab = Math.min(1.4, Cine.aberration), off = (ab * 5).toFixed(1);
+    Cine.stage.style.filter = Cine.ending || ab < 0.08 ? '' : 'drop-shadow(' + off + 'px 0 0 rgba(255,0,110,0.5)) drop-shadow(-' + off + 'px 0 0 rgba(0,220,255,0.45))';
     Cine.stage.style.transform = Cine.tear > 0.5 && Math.random() < 0.35 ? 'translateX(' + ((Math.random() - 0.5) * 30 * Cine.tear).toFixed(1) + 'px) skewX(' + ((Math.random() - 0.5) * 3 * Cine.tear).toFixed(2) + 'deg)' : '';
     Cine.raf = requestAnimationFrame(frame);
   }

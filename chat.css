@@ -1358,3 +1358,13 @@ body.accent-grad :is(.btn-primary, .send-btn):hover { filter: brightness(1.1); }
 .room-start.min .room-start-name { margin: 0; font-size: 1rem; }
 .room-start.min .room-desc, .room-start.min .room-start-welcome { display: none; }
 .room-start.min .room-card-toggle { top: 11px; width: 28px; height: 28px; }
+
+/* devices: the DM header's device switcher and the QR link screen (chat.js, Devices) */
+.device-switch { display: inline-flex; align-items: center; gap: 4px; }
+.device-step { width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--color-outline); background: transparent; color: inherit; cursor: pointer; line-height: 1; font-size: 15px; }
+.device-step:hover, .device-step:focus-visible { border-color: var(--color-primary); outline: none; }
+.device-name.on { color: #3ddc84; }
+.link-box { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 12px; }
+.link-qr { padding: 12px; border-radius: 12px; background: #fff; line-height: 0; }
+.link-qr img, .link-qr canvas { display: block; width: 220px; height: 220px; }
+.link-url { display: block; max-width: 100%; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,.06); word-break: break-all; font-size: 12px; }

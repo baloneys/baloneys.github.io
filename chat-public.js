@@ -1,4 +1,6 @@
-// chat-public.js: the balcade public chatroom inside /chat. Unlike DMs and rooms (peer-to-peer in chat.js),
+// chat-public.js: the public chatrooms inside /chat: balcade's, plus one for each game (Tetris, Pong, Battleships,
+// Chess). Full /chat lists all five and an Online now list; a game's chat window (chat.html?mini=1&game=pong) shows
+// just that game's room. Unlike DMs and rooms (peer-to-peer in chat.js),
 // it's stored in the Supabase database, so everyone sees the same history and staff can moderate it.
 //
 // Uses the same profile as the games (games-social.js on this page signs you in and supplies names, badges,
@@ -10,13 +12,30 @@
 // own messages, /me /shrug /tableflip /unflip, clickable names and links, pinned messages, a message of the
 // day, report buttons, and inline staff tools for players with a staff role.
 //
-// API (window.ChatPublic): show(), hide()
+// Online now: players seen in the last 2.5 minutes, minus anyone invisible or who turned off "Show me in the online
+// list" (chat settings, stored as presence.hide). Clicking one opens their profile, where you can add them as a
+// friend; messaging and game invites stay friends-only.
+//
+// API (window.ChatPublic): show(room), hide()
 (function () {
   'use strict';
-  // The game bubble is a direct-message surface, not the public room.
-  if (/[?&]mini(?:=|&|$)/.test(location.search)) return;
+  // Rooms share one table (tetris_chat.room); the database allows any short lowercase name, so no migration is needed.
+  var ROOMS = [
+    { id: 'public', name: 'balcade public chat', icon: '🌐', sub: 'Everyone, one room', short: 'balcade' },
+    { id: 'tetris', name: 'Tetris chat', icon: '🧱', sub: 'Everyone playing Tetris', short: 'Tetris' },
+    { id: 'pong', name: 'Pong chat', icon: '🏓', sub: 'Everyone playing Pong', short: 'Pong' },
+    { id: 'battleships', name: 'Battleships chat', icon: '🚢', sub: 'Everyone playing Battleships', short: 'Battleships' },
+    { id: 'chess', name: 'Chess chat', icon: '♟️', sub: 'Everyone playing Chess', short: 'Chess' }
+  ];
+  var ROOM_BY_ID = {};
+  ROOMS.forEach(function (r) { ROOM_BY_ID[r.id] = r; });
+  // In a game's chat window only that game's room is shown (next to DMs); without a known game, no public room.
+  var MINI = /[?&]mini(?:=|&|$)/.test(location.search);
+  var MINI_GAME = (location.search.match(/[?&]game=([a-z]+)/) || [])[1];
+  if (MINI && !(MINI_GAME && ROOM_BY_ID[MINI_GAME] && MINI_GAME !== 'public')) return;
+  var VISIBLE = MINI ? [ROOM_BY_ID[MINI_GAME]] : ROOMS;
 
-  var ROOM = 'public', PAGE_SIZE = 60, REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '🎉', '💀'];
+  var ROOM = VISIBLE[0].id, PAGE_SIZE = 60, REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '🎉', '💀'];
   var LEVEL = { helper: 1, moderator: 2, admin: 3, dev: 4 };
   // A small copy of the filter so you're warned before sending; the database's list is the real one.
   var SOFT_FILTER = /\b(fuck\w*|cunt|cock|dick|pussy|porn\w*|nudes?|sex|horny|cum|dildo|tits|slut|whore|rape|nigg\w*|fag\w*|retard|kys)\b/i;
@@ -33,24 +52,90 @@
 
   /* ---------- sidebar entry ---------- */
 
+  function hashFor(id) { return id === 'public' ? '#public' : '#public-' + id; }
+
   function buildEntry() {
     var scroll = document.querySelector('.side-scroll');
-    if (!scroll || $('pubEntry')) return;
-    var title = el('p', 'side-title', 'Public');
-    var b = el('button', 'conv pub-entry');
-    b.type = 'button';
-    b.id = 'pubEntry';
-    var icon = el('span', 'pub-entry-icon', '🌐');
-    var text = el('span', 'conv-text');
-    text.appendChild(el('span', 'conv-name', 'balcade public chat'));
-    var sub = el('span', 'conv-preview', 'Everyone, one room');
-    sub.id = 'pubEntrySub';
-    text.appendChild(sub);
-    b.appendChild(icon);
-    b.appendChild(text);
-    b.addEventListener('click', function () { location.hash = '#public'; });
-    scroll.insertBefore(b, scroll.firstChild);
-    scroll.insertBefore(title, b);
+    if (!scroll || $('pubEntries')) return;
+    var box = el('div', 'pub-entries');
+    box.id = 'pubEntries';
+    box.appendChild(el('p', 'side-title', MINI ? 'Game chat' : 'Public'));
+    VISIBLE.forEach(function (r) {
+      var b = el('button', 'conv pub-entry');
+      b.type = 'button';
+      b.id = 'pubEntry-' + r.id;
+      b.appendChild(el('span', 'pub-entry-icon', r.icon));
+      var text = el('span', 'conv-text');
+      text.appendChild(el('span', 'conv-name', r.name));
+      var sub = el('span', 'conv-preview', r.sub);
+      sub.id = 'pubEntrySub-' + r.id;
+      text.appendChild(sub);
+      b.appendChild(text);
+      b.addEventListener('click', function () { location.hash = hashFor(r.id); });
+      box.appendChild(b);
+    });
+    scroll.insertBefore(box, scroll.firstChild);
+    if (!MINI) buildOnline(scroll, box);
+  }
+
+  /* ---------- online now ---------- */
+
+  var ON = { box: null, list: null, timer: null, rows: [] };
+  var PAGE_NAMES = { chat: 'in chat', tetris: 'playing Tetris', pong: 'playing Pong', battleships: 'playing Battleships', chess: 'playing Chess' };
+
+  function buildOnline(scroll, after) {
+    var box = el('div', 'pub-online');
+    box.id = 'pubOnline';
+    var title = el('p', 'side-title', 'Online now');
+    title.id = 'pubOnlineTitle';
+    box.appendChild(title);
+    ON.list = el('div', 'pub-online-list');
+    box.appendChild(ON.list);
+    ON.box = box;
+    scroll.insertBefore(box, after.nextSibling);
+    paintOnline();
+    if (!SOC || !SOC.enabled) return;
+    SOC.ready(function () { refreshOnline(); ON.timer = setInterval(function () { if (!document.hidden) refreshOnline(); }, 45000); });
+  }
+
+  function refreshOnline() {
+    var sb = SOC.client(), me = SOC.uid();
+    if (!sb) return;
+    var since = new Date(Date.now() - 150000).toISOString();
+    sb.from('tetris_profiles').select('*').gte('presence->>at', since).neq('status_kind', 'invisible').limit(80).then(function (r) {
+      if (r.error) { ON.rows = null; paintOnline(); return; }
+      ON.rows = (r.data || []).map(SOC.cleanProfile).filter(function (p) {
+        var pres = SOC.ui.presenceOf(p);
+        return p.id !== me && pres.on && !(p.presence && p.presence.hide);
+      }).sort(function (a, b) { return a.name.localeCompare(b.name); });
+      paintOnline();
+    });
+  }
+
+  function paintOnline() {
+    if (!ON.list) return;
+    ON.list.textContent = '';
+    var rows = ON.rows;
+    $('pubOnlineTitle').textContent = rows && rows.length ? 'Online now · ' + rows.length : 'Online now';
+    if (!rows) { ON.list.appendChild(el('p', 'side-empty', 'The online list needs the site\'s database.')); return; }
+    if (!rows.length) { ON.list.appendChild(el('p', 'side-empty', 'Nobody else is online right now.')); return; }
+    rows.forEach(function (p) {
+      var b = el('button', 'conv pub-online-row');
+      b.type = 'button';
+      b.title = 'View ' + p.name + '\'s profile';
+      var av = SOC.ui.avatarEl(p, 32);
+      av.classList.add('pub-online-av');
+      b.appendChild(av);
+      var text = el('span', 'conv-text');
+      text.appendChild(SOC.ui.nameSpan(p, 'conv-name'));
+      var where = PAGE_NAMES[p.presence && p.presence.page] || 'online';
+      if (p.status_kind === 'away') where = 'away'; else if (p.status_kind === 'busy') where = 'busy';
+      text.appendChild(el('span', 'conv-preview', where));
+      b.appendChild(text);
+      // the profile has Add friend; messages and invites unlock once you're friends
+      b.addEventListener('click', function () { SOC.openProfile(p.id); });
+      ON.list.appendChild(b);
+    });
   }
 
   /* ---------- the view ---------- */
@@ -63,8 +148,8 @@
     view.innerHTML =
       '<div class="conv-head">' +
       '  <button class="icon-btn back-btn" type="button" id="pubBack" aria-label="Back"><svg><use href="#i-back"/></svg></button>' +
-      '  <span class="pub-head-icon">🌐</span>' +
-      '  <div class="conv-head-text"><h2 class="conv-head-title">balcade public chat</h2><p class="conv-head-sub" id="pubSub">Connecting…</p></div>' +
+      '  <span class="pub-head-icon" id="pubIcon">🌐</span>' +
+      '  <div class="conv-head-text"><h2 class="conv-head-title" id="pubTitle">balcade public chat</h2><p class="conv-head-sub" id="pubSub">Connecting…</p></div>' +
       '</div>' +
       '<div class="banner hidden" id="pubMotd"></div>' +
       '<div class="pub-pinned hidden" id="pubPinned"></div>' +
@@ -91,19 +176,24 @@
     $('pubMessages').addEventListener('scroll', function () { if ($('pubMessages').scrollTop < 40) loadOlder(); });
   }
 
-  function show() {
+  function show(room) {
     build();
+    room = room && ROOM_BY_ID[room] && VISIBLE.indexOf(ROOM_BY_ID[room]) !== -1 ? room : ROOM;
+    if (room !== ROOM) switchRoom(room);
+    var info = ROOM_BY_ID[ROOM];
+    $('pubIcon').textContent = info.icon;
+    $('pubTitle').textContent = info.name;
     S.open = true;
     $('publicView').classList.remove('hidden');
     document.querySelectorAll('.conv.active').forEach(function (c) { c.classList.remove('active'); });
-    $('pubEntry') && $('pubEntry').classList.add('active');
+    $('pubEntry-' + ROOM) && $('pubEntry-' + ROOM).classList.add('active');
     if (!SOC || !SOC.enabled) return unavailable('Public chat needs the site\'s database, which isn\'t set up on this copy of the page.');
     SOC.ready(function () { start(); });
   }
   function hide() {
     S.open = false;
     if ($('publicView')) $('publicView').classList.add('hidden');
-    $('pubEntry') && $('pubEntry').classList.remove('active');
+    document.querySelectorAll('.pub-entry.active').forEach(function (c) { c.classList.remove('active'); });
   }
 
   function unavailable(msg) {
@@ -119,6 +209,18 @@
   /* ---------- data ---------- */
 
   var started = false;
+  function switchRoom(room) {
+    ROOM = room;
+    if (S.channel) { try { S.sb.removeChannel(S.channel); } catch (e) { /* already gone */ } S.channel = null; }
+    if (S.poll) { clearInterval(S.poll); S.poll = null; }
+    S.msgs = new Map(); S.order = []; S.reactions = {}; S.replyTo = null; S.editing = null;
+    S.oldestId = null; S.newestId = 0; S.unavailable = null; S.online = 0;
+    S.settings = { locked: false, slow_seconds: 0, motd: '' };
+    started = false;
+    if ($('pubMessages')) $('pubMessages').textContent = '';
+    if ($('pubInput')) { $('pubInput').disabled = false; $('pubSend').disabled = false; $('pubInput').value = ''; }
+  }
+
   function start() {
     if (started) { scrollToEnd(); return; }
     S.sb = SOC.client();
@@ -126,10 +228,12 @@
     S.me = SOC.me();
     if (!S.sb) return unavailable('Public chat is only available on the live site.');
     started = true;
+    var room = ROOM;
     Promise.all([
       S.sb.from('tetris_chat_settings').select('*').eq('room', ROOM).maybeSingle(),
       S.sb.from('tetris_chat').select('*').eq('room', ROOM).order('id', { ascending: false }).limit(PAGE_SIZE)
     ]).then(function (res) {
+      if (room !== ROOM) return;   // switched rooms while this was loading
       if (res[1].error) {
         started = false;
         return unavailable(/does not exist|schema cache/i.test(res[1].error.message || '') ? 'Public chat is waiting for its database update. It\'ll open here as soon as that\'s run.' : 'Couldn\'t load public chat: ' + res[1].error.message);
@@ -138,7 +242,7 @@
       var rows = res[1].data.reverse();
       return absorb(rows).then(function () { paintAll(); scrollToEnd(); subscribe(); paintHeader(); checkMute(); countOnline(); });
     });
-    setInterval(countOnline, 60000);
+    if (!S.countTimer) S.countTimer = setInterval(countOnline, 60000);
   }
 
   // Bring in messages: their authors' profiles and reactions.
@@ -164,7 +268,7 @@
 
   function subscribe() {
     try {
-      S.channel = S.sb.channel('balcade-public-chat')
+      S.channel = S.sb.channel('balcade-chat-' + ROOM)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'tetris_chat', filter: 'room=eq.' + ROOM }, function (ev) {
           var m = ev.new && ev.new.id ? ev.new : null;
           if (!m) return;
@@ -211,7 +315,8 @@
   function countOnline() {
     if (!S.sb) return;
     var since = new Date(Date.now() - 150000).toISOString();
-    S.sb.from('tetris_profiles').select('id', { count: 'exact', head: true }).eq('presence->>page', 'chat').gte('last_seen', since).then(function (r) {
+    // balcade's room counts people in chat; a game's room counts people on that game's page
+    S.sb.from('tetris_profiles').select('id', { count: 'exact', head: true }).eq('presence->>page', ROOM === 'public' ? 'chat' : ROOM).gte('last_seen', since).then(function (r) {
       if (r.error) return;
       S.online = r.count || 0;
       paintHeader();
@@ -235,18 +340,18 @@
 
   function paintHeader() {
     var st = S.settings, bits = [];
-    bits.push(S.online ? S.online + ' in chat now' : 'Everyone on balcade');
+    bits.push(S.online ? S.online + (ROOM === 'public' ? ' in chat now' : ' playing now') : ROOM_BY_ID[ROOM].sub);
     if (st.slow_seconds) bits.push('slow mode ' + st.slow_seconds + 's');
     if (st.locked) bits.push('locked');
     $('pubSub').textContent = bits.join(' · ');
-    var sub = $('pubEntrySub');
-    if (sub) sub.textContent = S.online ? S.online + ' online' : 'Everyone, one room';
+    var sub = $('pubEntrySub-' + ROOM);
+    if (sub) sub.textContent = S.online ? S.online + ' online' : ROOM_BY_ID[ROOM].sub;
     var motd = $('pubMotd');
     motd.textContent = st.motd || '';
     motd.classList.toggle('hidden', !st.motd);
     var locked = st.locked && level() < 1;
     $('pubInput').disabled = locked || !!S.unavailable;
-    $('pubInput').placeholder = locked ? 'Public chat is locked by staff right now' : 'Message everyone';
+    $('pubInput').placeholder = locked ? 'This chat is locked by staff right now' : ROOM === 'public' ? 'Message everyone' : 'Message the ' + ROOM_BY_ID[ROOM].short + ' room';
   }
 
   function notice(text, bad) {
@@ -554,7 +659,8 @@
   function init() {
     buildEntry();
     // chat.js may have already routed before this file loaded
-    if (location.hash === '#public') { var go = function () { if (window.ChatApp) { location.hash = ''; location.hash = '#public'; } }; setTimeout(go, 600); }
+    var h = location.hash;
+    if (/^#public(-[a-z]+)?$/.test(h)) { var go = function () { if (window.ChatApp) { location.hash = ''; location.hash = h; } }; setTimeout(go, 600); }
   }
 
   window.ChatPublic = { show: show, hide: hide };

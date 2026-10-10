@@ -269,3 +269,4 @@ html[data-game="chat"] .soc-panel .text-input:focus { outline: none; border-colo
 html[data-game="chat"] .soc-panel .option-label { font-family: var(--font-family-heading); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: #c6bdd6; }
 html[data-game="chat"] .soc-status-edit select.text-input { width: auto; }
 html[data-game="chat"] .soc-status-edit input.text-input { width: auto; flex: 1; }
+.soc-ach-game { margin-top: 12px; } .soc-ach-game h4 { margin: 0 0 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-on-surface-secondary); }

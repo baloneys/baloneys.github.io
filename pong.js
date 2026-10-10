@@ -733,7 +733,8 @@
     paddle(ctx, W - PX - PW, g.p2.y, preview ? '#ff36c9' : '#e60065', g.p2.h);
 
     // trail (classic ball only; it would cover custom balls)
-    if ((preview || skinInfo(settings.skin).kind === 'classic') && (preview || !skull('ghost'))) g.trail.forEach(function (t, i) {
+    // (g.hideBall: the cinematic draws its own ball, with a flame trail, over this court)
+    if (!g.hideBall && (preview || skinInfo(settings.skin).kind === 'classic') && (preview || !skull('ghost'))) g.trail.forEach(function (t, i) {
       ctx.fillStyle = 'rgba(199, 125, 255,' + (i / g.trail.length) * 0.35 + ')';
       ctx.beginPath();
       ctx.arc(t.x, t.y, BALL_R * (0.4 + 0.6 * i / g.trail.length), 0, Math.PI * 2);
@@ -752,7 +753,7 @@
     var b = g.ball, info = preview ? { kind: 'classic' } : skinInfo(settings.skin);
     // Ghost Ball: fades out across the middle of the court
     var ghostA = !preview && skull('ghost') ? Math.min(1, Math.abs(b.x - W / 2) / (W * 0.16) - 0.25) : 1;
-    ctx.globalAlpha = Math.max(0, ghostA);
+    ctx.globalAlpha = g.hideBall ? 0 : Math.max(0, ghostA);
     if (sprite && !preview) sprite.style.opacity = String(Math.max(0, ghostA));
     if (sprite && !preview) {
       placeSprite(b);
@@ -808,7 +809,7 @@
     }
     function advance(court, dt) {
       var saved = game, wasDemo = filmDemo;
-      game = court.state; filmDemo = true;
+      game = court.state; filmDemo = true; game.hideBall = !!court.hideBall;
       try {
         var g = game, speed = 380 * dt;
         [g.p1, g.p2].forEach(function (p, i) {
@@ -824,7 +825,8 @@
           if (g.serveTimer <= 0) serve();
         } else stepBall(dt);
         updateEffects(dt);
-        drawCourt(court.ctx, g, performance.now(), true);
+        // court.noDraw: the cinematic runs several physics steps a frame and draws only the last (and only on screen)
+        if (!court.noDraw) drawCourt(court.ctx, g, performance.now(), true);
       } finally { game = saved; filmDemo = wasDemo; }
     }
     return { make: make, advance: advance, width: W, height: H };

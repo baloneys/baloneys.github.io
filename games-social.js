@@ -183,7 +183,11 @@
       glow: e.glow === true,
       banner: BANNERS[e.banner] || e.banner === 'custom' ? e.banner : 'dusk',
       frame: FRAMES[e.frame] ? e.frame : null,
-      chatCode: typeof e.chatCode === 'string' && /^[a-z2-9]{16}$/.test(e.chatCode) ? e.chatCode : null
+      chatCode: typeof e.chatCode === 'string' && /^[a-z2-9]{16}$/.test(e.chatCode) ? e.chatCode : null,
+      // every device's chat code on this account (chat-games-profile.js keeps it): { c: code, l: label, at: iso }
+      chatDevices: Array.isArray(e.chatDevices) ? e.chatDevices.filter(function (d) {
+        return d && typeof d.c === 'string' && /^[a-z2-9]{16}$/.test(d.c);
+      }).slice(0, 8).map(function (d) { return { c: d.c, l: String(d.l || 'Device').slice(0, 40), at: d.at || null }; }) : []
     };
   }
 
@@ -207,7 +211,7 @@
       last_seen: p.last_seen || null,
       status: String(p.status || '').slice(0, 60),
       status_kind: ['online', 'away', 'busy', 'invisible'].indexOf(p.status_kind) !== -1 ? p.status_kind : 'online',
-      presence: p.presence && typeof p.presence === 'object' ? { page: String(p.presence.page || ''), at: p.presence.at || null, lobby: /^[A-Z0-9]{5}$/.test(p.presence.lobby || '') ? p.presence.lobby : null } : null,
+      presence: p.presence && typeof p.presence === 'object' ? { page: String(p.presence.page || ''), at: p.presence.at || null, lobby: /^[A-Z0-9]{5}$/.test(p.presence.lobby || '') ? p.presence.lobby : null, hide: !!p.presence.hide } : null,
       role: ['helper', 'moderator', 'admin', 'dev'].indexOf(p.role) !== -1 ? p.role : null
     };
   }
@@ -248,9 +252,17 @@
         }).then(function (r) {
           if (r.data && r.data.session) return r.data.session;
           return sb.auth.signInAnonymously().then(function (res) { return check(res).session; });
-        }).then(function (session) { uid = session.user.id; return uid; });
+        }).then(function (session) {
+          uid = session.user.id;
+          // A device linked with a QR code acts as its owner's account (supabase/migrations/2026-10-11-device-links.sql).
+          return sb.rpc('tetris_me').then(function (r) { if (!r.error && r.data) uid = r.data; return uid; }, function () { return uid; });
+        });
       },
       uid: function () { return uid; },
+      linkCreate: function (data, label) { return sb.rpc('link_code_create', { data: data || {}, dev_label: label || null }).then(check); },
+      linkRedeem: function (code, label) { return sb.rpc('link_code_redeem', { link: code, dev_label: label || 'Device' }).then(check); },
+      devices: function () { return sb.rpc('my_devices').then(check); },
+      unlinkDevice: function (dev) { return sb.rpc('device_unlink', { dev: dev }).then(check); },
       getProfile: function (id) { return sb.from('tetris_profiles').select('*').eq('id', id).maybeSingle().then(check); },
       getProfiles: function (ids) {
         if (!ids.length) return Promise.resolve([]);
@@ -403,6 +415,71 @@
     readyFns: [], friendFns: []
   };
   function onReady(fn) { if (S.ready) fn(); else S.readyFns.push(fn); }
+
+  /* ---------- game data sync ----------
+     The games keep their settings, skins and bests in localStorage (games_* keys via Games.Store). They also go
+     to the profile's device_data, so every device on the account (linked with a QR code or link in chat) gets
+     them: on load, anything newer from another device is copied in; every save here is pushed a few seconds later.
+     Newest change per key wins. Device-only keys (sound mute, the test database) stay put. A newer value pulled
+     on load shows up the next time the game reads it (next visit for most settings). */
+  var Sync = {
+    off: false, timer: 0, STAMPS: 'games__sync_ts', SKIP: { games_muted: 1, games_tetris_mockdb: 1, games__sync_ts: 1 },
+    stamps: function () { try { return JSON.parse(localStorage.getItem(this.STAMPS) || '{}') || {}; } catch (e) { return {}; } },
+    saveStamps: function (st) { try { localStorage.setItem(this.STAMPS, JSON.stringify(st)); } catch (e) { /* full */ } },
+    keys: function () {
+      var out = [];
+      try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('games_') === 0 && !this.SKIP[k]) out.push(k); } } catch (e) { /* blocked */ }
+      return out;
+    },
+    // a save on this device: stamp it and push soon
+    touched: function (k) {
+      if (this.SKIP[k]) return;
+      var st = this.stamps(); st[k] = Date.now(); this.saveStamps(st);
+      this.schedule();
+    },
+    schedule: function () {
+      var self = this;
+      if (this.off || !S.ready) return;
+      clearTimeout(this.timer);
+      this.timer = setTimeout(function () { self.push(); }, 3000);
+    },
+    pull: function () {
+      var self = this, sb = B.client && B.client();
+      if (!sb || MOCK) return Promise.resolve();
+      return sb.from('tetris_profiles').select('device_data').eq('id', B.uid()).maybeSingle().then(function (r) {
+        if (r.error) { if (/device_data|column/i.test(r.error.message || '')) self.off = true; return; }
+        var remote = (r.data && r.data.device_data) || {}, st = self.stamps(), pushNeeded = false, pulled = 0;
+        Object.keys(remote).forEach(function (k) {
+          var e = remote[k];
+          if (!e || typeof e.v !== 'string' || k.indexOf('games_') !== 0 || self.SKIP[k]) return;
+          if (!st[k] || e.t > st[k]) { try { localStorage.setItem(k, e.v); st[k] = e.t; pulled++; } catch (err) { /* full */ } }
+        });
+        self.keys().forEach(function (k) { if (!remote[k] || (st[k] || 0) > remote[k].t) pushNeeded = true; });
+        self.saveStamps(st);
+        if (pulled) G.banner('Synced your game data from your other device');
+        if (pushNeeded) self.schedule();
+      });
+    },
+    push: function () {
+      var self = this, sb = B.client && B.client();
+      if (this.off || !sb || MOCK) return;
+      var st = this.stamps(), data = {}, size = 0, now = Date.now();
+      this.keys().forEach(function (k) {
+        var v = localStorage.getItem(k);
+        if (v == null || v.length > 60000 || size + v.length > 350000) return;   // big custom images stay on the device
+        data[k] = { v: v, t: st[k] || now }; size += v.length;
+      });
+      sb.from('tetris_profiles').update({ device_data: data }).eq('id', B.uid()).then(function (r) {
+        if (r.error && /device_data|column/i.test(r.error.message || '')) self.off = true;
+      });
+    }
+  };
+  // every Games.Store save on any page counts as a change on this device
+  (function () {
+    var set = G.Store.set;
+    G.Store.set = function (key, value) { set.call(G.Store, key, value); try { Sync.touched('games_' + key); } catch (e) { /* never block a save */ } };
+  })();
+  onReady(function () { Sync.pull(); });
   function profileCache() { if (!S.cache) S.cache = {}; return S.cache; }
   window.addEventListener('storage', function (e) {
     if (e.key !== 'chat.game-profile-changed' || !S.ready || !B) return;
@@ -454,10 +531,11 @@
   }
 
   // Tell friends where you are (this page, and a public lobby code if you're hosting one).
-  function heartbeat() {
-    if (!S.ready || document.hidden || S.me.status_kind === 'invisible' || S.noPresence) return;
+  function heartbeat(force) {
+    if (!S.ready || (document.hidden && !force) || S.me.status_kind === 'invisible' || S.noPresence) return;
     var lob = App().lobby && App().lobby(), lobby = lob && lob.role === 'host' && S.lobby.publicOn ? lob.code : null;
-    B.updateProfile({ presence: { page: GAME, at: new Date().toISOString(), lobby: lobby } }).then(function (row) {
+    // hide: left off chat's online-players list (a privacy setting in chat); friends still see you online
+    B.updateProfile({ presence: { page: GAME, at: new Date().toISOString(), lobby: lobby, hide: !!G.Store.get('presence_unlisted', false) } }).then(function (row) {
       S.me.presence = cleanProfile(row).presence;
     }).catch(function (e) { if (/presence|column/i.test(e.message || '')) S.noPresence = true; });
   }
@@ -599,6 +677,7 @@
   }
 
   function inviteToLobby(id) {
+    if (friendState(id) !== 'accepted') { G.banner('You can only invite friends to games'); return; }
     var lob = App().lobby();
     if (!lob || !lob.code) { G.banner('Create or join a lobby first'); return; }
     B.sendNote(id, 'invite', lob.code, GAMES[GAME] ? GAME : null).then(function () { G.banner('Invite sent'); }).catch(function () { G.banner('Couldn\'t send the invite'); });
@@ -678,7 +757,7 @@
     box.addEventListener('submit', function (e) {
       e.preventDefault();
       var k = kind.value;
-      saveMe({ status: text.value.trim().slice(0, 60), status_kind: k, presence: k === 'invisible' ? null : { page: GAME, at: new Date().toISOString(), lobby: null } })
+      saveMe({ status: text.value.trim().slice(0, 60), status_kind: k, presence: k === 'invisible' ? null : { page: GAME, at: new Date().toISOString(), lobby: null, hide: !!G.Store.get('presence_unlisted', false) } })
         .then(function () { G.banner(k === 'invisible' ? 'You\'re invisible: friends see you as offline' : 'Status set'); })
         .catch(function (err) { G.banner(/status/.test(err.message || '') ? 'Statuses need the database update first' : 'Couldn\'t save your status'); });
     });
@@ -688,6 +767,8 @@
   function messagePlayer(p) {
     var code = p && p.equipped && p.equipped.chatCode;
     if (!code) return;
+    // DMs start from a friendship (or a message request sent with a friend code in chat), never from a stranger's profile
+    if (friendState(p.id) !== 'accepted') { G.banner('Add them as a friend to message them'); return; }
     if (window.ChatApp && window.ChatApp.openContact) window.ChatApp.openContact(code);
     else if (window.GameChatDock) window.GameChatDock.openTo(code);
     else window.open('chat.html#add/' + code, '_blank', 'noopener');
@@ -828,6 +909,18 @@
           var d = el('div'); d.appendChild(el('b', null, n + '/' + A.count().total)); d.appendChild(el('span', null, GAMES[g])); sum.appendChild(d);
         });
         allSec.appendChild(sum);
+        // and every earned badge, game by game (chat used to show only the counts)
+        Object.keys(GAMES).forEach(function (g) {
+          var A = ALL_ACH[g]; if (!A) return;
+          var have = gameAch(p, g), earned = A.list().filter(function (a) { return have[a.id]; });
+          if (!earned.length) return;
+          var row = el('div', 'soc-ach-game');
+          row.appendChild(el('h4', null, GAMES[g] + ' · ' + earned.length + '/' + A.count().total));
+          var wall = el('div', 'soc-ach-wall');
+          earned.forEach(function (a) { var b = A.badge(a.id, 30); b.title = a.name + ': ' + a.desc; wall.appendChild(b); });
+          row.appendChild(wall);
+          allSec.appendChild(row);
+        });
       }
       var gotIds = ACH.list().filter(function (a) { return got[a.id]; });
       if (gotIds.length) {
@@ -836,7 +929,12 @@
         all.appendChild(wall);
       }
       var stats = el('div', 'soc-stats');
-      [[GAME_NAME + ' achievements', Object.keys(got).filter(function (id) { return ACH.get(id); }).length + '/' + ACH.count().total], ['Total XP', fmt(p.xp)], ['Member since', new Date(p.created_at).toLocaleDateString('en-AU', { month: 'short', year: 'numeric' })]]
+      // on chat (no game of its own) the count is every game's together
+      var achStat = ACH === NO_ACH
+        ? ['Achievements', Object.keys(GAMES).reduce(function (n, g) { var A = ALL_ACH[g], have = gameAch(p, g); return n + (A ? A.list().filter(function (a) { return have[a.id]; }).length : 0); }, 0) + '/' +
+            Object.keys(GAMES).reduce(function (n, g) { return n + (ALL_ACH[g] ? ALL_ACH[g].count().total : 0); }, 0)]
+        : [GAME_NAME + ' achievements', Object.keys(got).filter(function (id) { return ACH.get(id); }).length + '/' + ACH.count().total];
+      [achStat, ['Total XP', fmt(p.xp)], ['Member since', new Date(p.created_at).toLocaleDateString('en-AU', { month: 'short', year: 'numeric' })]]
         .forEach(function (s) { var d = el('div'); d.appendChild(el('b', null, s[1])); d.appendChild(el('span', null, s[0])); stats.appendChild(d); });
       main.appendChild(stats);
 
@@ -2275,6 +2373,17 @@
     cleanProfile: cleanProfile,
     ui: { nameSpan: nameSpan, avatarEl: avatarEl, badgeChip: badgeChip, bannerStyle: bannerStyle, levelBar: levelBar, hasBadge: hasBadge, presenceOf: presenceOf, roleNames: ROLE_NAMES },
     sendNote: function (to, kind) { return S.ready ? B.sendNote(to, kind) : Promise.resolve(); },
-    openFriends: function () { Friends.open(); }
+    openFriends: function () { Friends.open(); },
+    // for chat's privacy settings: push the online-list choice straight away
+    pingPresence: function () { heartbeat(true); },
+    // Linking devices (chat's Devices settings and chat.html#link/CODE): one account on several devices.
+    device: {
+      available: function () { return !!(B && B.linkCreate && !MOCK); },
+      create: function (data, label) { return B.linkCreate(data, label); },
+      redeem: function (code, label) { return B.linkRedeem(code, label); },
+      list: function () { return B.devices(); },
+      unlink: function (dev) { return B.unlinkDevice(dev); }
+    },
+    isFriend: function (id) { return friendState(id) === 'accepted'; }
   };
 })();

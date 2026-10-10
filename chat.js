@@ -111,7 +111,7 @@
   }
 
   function loadSettings() {
-    try { return Object.assign({ sounds: true, desktop: true }, JSON.parse(localStorage.getItem('chat.settings') || '{}')); } catch (e) { return { sounds: true, desktop: true }; }
+    try { return Object.assign({ sounds: true, desktop: true, requests: true }, JSON.parse(localStorage.getItem('chat.settings') || '{}')); } catch (e) { return { sounds: true, desktop: true, requests: true }; }
   }
   function saveSettings() { try { localStorage.setItem('chat.settings', JSON.stringify(S.settings)); } catch (e) { /* private mode */ } }
 
@@ -660,17 +660,19 @@
     }
     for (const friend of gameFriends) {
       const p = friend.profile;
-      const id = p.equipped && p.equipped.chatCode;
+      for (const dev of deviceList(p)) {
+      const id = dev.c;
       if (!/^[a-z2-9]{16}$/.test(id || '') || id === S.me.id) continue;
       const old = S.contacts[id];
-      if (!old || old.status !== 'accepted' || old.gameId !== friend.id) {
-        S.contacts[id] = Object.assign({}, old || { id, addedAt: Date.now() }, { status: 'accepted', declined: false, gameId: friend.id });
+      if (!old || old.status !== 'accepted' || old.gameId !== friend.id || old.device !== dev.l || old.deviceAt !== dev.at) {
+        S.contacts[id] = Object.assign({}, old || { id, addedAt: Date.now() }, { status: 'accepted', declined: false, gameId: friend.id, device: dev.l, deviceAt: dev.at });
         changed = true;
       }
       // The shared game profile supplies the same name, art and achievements in DMs.
       const profile = { ...(S.profiles[id] || {}), name: p.name, color: (S.profiles[id] && S.profiles[id].color) || '#9d00ff', bio: p.bio,
         avatar: p.avatar, banner: p.banner, gameData: cleanGameData(p) };
       setProfile(id, profile);
+      }
     }
     if (changed) {
       persist('contacts');
@@ -1020,7 +1022,11 @@
       case 'request':
         if (c && c.status === 'accepted') { sendTo(id, { t: 'accept' }); break; }
         if (c && c.status === 'outgoing') { acceptContact(id); break; }   // both added each other
+        // Friends never need a request: a friend's device is accepted straight away.
+        if (isSiteFriend(id)) { acceptContact(id); break; }
         if (!c) {
+          // Message requests switched off: only site friends get through; everyone else is turned away.
+          if (S.settings.requests === false && !isSiteFriend(id)) { sendTo(id, { t: 'decline' }); break; }
           S.contacts[id] = { id, status: 'incoming', addedAt: Date.now() };
           persist('contacts');
           notify(nameOf(id), 'wants to chat with you', '#requests');
@@ -1062,6 +1068,42 @@
     openDm(id);
     queueRerender();
   }
+
+  // A chat contact is a site friend when one of your friends' profiles lists this chat code (on any of their devices).
+  function isSiteFriend(id) {
+    const social = window.GameSocial;
+    if (!social || !social.friends) return false;
+    return social.friends().some((f) => f.status === 'accepted' && f.profile && deviceList(f.profile).some((d) => d.c === id));
+  }
+
+  // ---------- Devices ----------
+  // One account can be on several devices, and each device has its own chat code. A friend's devices are separate
+  // contacts that share a gameId; the sidebar shows one row per friend, and a DM's header cycles between devices.
+
+  // A profile's devices, newest first: equipped.chatDevices, plus the older single chatCode.
+  function deviceList(p) {
+    const eq = (p && p.equipped) || {};
+    const list = (Array.isArray(eq.chatDevices) ? eq.chatDevices : []).filter((d) => d && /^[a-z2-9]{16}$/.test(d.c || ''));
+    if (/^[a-z2-9]{16}$/.test(eq.chatCode || '') && !list.some((d) => d.c === eq.chatCode)) list.push({ c: eq.chatCode, l: 'Device', at: null });
+    return list;
+  }
+
+  // The same person's device contacts (just [id] for a contact who isn't a site friend).
+  function siblingsOf(id) {
+    const c = S.contacts[id];
+    if (!c || !c.gameId) return [id];
+    return Object.values(S.contacts).filter((x) => x.gameId === c.gameId && x.status === 'accepted')
+      .sort((a, b) => String(b.deviceAt || '').localeCompare(String(a.deviceAt || ''))).map((x) => x.id);
+  }
+
+  // Which of a person's devices to message: one that's online (the most recently used if several are), else the
+  // most recently used.
+  function bestDevice(id) {
+    const all = siblingsOf(id);
+    return all.filter((x) => S.online[x])[0] || all[0] || id;
+  }
+
+  function deviceName(id) { const c = S.contacts[id]; return (c && c.device) || 'Device'; }
 
   function acceptContact(id) {
     S.contacts[id] = Object.assign(S.contacts[id] || { id, addedAt: Date.now() }, { status: 'accepted', declined: false });
@@ -1935,7 +1977,16 @@
       el('button', { class: 'icon-btn', type: 'button', title: 'Decline', 'aria-label': 'Decline', onclick: () => declineContact(c.id) }, icon('close')))));
     $('requestTitle').classList.toggle('hidden', !requests.length);
 
+    const shownFor = {};
     const contacts = Object.values(S.contacts).filter((c) => c.status !== 'incoming')
+      .filter((c) => {
+        if (!c.gameId) return true;
+        if (!(c.gameId in shownFor)) {
+          const sib = siblingsOf(c.id);
+          shownFor[c.gameId] = S.conv && S.conv.type === 'dm' && sib.indexOf(S.conv.id) !== -1 ? S.conv.id : bestDevice(c.id);
+        }
+        return shownFor[c.gameId] === c.id;
+      })
       .sort((a, b) => ((S.meta[dmKey(b.id)] || {}).updatedAt || b.addedAt || 0) - ((S.meta[dmKey(a.id)] || {}).updatedAt || a.addedAt || 0));
     const dmNodes = contacts.map((c) => {
       const meta = S.meta[dmKey(c.id)];
@@ -1943,7 +1994,7 @@
       const pv = isBlocked(c.id) ? 'Blocked'
         : c.status === 'outgoing' ? (c.declined ? 'Request not accepted' : 'Request sent')
         : last ? (last.from === S.me.id ? 'You: ' : '') + last.text
-        : S.online[c.id] ? 'Online' : 'Say hi';
+        : S.online[c.id] ? (siblingsOf(c.id).length > 1 ? 'Online on ' + deviceName(c.id) : 'Online') : 'Say hi';
       const icon = avatar(c.id, null, true);
       icon.addEventListener('click', (event) => { event.stopPropagation(); showProfile(c.id); });
       icon.title = 'View profile';
@@ -2021,7 +2072,7 @@
     if (!S.me) return;
     const h = decodeURIComponent(location.hash.slice(1));
     let m;
-    if (h === 'public') openPublic();
+    if ((m = /^public(?:-([a-z]+))?$/.exec(h))) openPublic(m[1] || 'public');   // #public, or a game's room: #public-pong
     else if ((m = /^dm\/([a-z2-9]{16})$/.exec(h))) openDm(m[1]);
     else if ((m = /^add\/(.+)$/.exec(h))) {
       const id = parseCode(m[1]);
@@ -2032,6 +2083,7 @@
         if (ok) addContact(id).catch((e) => toast(e.message)); else openHome();
       });
     } else if ((m = /^(?:room|join)\/([A-Za-z2-9]{6})$/.exec(h))) joinRoom(m[1].toUpperCase());
+    else if ((m = /^link\/([A-Za-z2-9]{8})$/.exec(h))) { setHash(''); redeemLink(m[1].toUpperCase()); }
     else openHome(true);
   }
   window.addEventListener('hashchange', route);
@@ -2041,7 +2093,8 @@
     openContact: function (code) {
       const id = parseCode(code);
       if (!S.me || !/^[a-z2-9]{16}$/.test(id) || id === S.me.id) return;
-      setHash(isContact(id) ? '#dm/' + id : '#add/' + id);
+      const target = isContact(id) ? bestDevice(id) : id;
+      setHash(isContact(target) ? '#dm/' + target : '#add/' + target);
       route();
     },
     home: function () { openHome(); },
@@ -2064,7 +2117,7 @@
   // ---------- Opening conversations ----------
 
   // The public chatroom (chat-public.js) lives in the database, not peer-to-peer; it takes over the main pane.
-  function openPublic() {
+  function openPublic(room) {
     if (!window.ChatPublic) { openHome(); return; }
     closeConv();
     $('welcome').classList.add('hidden');
@@ -2072,7 +2125,7 @@
     $('membersPane').classList.add('hidden');
     $('appView').classList.add('in-conv');
     $('appView').classList.remove('with-members');
-    window.ChatPublic.show();
+    window.ChatPublic.show(room);
   }
 
   function closeConv() {
@@ -2510,7 +2563,17 @@
       $('convTitle').replaceChildren(nameEl(c.id));
       const p = profileOf(c.id);
       const status = S.online[c.id] ? 'online' : ct.lastSeen ? 'last seen ' + fmtAgo(ct.lastSeen) : 'offline';
-      $('convSub').replaceChildren(document.createTextNode(status), p && p.bio ? ' · ' + p.bio : '');
+      const sib = siblingsOf(c.id);
+      if (sib.length > 1) {
+        // ‹ Windows PC · online (2 of 3) ›: messages go to the device shown; the arrows cycle through their devices
+        const at = sib.indexOf(c.id), go = (step) => openDm(sib[(at + step + sib.length) % sib.length]);
+        const onlineCount = sib.filter((x) => S.online[x]).length;
+        $('convSub').replaceChildren(el('span', { class: 'device-switch' },
+          el('button', { class: 'device-step', type: 'button', title: 'Previous device', 'aria-label': 'Previous device', onclick: () => go(-1), text: '‹' }),
+          el('span', { class: 'device-name' + (S.online[c.id] ? ' on' : ''), text: deviceName(c.id) + ' · ' + status + ' (' + (at + 1) + ' of ' + sib.length + ')' }),
+          el('button', { class: 'device-step', type: 'button', title: 'Next device', 'aria-label': 'Next device', onclick: () => go(1), text: '›' })),
+          onlineCount > 1 ? ' · ' + onlineCount + ' devices online' : '');
+      } else $('convSub').replaceChildren(document.createTextNode(status), p && p.bio ? ' · ' + p.bio : '');
       $('membersBtn').classList.add('hidden');
     } else {
       const r = S.rooms[c.id] || {};
@@ -3692,7 +3755,151 @@
       svSec('Blocked people', ids.length ? el('div', null, ids.map((id) => el('div', { class: 'member' }, avatar(id, 'sm'), nameEl(id, 'member-name'),
         btn('Unblock', 'btn-sm btn-ghost', async () => { await setBlocked(id, false); drawStudio(); }))))
         : el('p', { class: 'field-hint', text: "You haven't blocked anyone." })),
-      svSec('Privacy', el('p', { class: 'field-hint', text: 'Messages go directly between browsers and are saved only on your devices. People you connect to (contacts, room hosts and people in voice with you) can see your IP address.' })));
+      svSec('Privacy',
+        toggleRow('Show me in the online list', 'Other players see you under Online in chat. Your friends still see you online either way; set your status to Invisible to hide from everyone.',
+          !(window.Games && window.Games.Store.get('presence_unlisted', false)), (on) => {
+            if (window.Games) window.Games.Store.set('presence_unlisted', !on);
+            if (window.GameSocial && window.GameSocial.pingPresence) window.GameSocial.pingPresence();
+          }),
+        toggleRow('Allow message requests', 'People who add your friend code can ask to message you. Off: only your friends can start a chat with you.',
+          S.settings.requests !== false, (on) => { S.settings.requests = on; saveSettings(); }),
+        el('p', { class: 'field-hint', text: 'Messages go directly between browsers and are saved only on your devices. People you connect to (contacts, room hosts and people in voice with you) can see your IP address.' })));
+  }
+
+  // ---------- Linking devices ----------
+  // The account's device shows a QR code for chat.html#link/CODE; the new device opens it and becomes part of the
+  // same account (profile, friends, XP, achievements), and gets this device's game data: the games' settings, skins,
+  // bests and chat look. Each device keeps its own chat code; friends pick which device to message.
+
+  const SYNC_KEYS = (k) => (k.startsWith('games_') && k !== 'games_tetris_mockdb') || k === 'chat.settings' || k === 'chat.look';
+  function packGameData() {
+    const out = {};
+    let size = 0;
+    try {
+      for (const k of Object.keys(localStorage)) {
+        if (!SYNC_KEYS(k)) continue;
+        const v = localStorage.getItem(k);
+        if (v == null || v.length > 60000 || size + v.length > 180000) continue;   // big custom images stay behind
+        out[k] = v; size += v.length;
+      }
+    } catch (e) { /* storage blocked */ }
+    return out;
+  }
+
+  let qrLib = null;
+  function loadQr() {
+    if (window.QRCode) return Promise.resolve();
+    if (!qrLib) qrLib = new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+      s.onload = res; s.onerror = () => rej(new Error("Couldn't load the QR code maker."));
+      document.head.appendChild(s);
+    });
+    return qrLib;
+  }
+
+  async function showLinkCode() {
+    const dev = window.GameSocial && window.GameSocial.device;
+    if (!dev || !dev.available()) { toast('Linking devices needs the site’s database.'); return; }
+    let code;
+    try { code = await dev.create(packGameData(), window.ChatGamesProfile && window.ChatGamesProfile.deviceLabel ? window.ChatGamesProfile.deviceLabel() : null); }
+    catch (e) { toast(/function|schema|does not exist/i.test(e.message || '') ? 'Linking devices needs the device-links database update first.' : e.message || 'Couldn’t make a link code.'); return; }
+    const url = location.origin + location.pathname + '#link/' + code;
+    const qr = el('div', { class: 'link-qr' });
+    const expires = Date.now() + 10 * 60000;
+    const left = el('small', { class: 'field-hint' });
+    const tick = () => { const s = Math.max(0, Math.round((expires - Date.now()) / 1000)); left.textContent = s ? 'Works once, for ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + ' more.' : 'This code has expired. Make a new one.'; };
+    tick();
+    const timer = setInterval(tick, 1000);
+    const box = el('div', { class: 'link-box' },
+      el('p', { text: 'On your other device, scan this with the camera (or open the link), then confirm there.' }),
+      qr,
+      el('div', { class: 'row' }, el('span', { class: 'big-code small', text: code.slice(0, 4) + '-' + code.slice(4) }), btn('Copy link', 'btn-sm btn-outline', () => (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => toast('Link copied.'), () => toast(url)))),
+      left,
+      el('p', { class: 'field-hint', text: 'The other device joins this account: profile, friends, XP and achievements, plus this device’s game settings, skins and bests. Its chat keeps its own code, and friends can pick which of your devices to message.' }));
+    const panel = $('linkPanel');
+    if (panel) panel.replaceChildren(box);
+    try {
+      await loadQr();
+      new window.QRCode(qr, { text: url, width: 220, height: 220, colorDark: '#12001f', colorLight: '#ffffff', correctLevel: window.QRCode.CorrectLevel.M });
+    } catch (e) { qr.replaceChildren(el('p', { class: 'field-hint', text: e.message + ' Use the link or code instead.' })); }
+    setTimeout(() => clearInterval(timer), 10 * 60000 + 2000);
+  }
+
+  // The same as the QR code, as a link to send yourself (the phone's share sheet where there is one).
+  async function copyLinkToSelf() {
+    const dev = window.GameSocial && window.GameSocial.device;
+    if (!dev || !dev.available()) { toast('Linking devices needs the site’s database.'); return; }
+    let code;
+    try { code = await dev.create(packGameData(), window.ChatGamesProfile && window.ChatGamesProfile.deviceLabel ? window.ChatGamesProfile.deviceLabel() : null); }
+    catch (e) { toast(/function|schema|does not exist/i.test(e.message || '') ? 'Linking devices needs the device-links database update first.' : e.message || 'Couldn’t make a link.'); return; }
+    const url = location.origin + location.pathname + '#link/' + code;
+    if (navigator.share && /Mobi|Android|iPhone|iPad/.test(navigator.userAgent)) {
+      try { await navigator.share({ title: 'Link my balcade account', text: 'Open this on your other device to link it (works once, for 10 minutes):', url }); return; } catch (e) { /* cancelled: fall back to copying */ }
+    }
+    (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(
+      () => toast('Link copied. Open it on your other device within 10 minutes.'),
+      () => toast('Your link: ' + url));
+    const panel = $('linkPanel');
+    if (panel) panel.replaceChildren(el('div', { class: 'link-box' }, el('p', { class: 'field-hint', text: 'Your link (works once, for 10 minutes):' }), el('code', { class: 'link-url', text: url })));
+  }
+
+  async function redeemLink(code) {
+    const social = window.GameSocial, dev = social && social.device;
+    if (!dev || !dev.available()) { toast('Linking devices needs the site’s database.'); openHome(); return; }
+    const me = social.me && social.me();
+    const ok = await confirmBox('Link this device?', 'This device will join the account that made code ' + code.slice(0, 4) + '-' + code.slice(4) +
+      ': its profile, friends, XP and achievements, and its game settings.' + (me && me.name ? ' The profile on this device now (' + me.name + ') stops being used here.' : ''), 'Link this device');
+    if (!ok) { openHome(); return; }
+    try {
+      const label = window.ChatGamesProfile && window.ChatGamesProfile.deviceLabel ? window.ChatGamesProfile.deviceLabel() : 'Device';
+      const res = await dev.redeem(code, label);
+      const data = (res && res.data) || {};
+      try { for (const k of Object.keys(data)) if (SYNC_KEYS(k) && typeof data[k] === 'string') localStorage.setItem(k, data[k]); } catch (e) { /* storage full */ }
+      toast('Linked. Loading your account…');
+      setTimeout(() => location.replace(location.pathname), 900);
+    } catch (e) {
+      toast(/function|schema|does not exist/i.test(e.message || '') ? 'Linking devices needs the device-links database update first.' : e.message || 'Couldn’t link this device.');
+      openHome();
+    }
+  }
+
+  function sectionDevices() {
+    const dev = window.GameSocial && window.GameSocial.device;
+    const list = el('div', { class: 'device-list' }, el('p', { class: 'field-hint', text: 'Loading your devices…' }));
+    if (dev && dev.available()) {
+      dev.list().then((rows) => {
+        rows = rows || [];
+        list.replaceChildren(...(rows.length ? rows.map((d) => el('div', { class: 'member' },
+          el('span', { class: 'member-name', text: d.label + (d.this ? ' (this device)' : '') }),
+          el('small', { class: 'field-hint', text: 'linked ' + fmtAgo(new Date(d.linked_at).getTime()) }),
+          btn(d.this ? 'Unlink this device' : 'Unlink', 'btn-sm btn-ghost', async () => {
+            if (!(await confirmBox('Unlink ' + d.label + '?', d.this ? 'This device goes back to its own profile.' : 'It stops being part of your account.', 'Unlink', true))) return;
+            await dev.unlink(d.device);
+            if (d.this) location.replace(location.pathname); else drawStudio();
+          })))
+          : [el('p', { class: 'field-hint', text: 'No other devices linked yet. The device that made your account is always part of it.' })]));
+      }).catch((e) => list.replaceChildren(el('p', { class: 'field-hint', text: /function|schema|does not exist/i.test(e.message || '') ? 'Linking devices needs the device-links database update first.' : 'Couldn’t load your devices.' })));
+    } else list.replaceChildren(el('p', { class: 'field-hint', text: 'Linking devices needs the site’s database.' }));
+    return el('div', null,
+      svSec('Link a device', el('p', { class: 'field-hint', text: 'Use your account on your phone, laptop and more. Make a code here, scan it on the other device.' }),
+        el('div', { class: 'row' }, btn('Show QR code', 'btn-sm btn-primary', showLinkCode), btn('Copy a link to myself', 'btn-sm btn-outline', copyLinkToSelf)),
+        el('p', { class: 'field-hint', text: 'Made your game on your phone? Copy the link, send it to yourself (email, notes, a message) and open it on your PC. After linking, settings, skins and bests stay in step on every device.' }),
+        el('div', { id: 'linkPanel' })),
+      svSec('This device', (() => {
+        // A nickname for the device you're messaging from; friends see it when they pick which of your devices to message.
+        const input = el('input', { class: 'text-input', type: 'text', maxlength: '40', placeholder: window.ChatGamesProfile && window.ChatGamesProfile.deviceLabel ? window.ChatGamesProfile.deviceLabel() : 'Device', 'aria-label': 'Device nickname' });
+        try { input.value = localStorage.getItem('chat.deviceName') || ''; } catch (e) { /* blocked */ }
+        const save = async () => {
+          if (!window.ChatGamesProfile || !window.ChatGamesProfile.renameDevice) { toast('Device names need the site’s database.'); return; }
+          try { await window.ChatGamesProfile.renameDevice(S.me, input.value); toast(input.value.trim() ? 'This device is now “' + input.value.trim() + '”.' : 'Device name reset.'); }
+          catch (e) { toast('Couldn’t save the device name.'); }
+        };
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') save(); });
+        return el('div', null, el('p', { class: 'field-hint', text: 'Name the device you’re messaging from, like “Living room PC” or “Sean’s phone”. Friends see it in the device switcher.' }),
+          el('div', { class: 'row' }, input, btn('Save', 'btn-sm btn-primary', save)));
+      })()),
+      svSec('Linked devices', list));
   }
 
   function sectionIdentity() {
@@ -3934,7 +4141,8 @@
       subs: [['presets', 'Themes'], ['custom-gradient', 'Gradient'], ['solid-colour', 'Solid colour'], ['your-own-image', 'Image'], ['glass-panels', 'Glass & panels'], ['room-themes', 'Room themes'], ['message-text', 'Text colour'], ['accent-colour', 'Accent'], ['text-size', 'Text size']] },
     { id: 'notifications', group: 'Chat', label: 'Notifications', build: () => sectionNotifications() },
     { id: 'emoji', group: 'Chat', label: 'Emoji & stickers', build: () => sectionEmoji() },
-    { id: 'privacy', group: 'Chat', label: 'Privacy & blocked', build: () => sectionBlocked() }
+    { id: 'privacy', group: 'Chat', label: 'Privacy & blocked', build: () => sectionBlocked() },
+    { id: 'devices', group: 'Chat', label: 'Devices & sync', build: () => sectionDevices() }
   ];
   const TAB_ALIAS = { theme: 'appearance', text: 'sv-message-text' };
   const slug = (t) => t.toLowerCase().replace(/&/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

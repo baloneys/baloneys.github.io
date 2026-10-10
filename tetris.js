@@ -662,6 +662,7 @@
     SCREENS.forEach(function (s) { $('#' + s).classList.toggle('hidden', s !== id); });
     var page = $('.game-page');
     if (page) page.classList.toggle('playing', id === 'gameView');
+    if (window.TetrisMenuMusic) window.TetrisMenuMusic.screen(id);
   }
 
   function startGame(mode, players) {

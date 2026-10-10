@@ -126,8 +126,11 @@
 
   // A short rising "here we go" when a game starts: a pulse sweep and two quick notes (respects the site mute).
   function startSound() {
-    if (!M.ctx || M.ctx.state !== 'running' || (G.Sound && G.Sound.isMuted && G.Sound.isMuted())) return;
-    var ctx = M.ctx, t = ctx.currentTime + 0.01;
+    if (G.Sound && G.Sound.isMuted && G.Sound.isMuted()) return;
+    var ctx = context();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    var t = ctx.currentTime + 0.03;
     function tone(type, f0, f1, at, dur, vol) {
       var o = ctx.createOscillator(), g = ctx.createGain();
       o.type = type; o.frequency.setValueAtTime(f0, at); o.frequency.exponentialRampToValueAtTime(f1, at + dur);
@@ -233,7 +236,7 @@
       var menu = !!MENU_SCREENS[id];
       if (menu === M.onMenu) return;
       M.onMenu = menu;
-      if (!menu) { if (M.playing) startSound(); stop(0.4); if (window.TetrisBG) window.TetrisBG.setEnergy(0); }
+      if (!menu) { if (id === 'gameView') startSound(); stop(0.4); if (window.TetrisBG) window.TetrisBG.setEnergy(0); }
       else startNow(1.8);
       paint();
     },
@@ -242,6 +245,8 @@
 
   function init() {
     buildButton();
+    // Decode the loop ahead of the cinematic's 60-second hand-off.
+    context();
     // Returning visitors (no cinematic): start on the menu, or as soon as the browser allows audio.
     setTimeout(function () {
       var cine = window.TetrisCinematic && window.TetrisCinematic.playing && window.TetrisCinematic.playing();

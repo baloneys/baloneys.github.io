@@ -320,7 +320,15 @@
     const values = new Uint8Array(1); crypto.getRandomValues(values);
     return words[values[0] % words.length] + '_' + id;
   }
-  function usernamePrefix(me) { return (me.username || randomUsername(me.id)).slice(0, -(me.id.length + 1)); }
+  function usernamePrefix(profile) {
+    // The settings draft is a copy of editable fields, not necessarily a full identity.
+    // Use our stable identity code for the suffix instead of reading a missing draft.id.
+    const id = (profile && profile.id) || (S.me && S.me.id);
+    if (!id) return '';
+    const handle = String((profile && profile.username) || randomUsername(id));
+    const suffix = '_' + id;
+    return handle.endsWith(suffix) ? handle.slice(0, -suffix.length) : handle;
+  }
 
   async function loadKey(me) {
     return crypto.subtle.importKey('jwk', me.priv, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
@@ -4194,7 +4202,7 @@
   function draft() {
     if (!profileDraft) {
       const m = S.me;
-      profileDraft = { name: m.name, username: m.username, color: m.color, bio: m.bio || '', avatar: m.avatar || null, banner: m.banner || null, nameGrad: m.nameGrad ? m.nameGrad.slice() : null, bannerGrad: m.bannerGrad ? m.bannerGrad.slice() : null };
+      profileDraft = { id: m.id, name: m.name, username: m.username, color: m.color, bio: m.bio || '', avatar: m.avatar || null, banner: m.banner || null, nameGrad: m.nameGrad ? m.nameGrad.slice() : null, bannerGrad: m.bannerGrad ? m.bannerGrad.slice() : null };
     }
     return profileDraft;
   }

@@ -1,22 +1,32 @@
-// tetris-social.js: player profiles, friends, the notification bell, game invites, XP and levels, badges,
-// the points shop, the public leaderboard and the public lobby finder for Tetris.
+// games-social.js: player profiles, friends, the notification bell, game invites, XP and levels, badges,
+// the points shop, the public leaderboards, achievement sync and the public lobby finder, shared by all four games.
+// One profile across the site: XP, points, shop items, badges and friends are shared; achievements,
+// leaderboards and lobbies belong to the game the page is (<html data-game="tetris|pong|battleships|chess">).
 //
-// Games stay peer-to-peer (PeerJS, in tetris.js). Only the shared bits live in a Supabase project (free tier):
-// see supabase/tetris-schema.sql for the tables and security rules, and tetris-config.js for the URL and key.
+// Games stay peer-to-peer (PeerJS). Only the shared bits live in a Supabase project (free tier): see
+// supabase/tetris-schema.sql for the tables and security rules, and games-config.js for the URL and key.
 // With no config the whole feature stays off and the page behaves exactly as before.
 // Add ?mockdb to the URL to run against a stand-in database kept in this browser's localStorage (each tab is
 // a different player), which is how the UI is tested without a real project.
 //
-// tetris.js talks to this file through window.TetrisSocial (soloFinished, versusFinished, lobbyChanged, card,
-// decorateName, openProfile, localProfileChanged) and this file calls back through window.TetrisApp
-// (join(code), lobby()).
+// The game talks to this file through window.GameSocial (the game-specific Finished hooks,
+// lobbyChanged, card, decorateName, openProfile, localProfileChanged) and this file calls back through
+// window.GameApp (join(code), lobby(), pause(), profileChanged(), and for Tetris skulls()/skullIcon()).
 //
-// API (window.TetrisSocial): see the object at the bottom.
+// API (window.GameSocial, also window.TetrisSocial): see the object at the bottom.
 (function () {
   'use strict';
 
-  var G = window.Games, ACH = window.TetrisAchievements;
-  var CFG = window.TETRIS_SUPABASE || {};
+  // Which game this page is (<html data-game=...>): picks the achievements shown on profiles and the leaderboard.
+  var GAMES = { tetris: 'Tetris', pong: 'Pong', battleships: 'Battleships', chess: 'Chess' };
+  var GAME = GAMES[document.documentElement.getAttribute('data-game')] ? document.documentElement.getAttribute('data-game') : 'tetris';
+  var GAME_NAME = GAMES[GAME];
+  var G = window.Games;
+  var ACH = { tetris: window.TetrisAchievements, pong: window.PongAchievements, battleships: window.BattleshipsAchievements, chess: window.ChessAchievements }[GAME];
+  var CFG = window.GAMES_SUPABASE || {};
+  // The game's hooks (window.GameApp, set by each game script); harmless defaults until it exists.
+  var NO_APP = { lobby: function () { return null; } };
+  function App() { return window.GameApp || NO_APP; }
   var MOCK = /[?&]mockdb\b/.test(location.search);
   var ENABLED = MOCK || !!(CFG.url && CFG.anonKey);
   var SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
@@ -62,10 +72,15 @@
     { id: 'lvl5', name: 'Level 5', sym: '5', a: '#9ecbff', b: '#4d80ff', desc: 'Reach level 5.', test: function (p) { return levelOf(p.xp) >= 5; } },
     { id: 'lvl10', name: 'Level 10', sym: '10', a: '#c7a2ff', b: '#7a3cff', desc: 'Reach level 10.', test: function (p) { return levelOf(p.xp) >= 10; } },
     { id: 'lvl25', name: 'Level 25', sym: '25', a: '#ff9ad5', b: '#d6247e', desc: 'Reach level 25.', test: function (p) { return levelOf(p.xp) >= 25; } },
-    { id: 'tetrisfan', name: 'Tetris Enthusiast', sym: '▤', a: '#66f2ff', b: '#1aa7c9', desc: 'Unlock Tetris Enthusiast.', test: function (p) { return !!achOf(p).tetris50; } },
-    { id: 'champion', name: 'Champion', sym: '♛', a: '#ffe27a', b: '#e0a100', desc: 'Unlock Champion (5 online wins).', test: function (p) { return !!achOf(p).vs_win5; } },
-    { id: 'supernova', name: 'Supernova', sym: '✺', a: '#ffffff', b: '#c77dff', desc: 'Reach a 50x streak.', test: function (p) { return !!achOf(p).streak50; } },
-    { id: 'collector', name: 'Collector', sym: '◆', a: '#b8ff4d', b: '#2dd4bf', desc: 'Unlock 25 achievements.', test: function (p) { return Object.keys(achOf(p)).length >= 25; } },
+    { id: 'tetrisfan', name: 'Tetris Enthusiast', sym: '▤', a: '#66f2ff', b: '#1aa7c9', desc: 'Tetris: unlock Tetris Enthusiast.', test: function (p) { return !!gameAch(p, 'tetris').tetris50; } },
+    { id: 'champion', name: 'Champion', sym: '♛', a: '#ffe27a', b: '#e0a100', desc: 'Tetris: unlock Champion (5 online wins).', test: function (p) { return !!gameAch(p, 'tetris').vs_win5; } },
+    { id: 'supernova', name: 'Supernova', sym: '✺', a: '#ffffff', b: '#c77dff', desc: 'Tetris: reach a 50x streak.', test: function (p) { return !!gameAch(p, 'tetris').streak50; } },
+    { id: 'pongpro', name: 'Pong Pro', sym: '◐', a: '#7dffcf', b: '#14a37f', desc: 'Pong: beat the Hard CPU.', test: function (p) { return !!gameAch(p, 'pong').hard_win; } },
+    { id: 'rallyking', name: 'Rally King', sym: '∞', a: '#9ad5ff', b: '#3d5cff', desc: 'Pong: keep a 50-hit rally going.', test: function (p) { return !!gameAch(p, 'pong').rally50; } },
+    { id: 'admiral', name: 'Admiral', sym: '⚓', a: '#7fd8ff', b: '#1f5fa8', desc: 'Battleships: beat the Hard CPU.', test: function (p) { return !!gameAch(p, 'battleships').hard_win; } },
+    { id: 'grandmaster', name: 'Grandmaster', sym: '♞', a: '#f3e6ff', b: '#7a3cff', desc: 'Chess: beat the Hard CPU.', test: function (p) { return !!gameAch(p, 'chess').hard_win; } },
+    { id: 'allrounder', name: 'All-Rounder', sym: '✚', a: '#ffd6f0', b: '#c77dff', desc: 'Unlock 5 achievements in three different games.', test: function (p) { return Object.keys(GAMES).filter(function (g) { return Object.keys(gameAch(p, g)).length >= 5; }).length >= 3; } },
+    { id: 'collector', name: 'Collector', sym: '◆', a: '#b8ff4d', b: '#2dd4bf', desc: 'Unlock 25 achievements across the site.', test: function (p) { return Object.keys(achOf(p)).length >= 25; } },
     { id: 'bean', name: 'Bean', sym: '●', a: '#d99a59', b: '#7a4a1f', desc: 'From the points shop.', shop: true },
     { id: 'skull', name: 'Skull', sym: '☠', a: '#e9e4ff', b: '#6b5d8f', desc: 'From the points shop.', shop: true },
     { id: 'heart', name: 'Sweetheart', sym: '♥', a: '#ff9ac8', b: '#ff3f7f', desc: 'From the points shop.', shop: true },
@@ -74,6 +89,22 @@
   var BADGE_BY = {};
   BADGES.forEach(function (b) { BADGE_BY[b.id] = b; });
   function achOf(p) { return (p && p.achievements && typeof p.achievements === 'object') ? p.achievements : {}; }
+  // The profile keeps every game's achievements in one map, keyed "game:id" (e.g. "pong:rally50"). Keys
+  // without a game prefix come from before Pong had achievements and are Tetris's.
+  function akey(game, id) { return game + ':' + id; }
+  function gameAch(p, game) {
+    var all = achOf(p), out = {};
+    Object.keys(all).forEach(function (k) {
+      var at = k.indexOf(':');
+      if (at === -1) { if (game === 'tetris') out[k] = all[k]; }
+      else if (k.slice(0, at) === game) out[k.slice(at + 1)] = all[k];
+    });
+    return out;
+  }
+  // Featured achievements are stored as "game:id" too, up to 3 per game; a profile shows the current game's.
+  function gameFeatured(p, game) {
+    return (p.featured || []).filter(function (k) { return k.indexOf(game + ':') === 0; }).map(function (k) { return k.slice(game.length + 1); });
+  }
   function hasBadge(p, id) {
     var b = BADGE_BY[id];
     if (!b) return false;
@@ -140,7 +171,8 @@
       name: NAME_STYLES[e.name] ? e.name : null,
       glow: e.glow === true,
       banner: BANNERS[e.banner] || e.banner === 'custom' ? e.banner : 'dusk',
-      frame: FRAMES[e.frame] ? e.frame : null
+      frame: FRAMES[e.frame] ? e.frame : null,
+      chatCode: typeof e.chatCode === 'string' && /^[a-z2-9]{16}$/.test(e.chatCode) ? e.chatCode : null
     };
   }
 
@@ -154,7 +186,8 @@
       bio: String(p.bio || '').slice(0, 190),
       tags: (Array.isArray(p.tags) ? p.tags : []).map(function (t) { return String(t).replace(/\s+/g, ' ').trim().slice(0, 16); }).filter(Boolean).slice(0, 5),
       badges: (Array.isArray(p.badges) ? p.badges : []).filter(function (b) { return BADGE_BY[b]; }).slice(0, 3),
-      featured: (Array.isArray(p.featured) ? p.featured : []).filter(function (a) { return ACH.get(a); }).slice(0, 3),
+      featured: (Array.isArray(p.featured) ? p.featured : []).map(function (k) { return k.indexOf(':') === -1 ? 'tetris:' + k : k; })
+        .filter(function (k) { return /^(tetris|pong|battleships|chess):[A-Za-z0-9_]{1,32}$/.test(k); }).slice(0, 12),
       achievements: achOf(p),
       xp: Math.max(0, p.xp | 0), points: Math.max(0, p.points | 0),
       owned: (Array.isArray(p.owned) ? p.owned : []).filter(function (i) { return SHOP_BY[i]; }),
@@ -210,19 +243,21 @@
       sendNote: function (to, kind, lobby) { return sb.from('tetris_notifications').insert({ to_id: to, from_id: uid, kind: kind, lobby: lobby || null }).then(check); },
       markRead: function () { return sb.from('tetris_notifications').update({ read: true }).eq('to_id', uid).eq('read', false).then(check); },
       clearNote: function (id) { return sb.from('tetris_notifications').delete().eq('id', id).then(check); },
-      addRun: function (row) { row.user_id = uid; return sb.from('tetris_runs').insert(row).then(check); },
+      addRun: function (row) { row.user_id = uid; row.game = GAME; return sb.from('tetris_runs').insert(row).then(check); },
       // f: { mode, kinds[], versusType|null, skullsOn, skulls[], userIds|null, asc }
       runs: function (f) {
-        var q = sb.from('tetris_board').select('*').eq('mode', f.mode).in('kind', f.kinds);
+        var q = sb.from('tetris_board').select('*').eq('game', GAME).eq('mode', f.mode).in('kind', f.kinds);
         if (f.versusType) q = q.eq('versus_type', f.versusType);
-        if (!f.skullsOn) q = q.eq('skull_count', 0);
-        else { q = q.gt('skull_count', 0); if (f.skulls.length) q = q.contains('skulls', f.skulls); }
+        if (f.skullsOn === false) q = q.eq('skull_count', 0);
+        else if (f.skullsOn) { q = q.gt('skull_count', 0); if (f.skulls.length) q = q.contains('skulls', f.skulls); }
         if (f.userIds) q = q.in('user_id', f.userIds);
-        return q.order('value', { ascending: f.asc }).order('created_at', { ascending: true }).limit(300).then(check);
+        if (f.wonOnly) q = q.eq('won', true);
+        Object.keys(f.info || {}).forEach(function (k) { q = q.eq('info->>' + k, String(f.info[k])); });
+        return q.order(f.order || 'value', { ascending: f.asc }).order('created_at', { ascending: true }).limit(300).then(check);
       },
       publishLobby: function (row) { row.host_id = uid; return sb.from('tetris_lobbies').upsert(row).then(check); },
       unpublishLobby: function (code) { return sb.from('tetris_lobbies').delete().eq('code', code).then(check); },
-      lobbies: function () { return sb.from('tetris_open_lobbies').select('*').order('updated_at', { ascending: false }).limit(40).then(check); }
+      lobbies: function () { return sb.from('tetris_open_lobbies').select('*').eq('game', GAME).order('updated_at', { ascending: false }).limit(40).then(check); }
     };
     return api;
   }
@@ -291,19 +326,21 @@
       clearNote: function (id) { var d = db(); d.notes = d.notes.filter(function (n) { return n.id !== id; }); save(d); return later(null); },
       addRun: function (row) {
         var d = db();
-        row.id = Date.now() + Math.random(); row.user_id = uid; row.created_at = nowIso();
+        row.id = Date.now() + Math.random(); row.user_id = uid; row.game = GAME; row.created_at = nowIso();
         d.scores.push(row); save(d); return later(null);
       },
       runs: function (f) {
         var d = db();
         return later(d.scores.filter(function (r) {
           var n = (r.skulls || []).length;
-          if (r.mode !== f.mode || f.kinds.indexOf(r.kind) === -1) return false;
+          if ((r.game || 'tetris') !== GAME || r.mode !== f.mode || f.kinds.indexOf(r.kind) === -1) return false;
           if (f.versusType && r.versus_type !== f.versusType) return false;
-          if (!f.skullsOn ? n !== 0 : n === 0) return false;
+          if (f.skullsOn === false ? n !== 0 : f.skullsOn && n === 0) return false;
+          if (f.wonOnly && !r.won) return false;
+          if (Object.keys(f.info || {}).some(function (k) { return String((r.info || {})[k]) !== String(f.info[k]); })) return false;
           if (f.skullsOn && f.skulls.some(function (s) { return r.skulls.indexOf(s) === -1; })) return false;
           return !f.userIds || f.userIds.indexOf(r.user_id) !== -1;
-        }).sort(function (a, b) { return f.asc ? a.value - b.value : b.value - a.value; }).slice(0, 300).map(function (r) {
+        }).sort(function (a, b) { var c = f.order || 'value'; return f.asc ? a[c] - b[c] : b[c] - a[c]; }).slice(0, 300).map(function (r) {
           var p = d.profiles[r.user_id] || {};
           return Object.assign({ name: p.name, avatar: p.avatar, equipped: p.equipped, xp: p.xp }, r);
         }));
@@ -312,7 +349,7 @@
       unpublishLobby: function (code) { var d = db(); delete d.lobbies[code]; save(d); return later(null); },
       lobbies: function () {
         var d = db(), cutoff = Date.now() - 60000;
-        return later(Object.keys(d.lobbies).map(function (k) { return d.lobbies[k]; }).filter(function (l) { return new Date(l.updated_at).getTime() > cutoff; })
+        return later(Object.keys(d.lobbies).map(function (k) { return d.lobbies[k]; }).filter(function (l) { return (l.game || 'tetris') === GAME && new Date(l.updated_at).getTime() > cutoff; })
           .map(function (l) { var p = d.profiles[l.host_id] || {}; return Object.assign({ equipped: p.equipped, avatar: p.avatar, xp: p.xp }, l); }));
       }
     };
@@ -334,6 +371,16 @@
   };
   function onReady(fn) { if (S.ready) fn(); else S.readyFns.push(fn); }
   function profileCache() { if (!S.cache) S.cache = {}; return S.cache; }
+  window.addEventListener('storage', function (e) {
+    if (e.key !== 'chat.game-profile-changed' || !S.ready || !B) return;
+    B.getProfile(B.uid()).then(function (row) {
+      if (!row) return;
+      S.me = cleanProfile(row);
+      G.Profile.set({ name: S.me.name, avatar: S.me.avatar });
+      paintDock();
+      if (App().profileChanged) App().profileChanged();
+    }).catch(function (error) { console.warn('[social] profile refresh', error); });
+  });
 
   function start() {
     if (!B) return;
@@ -364,7 +411,7 @@
   }
 
   function saveMe(patch) {
-    return B.updateProfile(patch).then(function (row) { S.me = cleanProfile(row); paintDock(); return S.me; });
+    return B.updateProfile(patch).then(function (row) { S.me = cleanProfile(row); paintDock(); localStorage.setItem('chat.game-profile-changed', String(Date.now())); return S.me; });
   }
 
   // XP and points for anything earned. Achievements already unlocked in this browser before profiles existed
@@ -385,15 +432,23 @@
   function syncAchievements() {
     if (!S.ready) return;
     granting = granting.then(function () {
-      var have = Object.assign({}, S.me.achievements), xp = 0, pts = 0, fresh = 0;
+      // Down: this game's achievements earned on another device or browser unlock here quietly.
+      var mine = gameAch(S.me, GAME);
+      if (ACH.importUnlocks) ACH.importUnlocks(mine);
+      if (ACH.setSynced) ACH.setSynced(true);
+      // Up: ones earned here go to the profile with their XP and points (once, on whichever device was first).
+      var have = Object.assign({}, S.me.achievements), xp = 0, pts = 0, fresh = 0, moved = 0;
+      if (GAME === 'tetris') Object.keys(have).forEach(function (k) {
+        if (k.indexOf(':') === -1) { have[akey('tetris', k)] = have[akey('tetris', k)] || have[k]; delete have[k]; moved++; }
+      });
       ACH.list().forEach(function (a) {
-        if (a.unlocked && !have[a.id]) {
-          have[a.id] = a.unlocked;
+        if (a.unlocked && !mine[a.id]) {
+          have[akey(GAME, a.id)] = a.unlocked;
           var r = ACH_REWARD[a.tier] || ACH_REWARD.bronze;
           xp += r[0]; pts += r[1]; fresh++;
         }
       });
-      if (!fresh) return;
+      if (!fresh) return moved ? saveMe({ achievements: have }) : null;
       var before = levelOf(S.me.xp);
       return saveMe({ achievements: have, xp: S.me.xp + xp, points: S.me.points + pts }).then(function () {
         G.banner('+' + fmt(xp) + ' XP · +' + fmt(pts) + ' points from ' + (fresh === 1 ? 'an achievement' : fresh + ' achievements'));
@@ -480,7 +535,7 @@
   }
 
   function inviteToLobby(id) {
-    var lob = window.TetrisApp && window.TetrisApp.lobby();
+    var lob = App().lobby();
     if (!lob || !lob.code) { G.banner('Create or join a lobby first'); return; }
     B.sendNote(id, 'invite', lob.code).then(function () { G.banner('Invite sent'); }).catch(function () { G.banner('Couldn\'t send the invite'); });
   }
@@ -544,6 +599,12 @@
   }
 
   function profileLink(id) { return PROFILE_URL + '?profile=' + id; }
+  function messagePlayer(p) {
+    var code = p && p.equipped && p.equipped.chatCode;
+    if (!code) return;
+    if (window.GameChatDock) window.GameChatDock.openTo(code);
+    else window.open('chat.html#add/' + code, '_blank', 'noopener');
+  }
   function inviteLink(code) { return PROFILE_URL + '?join=' + code; }
 
   /* =================================================================
@@ -587,7 +648,7 @@
   }
 
   // Opening a panel mid-game pauses offline games, like the achievements browser does.
-  function pauseGame() { if (window.TetrisApp && window.TetrisApp.pause) window.TetrisApp.pause(); }
+  function pauseGame() { if (App().pause) App().pause(); }
 
   function notReady(body) {
     body.textContent = '';
@@ -649,7 +710,9 @@
       var sect = function (label) { var s = el('section', 'soc-sect'); s.appendChild(el('h3', null, label)); main.appendChild(s); return s; };
       if (p.bio) sect('About me').appendChild(el('p', 'soc-bio', p.bio));
       sect('Level').appendChild(levelBar(p));
-      var feats = p.featured.filter(function (a) { return achOf(p)[a]; });
+      // Only this game's achievements show here (a Pong profile shows Pong's); badges and level are site-wide.
+      var got = gameAch(p, GAME);
+      var feats = gameFeatured(p, GAME).filter(function (id) { return got[id] && ACH.get(id); });
       if (feats.length) {
         var fs = sect('Featured achievements'), grid = el('div', 'soc-feats');
         feats.forEach(function (id) {
@@ -663,8 +726,14 @@
         });
         fs.appendChild(grid);
       }
+      var gotIds = ACH.list().filter(function (a) { return got[a.id]; });
+      if (gotIds.length) {
+        var all = sect(GAME_NAME + ' achievements · ' + gotIds.length + '/' + ACH.count().total), wall = el('div', 'soc-ach-wall');
+        gotIds.forEach(function (a) { var b = ACH.badge(a.id, 30); b.title = a.name + ': ' + a.desc; wall.appendChild(b); });
+        all.appendChild(wall);
+      }
       var stats = el('div', 'soc-stats');
-      [['Achievements', Object.keys(achOf(p)).length + '/' + ACH.count().total], ['Total XP', fmt(p.xp)], ['Member since', new Date(p.created_at).toLocaleDateString('en-AU', { month: 'short', year: 'numeric' })]]
+      [[GAME_NAME + ' achievements', Object.keys(got).filter(function (id) { return ACH.get(id); }).length + '/' + ACH.count().total], ['Total XP', fmt(p.xp)], ['Member since', new Date(p.created_at).toLocaleDateString('en-AU', { month: 'short', year: 'numeric' })]]
         .forEach(function (s) { var d = el('div'); d.appendChild(el('b', null, s[1])); d.appendChild(el('span', null, s[0])); stats.appendChild(d); });
       main.appendChild(stats);
 
@@ -677,7 +746,8 @@
         var st = friendState(p.id);
         if (st === 'accepted') {
           actions.appendChild(el('span', 'soc-pill ok', '✓ Friends'));
-          var lob = window.TetrisApp && window.TetrisApp.lobby();
+          if (p.equipped.chatCode) actions.appendChild(btn('Message', 'btn-primary', function () { modal.close(); messagePlayer(p); }));
+          var lob = App().lobby();
           if (lob && lob.code) actions.appendChild(btn('Invite to my lobby', 'btn-primary', function () { inviteToLobby(p.id); }));
           actions.appendChild(btn('Remove friend', null, function () { removeFriend(p.id).then(function () { render(p); }); }));
         } else if (st === 'outgoing') {
@@ -836,21 +906,22 @@
       });
       field('Badges to show', badges, 'Pick up to 3. Locked ones show how to earn them.');
 
-      // Featured achievements: up to three unlocked ones.
+      // Featured achievements: up to three unlocked ones from this game (the other game's picks are kept).
       var feats = el('div', 'soc-pick-row soc-feat-pick');
       var unlocked = ACH.list().filter(function (a) { return a.unlocked; });
       if (!unlocked.length) feats.appendChild(el('span', 'soc-note', 'Unlock achievements to feature them here.'));
       unlocked.forEach(function (a) {
-        var chip = el('button', 'soc-ach-opt' + (p.featured.indexOf(a.id) !== -1 ? ' on' : ''));
+        var k = akey(GAME, a.id);
+        var chip = el('button', 'soc-ach-opt' + (p.featured.indexOf(k) !== -1 ? ' on' : ''));
         chip.type = 'button';
         chip.title = a.desc;
         chip.appendChild(ACH.badge(a.id, 24));
         chip.appendChild(el('span', null, a.name));
         chip.addEventListener('click', function () {
-          var at = p.featured.indexOf(a.id);
+          var at = p.featured.indexOf(k);
           if (at !== -1) p.featured.splice(at, 1);
-          else if (p.featured.length >= 3) { G.banner('You can feature 3 achievements'); return; }
-          else p.featured.push(a.id);
+          else if (gameFeatured(p, GAME).length >= 3) { G.banner('You can feature 3 achievements per game'); return; }
+          else p.featured.push(k);
           chip.classList.toggle('on', at === -1);
         });
         feats.appendChild(chip);
@@ -870,7 +941,7 @@
         saveMe({ name: clean.name, avatar: clean.avatar, banner: clean.banner, bio: clean.bio, tags: clean.tags, badges: clean.badges, featured: clean.featured, equipped: clean.equipped })
           .then(function (me) {
             G.Profile.set({ name: me.name, avatar: me.avatar });
-            if (window.TetrisApp && window.TetrisApp.profileChanged) window.TetrisApp.profileChanged();
+            if (App().profileChanged) App().profileChanged();
             G.banner('Profile saved');
             modal.title('Your profile');
             render(me);
@@ -933,7 +1004,8 @@
       li.appendChild(who);
       var act = el('span', 'soc-row-actions');
       if (f.status === 'accepted') {
-        var lob = window.TetrisApp && window.TetrisApp.lobby();
+        var lob = App().lobby();
+        if (p.equipped.chatCode) act.appendChild(btn('Message', 'btn-primary', function () { modal.close(); messagePlayer(p); }));
         if (lob && lob.code) act.appendChild(btn('Invite', 'btn-primary', function () { inviteToLobby(p.id); }));
         act.appendChild(btn('Remove', null, function () { removeFriend(p.id); }));
       } else if (f.status === 'incoming') {
@@ -1112,7 +1184,7 @@
   })();
 
   function joinCode(code) {
-    if (window.TetrisApp && window.TetrisApp.join) window.TetrisApp.join(code);
+    if (App().join) App().join(code);
   }
 
   /* =================================================================
@@ -1134,23 +1206,282 @@
     return m + ':' + (r < 10 ? '0' : '') + r.toFixed(1);
   }
   // The skull list and pixel icons come from tetris.js, so the leaderboard always matches the game.
-  function skullList() { return window.TetrisApp && window.TetrisApp.skulls ? window.TetrisApp.skulls() : []; }
-  function skullIcon(id) { return window.TetrisApp && window.TetrisApp.skullIcon ? window.TetrisApp.skullIcon(id) : el('span'); }
+  function skullList() { return App().skulls ? App().skulls() : []; }
+  function skullIcon(id) { return App().skullIcon ? App().skullIcon(id) : el('span'); }
   function skullName(id) { var s = skullList().filter(function (x) { return x.id === id; })[0]; return s ? s.name : id; }
   var CHEVRON = '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   /* ---------- leaderboard ----------
-     One board, filtered by tags along the top. Each tag is a simple on/off (or pick) with an optional
-     dropdown for fine-tuning: game type, Solo / Versus (online, vs CPU, rules), Skulls (tick exactly which
-     skulls a run must have used), Friends, and best-per-player vs every run. Click a run for its details. */
+     One board per game, filtered by tags along the top. Each tag is a simple on/off (or pick) with an
+     optional dropdown for fine-tuning. Click a run for its details. The tags, query, row text and details
+     pane come from the game's spec (TETRIS_BOARD / PONG_BOARD below); the board itself is shared. */
+
+  // Tetris: game type, Solo / Versus (online, vs CPU, rules), Skulls (tick exactly which skulls a run used).
+  var TETRIS_BOARD = {
+    init: function () { return { mode: 'marathon', kinds: { online: true, cpu: true }, versusType: null, skullsOn: null, skulls: [] }; },  // skullsOn: null any, false none (ranked), true with skulls
+    openWith: function (F, m) { if (MODE_BY[m]) F.mode = m; },
+    tags: function (F, K) {
+      var tag = K.tag, check = K.check, radio = K.radio, closeDrops = K.closeDrops, refresh = K.refresh, bar = K.bar;
+      var versus = F.mode === 'versus';
+      // game type: the label shows the current one; the dropdown picks another
+      var gtLabel = versus ? 'Any game type' : MODE_BY[F.mode].name;
+      bar.appendChild(tag(gtLabel, !versus, function () { if (versus) { F.mode = 'marathon'; refresh(); } }, versus ? null : function (drop) {
+        drop.appendChild(el('div', 'lb-drop-title', 'Game type'));
+        MODES.filter(function (m) { return m.id !== 'versus'; }).forEach(function (m) {
+          drop.appendChild(radio('lb-mode', m.name, F.mode === m.id, function () { F.mode = m.id; closeDrops(); refresh(); }));
+        });
+      }));
+      bar.appendChild(tag('Solo', !versus, function () { if (versus) { F.mode = 'marathon'; refresh(); } }));
+      var vLabel = 'Versus' + (versus && !(F.kinds.online && F.kinds.cpu) ? (F.kinds.online ? ' · online' : ' · vs CPU') : '') +
+        (versus && F.versusType ? (F.versusType === 'elim' ? ' · elimination' : ' · last standing') : '');
+      bar.appendChild(tag(vLabel, versus, function () { F.mode = versus ? 'marathon' : 'versus'; refresh(); }, function (drop) {
+        drop.appendChild(el('div', 'lb-drop-title', 'Opponents'));
+        drop.appendChild(check('Online players', F.kinds.online, function (v) { F.kinds.online = v || !F.kinds.cpu; F.mode = 'versus'; refresh(true); }));
+        drop.appendChild(check('vs CPU', F.kinds.cpu, function (v) { F.kinds.cpu = v || !F.kinds.online; F.mode = 'versus'; refresh(true); }));
+        drop.appendChild(el('div', 'lb-drop-title', 'Rules'));
+        [[null, 'Any rules'], ['last', 'Last Standing'], ['elim', 'Elimination']].forEach(function (x) {
+          drop.appendChild(radio('lb-vt', x[1], F.versusType === x[0], function () { F.versusType = x[0]; F.mode = 'versus'; refresh(true); }));
+        });
+      }));
+      var skLabel = el('span', 'lb-sk-label');
+      skLabel.appendChild(el('span', null, F.skullsOn ? (F.skulls.length ? 'Skulls · ' + F.skulls.length : 'Skulls on') : F.skullsOn === false ? 'No skulls' : 'Any skulls'));
+      // click cycles: any skulls -> no skulls (ranked) -> skulls on -> any; the dropdown picks exact skulls
+      bar.appendChild(tag(skLabel, F.skullsOn !== null, function () { F.skullsOn = F.skullsOn === null ? false : F.skullsOn === false ? true : null; if (!F.skullsOn) F.skulls = []; refresh(); }, function (drop) {
+        drop.classList.add('wide');
+        fillSkulls(drop);
+      }));
+      function fillSkulls(drop) {
+        var head = el('div', 'lb-drop-head');
+        head.appendChild(el('div', 'lb-drop-title', 'Runs that used every ticked skull'));
+        head.appendChild(btn('Clear', null, function () { F.skulls = []; drop.textContent = ''; fillSkulls(drop); refresh(true); }));
+        drop.appendChild(head);
+        [['mod', 'Modifiers'], ['power', 'Power-ups'], ['attack', 'Versus attacks']].forEach(function (g) {
+          var list = skullList().filter(function (s) { return s.cat === g[0]; });
+          if (!list.length) return;
+          drop.appendChild(el('div', 'lb-drop-sub', g[1]));
+          var grid = el('div', 'lb-skull-grid');
+          list.forEach(function (s) {
+            grid.appendChild(check(s.name, F.skulls.indexOf(s.id) !== -1, function (v) {
+              var at = F.skulls.indexOf(s.id);
+              if (v && at === -1) F.skulls.push(s.id);
+              if (!v && at !== -1) F.skulls.splice(at, 1);
+              F.skullsOn = true;
+              refresh(true);
+            }, skullIcon(s.id)));
+          });
+          drop.appendChild(grid);
+        });
+      }
+    },
+    describe: function (F) {
+      var m = MODE_BY[F.mode];
+      return [F.mode === 'versus' ? 'Versus runs ranked by points' : m.name + (m.unit === 'time' ? (m.asc ? ', fastest first' : ', longest first') : ', highest score first'),
+        F.skullsOn ? (F.skulls.length ? 'with ' + F.skulls.map(skullName).join(', ') : 'skull runs only') : F.skullsOn === false ? 'no skulls (ranked)' : 'with or without skulls'];
+    },
+    query: function (F) {
+      return { mode: F.mode, kinds: F.mode === 'versus' ? ['online', 'cpu'].filter(function (k) { return F.kinds[k]; }) : ['solo'],
+        versusType: F.mode === 'versus' ? F.versusType : null, skullsOn: F.skullsOn, skulls: F.skulls.slice(), asc: MODE_BY[F.mode].asc };
+    },
+    value: function (r) { var m = MODE_BY[r.mode]; return m && m.unit === 'time' ? clockTenths(r.value) : fmt(r.value); },
+    sub: function (r, p, sub) {
+      if (r.skulls && r.skulls.length) {
+        var icons = el('span', 'lb-run-skulls');
+        r.skulls.slice(0, 5).forEach(function (id) { icons.appendChild(skullIcon(id)); });
+        if (r.skulls.length > 5) icons.appendChild(el('b', null, '+' + (r.skulls.length - 5)));
+        sub.appendChild(icons);
+      }
+      sub.appendChild(document.createTextNode(r.mode === 'versus' ? (r.won ? 'Won' : 'Place ' + (r.place || '–')) + ' · ' + ((r.players || []).length || 2) + ' players' : 'Level ' + levelOf(p.xp)));
+    },
+    meta: function (r) { return (r.multiplier && Math.abs(r.multiplier - 1) > 0.01 ? '×' + r.multiplier + ' · ' : '') + (r.mode === 'marathon' ? 'lvl ' + r.level + ' · ' : '') + r.lines + ' lines · ' + ago(r.created_at); },
+    kicker: function (r) { return r.mode === 'versus' ? (r.kind === 'cpu' ? 'Versus CPU' : 'Online versus') + (r.versus_type ? ' · ' + (r.versus_type === 'elim' ? 'Elimination' : 'Last Standing') : '') : 'Solo · ' + MODE_BY[r.mode].name; },
+    stats: function (r) {
+      return [['Points', fmt(r.score)], ['Lines', fmt(r.lines)], [r.mode === 'versus' ? 'Result' : 'Level', r.mode === 'versus' ? (r.won ? 'Won' : 'Place ' + (r.place || '–')) : String(r.level)],
+        ['Time', clockTenths(Math.round((r.elapsed || 0) / 100))], ['Multiplier', '×' + (r.multiplier || 1)], ['Skulls', String((r.skulls || []).length)]];
+    },
+    sections: function (r, pane) {
+      var sk = el('section', 'soc-sect');
+      sk.appendChild(el('h3', null, 'Skulls on'));
+      if (!r.skulls || !r.skulls.length) sk.appendChild(el('p', 'soc-note', 'None. A ranked run.'));
+      else {
+        var grid = el('div', 'lb-pane-skulls');
+        r.skulls.forEach(function (id) { var s = el('span', 'lb-pane-skull'); s.appendChild(skullIcon(id)); s.appendChild(el('span', null, skullName(id))); grid.appendChild(s); });
+        sk.appendChild(grid);
+      }
+      pane.appendChild(sk);
+    }
+  };
+
+  // Pong: two boards (longest rally, fastest win), filtered by opponent (CPU difficulty or online) and match length.
+  // A Pong run: mode 'pong', kind 'cpu' | 'online', value = longest rally, elapsed = match length (ms), score/lines =
+  // your points / theirs, info = { difficulty, target, ball, opponent }.
+  var PONG_DIFFS = [['easy', 'Easy CPU'], ['normal', 'Normal CPU'], ['hard', 'Hard CPU']];
+  var PONG_TARGETS = [['5', 'First to 5'], ['7', 'First to 7'], ['11', 'First to 11'], ['inf', 'Endless']];
+  var PONG_BOARD = {
+    init: function () { return { board: 'rally', opp: 'any', target: null }; },
+    openWith: function (F, m) { if (m === 'rally' || m === 'fastest') F.board = m; },
+    tags: function (F, K) {
+      var tag = K.tag, radio = K.radio, closeDrops = K.closeDrops, refresh = K.refresh, bar = K.bar;
+      bar.appendChild(tag('Longest rally', F.board === 'rally', function () { F.board = 'rally'; refresh(); }));
+      bar.appendChild(tag('Fastest win', F.board === 'fastest', function () { F.board = 'fastest'; if (F.target === 'inf') F.target = null; refresh(); }));
+      var oppName = F.opp === 'any' ? 'Any opponent' : F.opp === 'online' ? 'Online' : PONG_DIFFS.filter(function (d) { return d[0] === F.opp; })[0][1];
+      bar.appendChild(tag(oppName, F.opp !== 'any', function () { F.opp = F.opp === 'any' ? 'online' : 'any'; refresh(); }, function (drop) {
+        drop.appendChild(el('div', 'lb-drop-title', 'Opponent'));
+        [['any', 'Anyone']].concat(PONG_DIFFS, [['online', 'Online players']]).forEach(function (o) {
+          drop.appendChild(radio('lb-opp', o[1], F.opp === o[0], function () { F.opp = o[0]; closeDrops(); refresh(); }));
+        });
+      }));
+      var tName = F.target ? PONG_TARGETS.filter(function (t) { return t[0] === F.target; })[0][1] : 'Any length';
+      bar.appendChild(tag(tName, !!F.target, function () { F.target = F.target ? null : '7'; refresh(); }, function (drop) {
+        drop.appendChild(el('div', 'lb-drop-title', 'Match length'));
+        [[null, 'Any length']].concat(PONG_TARGETS.filter(function (t) { return F.board !== 'fastest' || t[0] !== 'inf'; })).forEach(function (t) {
+          drop.appendChild(radio('lb-target', t[1], F.target === t[0], function () { F.target = t[0]; closeDrops(); refresh(); }));
+        });
+      }));
+    },
+    describe: function (F) {
+      return [F.board === 'rally' ? 'Longest rally in a match' : 'Quickest match wins',
+        F.opp === 'any' ? 'any opponent' : F.opp === 'online' ? 'against online players' : 'against the ' + F.opp + ' CPU',
+        F.target ? PONG_TARGETS.filter(function (t) { return t[0] === F.target; })[0][1].toLowerCase() : 'any match length'];
+    },
+    query: function (F) {
+      var info = {};
+      if (F.opp !== 'any' && F.opp !== 'online') info.difficulty = F.opp;
+      if (F.target) info.target = F.target;
+      return { mode: 'pong', kinds: F.opp === 'any' ? ['cpu', 'online'] : F.opp === 'online' ? ['online'] : ['cpu'], info: info,
+        wonOnly: F.board === 'fastest', order: F.board === 'fastest' ? 'elapsed' : 'value', asc: F.board === 'fastest' };
+    },
+    // the row's big number follows the board being viewed
+    value: function (r, F) { return F && F.board === 'fastest' ? clockTenths(Math.round(r.elapsed / 100)) : fmt(r.value) + ' hits'; },
+    sub: function (r, p, sub) {
+      sub.appendChild(document.createTextNode((r.won ? 'Won ' : 'Lost ') + r.score + '–' + r.lines + ' · ' + pongOpp(r)));
+    },
+    meta: function (r) { var i = r.info || {}; return (i.target === 'inf' ? 'endless' : 'first to ' + (i.target || '?')) + ' · ' + ago(r.created_at); },
+    kicker: function (r) { return 'Pong · ' + pongOpp(r); },
+    stats: function (r) {
+      var i = r.info || {};
+      return [['Result', (r.won ? 'Won ' : 'Lost ') + r.score + '–' + r.lines], ['Longest rally', fmt(r.value)], ['Match time', clockTenths(Math.round((r.elapsed || 0) / 100))],
+        ['Length', i.target === 'inf' ? 'Endless' : 'First to ' + (i.target || '?')], ['Opponent', r.kind === 'online' ? 'Online' : (i.difficulty || 'CPU')], ['Top speed', i.speed ? fmt(i.speed) : '–']];
+    },
+    sections: function (r, pane) {
+      var i = r.info || {};
+      if (!i.ball) return;
+      var s = el('section', 'soc-sect');
+      s.appendChild(el('h3', null, 'Ball'));
+      s.appendChild(el('p', 'soc-note', String(i.ball).slice(0, 40)));
+      pane.appendChild(s);
+    }
+  };
+  function pongOpp(r) {
+    var i = r.info || {};
+    if (r.kind === 'online') return i.opponent ? 'vs ' + String(i.opponent).slice(0, 16) : 'online';
+    return 'vs ' + (i.difficulty || 'normal') + ' CPU';
+  }
+
+  // Battleships: Fewest shots (wins only) or Best accuracy (wins only), filtered by opponent.
+  // A run: mode 'battleships', kind 'cpu' | 'online', value = shots fired, score = accuracy %, lines = ships lost,
+  // info = { difficulty, opponent, enemyHits }.
+  var BS_OPPS = [['easy', 'Easy CPU'], ['hard', 'Hard CPU']];
+  var BATTLESHIPS_BOARD = {
+    init: function () { return { board: 'shots', opp: 'any' }; },
+    openWith: function (F, m) { if (m === 'shots' || m === 'accuracy') F.board = m; },
+    tags: function (F, K) {
+      var tag = K.tag, radio = K.radio, closeDrops = K.closeDrops, refresh = K.refresh, bar = K.bar;
+      bar.appendChild(tag('Fewest shots', F.board === 'shots', function () { F.board = 'shots'; refresh(); }));
+      bar.appendChild(tag('Best accuracy', F.board === 'accuracy', function () { F.board = 'accuracy'; refresh(); }));
+      bar.appendChild(oppTag(F, K, BS_OPPS));
+    },
+    describe: function (F) { return [F.board === 'shots' ? 'Wins in the fewest shots' : 'Wins with the best accuracy', oppText(F, BS_OPPS)]; },
+    query: function (F) {
+      return { mode: 'battleships', kinds: oppKinds(F), info: F.opp !== 'any' && F.opp !== 'online' ? { difficulty: F.opp } : {},
+        wonOnly: true, order: F.board === 'shots' ? 'value' : 'score', asc: F.board === 'shots' };
+    },
+    value: function (r, F) { return F && F.board === 'accuracy' ? r.score + '%' : r.value + ' shots'; },
+    sub: function (r, p, sub) { sub.appendChild(document.createTextNode(oppOf(r) + ' · ' + r.score + '% accuracy')); },
+    meta: function (r) { return (r.lines ? r.lines + ' ship' + (r.lines > 1 ? 's' : '') + ' lost' : 'no ships lost') + ' · ' + ago(r.created_at); },
+    kicker: function (r) { return 'Battleships · ' + oppOf(r); },
+    stats: function (r) {
+      var i = r.info || {};
+      return [['Shots', String(r.value)], ['Accuracy', r.score + '%'], ['Ships lost', String(r.lines)], ['Hits taken', String(i.enemyHits | 0)],
+        ['Time', clockTenths(Math.round((r.elapsed || 0) / 100))], ['Opponent', r.kind === 'online' ? 'Online' : (i.difficulty || 'CPU')]];
+    },
+    sections: function () {}
+  };
+
+  // Chess: Quickest win (fewest of your own moves), filtered by opponent, colour and how it was won.
+  // A run: mode 'chess', kind 'cpu' | 'online', value = your moves, score = material edge at the end (pawns),
+  // info = { difficulty, opponent, color, method, clock, material }.
+  var CHESS_OPPS = [['easy', 'Easy CPU'], ['normal', 'Normal CPU'], ['hard', 'Hard CPU']];
+  var CHESS_METHODS = [['mate', 'Checkmate'], ['time', 'On time'], ['resign', 'Resignation']];
+  var CHESS_BOARD = {
+    init: function () { return { opp: 'any', color: null, method: null }; },
+    openWith: function () {},
+    tags: function (F, K) {
+      var tag = K.tag, radio = K.radio, closeDrops = K.closeDrops, refresh = K.refresh, bar = K.bar;
+      bar.appendChild(tag('Quickest win', true, function () {}));
+      bar.appendChild(oppTag(F, K, CHESS_OPPS));
+      var cName = F.color === 'w' ? 'As White' : F.color === 'b' ? 'As Black' : 'Either colour';
+      bar.appendChild(tag(cName, !!F.color, function () { F.color = F.color === 'w' ? 'b' : F.color === 'b' ? null : 'w'; refresh(); }));
+      var mName = F.method ? CHESS_METHODS.filter(function (m) { return m[0] === F.method; })[0][1] : 'Any finish';
+      bar.appendChild(tag(mName, !!F.method, function () { F.method = F.method ? null : 'mate'; refresh(); }, function (drop) {
+        drop.appendChild(el('div', 'lb-drop-title', 'How it was won'));
+        [[null, 'Any finish']].concat(CHESS_METHODS).forEach(function (m) {
+          drop.appendChild(radio('lb-method', m[1], F.method === m[0], function () { F.method = m[0]; closeDrops(); refresh(); }));
+        });
+      }));
+    },
+    describe: function (F) {
+      return ['Wins in the fewest moves', oppText(F, CHESS_OPPS), F.color === 'w' ? 'playing White' : F.color === 'b' ? 'playing Black' : 'either colour',
+        F.method ? 'by ' + CHESS_METHODS.filter(function (m) { return m[0] === F.method; })[0][1].toLowerCase() : 'any finish'];
+    },
+    query: function (F) {
+      var info = {};
+      if (F.opp !== 'any' && F.opp !== 'online') info.difficulty = F.opp;
+      if (F.color) info.color = F.color;
+      if (F.method) info.method = F.method;
+      return { mode: 'chess', kinds: oppKinds(F), info: info, wonOnly: true, order: 'value', asc: true };
+    },
+    value: function (r) { return r.value + ' moves'; },
+    sub: function (r, p, sub) { var i = r.info || {}; sub.appendChild(document.createTextNode((i.color === 'b' ? 'Black' : 'White') + ' · ' + oppOf(r))); },
+    meta: function (r) { var i = r.info || {}; return chessMethod(i.method) + ' · ' + ago(r.created_at); },
+    kicker: function (r) { return 'Chess · ' + oppOf(r); },
+    stats: function (r) {
+      var i = r.info || {};
+      return [['Moves', String(r.value)], ['Finish', chessMethod(i.method)], ['Colour', i.color === 'b' ? 'Black' : 'White'],
+        ['Material', ((i.material | 0) > 0 ? '+' : '') + (i.material | 0)], ['Time', clockTenths(Math.round((r.elapsed || 0) / 100))], ['Clock', i.clock && i.clock !== '0' ? i.clock + ' min' : 'None']];
+    },
+    sections: function () {}
+  };
+  function chessMethod(m) { return { mate: 'Checkmate', time: 'On time', resign: 'Resignation', abandon: 'Opponent left' }[m] || 'Win'; }
+
+  // Shared bits for the two-player games' opponent tag: anyone, a CPU difficulty, or online players.
+  function oppTag(F, K, opps) {
+    var name = F.opp === 'any' ? 'Any opponent' : F.opp === 'online' ? 'Online' : opps.filter(function (d) { return d[0] === F.opp; })[0][1];
+    return K.tag(name, F.opp !== 'any', function () { F.opp = F.opp === 'any' ? 'online' : 'any'; K.refresh(); }, function (drop) {
+      drop.appendChild(el('div', 'lb-drop-title', 'Opponent'));
+      [['any', 'Anyone']].concat(opps, [['online', 'Online players']]).forEach(function (o) {
+        drop.appendChild(K.radio('lb-opp', o[1], F.opp === o[0], function () { F.opp = o[0]; K.closeDrops(); K.refresh(); }));
+      });
+    });
+  }
+  function oppText(F, opps) { return F.opp === 'any' ? 'any opponent' : F.opp === 'online' ? 'against online players' : 'against the ' + opps.filter(function (d) { return d[0] === F.opp; })[0][1]; }
+  function oppKinds(F) { return F.opp === 'any' ? ['cpu', 'online'] : F.opp === 'online' ? ['online'] : ['cpu']; }
+  function oppOf(r) {
+    var i = r.info || {};
+    if (r.kind === 'online') return i.opponent ? 'vs ' + String(i.opponent).slice(0, 16) : 'online';
+    return 'vs ' + (i.difficulty || 'normal') + ' CPU';
+  }
+
+  var BOARD = { tetris: TETRIS_BOARD, pong: PONG_BOARD, battleships: BATTLESHIPS_BOARD, chess: CHESS_BOARD }[GAME];
+
   var Leaderboard = (function () {
     var modal = Modal('socBoard', 'Leaderboard', true);
-    var F = { mode: 'marathon', kinds: { online: true, cpu: true }, versusType: null, skullsOn: false, skulls: [], friends: false, all: false };
+    var F = BOARD.init();
+    F.friends = false; F.all = false;
     var seq = 0, openDrop = null, rows = [], dropHost = null;
 
     function open(m) {
       var body = modal.open();
-      if (m && MODE_BY[m]) F.mode = m;
+      if (m) BOARD.openWith(F, m);
       if (!S.ready) { notReady(body); onReady(function () { if (modal.isOpen()) open(); }); return; }
       render();
     }
@@ -1213,71 +1544,15 @@
       return l;
     }
 
-    function renderTags(bar) {
-      bar.textContent = '';
-      var versus = F.mode === 'versus';
-      // game type: the label shows the current one; the dropdown picks another
-      var gtLabel = versus ? 'Any game type' : MODE_BY[F.mode].name;
-      bar.appendChild(tag(gtLabel, !versus, function () { if (versus) { F.mode = 'marathon'; refresh(); } }, versus ? null : function (drop) {
-        drop.appendChild(el('div', 'lb-drop-title', 'Game type'));
-        MODES.filter(function (m) { return m.id !== 'versus'; }).forEach(function (m) {
-          drop.appendChild(radio('lb-mode', m.name, F.mode === m.id, function () { F.mode = m.id; closeDrops(); refresh(); }));
-        });
-      }));
-      bar.appendChild(tag('Solo', !versus, function () { if (versus) { F.mode = 'marathon'; refresh(); } }));
-      var vLabel = 'Versus' + (versus && !(F.kinds.online && F.kinds.cpu) ? (F.kinds.online ? ' · online' : ' · vs CPU') : '') +
-        (versus && F.versusType ? (F.versusType === 'elim' ? ' · elimination' : ' · last standing') : '');
-      bar.appendChild(tag(vLabel, versus, function () { F.mode = versus ? 'marathon' : 'versus'; refresh(); }, function (drop) {
-        drop.appendChild(el('div', 'lb-drop-title', 'Opponents'));
-        drop.appendChild(check('Online players', F.kinds.online, function (v) { F.kinds.online = v || !F.kinds.cpu; F.mode = 'versus'; refresh(true); }));
-        drop.appendChild(check('vs CPU', F.kinds.cpu, function (v) { F.kinds.cpu = v || !F.kinds.online; F.mode = 'versus'; refresh(true); }));
-        drop.appendChild(el('div', 'lb-drop-title', 'Rules'));
-        [[null, 'Any rules'], ['last', 'Last Standing'], ['elim', 'Elimination']].forEach(function (x) {
-          drop.appendChild(radio('lb-vt', x[1], F.versusType === x[0], function () { F.versusType = x[0]; F.mode = 'versus'; refresh(true); }));
-        });
-      }));
-      var skLabel = el('span', 'lb-sk-label');
-      skLabel.appendChild(el('span', null, F.skullsOn ? (F.skulls.length ? 'Skulls · ' + F.skulls.length : 'Skulls on') : 'No skulls'));
-      bar.appendChild(tag(skLabel, F.skullsOn, function () { F.skullsOn = !F.skullsOn; refresh(); }, function (drop) {
-        drop.classList.add('wide');
-        var head = el('div', 'lb-drop-head');
-        head.appendChild(el('div', 'lb-drop-title', 'Runs that used every ticked skull'));
-        head.appendChild(btn('Clear', null, function () { F.skulls = []; drop.textContent = ''; fillSkulls(drop); refresh(true); }));
-        drop.appendChild(head);
-        fillSkulls(drop);
-      }));
-      function fillSkulls(drop) {
-        if (!drop.querySelector('.lb-drop-head')) {
-          var head = el('div', 'lb-drop-head');
-          head.appendChild(el('div', 'lb-drop-title', 'Runs that used every ticked skull'));
-          head.appendChild(btn('Clear', null, function () { F.skulls = []; drop.textContent = ''; fillSkulls(drop); refresh(true); }));
-          drop.appendChild(head);
-        }
-        [['mod', 'Modifiers'], ['power', 'Power-ups'], ['attack', 'Versus attacks']].forEach(function (g) {
-          var list = skullList().filter(function (s) { return s.cat === g[0]; });
-          if (!list.length) return;
-          drop.appendChild(el('div', 'lb-drop-sub', g[1]));
-          var grid = el('div', 'lb-skull-grid');
-          list.forEach(function (s) {
-            grid.appendChild(check(s.name, F.skulls.indexOf(s.id) !== -1, function (v) {
-              var at = F.skulls.indexOf(s.id);
-              if (v && at === -1) F.skulls.push(s.id);
-              if (!v && at !== -1) F.skulls.splice(at, 1);
-              F.skullsOn = true;
-              refresh(true);
-            }, skullIcon(s.id)));
-          });
-          drop.appendChild(grid);
-        });
-      }
-      bar.appendChild(tag('Friends', F.friends, function () { F.friends = !F.friends; refresh(); }));
-      bar.appendChild(tag(F.all ? 'Every run' : 'Best per player', F.all, function () { F.all = !F.all; refresh(); }));
+    function renderTags(target) {
+      target.textContent = '';
+      BOARD.tags(F, { tag: tag, check: check, radio: radio, closeDrops: closeDrops, refresh: refresh, bar: target });
+      target.appendChild(tag('Friends', F.friends, function () { F.friends = !F.friends; refresh(); }));
+      target.appendChild(tag(F.all ? 'Every run' : 'Best per player', F.all, function () { F.all = !F.all; refresh(); }));
     }
 
     function describe() {
-      var m = MODE_BY[F.mode], parts = [];
-      parts.push(F.mode === 'versus' ? 'Versus runs ranked by points' : m.name + (m.unit === 'time' ? (m.asc ? ', fastest first' : ', longest first') : ', highest score first'));
-      parts.push(F.skullsOn ? (F.skulls.length ? 'with ' + F.skulls.map(skullName).join(', ') : 'with any skulls') : 'no skulls (ranked)');
+      var parts = BOARD.describe(F);
       if (F.friends) parts.push('you and your friends');
       parts.push(F.all ? 'every run' : 'best run per player');
       return parts.join(' · ');
@@ -1326,58 +1601,49 @@
     }
 
     function load() {
-      var my = ++seq, m = MODE_BY[F.mode];
+      var my = ++seq;
       list.textContent = '';
       list.appendChild(el('li', 'soc-empty', 'Loading…'));
       hidePane();
-      var kinds = F.mode === 'versus' ? ['online', 'cpu'].filter(function (k) { return F.kinds[k]; }) : ['solo'];
-      var ids = F.friends ? [B.uid()].concat(S.friends.filter(function (f) { return f.status === 'accepted'; }).map(function (f) { return f.id; })) : null;
-      B.runs({ mode: F.mode, kinds: kinds, versusType: F.mode === 'versus' ? F.versusType : null, skullsOn: F.skullsOn, skulls: F.skulls.slice(), userIds: ids, asc: m.asc })
-        .then(function (data) {
-          if (my !== seq) return;
-          if (!F.all) {
-            var seen = {};
-            data = data.filter(function (r) { if (seen[r.user_id]) return false; seen[r.user_id] = true; return true; });
-          }
-          rows = data.slice(0, 50);
-          paint();
-        }).catch(function (e) {
-          if (my !== seq) return;
-          console.warn('[social] board', e);
-          list.textContent = '';
-          list.appendChild(el('li', 'soc-empty', 'Couldn\'t load the leaderboard.'));
-        });
+      var q = BOARD.query(F);
+      q.userIds = F.friends ? [B.uid()].concat(S.friends.filter(function (f) { return f.status === 'accepted'; }).map(function (f) { return f.id; })) : null;
+      B.runs(q).then(function (data) {
+        if (my !== seq) return;
+        if (!F.all) {
+          var seen = {};
+          data = data.filter(function (r) { if (seen[r.user_id]) return false; seen[r.user_id] = true; return true; });
+        }
+        rows = data.slice(0, 50);
+        paint();
+      }).catch(function (e) {
+        if (my !== seq) return;
+        console.warn('[social] board', e);
+        list.textContent = '';
+        list.appendChild(el('li', 'soc-empty', 'Couldn\'t load the leaderboard.'));
+      });
     }
-
-    function valueText(r) { var m = MODE_BY[r.mode]; return m && m.unit === 'time' ? clockTenths(r.value) : fmt(r.value); }
 
     function paint() {
       list.textContent = '';
-      if (!rows.length) { list.appendChild(el('li', 'soc-empty', 'No runs match these tags yet. Go set one.')); return; }
+      if (!rows.length) { list.appendChild(el('li', 'soc-empty', 'No runs match these tags yet. Try another game type or tag, or go set one.')); return; }
       rows.forEach(function (r, i) {
         var p = cleanProfile({ id: r.user_id, name: r.name, avatar: r.avatar, equipped: r.equipped, xp: r.xp });
         var li = el('li', 'soc-board-row lb-run' + (r.user_id === B.uid() ? ' me' : '') + (i < 3 ? ' top' + (i + 1) : ''));
         li.tabIndex = 0;
         li.setAttribute('role', 'button');
-        li.setAttribute('aria-label', 'Run details: ' + p.name + ', ' + valueText(r));
+        li.setAttribute('aria-label', 'Run details: ' + p.name + ', ' + BOARD.value(r, F));
         li.appendChild(el('span', 'soc-rank', '#' + (i + 1)));
         var who = el('span', 'soc-who');
         who.appendChild(avatarEl(p, 30));
         var t = el('span', 'soc-who-text');
         t.appendChild(nameSpan(p));
         var sub = el('small', 'lb-sub');
-        if (r.skulls && r.skulls.length) {
-          var icons = el('span', 'lb-run-skulls');
-          r.skulls.slice(0, 5).forEach(function (id) { icons.appendChild(skullIcon(id)); });
-          if (r.skulls.length > 5) icons.appendChild(el('b', null, '+' + (r.skulls.length - 5)));
-          sub.appendChild(icons);
-        }
-        sub.appendChild(document.createTextNode(r.mode === 'versus' ? (r.won ? 'Won' : 'Place ' + (r.place || '–')) + ' · ' + ((r.players || []).length || 2) + ' players' : 'Level ' + levelOf(p.xp)));
+        BOARD.sub(r, p, sub);
         t.appendChild(sub);
         who.appendChild(t);
         li.appendChild(who);
-        li.appendChild(el('span', 'soc-score', valueText(r)));
-        li.appendChild(el('span', 'soc-meta', (r.multiplier && Math.abs(r.multiplier - 1) > 0.01 ? '×' + r.multiplier + ' · ' : '') + (r.mode === 'marathon' ? 'lvl ' + r.level + ' · ' : '') + r.lines + ' lines · ' + ago(r.created_at)));
+        li.appendChild(el('span', 'soc-score', BOARD.value(r, F)));
+        li.appendChild(el('span', 'soc-meta', BOARD.meta(r)));
         function show() {
           Array.prototype.forEach.call(list.querySelectorAll('.lb-run.sel'), function (x) { x.classList.remove('sel'); });
           li.classList.add('sel');
@@ -1391,13 +1657,12 @@
 
     function hidePane() { if (pane) { pane.classList.add('hidden'); pane.textContent = ''; } }
 
-    // The run's info pane: who, when, the numbers, the skulls that were on, and everyone in a versus game.
+    // The run's info pane: who, when, the numbers, the game's own sections, and everyone else in a versus game.
     function showPane(r, p) {
       pane.textContent = '';
       pane.classList.remove('hidden');
-      var m = MODE_BY[r.mode];
       var head = el('div', 'lb-pane-head');
-      head.appendChild(el('span', 'lb-pane-kicker', r.mode === 'versus' ? (r.kind === 'cpu' ? 'Versus CPU' : 'Online versus') + (r.versus_type ? ' · ' + (r.versus_type === 'elim' ? 'Elimination' : 'Last Standing') : '') : 'Solo · ' + m.name));
+      head.appendChild(el('span', 'lb-pane-kicker', BOARD.kicker(r)));
       var x = el('button', 'soc-x', '×');
       x.type = 'button';
       x.setAttribute('aria-label', 'Close run details');
@@ -1413,22 +1678,13 @@
       who.appendChild(t);
       who.addEventListener('click', function () { modal.close(); ProfileView.open(r.user_id); });
       pane.appendChild(who);
-      pane.appendChild(el('div', 'lb-pane-value', valueText(r)));
+      pane.appendChild(el('div', 'lb-pane-value', BOARD.value(r, F)));
       var stats = el('div', 'soc-stats lb-pane-stats');
-      [['Points', fmt(r.score)], ['Lines', fmt(r.lines)], [r.mode === 'versus' ? 'Result' : 'Level', r.mode === 'versus' ? (r.won ? 'Won' : 'Place ' + (r.place || '–')) : String(r.level)],
-        ['Time', clockTenths(Math.round((r.elapsed || 0) / 100))], ['Multiplier', '×' + (r.multiplier || 1)], ['Skulls', String((r.skulls || []).length)]].forEach(function (s) {
+      BOARD.stats(r).forEach(function (s) {
         var d = el('div'); d.appendChild(el('b', null, s[1])); d.appendChild(el('span', null, s[0])); stats.appendChild(d);
       });
       pane.appendChild(stats);
-      var sk = el('section', 'soc-sect');
-      sk.appendChild(el('h3', null, 'Skulls on'));
-      if (!r.skulls || !r.skulls.length) sk.appendChild(el('p', 'soc-note', 'None. A ranked run.'));
-      else {
-        var grid = el('div', 'lb-pane-skulls');
-        r.skulls.forEach(function (id) { var s = el('span', 'lb-pane-skull'); s.appendChild(skullIcon(id)); s.appendChild(el('span', null, skullName(id))); grid.appendChild(s); });
-        sk.appendChild(grid);
-      }
-      pane.appendChild(sk);
+      BOARD.sections(r, pane);
       if (r.players && r.players.length) {
         var ps = el('section', 'soc-sect');
         ps.appendChild(el('h3', null, 'Players'));
@@ -1479,7 +1735,7 @@
       }
       B.lobbies().then(function (rows) {
         list.textContent = '';
-        var mine = window.TetrisApp && window.TetrisApp.lobby();
+        var mine = App().lobby();
         rows = rows.filter(function (r) { return !mine || r.code !== mine.code; });
         var old = body.querySelector('.soc-empty');
         if (old) old.remove();
@@ -1516,7 +1772,7 @@
   // Host side: keep this lobby's row fresh while it's public; remove it when it isn't.
   function lobbyChanged() {
     if (!S.ready) return;
-    var lob = window.TetrisApp && window.TetrisApp.lobby();
+    var lob = App().lobby();
     var want = lob && lob.role === 'host' && S.lobby.publicOn;
     paintLobbyTools(lob);
     if (!want) {
@@ -1524,7 +1780,7 @@
       if (S.lobby.published) { B.unpublishLobby(S.lobby.published).catch(function () {}); S.lobby.published = null; }
       return;
     }
-    var row = { code: lob.code, host_name: S.me.name, players: lob.count, max_players: 4, rules: String(lob.rules || '').slice(0, 80), in_game: !!lob.inGame };
+    var row = { code: lob.code, game: GAME, host_name: S.me.name, players: lob.count, max_players: lob.max || 4, rules: String(lob.rules || '').slice(0, 80), in_game: !!lob.inGame };
     if (S.lobby.published && S.lobby.published !== lob.code) B.unpublishLobby(S.lobby.published).catch(function () {});
     S.lobby.published = lob.code;
     B.publishLobby(row).catch(function (e) { console.warn('[social] publish', e); });
@@ -1563,7 +1819,7 @@
       var body = modal.open();
       if (!S.ready) { notReady(body); return; }
       body.textContent = '';
-      var lob = window.TetrisApp && window.TetrisApp.lobby();
+      var lob = App().lobby();
       if (!lob) { body.appendChild(el('p', 'soc-empty', 'Open a lobby first.')); return; }
       var friends = S.friends.filter(function (f) { return f.status === 'accepted'; });
       var share = el('p', 'soc-note soc-share');
@@ -1766,6 +2022,43 @@
     }));
   }
 
+  // A Pong match ended (vs CPU or online; local two-player matches have no single owner, so they don't count).
+  // d: { online, won, myScore, theirScore, rally (longest), elapsed (s), target, difficulty, opponent, ball, speed }
+  function pongFinished(d) {
+    if (!S.ready) return;
+    if (d.online) grant(d.won ? 100 : 20, d.won ? 50 : 8, d.won ? 'online win' : 'online match');
+    else grant(d.won ? ({ easy: 20, normal: 40, hard: 80, ultra: 110 }[d.difficulty] || 30) : 8, d.won ? ({ easy: 8, normal: 16, hard: 35, ultra: 50 }[d.difficulty] || 12) : 2, d.won ? 'match won' : null);
+    var info = { target: String(d.target || '7'), ball: String(d.ball || '').slice(0, 40), speed: Math.max(0, d.speed | 0) };
+    if (d.online) info.opponent = String(d.opponent || '').slice(0, 16); else info.difficulty = ['easy', 'normal', 'hard', 'ultra'].indexOf(d.difficulty) !== -1 ? d.difficulty : 'normal';
+    addRun({ kind: d.online ? 'online' : 'cpu', mode: 'pong', value: Math.max(0, d.rally | 0), score: Math.max(0, d.myScore | 0), lines: Math.max(0, d.theirScore | 0),
+      level: 1, elapsed: Math.max(0, Math.round((d.elapsed || 0) * 1000)), skulls: [], multiplier: 1, won: !!d.won, info: info });
+  }
+
+  // A Battleships battle ended (vs CPU or online).
+  // d: { online, won, shots, accuracy, shipsLost, enemyHits, elapsed (s), difficulty, opponent }
+  function battleshipsFinished(d) {
+    if (!S.ready) return;
+    if (d.online) grant(d.won ? 100 : 20, d.won ? 50 : 8, d.won ? 'online win' : 'online battle');
+    else grant(d.won ? ({ easy: 30, normal: 50, hard: 70, ultra: 95 }[d.difficulty] || 30) : 8, d.won ? ({ easy: 12, normal: 20, hard: 30, ultra: 42 }[d.difficulty] || 12) : 2, d.won ? 'battle won' : null);
+    var info = { enemyHits: Math.max(0, d.enemyHits | 0) };
+    if (d.online) info.opponent = String(d.opponent || '').slice(0, 16); else info.difficulty = ['easy', 'normal', 'hard', 'ultra'].indexOf(d.difficulty) !== -1 ? d.difficulty : 'normal';
+    addRun({ kind: d.online ? 'online' : 'cpu', mode: 'battleships', value: Math.max(0, d.shots | 0), score: Math.max(0, Math.min(100, d.accuracy | 0)),
+      lines: Math.max(0, Math.min(5, d.shipsLost | 0)), level: 1, elapsed: Math.max(0, Math.round((d.elapsed || 0) * 1000)), skulls: [], multiplier: 1, won: !!d.won, info: info });
+  }
+
+  // A Chess game ended (vs CPU or online). d: { online, won (true/false/null for a draw), myMoves, material (pawns, your side),
+  //   method, color, difficulty, opponent, clock, elapsed (s) }
+  function chessFinished(d) {
+    if (!S.ready) return;
+    var won = d.won === true;
+    if (d.online) grant(won ? 120 : 25, won ? 60 : 10, won ? 'online win' : 'online game');
+    else grant(won ? ({ easy: 25, normal: 60, hard: 120, ultra: 150 }[d.difficulty] || 40) : 10, won ? ({ easy: 10, normal: 25, hard: 55, ultra: 70 }[d.difficulty] || 15) : 3, won ? 'game won' : null);
+    var info = { color: d.color === 'b' ? 'b' : 'w', method: String(d.method || '').slice(0, 12), clock: String(d.clock || '0'), material: Math.max(-99, Math.min(99, Math.round(d.material || 0))) };
+    if (d.online) info.opponent = String(d.opponent || '').slice(0, 16); else info.difficulty = ['easy', 'normal', 'hard', 'ultra'].indexOf(d.difficulty) !== -1 ? d.difficulty : 'normal';
+    addRun({ kind: d.online ? 'online' : 'cpu', mode: 'chess', value: Math.max(0, d.myMoves | 0), score: Math.max(0, Math.min(99, Math.round(d.material || 0))),
+      lines: 0, level: 1, elapsed: Math.max(0, Math.round((d.elapsed || 0) * 1000)), skulls: [], multiplier: 1, won: won, info: info });
+  }
+
   // What other players should see of you in a lobby: your id (to open your profile) and name style.
   function card() { return S.ready ? { uid: B.uid(), eq: { name: S.me.equipped.name, glow: S.me.equipped.glow, frame: S.me.equipped.frame } } : null; }
   function cleanCard(c) {
@@ -1806,10 +2099,13 @@
     start();
   }
 
-  window.TetrisSocial = {
+  window.GameSocial = window.TetrisSocial = {
     enabled: ENABLED,
     soloFinished: soloFinished,
     versusFinished: versusFinished,
+    pongFinished: pongFinished,
+    battleshipsFinished: battleshipsFinished,
+    chessFinished: chessFinished,
     lobbyChanged: lobbyChanged,
     card: card,
     cleanCard: cleanCard,

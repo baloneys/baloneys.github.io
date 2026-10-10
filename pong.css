@@ -1,0 +1,35 @@
+/* pong.css: Pong-only styles (animated background, achievements button). Loaded after games.css. */
+
+/* ---------- animated background (pong-bg.js) ---------- */
+
+.pong-page { position: relative; isolation: isolate; }
+.pong-page > *:not(.pong-bg) { position: relative; z-index: 1; }
+
+.pong-bg {
+  /* the whole window, behind the page content */
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  opacity: 0.6;
+  pointer-events: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  -webkit-mask-image: radial-gradient(ellipse 95% 90% at 50% 45%, #000 52%, transparent 100%);
+  mask-image: radial-gradient(ellipse 95% 90% at 50% 45%, #000 52%, transparent 100%);
+  transition: opacity 0.8s ease;
+}
+.pong-page.playing .pong-bg { opacity: 0.8; }
+.pong-bg.fallback {
+  background: radial-gradient(ellipse at 25% 50%, color-mix(in srgb, var(--color-primary) 30%, transparent), transparent 60%),
+              radial-gradient(ellipse at 75% 50%, color-mix(in srgb, #e60065 25%, transparent), transparent 60%);
+}
+
+/* panels and the court let a little of the background through */
+.pong-page .panel { background: linear-gradient(145deg, rgba(24,18,39,.62), rgba(7,10,20,.58)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-color: rgba(219,194,255,.16); }
+.pong-page .stage { background: rgba(7, 5, 11, 0.5); }
+.pong-page .hud-stat, .pong-page .hud .btn { background: rgba(15,11,29,.58); border-color: rgba(220,188,255,.22); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+
+.pong-page .menu-tools { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px; }

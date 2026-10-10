@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en" class="no-js" data-game="battleships">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Battleships | baloneys</title>
+    <title>Battleships | balcade</title>
     <meta name="description" content="Battleships against a smart CPU or a friend online." />
     <meta name="theme-color" content="#050505" />
-    <meta property="og:title" content="Battleships | baloneys" />
+    <meta property="og:title" content="Battleships | balcade" />
     <meta property="og:description" content="Battleships against a smart CPU or a friend online." />
     <link rel="canonical" href="https://kanaris-beans.com/battleships" />
     <link rel="icon" href="public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" sizes="32x32" />
@@ -29,10 +29,21 @@
     </style>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="home.css" />
-    <link rel="stylesheet" href="games.css" />
+    <!-- Bump the version on local assets when deploying changes so cached files cannot mix releases. -->
+    <link rel="stylesheet" href="games.css?v=20261010-18" />
+    <link rel="stylesheet" href="games-achievements.css?v=20261010-18" />
+    <link rel="stylesheet" href="games-social.css?v=20261010-18" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
-    <script src="games-common.js" defer></script>
-    <script src="battleships.js" defer></script>
+    <script src="games-common.js?v=20261010-18" defer></script>
+    <script src="games-bg.js?v=20261010-18" defer></script>
+    <script src="battleships-bg.js?v=20261010-18" defer></script>
+    <script src="games-achievements.js?v=20261010-18" defer></script>
+    <script src="battleships-achievements.js?v=20261010-18" defer></script>
+    <script src="games-config.js?v=20261010-18" defer></script>
+    <script src="games-social.js?v=20261010-18" defer></script>
+    <link rel="stylesheet" href="game-chat.css?v=20261010-18" />
+    <script src="game-chat.js?v=20261010-18" defer></script>
+    <script src="battleships.js?v=20261010-18" defer></script>
   </head>
   <body>
     <!-- shared icons -->
@@ -48,8 +59,8 @@
     <!-- Navigation -->
     <header class="navigation-wrapper" id="siteNav">
       <nav class="navigation-container" aria-label="Main">
-        <a href="index.html" class="navigation-logo" aria-label="baloneys home">
-          <span class="section-title">baloneys</span>
+        <a href="index.html" class="navigation-logo" aria-label="balcade home">
+          <span class="section-title">balcade</span>
         </a>
         <div class="navigation-desktop-menu">
           <a href="index.html" class="navigation-link is-straya">Straya</a>
@@ -67,7 +78,7 @@
 
     <div id="mobileOverlay" class="navigation-mobile-overlay" role="dialog" aria-modal="true" aria-label="Menu">
       <div class="navigation-mobile-header">
-        <a href="index.html" class="navigation-logo"><span class="section-title">baloneys</span></a>
+        <a href="index.html" class="navigation-logo"><span class="section-title">balcade</span></a>
         <button id="navClose" class="navigation-toggle" aria-label="Close menu">
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
@@ -87,7 +98,7 @@
     </div>
 
     <main id="main">
-      <div class="game-page">
+      <div class="game-page bg-page">
         <header class="game-head">
           <h1 class="game-title">battleships</h1>
           <p class="game-tagline">hits keep your turn. sink the whole fleet to win.</p>
@@ -100,9 +111,14 @@
           </div>
           <div class="option-row" id="difficultyChips">
             <span class="option-label">CPU difficulty</span>
-            <button class="chip" data-value="easy">Easy</button><button class="chip" data-value="hard">Hard</button>
+            <button class="chip" data-value="easy">Easy</button><button class="chip" data-value="normal">Normal</button><button class="chip" data-value="hard">Hard</button><button class="chip" data-value="ultra">Ultra hard</button>
           </div>
           <p class="notice" id="menuStats"></p>
+
+          <div class="menu-tools">
+            <button class="btn btn-sm btn-outline ach-launch" id="achBtn" type="button">Achievements <span class="ach-count" id="achCount"></span></button>
+            <button class="btn btn-sm btn-outline" id="shuffleBg" type="button">Shuffle background</button>
+          </div>
         </section>
 
         <section class="panel hidden" id="onlinePanel">
@@ -158,6 +174,8 @@
           <div class="hud">
             <div class="hud-group"><span class="hud-stat bs-turn" id="turnText"></span></div>
             <div class="hud-group">
+              <button class="btn btn-sm btn-outline" id="hudAch" type="button" title="Achievements">Trophies</button>
+              <button class="btn btn-sm btn-outline" id="hudShuffleBg" type="button" title="Shuffle background">Scene</button>
               <button class="btn btn-sm btn-outline" id="soundBtn" type="button">Sound</button>
               <button class="btn btn-sm btn-outline" id="quitBtn" type="button">Quit</button>
             </div>
@@ -194,7 +212,7 @@
       <div class="footer-container">
         <div class="footer-grid">
           <div class="footer-brand-column">
-            <a href="index.html" class="footer-logo-link"><span class="footer-logo-text">baloneys</span></a>
+            <a href="index.html" class="footer-logo-link"><span class="footer-logo-text">balcade</span></a>
             <p class="footer-brand-description section-content">
               Crafting highly immersive experiences,<br />
               environments, and robust prefabs.

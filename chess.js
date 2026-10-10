@@ -3,6 +3,9 @@
   'use strict';
 
   var G = window.Games;
+  var ACH = window.ChessAchievements;
+  var BG = window.ChessBG;
+  var SOC = window.GameSocial && window.GameSocial.enabled ? window.GameSocial : null;
   var $ = function (s, r) { return (r || document).querySelector(s); };
 
   /* =================================================================
@@ -254,7 +257,8 @@
     return alpha;
   }
 
-  var LEVELS = { easy: { depth: 1, noise: 120 }, normal: { depth: 2, noise: 25 }, hard: { depth: 3, noise: 0 } };
+  // The strongest tier keeps the mobile search bounded at three plies.
+  var LEVELS = { easy: { depth: 1, noise: 120 }, normal: { depth: 2, noise: 25 }, hard: { depth: 3, noise: 12 }, ultra: { depth: 3, noise: 0 } };
 
   function bestMove(s, level) {
     var cfg = LEVELS[level] || LEVELS.normal;
@@ -299,7 +303,11 @@
       flipped: myColor === 'b',
       clock: mins ? { w: mins * 60000, b: mins * 60000, inc: mins === 3 ? 2000 : 0, last: null } : null,
       thinking: false,
-      drawOfferFrom: null
+      drawOfferFrom: null,
+      startedAt: performance.now(),
+      clockSetting: settings.clock,
+      worstDeficit: 0,
+      reported: false
     };
   }
 
@@ -311,6 +319,9 @@
     newGame(mode, myColor);
     buildBoard();
     screen('gameView');
+    $('.game-page').classList.add('playing');
+    if (BG) { BG.scene(0); BG.energy(0); BG.balance(0); BG.focus($('#board')); }
+    if (SOC && mode === 'online') SOC.lobbyChanged();
     G.hide($('#overlay'));
     $('#undoBtn').classList.toggle('hidden', mode === 'online');
     $('#drawBtn').classList.toggle('hidden', mode !== 'online');
@@ -410,7 +421,13 @@
     if (game.mode !== 'local' && c === game.myColor) profile = G.Profile.get();
     else if (game.mode === 'online') profile = net.them;
     if (profile) el.appendChild(G.Profile.avatar(profile, 24));
-    el.appendChild(document.createTextNode(playerLabel(c)));
+    var label = document.createElement('span');
+    label.textContent = playerLabel(c);
+    if (SOC && game.mode === 'online') {
+      var card = c === game.myColor ? SOC.card() : net.them && net.them.card;
+      if (card) SOC.decorateName(label, card);
+    }
+    el.appendChild(label);
   }
 
   function playerLabel(c) {
@@ -520,6 +537,22 @@
     else G.Sound.beep(520, 0.05, 'triangle', 0.04);
     if (check) G.Sound.beep(880, 0.12, 'triangle', 0.05);
 
+    var material = materialFor(game.state, game.myColor);
+    if (game.myColor) game.worstDeficit = Math.max(game.worstDeficit, -material);
+    if (BG) {
+      var cell = $('#board').children[game.flipped ? 63 - m.to : m.to];
+      BG.focus(cell);
+      BG.hit(cell, (m.captured || m.flag === 'ep') ? 1.6 : 0.6);
+      BG.energy(Math.min(1, game.history.length / 80 + (check ? 0.2 : 0)));
+      BG.balance(Math.max(-1, Math.min(1, material / 1500)));
+      if (check) BG.flash(0.7);
+      if (game.history.length % 10 === 0) BG.scene(Math.floor(game.history.length / 10) % 5);
+    }
+    if (local && ACH) ACH.event('move', {
+      capture: !!(m.captured || m.flag === 'ep'), check: check,
+      castle: m.flag === 'castleK' ? 'k' : m.flag === 'castleQ' ? 'q' : null,
+      ep: m.flag === 'ep', promo: m.promo || null
+    });
     if (local && game.mode === 'online') netSend({ t: 'move', from: m.from, to: m.to, promo: m.promo || null });
     checkEnd();
     render();
@@ -539,6 +572,32 @@
     }
   }
 
+  function materialFor(s, color) {
+    if (!color) return 0;
+    var total = 0;
+    s.board.forEach(function (p) {
+      if (p !== '.') total += (colorOf(p) === color ? 1 : -1) * VALUE[lower(p)];
+    });
+    return total;
+  }
+
+  function finishInfo(text, won) {
+    var method = /Checkmate/.test(text) ? 'mate' : /on time/.test(text) ? 'time' :
+      /resign/i.test(text) ? 'resign' : /disconnected/.test(text) ? 'abandon' :
+      /Stalemate/.test(text) ? 'stalemate' : 'draw';
+    var last = game.history[game.history.length - 1];
+    var myMoves = game.history.filter(function (h) { return h.state.turn === game.myColor; }).length;
+    var matePiece = method === 'mate' && last ? lower(last.move.promo || last.state.board[last.move.from]) : null;
+    return {
+      mode: game.mode, won: won, method: method, difficulty: settings.difficulty,
+      color: game.myColor, myMoves: myMoves, matePiece: matePiece, worstDeficit: game.worstDeficit,
+      material: materialFor(game.state, game.myColor) / 100,
+      clock: game.clockSetting,
+      elapsed: (performance.now() - game.startedAt) / 1000,
+      opponent: net.them ? net.them.name : ''
+    };
+  }
+
   function endGame(text) {
     if (game.over) return;
     game.over = true;
@@ -547,7 +606,18 @@
     renderSide();
     var won = null;
     if (game.mode !== 'local' && /wins/.test(text)) won = (/White wins/.test(text) && game.myColor === 'w') || (/Black wins/.test(text) && game.myColor === 'b');
-    if (/resign/i.test(text) && game.mode !== 'local') won = !/^You/.test(text);
+    if (/resign|disconnected/i.test(text) && game.mode !== 'local') won = !/^You/.test(text);
+    if (!game.reported) {
+      game.reported = true;
+      var info = finishInfo(text, won);
+      if (ACH) ACH.event('game', info);
+      if (SOC && game.mode !== 'local') SOC.chessFinished({
+        online: game.mode === 'online', won: won, myMoves: info.myMoves,
+        material: info.material, method: info.method, color: info.color,
+        difficulty: info.difficulty, opponent: info.opponent, clock: info.clock, elapsed: info.elapsed
+      });
+      if (BG) BG.flash(won ? 1.4 : 0.8);
+    }
     $('#overlayTitle').textContent = won === true ? 'You win!' : won === false ? 'You lose' : text.split(' · ')[0];
     $('#overlayText').textContent = text;
     G.show($('#overlay'));
@@ -567,7 +637,7 @@
   }
 
   function undo() {
-    if (!game || game.mode === 'online' || game.thinking || !game.history.length) return;
+    if (!game || game.over || game.mode === 'online' || game.thinking || !game.history.length) return;
     var steps = game.mode === 'cpu' ? (game.state.turn === game.myColor ? 2 : 1) : 1;
     for (var i = 0; i < steps && game.history.length; i++) {
       var h = game.history.pop();
@@ -576,6 +646,11 @@
     }
     game.over = false;
     game.result = '';
+    game.worstDeficit = 0;
+    game.history.forEach(function (h) {
+      var v = materialFor(apply(h.state, h.move), game.myColor);
+      game.worstDeficit = Math.max(game.worstDeficit, -v);
+    });
     game.selected = null;
     game.legal = legalMoves(game.state);
     G.hide($('#overlay'));
@@ -594,7 +669,7 @@
      Online
      ================================================================= */
 
-  var net = { role: null, session: null, myReady: false, theirReady: false, them: null };
+  var net = { role: null, session: null, code: null, myReady: false, theirReady: false, them: null };
 
   function netSend(msg) {
     if (!net.session) return;
@@ -607,10 +682,13 @@
     switch (d.t) {
       case 'hi':
         net.them = G.Profile.sanitize(d.profile);
+        net.them.card = SOC ? SOC.cleanCard(d.card) : null;
         renderLobby();
         break;
       case 'hello':
-        net.them = G.Profile.sanitize(d.profile); renderLobby(); break;
+        net.them = G.Profile.sanitize(d.profile);
+        net.them.card = SOC ? SOC.cleanCard(d.card) : null;
+        renderLobby(); break;
       case 'ready':
         net.theirReady = !!d.v;
         renderLobby();
@@ -672,6 +750,16 @@
     $('#readyBtn').disabled = !connected;
     $('#readyBtn').textContent = net.myReady ? 'Not ready' : 'Ready';
     $('#lobbyClock').textContent = settings.clock === '0' ? 'No clock' : settings.clock + ' minute clock';
+    if (SOC) {
+      var rows = list.querySelectorAll('.lobby-who > span:not(.avatar)');
+      if (rows.length >= 2) {
+        var mine = net.role === 'host' ? rows[0] : rows[1];
+        var theirs = net.role === 'host' ? rows[1] : rows[0];
+        if (SOC.card()) SOC.decorateName(mine, SOC.card());
+        if (net.them && net.them.card) SOC.decorateName(theirs, net.them.card);
+      }
+      SOC.lobbyChanged();
+    }
   }
 
   function createLobby() {
@@ -681,12 +769,13 @@
     net.session = G.Net.host('chess', {
       maxGuests: 1,
       onReady: function (code) {
+        net.code = code;
         $('#lobbyCode').textContent = code;
         G.show($('#lobbyCodeBox'));
         screen('lobbyPanel');
         renderLobby();
       },
-      onJoin: function (conn) { net.session.send(conn, { t: 'hello', profile: G.Profile.get() }); G.Sound.beep(660, 0.1, 'triangle'); renderLobby(); },
+      onJoin: function (conn) { net.session.send(conn, { t: 'hello', profile: G.Profile.get(), card: SOC ? SOC.card() : null }); G.Sound.beep(660, 0.1, 'triangle'); renderLobby(); },
       onData: function (conn, d) { onNet(d); },
       onLeave: opponentLeft,
       onError: netError
@@ -697,10 +786,11 @@
     var code = G.cleanCode($('#joinCode').value);
     if (code.length !== 5) return netError('Lobby codes are 5 characters.');
     net.role = 'guest';
+    net.code = code;
     net.myReady = net.theirReady = false;
     setNotice('Connecting…');
     net.session = G.Net.join('chess', code, {
-      onOpen: function () { net.session.send({ t: 'hi', profile: G.Profile.get() }); G.hide($('#lobbyCodeBox')); screen('lobbyPanel'); renderLobby(); },
+      onOpen: function () { net.session.send({ t: 'hi', profile: G.Profile.get(), card: SOC ? SOC.card() : null }); G.hide($('#lobbyCodeBox')); screen('lobbyPanel'); renderLobby(); },
       onData: onNet,
       onClose: opponentLeft,
       onError: netError
@@ -718,7 +808,8 @@
     net.session.close();
     net.session = null;
     if (game && !game.over) endGame('Opponent disconnected · you win');
-    else netError('Lost connection to your opponent.');
+    if (SOC) SOC.lobbyChanged();
+    if (!game || !game.over) netError('Lost connection to your opponent.');
   }
 
   function setNotice(msg, err) {
@@ -730,13 +821,19 @@
     setNotice(msg, true);
     if (net.session) { net.session.close(); net.session = null; }
     screen('onlinePanel');
+    if (SOC) SOC.lobbyChanged();
   }
 
   function toMenu() {
     clearInterval(clockTimer);
     if (net.session) { net.session.close(); net.session = null; }
     net.role = null;
+    net.code = null;
+    net.them = null;
     game = null;
+    $('.game-page').classList.remove('playing');
+    if (BG) { BG.energy(0); BG.balance(0); }
+    if (SOC) SOC.lobbyChanged();
     G.hide($('#promoModal'));
     G.hide($('#drawOffer'));
     screen('menuPanel');
@@ -800,9 +897,60 @@
       startMode(mode, mode === 'cpu' ? (settings.side === 'r' ? (Math.random() < 0.5 ? 'w' : 'b') : settings.side) : color);
     });
     $('#menuBtn').addEventListener('click', toMenu);
+    $('#achBtn').addEventListener('click', function () { if (ACH) ACH.open(); });
+    $('#hudAch').addEventListener('click', function () { if (ACH) ACH.open(); });
+    if (ACH) {
+      var paintAch = function () { var c = ACH.count(); $('#achCount').textContent = c.unlocked + '/' + c.total; };
+      ACH.onChange(paintAch);
+      paintAch();
+    }
+    ['#shuffleBg', '#hudShuffleBg'].forEach(function (id) {
+      $(id).addEventListener('click', function () { if (BG) BG.shuffle(); });
+    });
+    if (BG) { BG.mount($('.game-page')); BG.scene(Math.floor(Math.random() * 5)); }
     G.Sound.bindButton($('#soundBtn'));
-    G.Profile.mount($('#profileEditor'));
+    mountProfileEditor();
     screen('menuPanel');
+    joinFromLink();
+  }
+
+  function mountProfileEditor() {
+    G.Profile.mount($('#profileEditor'), function () {
+      if (net.session && !game) {
+        netSend({ t: net.role === 'host' ? 'hello' : 'hi', profile: G.Profile.get(), card: SOC ? SOC.card() : null });
+        renderLobby();
+      }
+      if (SOC) SOC.localProfileChanged(G.Profile.get());
+    });
+  }
+
+  window.GameApp = window.ChessApp = {
+    join: function (code) {
+      code = G.cleanCode(code);
+      if (code.length !== 5) return;
+      if (game && !game.over && game.mode === 'online') { G.banner('Finish or leave this game first'); return; }
+      if (net.session && net.code === code) return;
+      toMenu();
+      screen('onlinePanel');
+      $('#joinCode').value = code;
+      joinLobby();
+    },
+    lobby: function () {
+      if (!net.session || !net.role || !net.code) return null;
+      var connected = net.role === 'guest' || !!(net.session.conns && net.session.conns.length);
+      return { code: net.code, role: net.role, count: connected ? 2 : 1, max: 2,
+        rules: 'Chess · ' + (settings.clock === '0' ? 'no clock' : settings.clock + ' min'), inGame: !!(game && !game.over) };
+    },
+    pause: function () {},
+    profileChanged: function () { mountProfileEditor(); if (net.session && !game) renderLobby(); }
+  };
+
+  function joinFromLink() {
+    var m = location.search.match(/[?&]join=([A-Za-z0-9]{5})(?:&|$)/);
+    if (!m) return;
+    var rest = location.search.replace(/^\?/, '').split('&').filter(function (kv) { return kv && !/^join=/.test(kv); }).join('&');
+    history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+    window.GameApp.join(m[1]);
   }
 
   // Exposed for tests

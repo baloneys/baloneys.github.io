@@ -1,4 +1,4 @@
--- Tetris social backend (Supabase free tier).
+-- Social backend for the balcade games (Tetris, Pong, Battleships, Chess), Supabase free tier.
 --
 -- Run this once in the Supabase dashboard: SQL Editor -> New query -> paste -> Run.
 -- Then: Authentication -> Sign In / Providers -> enable "Allow anonymous sign-ins".
@@ -21,8 +21,8 @@ create table if not exists public.tetris_profiles (
   bio text not null default '' check (char_length(bio) <= 190),
   tags text[] not null default '{}' check (cardinality(tags) <= 5),
   badges text[] not null default '{}' check (cardinality(badges) <= 3),
-  featured text[] not null default '{}' check (cardinality(featured) <= 3),
-  achievements jsonb not null default '{}'::jsonb,
+  featured text[] not null default '{}' check (cardinality(featured) <= 12),  -- 'game:id', up to 3 per game
+  achievements jsonb not null default '{}'::jsonb,                               -- { 'game:id': unlock time ms }
   xp integer not null default 0 check (xp between 0 and 50000000),
   points integer not null default 0 check (points between 0 and 50000000),
   owned text[] not null default '{}' check (cardinality(owned) <= 200),
@@ -54,15 +54,16 @@ create table if not exists public.tetris_notifications (
 );
 create index if not exists tetris_notifications_to on public.tetris_notifications (to_id, created_at desc);
 
--- Public high scores: every finished run, solo or versus, with or without skulls. The leaderboard filters
+-- Public high scores for Tetris and Pong: every finished run, solo or versus, with or without skulls. The leaderboard filters
 -- them with tags (game type, solo/versus, skulls...). value is what the run is ranked by: points, or tenths
 -- of a second for Sprint/Dig (lower is better) and Survival (higher is better). Versus runs rank by points.
 -- players: everyone in a versus game, for the run's info pane: [{ name, uid, cpu, score, lines, place }].
 create table if not exists public.tetris_runs (
   id bigint generated always as identity primary key,
   user_id uuid not null references public.tetris_profiles (id) on delete cascade,
+  game text not null default 'tetris' check (game in ('tetris', 'pong', 'battleships', 'chess')),
   kind text not null check (kind in ('solo', 'online', 'cpu')),
-  mode text not null check (mode in ('marathon', 'sprint', 'ultra', 'dig', 'survival', 'versus')),
+  mode text not null check (mode in ('marathon', 'sprint', 'ultra', 'dig', 'survival', 'versus', 'pong', 'battleships', 'chess')),
   versus_type text check (versus_type is null or versus_type in ('last', 'elim')),
   value integer not null check (value between 0 and 99999999),
   score integer not null default 0 check (score between 0 and 99999999),
@@ -75,14 +76,16 @@ create table if not exists public.tetris_runs (
   won boolean,
   place integer check (place is null or place between 1 and 4),
   players jsonb check (players is null or (jsonb_typeof(players) = 'array' and jsonb_array_length(players) <= 4 and length(players::text) < 4000)),
+  info jsonb check (info is null or (jsonb_typeof(info) = 'object' and length(info::text) < 1000)),  -- per-game extras (Pong: difficulty, target, ball...)
   created_at timestamptz not null default now()
 );
-create index if not exists tetris_runs_board on public.tetris_runs (mode, kind, skull_count, value);
+create index if not exists tetris_runs_board on public.tetris_runs (game, mode, kind, skull_count, value);
 create index if not exists tetris_runs_skulls on public.tetris_runs using gin (skulls);
 
 -- Public lobby finder. The host's browser refreshes its row every ~15s; rows older than a minute are stale.
 create table if not exists public.tetris_lobbies (
   code text primary key check (code ~ '^[A-Z0-9]{5}$'),
+  game text not null default 'tetris' check (game in ('tetris', 'pong', 'battleships', 'chess')),
   host_id uuid not null references public.tetris_profiles (id) on delete cascade,
   host_name text not null check (char_length(host_name) between 1 and 16),
   players integer not null default 1 check (players between 0 and 4),
@@ -144,13 +147,15 @@ create policy "lobbies host delete" on public.tetris_lobbies for delete using (a
 
 -- Runs with the player's name and look, for the leaderboard. Filtering (game type, solo/versus, skulls,
 -- friends) and best-per-player happen in the query and the browser.
-create or replace view public.tetris_board with (security_invoker = true) as
+drop view if exists public.tetris_board;
+create view public.tetris_board with (security_invoker = true) as
 select r.*, p.name, p.avatar, p.equipped, p.xp
 from public.tetris_runs r
 join public.tetris_profiles p on p.id = r.user_id;
 
 -- Lobbies whose host refreshed them in the last minute (by the database clock).
-create or replace view public.tetris_open_lobbies with (security_invoker = true) as
+drop view if exists public.tetris_open_lobbies;
+create view public.tetris_open_lobbies with (security_invoker = true) as
 select l.*, p.equipped, p.avatar, p.xp from public.tetris_lobbies l
 join public.tetris_profiles p on p.id = l.host_id
 where l.updated_at > now() - interval '60 seconds';

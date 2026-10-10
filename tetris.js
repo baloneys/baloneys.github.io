@@ -9,7 +9,7 @@
   var G = window.Games;
   var BG = window.TetrisBG || null;
   var ACH = window.TetrisAchievements || { event: function () {}, open: function () {}, count: function () { return { unlocked: 0, total: 0 }; }, onChange: function () {} };
-  // Profiles, friends, invites, XP, leaderboard and lobby finder (tetris-social.js); null when it's off.
+  // Profiles, friends, invites, XP, leaderboard and lobby finder (games-social.js); null when it's off.
   var SOC = window.TetrisSocial && window.TetrisSocial.enabled ? window.TetrisSocial : null;
   var $ = function (s, r) { return (r || document).querySelector(s); };
 
@@ -676,7 +676,8 @@
     $('#pauseBtn').classList.toggle('hidden', mode === 'online');
     $('#endBtn').classList.toggle('hidden', !(mode === 'online' && net.role === 'host'));
     G.show($('#touchPad'));
-    $('#touchPad').classList.toggle('hidden', mode === 'local');
+    $('#touchPadLabel').textContent = mode === 'local' ? 'Player 1 controls' : 'Touch controls';
+    $('#touchPadTwo').classList.toggle('hidden', mode !== 'local');
     $('#help').innerHTML = helpText();
     if (BG) {
       BG.setThemes(themesFor(players.filter(function (p) { return p.local; })[0] || players[0]), mode === 'online');
@@ -1102,7 +1103,7 @@
     });
     var players = order.map(function (p, i) {
       var card = p === me && SOC ? SOC.card() : p.card;
-      return { name: plain(p), uid: card ? card.uid : null, cpu: !!p.cpu || (!p.local && !p.card && game.mode === 'cpu'), score: p.score, lines: p.lines, place: i + 1 };
+      return { name: plain(p), uid: card ? card.uid : null, cpu: !!(p.cpu || p.isCpu), score: p.score, lines: p.lines, place: i + 1 };
     });
     var won = !!winnerName && plain(me) === winnerName;
     return { online: game.mode === 'online', won: won, versusType: game.versusType, score: me.score, lines: me.lines, level: me.level,
@@ -1767,23 +1768,26 @@
 
   // Touch pad: tap to act, hold left/right/down to repeat.
   function bindTouch() {
-    var repeatTimer = null;
-    $('#touchPad').addEventListener('pointerdown', function (e) {
-      var btn = e.target.closest('button[data-act]');
-      if (!btn || !game) return;
-      e.preventDefault();
-      var me = game.players.filter(isHuman)[0];
-      if (!me || game.paused || game.over) return;
-      var a = btn.dataset.act;
-      doAction(me, a);
-      if (a === 'left' || a === 'right' || a === 'soft') {
-        clearInterval(repeatTimer);
-        var start = Date.now();
-        repeatTimer = setInterval(function () { if (Date.now() - start > 170) doAction(me, a); }, 50);
-      }
-    });
-    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) {
-      $('#touchPad').addEventListener(ev, function () { clearInterval(repeatTimer); });
+    ['touchPad', 'touchPadTwo'].forEach(function (id, playerIndex) {
+      var pad = $('#' + id), repeats = {};
+      pad.addEventListener('pointerdown', function (e) {
+        var btn = e.target.closest('button[data-act]');
+        if (!btn || !game) return;
+        e.preventDefault();
+        var me = game.players.filter(isHuman)[playerIndex];
+        if (!me || game.paused || game.over) return;
+        var a = btn.dataset.act;
+        btn.setPointerCapture(e.pointerId);
+        doAction(me, a);
+        if (a === 'left' || a === 'right' || a === 'soft') {
+          var started = Date.now();
+          repeats[e.pointerId] = setInterval(function () { if (Date.now() - started > 170) doAction(me, a); }, 50);
+        }
+      });
+      function stop(e) { clearInterval(repeats[e.pointerId]); delete repeats[e.pointerId]; }
+      pad.addEventListener('pointerup', stop);
+      pad.addEventListener('pointercancel', stop);
+      window.addEventListener('blur', function () { Object.keys(repeats).forEach(function (key) { clearInterval(repeats[key]); delete repeats[key]; }); });
     });
   }
 
@@ -2282,6 +2286,7 @@
         var bot = new Player({ id: x.slot, name: String(x.name || 'CPU').slice(0, 40), palette: pal, local: net.role === 'host',
           controls: Cpu.NO_KEYS, lives: lv, versus: true, skulls: net.cfg.skulls });
         if (net.role === 'host') bot.cpu = Cpu.brain(x.cpu);
+        bot.isCpu = true;   // everyone knows it's a CPU, even where the host runs it
         return bot;
       }
       var pr = G.Profile.sanitize({ name: x.name, avatar: x.avatar });
@@ -2731,8 +2736,8 @@
     return r;
   }
 
-  // For tetris-social.js: join by code (invite links, the lobby finder, the bell) and read the current lobby.
-  window.TetrisApp = {
+  // For games-social.js: join by code (invite links, the lobby finder, the bell) and read the current lobby.
+  window.GameApp = window.TetrisApp = {
     join: function (code) {
       code = G.cleanCode(code);
       if (code.length !== 5) return;

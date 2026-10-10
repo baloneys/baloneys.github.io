@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Animated game scene</title>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#100720}canvas{display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;opacity:1!important;image-rendering:pixelated!important;pointer-events:none}canvas.fallback{background:radial-gradient(circle at 35% 25%,#8640ce,#110623 70%)}</style></head>
+<body><script>
+(function(){
+  'use strict';
+  var q=new URLSearchParams(location.search);
+  var files={tetris:['tetris-bg.js'],pong:['pong-bg.js'],battleships:['games-bg.js','battleships-bg.js'],chess:['games-bg.js','chess-bg.js']};
+  var names={tetris:'TetrisBG',pong:'PongBG',battleships:'BattleshipsBG',chess:'ChessBG'};
+  var game=files[q.get('game')]?q.get('game'):'tetris';
+  var scene=Math.max(0,Math.min(15,Number(q.get('scene'))||0));
+  window.ChatScenePixel=Math.max(1,Math.min(5,Number(q.get('pixel'))||1));
+  function load(list){if(!list.length){var bg=window[names[game]];if(!bg)return;bg.mount(document.body);if(bg.scene)bg.scene(scene);else bg.show(scene,42,scene>=4&&scene<=11);return;}var script=document.createElement('script');script.src=list.shift();script.onload=function(){load(list);};document.head.appendChild(script);}
+  load(files[game].slice());
+})();
+</script></body></html>

@@ -1,0 +1,171 @@
+/* games-achievements.css: achievements toast and browser for every game (moved out of tetris.css). */
+
+/* =================================================================
+   Achievements (games-achievements.js): glass toast + browser, shared by Tetris and Pong.
+   The modal/panel classes are also reused by the social panels (games-social.css).
+   ================================================================= */
+
+.ach-badge {
+  --ach-size: 52px;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--ach-size); height: var(--ach-size);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,.18), transparent 55%),
+    linear-gradient(160deg, rgba(40,28,66,.95), rgba(10,8,22,.95));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.12), inset 0 -10px 18px rgba(0,0,0,.35);
+}
+.ach-badge::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 2px;
+  background: linear-gradient(160deg, var(--tier-a), var(--tier-b));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.ach-badge img { width: 62%; height: 62%; image-rendering: pixelated; image-rendering: crisp-edges; filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
+.ach-badge.locked { filter: saturate(.2) brightness(.7); }
+.ach-badge.locked::before { background: rgba(255,255,255,.14); }
+
+/* every tier is purple (lighter and glowier as it climbs); the tier is named in text */
+.tier-bronze { --tier-a: #c9a2ff; --tier-b: #5b2aa8; --tier-glow: rgba(160,100,255,.4); }
+.tier-silver { --tier-a: #dcc4ff; --tier-b: #6c35c8; --tier-glow: rgba(175,115,255,.5); }
+.tier-gold { --tier-a: #ecdcff; --tier-b: #7d3cff; --tier-glow: rgba(190,130,255,.6); }
+.tier-platinum { --tier-a: #ffffff; --tier-b: #9b4dff; --tier-glow: rgba(205,150,255,.75); }
+
+/* ---------- toast ---------- */
+
+.ach-toast-stack {
+  position: fixed; z-index: 1000; right: 20px; bottom: 20px;
+  display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+  pointer-events: none;
+}
+.ach-toast {
+  --ach-ms: 5600ms;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 14px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px 18px;
+  border: 1px solid rgba(219,194,255,.22);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(30,21,50,.86), rgba(7,10,20,.84));
+  box-shadow: inset 0 1px rgba(255,255,255,.1), 0 22px 60px rgba(0,0,0,.45), 0 0 40px -12px var(--tier-glow);
+  backdrop-filter: blur(14px) saturate(135%); -webkit-backdrop-filter: blur(14px) saturate(135%);
+  color: #fff; text-align: left; cursor: pointer; pointer-events: auto;
+  animation: achIn .55s cubic-bezier(.2,1.3,.4,1) both;
+}
+.ach-toast:hover, .ach-toast:focus-visible { border-color: rgba(219,194,255,.45); outline: none; }
+.ach-toast.leaving { animation: achOut .32s ease-in forwards; }
+/* a light sweep across the card as it lands */
+.ach-toast::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.16) 50%, transparent 65%);
+  transform: translateX(-120%); animation: achShine 1.1s .25s ease-out both;
+}
+.ach-toast .ach-badge { animation: achBadge .7s .1s cubic-bezier(.3,1.6,.5,1) both; box-shadow: inset 0 0 0 1px rgba(255,255,255,.12), 0 0 22px var(--tier-glow); }
+.ach-toast-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ach-kicker { font-family: var(--font-family-heading); font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--tier-a); }
+.ach-toast strong { font-family: var(--font-family-heading); font-size: 1rem; line-height: 1.2; }
+.ach-desc { color: #cfc6e2; font-size: .78rem; line-height: 1.3; }
+/* the bar fills while the toast is up; hover or focus pauses it */
+.ach-toast-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255,255,255,.08); }
+.ach-toast-bar span {
+  display: block; height: 100%; width: 100%; transform-origin: left center; transform: scaleX(0);
+  background: linear-gradient(90deg, var(--tier-b), var(--tier-a));
+  box-shadow: 0 0 10px var(--tier-glow);
+  animation: achFill var(--ach-ms) linear forwards;
+}
+.ach-toast:hover .ach-toast-bar span, .ach-toast:focus-visible .ach-toast-bar span { animation-play-state: paused; }
+
+@keyframes achIn { from { opacity: 0; transform: translateY(24px) scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes achOut { to { opacity: 0; transform: translateX(40px) scale(.97); } }
+@keyframes achShine { to { transform: translateX(120%); } }
+@keyframes achBadge { from { transform: scale(.4) rotate(-12deg); } to { transform: none; } }
+@keyframes achFill { to { transform: scaleX(1); } }
+
+/* ---------- browser ---------- */
+
+.ach-open, .ach-open body { overflow: hidden; }
+.ach-modal { position: fixed; inset: 0; z-index: 1001; display: grid; place-items: center; padding: 16px; }
+.ach-modal.hidden { display: none; }
+.ach-backdrop { position: absolute; inset: 0; background: rgba(4,3,10,.32); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); animation: achFade .25s ease both; }
+.ach-panel {
+  position: relative; display: flex; flex-direction: column;
+  width: min(880px, 100%); max-height: min(86vh, 900px);
+  border: 1px solid rgba(219,194,255,.18); border-radius: 22px;
+  background: linear-gradient(145deg, rgba(24,18,39,.62), rgba(7,10,20,.58));
+  box-shadow: inset 0 1px rgba(255,255,255,.08), 0 24px 70px rgba(0,0,0,.28);
+  backdrop-filter: blur(14px) saturate(125%); -webkit-backdrop-filter: blur(14px) saturate(125%);
+  animation: achPanel .35s cubic-bezier(.2,1.1,.4,1) both;
+  overflow: hidden;
+}
+.ach-head { display: flex; align-items: center; gap: 18px; padding: 22px 24px 14px; }
+.ach-ring {
+  --ach-pct: 0;
+  flex: none; display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%;
+  background: conic-gradient(#c77dff calc(var(--ach-pct) * 1%), rgba(255,255,255,.08) 0);
+  box-shadow: 0 0 30px -8px rgba(199,125,255,.7);
+}
+.ach-ring-num { display: grid; place-items: center; width: 58px; height: 58px; border-radius: 50%; background: rgba(14,10,26,.85); font-family: var(--font-family-heading); font-weight: 800; font-size: .95rem; }
+.ach-head-text { flex: 1; min-width: 0; }
+.ach-head h2 { margin: 0; font-family: var(--font-family-heading); font-size: 1.35rem; }
+.ach-sub { margin: 2px 0 8px; color: #b9afce; font-size: .8rem; }
+.ach-tiers { display: flex; flex-wrap: wrap; gap: 6px; }
+.ach-tier-count { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04); font-size: .7rem; font-weight: 600; color: #ddd3f0; }
+.ach-tier-count i { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(160deg, var(--tier-a), var(--tier-b)); box-shadow: 0 0 8px var(--tier-glow); }
+.ach-close { align-self: flex-start; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,.14); color: #fff; font-size: 1.3rem; line-height: 1; cursor: pointer; transition: background-color .15s ease; }
+.ach-close:hover { background: rgba(255,255,255,.1); }
+.ach-filters { display: flex; gap: 6px; padding: 0 24px 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.ach-filters .chip { background: rgba(5,7,16,.35); cursor: pointer; }
+.ach-body { overflow-y: auto; padding: 8px 24px 24px; scrollbar-width: thin; }
+.ach-cat { display: flex; justify-content: space-between; margin: 18px 0 10px; font-family: var(--font-family-heading); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: #c6bdd6; }
+.ach-cat span { color: #8f84a8; letter-spacing: .06em; }
+.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.ach-card {
+  --ach-i: 0;
+  display: flex; gap: 12px; align-items: flex-start; padding: 12px;
+  border: 1px solid rgba(227,207,255,.12); border-radius: 14px;
+  background: rgba(10,9,22,.38);
+  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  animation: achCard .35s calc(var(--ach-i) * 18ms) ease both;
+}
+.ach-card.got { border-color: rgba(181,118,255,.45); background: linear-gradient(150deg, rgba(129,43,205,.24), rgba(10,9,22,.4)); }
+.ach-card.got:hover { transform: translateY(-2px); box-shadow: 0 12px 30px -16px rgba(181,118,255,.75); }
+.ach-card.focus { box-shadow: 0 0 0 2px #b576ff, 0 0 30px -6px rgba(181,118,255,.8); }
+.ach-card-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.ach-card strong { font-family: var(--font-family-heading); font-size: .9rem; }
+.ach-card.locked strong { color: #a99fbe; }
+.ach-card p { margin: 0; color: #bdb3d1; font-size: .76rem; line-height: 1.35; }
+.ach-meta { margin-top: 2px; font-size: .64rem; letter-spacing: .06em; text-transform: uppercase; color: #c9a2ff; opacity: .9; }
+.ach-card.locked .ach-meta { color: #7f7596; }
+.ach-progress { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.ach-progress span { flex: 1; height: 5px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden; }
+.ach-progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #7b3cff, #c77dff); }
+.ach-progress em { font-style: normal; font-size: .64rem; color: #a99fbe; white-space: nowrap; }
+.ach-empty { padding: 30px 0; text-align: center; color: #b9afce; }
+
+@keyframes achFade { from { opacity: 0; } }
+@keyframes achPanel { from { opacity: 0; transform: translateY(18px) scale(.97); } }
+@keyframes achCard { from { opacity: 0; transform: translateY(8px); } }
+
+.ach-launch { display: inline-flex; align-items: center; gap: 8px; }
+.ach-launch .ach-count { padding: 0 8px; border-radius: 999px; background: rgba(199,125,255,.2); font-size: .7rem; font-weight: 700; }
+
+@media (max-width: 600px) {
+  .ach-toast-stack { left: 12px; right: 12px; bottom: 12px; align-items: stretch; }
+  .ach-toast { width: auto; }
+  .ach-head { padding: 18px 16px 10px; gap: 12px; }
+  .ach-ring { width: 58px; height: 58px; } .ach-ring-num { width: 46px; height: 46px; font-size: .8rem; }
+  .ach-filters, .ach-body { padding-left: 16px; padding-right: 16px; }
+  .ach-grid { grid-template-columns: 1fr; }
+}
+/* reduced motion: no flourishes, but the toast bar still runs (it is the dismiss timer) */
+@media (prefers-reduced-motion: reduce) {
+  .ach-toast, .ach-toast::after, .ach-toast .ach-badge, .ach-card, .ach-panel, .ach-backdrop { animation: none !important; }
+  .game-page .ach-toast-bar span, .ach-toast-bar span { animation: achFill var(--ach-ms) linear forwards !important; }
+}
+.ach-body { scrollbar-color: rgba(181,118,255,.55) transparent; }
+.ach-body::-webkit-scrollbar { width: 8px; }
+.ach-body::-webkit-scrollbar-thumb { background: rgba(181,118,255,.45); border-radius: 999px; }
+.ach-body::-webkit-scrollbar-track { background: transparent; }

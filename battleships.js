@@ -1,9 +1,14 @@
-// battleships.js: Battleships for kanaris-beans.com. vs CPU (easy / hard) and online (PeerJS).
+// battleships.js: Battleships for kanaris-beans.com. vs CPU and online (PeerJS).
 (function () {
   'use strict';
 
   var G = window.Games;
   var $ = function (s, r) { return (r || document).querySelector(s); };
+  // Achievements (battleships-achievements.js), animated backgrounds (battleships-bg.js), and profiles /
+  // friends / invites / leaderboard / lobby finder (games-social.js, null when it's off). Each is optional.
+  var ACH = window.BattleshipsAchievements || { event: function () {}, open: function () {}, count: function () { return { unlocked: 0, total: 0 }; }, onChange: function () {} };
+  var BG = window.BattleshipsBG || null;
+  var SOC = window.GameSocial && window.GameSocial.enabled ? window.GameSocial : null;
 
   var N = 10;
   var FLEET = [
@@ -15,7 +20,7 @@
   ];
   var LETTERS = 'ABCDEFGHIJ';
 
-  var settings = { mode: null, difficulty: G.Store.get('bs_difficulty', 'hard') };
+  var settings = { mode: null, difficulty: G.Store.get('bs_difficulty', 'normal') };
   var stats = G.Store.get('bs_stats', { wins: 0, losses: 0 });
 
   var state = null;
@@ -92,7 +97,8 @@
       return opts[Math.floor(Math.random() * opts.length)];
     }
 
-    // Hard: target mode around unsunk hits, otherwise a probability heat map.
+    // Normal targets known hits but explores high-probability squares; hard and ultra
+    // use the fleet heat map more consistently. Ultra always takes its best square.
     var remaining = FLEET.filter(function (f) { return ai.sunk.indexOf(f.id) === -1; });
     var heat = emptyGrid(0);
     var unsunkHits = [];
@@ -124,6 +130,20 @@
       var v = heat[r][c] + ((r + c) % 2 === 0 && !unsunkHits.length ? 0.5 : 0);
       if (v > bestV) { bestV = v; best = [[r, c]]; }
       else if (v === bestV) best.push([r, c]);
+    }
+    if (settings.difficulty === 'ultra') return best[Math.floor(Math.random() * best.length)];
+    var candidates = [];
+    var tolerance = settings.difficulty === 'normal' ? 0.55 : 0.2;
+    for (r = 0; r < N; r++) for (c = 0; c < N; c++) {
+      if (!free(r, c)) continue;
+      var score = heat[r][c] + ((r + c) % 2 === 0 && !unsunkHits.length ? 0.5 : 0);
+      if (score >= bestV * tolerance) candidates.push({ cell: [r, c], score: Math.max(1, score) });
+    }
+    var total = candidates.reduce(function (sum, entry) { return sum + entry.score; }, 0);
+    var roll = Math.random() * total;
+    for (var k = 0; k < candidates.length; k++) {
+      roll -= candidates[k].score;
+      if (roll <= 0) return candidates[k].cell;
     }
     return best[Math.floor(Math.random() * best.length)];
   }
@@ -326,7 +346,9 @@
       shots: 0,
       hits: 0,
       ai: null,
-      pendingShot: null
+      pendingShot: null,
+      // for achievements, the leaderboard and the background
+      streak: 0, enemyHits: 0, startedAt: performance.now(), reported: false
     };
   }
 
@@ -339,11 +361,21 @@
     var lbl = $('#enemyLabel');
     lbl.textContent = '';
     if (settings.mode === 'online' && net.them) lbl.appendChild(G.Profile.avatar(net.them, 22));
-    lbl.appendChild(document.createTextNode(settings.mode === 'cpu' ? 'CPU waters' : (net.them ? net.them.name : 'Opponent') + '\'s waters'));
+    if (settings.mode === 'cpu') lbl.appendChild(document.createTextNode('CPU waters'));
+    else {
+      var themName = document.createElement('span');
+      themName.textContent = net.them ? net.them.name : 'Opponent';
+      if (SOC && net.them && net.them.card) SOC.decorateName(themName, net.them.card);
+      lbl.appendChild(themName);
+      lbl.appendChild(document.createTextNode('\'s waters'));
+    }
     var mine = $('#myLabel');
     mine.textContent = '';
     mine.appendChild(G.Profile.avatar(G.Profile.get(), 22));
-    mine.appendChild(document.createTextNode('Your fleet'));
+    var myName = document.createElement('span');
+    myName.textContent = 'Your fleet';
+    if (SOC && SOC.card()) SOC.decorateName(myName, SOC.card());
+    mine.appendChild(myName);
     paintTarget();
     paintOwn($('#ownGrid'), state.myShips, state.enemyShots);
     renderFleetStatus($('#enemyFleet'), state.enemySunk);
@@ -351,7 +383,27 @@
     G.hide($('#overlay'));
     setTurnText();
     screen('battleView');
+    var page = $('.game-page');
+    if (page) page.classList.add('playing');
+    if (BG) { BG.scene(0); BG.energy(0); BG.balance(0); BG.focus($('#enemyGrid')); }
+    if (SOC && settings.mode === 'online') SOC.lobbyChanged();
     if (!state.myTurn && settings.mode === 'cpu') setTimeout(cpuTurn, 700);
+  }
+
+  // The background follows the fight: a ripple from every shot, a flash on hits, and a new scene whenever a
+  // ship goes down (chosen from the number sunk, so both players see the same scene).
+  function bgShot(grid, r, c, res) {
+    if (!BG) return;
+    var cell = cellEl(grid, r, c);
+    BG.focus(cell);
+    BG.hit(cell, res.result === 'miss' ? 0.5 : 1.5);
+    if (res.result === 'sunk') {
+      var sunk = state.enemySunk.length + state.mySunk.length;
+      BG.flash(1);
+      BG.scene(sunk);
+      BG.energy(sunk / 10);
+      BG.balance((state.enemySunk.length - state.mySunk.length) / 5);
+    }
   }
 
   function startCpuBattle() {
@@ -387,6 +439,7 @@
     } else {
       state.hits++;
       if (res.result === 'sunk') {
+        var firstSink = !state.enemySunk.length;
         state.enemySunk.push(res.ship.id);
         shipCells(res.ship).forEach(function (x) { state.enemySunkCells[x[0] + ',' + x[1]] = true; });
         log('You sank their ' + res.ship.name + '!');
@@ -397,6 +450,9 @@
         G.Sound.beep(660, 0.1, 'square', 0.05);
       }
     }
+    state.streak = res.result === 'miss' ? 0 : state.streak + 1;
+    ACH.event('shot', { hit: res.result !== 'miss', sunk: res.result === 'sunk' ? res.ship.id : null, streak: state.streak, firstSink: res.result === 'sunk' && firstSink });
+    bgShot($('#enemyGrid'), r, c, res);
     // Hits keep the turn; misses pass it.
     state.myTurn = res.result !== 'miss';
     renderFleetStatus($('#enemyFleet'), state.enemySunk);
@@ -433,9 +489,11 @@
       log(who + ' fired at ' + coord + ': hit.');
       G.Sound.beep(300, 0.1, 'square', 0.05);
     }
+    if (res.result !== 'miss') state.enemyHits++;
     var cell = cellEl($('#ownGrid'), r, c);
     paintOwn($('#ownGrid'), state.myShips, state.enemyShots);
     if (cell) { cell.classList.add('flash'); }
+    bgShot($('#ownGrid'), r, c, res);
     renderFleetStatus($('#myFleet'), state.mySunk);
     if (res.win) return gameOver(false);
     state.myTurn = res.result === 'miss';
@@ -455,11 +513,23 @@
     $('#overlayText').textContent = state.shots + ' shots · ' + acc + '% accuracy · record ' + stats.wins + 'W ' + stats.losses + 'L';
     G.show($('#overlay'));
     G.Sound.beep(won ? 660 : 180, 0.5, 'triangle', 0.07);
+    reportBattle(won, acc);
     if (settings.mode === 'online') {
       if (!won) revealEnemy();
     } else {
       revealCpu();
     }
+  }
+
+  // Once per battle: achievements, and for the leaderboard a run with shots, accuracy and ships lost.
+  function reportBattle(won, acc) {
+    if (state.reported) return;
+    state.reported = true;
+    var d = { mode: settings.mode, won: won, difficulty: settings.difficulty, shots: state.shots, accuracy: acc, shipsLost: state.mySunk.length, enemyHits: state.enemyHits };
+    ACH.event('battle', d);
+    if (BG) BG.flash(1);
+    if (SOC) SOC.battleshipsFinished({ online: settings.mode === 'online', won: won, shots: d.shots, accuracy: acc, shipsLost: d.shipsLost, enemyHits: d.enemyHits,
+      elapsed: (performance.now() - state.startedAt) / 1000, difficulty: settings.difficulty, opponent: net.them ? net.them.name : '' });
   }
 
   function revealCpu() {
@@ -487,11 +557,9 @@
     if (!d || typeof d !== 'object') return;
     switch (d.t) {
       case 'hi':
-        net.them = G.Profile.sanitize(d.profile);
-        renderLobby();
-        break;
       case 'hello':
         net.them = G.Profile.sanitize(d.profile);
+        net.them.card = SOC ? SOC.cleanCard(d.card) : null;
         renderLobby();
         break;
       case 'ready':
@@ -585,15 +653,17 @@
     function st(r) { return r ? ['✓ Ready', 'ready'] : ['Not ready', 'waiting']; }
     var mine = st(net.myReady), theirs = st(net.theirReady);
     var themName = net.them ? net.them.name : (net.role === 'host' ? 'Opponent' : 'Host');
-    if (net.role === 'host') {
-      list.appendChild(G.lobbyRow(me, me.name + ' (host) · you', mine[0], mine[1]));
-      list.appendChild(connected ? G.lobbyRow(net.them, themName, theirs[0], theirs[1]) : G.lobbyRow(null, 'Waiting for opponent…', '', 'waiting'));
-    } else {
-      list.appendChild(G.lobbyRow(net.them, themName + ' (host)', theirs[0], theirs[1]));
-      list.appendChild(G.lobbyRow(me, me.name + ' · you', mine[0], mine[1]));
+    var myRow = G.lobbyRow(me, me.name + (net.role === 'host' ? ' (host) · you' : ' · you'), mine[0], mine[1]);
+    var theirRow = connected ? G.lobbyRow(net.them, themName + (net.role === 'host' ? '' : ' (host)'), theirs[0], theirs[1]) : G.lobbyRow(null, 'Waiting for opponent…', '', 'waiting');
+    if (SOC) {
+      if (SOC.card()) SOC.decorateName(myRow.querySelector('.lobby-who > span:not(.avatar)'), SOC.card());
+      if (connected && net.them && net.them.card) SOC.decorateName(theirRow.querySelector('.lobby-who > span:not(.avatar)'), net.them.card);
     }
+    if (net.role === 'host') { list.appendChild(myRow); list.appendChild(theirRow); }
+    else { list.appendChild(theirRow); list.appendChild(myRow); }
     $('#readyBtn').disabled = !connected;
     $('#readyBtn').textContent = net.myReady ? 'Not ready' : 'Ready';
+    if (SOC) SOC.lobbyChanged();
   }
 
   function createLobby() {
@@ -603,12 +673,13 @@
     net.session = G.Net.host('battleships', {
       maxGuests: 1,
       onReady: function (code) {
+        net.code = code;
         $('#lobbyCode').textContent = code;
         G.show($('#lobbyCodeBox'));
         screen('lobbyPanel');
         renderLobby();
       },
-      onJoin: function (conn) { net.session.send(conn, { t: 'hello', profile: G.Profile.get() }); G.Sound.beep(660, 0.1, 'triangle'); renderLobby(); },
+      onJoin: function (conn) { net.session.send(conn, { t: 'hello', profile: G.Profile.get(), card: SOC ? SOC.card() : null }); G.Sound.beep(660, 0.1, 'triangle'); renderLobby(); },
       onData: function (conn, d) { onNet(d); },
       onLeave: opponentLeft,
       onError: netError
@@ -619,10 +690,11 @@
     var code = G.cleanCode($('#joinCode').value);
     if (code.length !== 5) return netError('Lobby codes are 5 characters.');
     net.role = 'guest';
+    net.code = code;
     net.myReady = net.theirReady = false;
     setNotice('Connecting…');
     net.session = G.Net.join('battleships', code, {
-      onOpen: function () { net.session.send({ t: 'hi', profile: G.Profile.get() }); G.hide($('#lobbyCodeBox')); screen('lobbyPanel'); renderLobby(); },
+      onOpen: function () { net.session.send({ t: 'hi', profile: G.Profile.get(), card: SOC ? SOC.card() : null }); G.hide($('#lobbyCodeBox')); screen('lobbyPanel'); renderLobby(); },
       onData: onNet,
       onClose: opponentLeft,
       onError: netError
@@ -633,6 +705,7 @@
     if (!net.session) return;
     if (net.role === 'host' && !$('#lobbyPanel').classList.contains('hidden')) {
       net.theirReady = false;
+      net.them = null;
       renderLobby();
       G.banner('Opponent left');
       return;
@@ -663,9 +736,14 @@
   function toMenu() {
     if (net.session) { net.session.close(); net.session = null; }
     net.role = null;
+    net.code = null;
+    net.them = null;
     state = null;
+    var page = $('.game-page');
+    if (page) page.classList.remove('playing');
     renderStats();
     screen('menuPanel');
+    if (SOC) SOC.lobbyChanged();
   }
 
   function renderStats() {
@@ -726,8 +804,54 @@
     $('#menuBtn').addEventListener('click', toMenu);
     $('#quitBtn').addEventListener('click', toMenu);
     G.Sound.bindButton($('#soundBtn'));
-    G.Profile.mount($('#profileEditor'));
+    if (BG) { BG.mount($('.game-page')); BG.scene(Math.floor(Math.random() * 5)); }
+    mountProfileEditor();
+    $('#achBtn').addEventListener('click', function () { ACH.open(); });
+    $('#hudAch').addEventListener('click', function () { ACH.open(); });
+    var paintAch = function () { var c = ACH.count(); $('#achCount').textContent = c.unlocked + '/' + c.total; };
+    ACH.onChange(paintAch);
+    paintAch();
+    ['#shuffleBg', '#hudShuffleBg'].forEach(function (id) { $(id).addEventListener('click', function () { if (BG) BG.shuffle(); }); });
     screen('menuPanel');
+    joinFromLink();
+  }
+
+  // The name/picture editor on the Online panel; changes reach the lobby and the social profile.
+  function mountProfileEditor() {
+    G.Profile.mount($('#profileEditor'), function () {
+      if (net.session && !state) { netSend({ t: net.role === 'host' ? 'hello' : 'hi', profile: G.Profile.get(), card: SOC ? SOC.card() : null }); renderLobby(); }
+      if (SOC) SOC.localProfileChanged(G.Profile.get());
+    });
+  }
+
+  // For games-social.js: join by code (invite links, the lobby finder, the bell) and read the current lobby.
+  window.GameApp = window.BattleshipsApp = {
+    join: function (code) {
+      code = G.cleanCode(code);
+      if (code.length !== 5) return;
+      if (state && !state.over && settings.mode === 'online') { G.banner('Finish or leave this battle first'); return; }
+      if (net.session && net.code === code) return;
+      toMenu();
+      screen('onlinePanel');
+      $('#joinCode').value = code;
+      joinLobby();
+    },
+    lobby: function () {
+      if (!net.session || !net.role || !net.code) return null;
+      var connected = net.role === 'guest' || !!(net.session.conns && net.session.conns.length);
+      return { code: net.code, role: net.role, count: connected ? 2 : 1, max: 2, rules: 'Classic fleet · hits keep your turn', inGame: !!(state && !state.over) };
+    },
+    pause: function () {},
+    profileChanged: function () { mountProfileEditor(); if (net.session && !state) renderLobby(); }
+  };
+
+  // Invite links (battleships?join=CODE) open straight into that lobby; the parameter is then removed.
+  function joinFromLink() {
+    var m = location.search.match(/[?&]join=([A-Za-z0-9]{5})(?:&|$)/);
+    if (!m) return;
+    var rest = location.search.replace(/^\?/, '').split('&').filter(function (kv) { return kv && !/^join=/.test(kv); }).join('&');
+    history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+    window.GameApp.join(m[1]);
   }
 
   init();

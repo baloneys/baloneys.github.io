@@ -4,6 +4,11 @@
 
   var G = window.Games;
   var $ = function (s) { return document.querySelector(s); };
+  // Achievements (pong-achievements.js), animated backgrounds (pong-bg.js), and profiles / friends / invites /
+  // leaderboard / lobby finder (games-social.js, null when it's off). Each is optional.
+  var ACH = window.PongAchievements || { event: function () {}, open: function () {}, count: function () { return { unlocked: 0, total: 0 }; }, onChange: function () {} };
+  var BG = window.PongBG || null;
+  var SOC = window.GameSocial && window.GameSocial.enabled ? window.GameSocial : null;
 
   /* ---------- constants ---------- */
 
@@ -18,7 +23,8 @@
   var CPU = {
     easy: { speed: 0.55, error: 60, react: 0.35 },
     normal: { speed: 0.8, error: 26, react: 0.18 },
-    hard: { speed: 1.0, error: 6, react: 0.05 }
+    hard: { speed: 1.0, error: 6, react: 0.05 },
+    ultra: { speed: 1.12, error: 2, react: 0.035 }
   };
 
   var BUILTIN = ['classic', 'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b9'];
@@ -65,7 +71,9 @@
       shake: 0,
       niceUntil: 0,
       cpuAim: H / 2,
-      cpuThink: 0
+      cpuThink: 0,
+      // for achievements and the leaderboard
+      startedAt: performance.now(), maxRally: 0, maxDeficit: 0, topSpeed: 0, reported: false
     };
   }
 
@@ -265,7 +273,25 @@
   function hudName(el, name, profile) {
     el.textContent = '';
     if (profile) el.appendChild(G.Profile.avatar(profile, 20));
-    el.appendChild(document.createTextNode(name));
+    var text = document.createElement('span');
+    text.textContent = name;
+    el.appendChild(text);
+    // the player's profile look (gradient name) and a click-through to their profile
+    var card = profile && profile === G.Profile.get() ? (SOC && SOC.card()) : profile && profile.card;
+    if (SOC && card) SOC.decorateName(text, card);
+  }
+
+  function mySide() {
+    if (settings.mode === 'cpu') return 0;
+    if (settings.mode === 'online') return net.role === 'host' ? 0 : 1;
+    return null;
+  }
+
+  function ballKind() {
+    var id = settings.skin, info = skinInfo(id);
+    if (info.kind === 'classic') return 'classic';
+    if (skinImages[id]) return 'builtin';
+    return info.kind;   // 'image' | 'gif' | 'emoji'
   }
 
   function targetScore() { return settings.target === 'inf' ? Infinity : parseInt(settings.target, 10); }
@@ -279,6 +305,11 @@
     hudName($('#name1'), n[0], pr[0]);
     hudName($('#name2'), n[1], pr[1]);
     syncSprite();
+    var page = $('.game-page');
+    if (page) page.classList.add('playing');
+    if (BG) { BG.score(0, 0); BG.rally(0); }
+    ACH.event('start', { ball: ballKind() });
+    if (SOC && mode === 'online') SOC.lobbyChanged();
     $('#targetLabel').textContent = settings.target === 'inf' ? 'Endless' : 'First to ' + settings.target;
     $('#help').innerHTML = helpText();
     hideOverlay();
@@ -294,13 +325,18 @@
   }
 
   function quitToMenu() {
+    if (game && !game.over && settings.target === 'inf') reportMatch(null);
+    var page = $('.game-page');
+    if (page) page.classList.remove('playing');
     stopLoop();
     if (sprite) { sprite.remove(); sprite = null; }
     if (net.session) { net.session.close(); net.session = null; }
     net.role = null;
     net.them = null;
+    net.code = null;
     game = null;
     screen('menuPanel');
+    if (SOC) SOC.lobbyChanged();
   }
 
   /* ---------- overlay ---------- */
@@ -353,6 +389,7 @@
       else update(dt);
     }
     if (game) draw(now);
+    if (game && BG) BG.ball(game.ball.x, game.ball.y);
     raf = requestAnimationFrame(loop);
   }
 
@@ -454,7 +491,12 @@
     b.x = dir === 1 ? face + BALL_R : face - BALL_R;
 
     game.rally++;
+    game.maxRally = Math.max(game.maxRally, game.rally);
     if (game.rally > best) { best = game.rally; G.Store.set('pong_best_rally', best); }
+    var side = dir === 1 ? 0 : 1, mine = mySide() === side;
+    if (mine) game.topSpeed = Math.max(game.topSpeed, b.speed);
+    ACH.event('hit', { rally: game.rally, mine: mine, edge: Math.abs(rel) > 0.88, top: b.speed >= BALL_MAX });
+    if (BG) { BG.hit(b.x, b.y, 0.6 + b.speed / BALL_MAX); BG.rally(game.rally); }
     if (game.rally === 69) { game.niceUntil = performance.now() + 2500; G.Sound.beep(880, 0.3, 'sine', 0.08); }
     burst(b.x, b.y, dir === 1 ? '#c77dff' : '#ff6fae');
     game.shake = Math.min(6, 2 + b.speed / 250);
@@ -475,7 +517,34 @@
     burst(side === 0 ? W - 10 : 10, g.ball.y, '#e60065', 26);
     G.Sound.beep(180, 0.25, 'sawtooth', 0.05);
     updateHud();
+    scored(side);
     if (g.score[side] >= targetScore()) finish(side);
+  }
+
+  // A point went in (host, CPU and local matches call this from point(); online guests from the host's state).
+  function scored(side) {
+    var g = game, me = mySide();
+    if (me !== null) {
+      var deficit = g.score[1 - me] - g.score[me];
+      g.maxDeficit = Math.max(g.maxDeficit, deficit);
+    }
+    ACH.event('point', { mine: me === null ? null : side === me, myScore: me === null ? 0 : g.score[me], target: settings.target });
+    if (BG) { BG.point(side); BG.score(g.score[0], g.score[1]); BG.rally(0); }
+  }
+
+  // A match is over (won: true/false for you; null when an Endless match is quit). Reports it once to
+  // achievements and, for CPU and online matches, to the leaderboard.
+  function reportMatch(won) {
+    var g = game;
+    if (!g || g.reported) return;
+    g.reported = true;
+    var me = mySide(), mode = settings.mode;
+    var myScore = me === null ? 0 : g.score[me], theirScore = me === null ? 0 : g.score[1 - me];
+    if (won !== null) ACH.event('match', { mode: mode, won: !!won, difficulty: settings.difficulty, target: settings.target, myScore: myScore, theirScore: theirScore, maxDeficit: g.maxDeficit });
+    if (!SOC || me === null || (won === null && myScore + theirScore === 0)) return;
+    SOC.pongFinished({ online: mode === 'online', won: won === null ? myScore > theirScore : !!won, myScore: myScore, theirScore: theirScore,
+      rally: g.maxRally, elapsed: (performance.now() - g.startedAt) / 1000, target: settings.target, difficulty: settings.difficulty,
+      opponent: net.them ? net.them.name : '', ball: ballKind(), speed: Math.round(g.topSpeed) });
   }
 
   function finish(side) {
@@ -486,6 +555,7 @@
     var title = youWon === null ? n[side] + ' wins!' : youWon ? 'You win!' : settings.mode === 'cpu' ? 'CPU wins' : 'You lose';
     G.Sound.beep(youWon === false ? 200 : 660, 0.4, 'triangle', 0.07);
     if (settings.mode === 'online' && net.role === 'host') sendNet({ t: 'over', side: side, score: g.score });
+    reportMatch(youWon);
     showFinish(title);
   }
 
@@ -569,7 +639,8 @@
     ctx.save();
     if (g.shake) ctx.translate((Math.random() - 0.5) * g.shake, (Math.random() - 0.5) * g.shake);
 
-    ctx.fillStyle = '#050505';
+    ctx.clearRect(-10, -10, W + 20, H + 20);
+    ctx.fillStyle = BG ? 'rgba(5, 5, 8, 0.8)' : '#050505';
     ctx.fillRect(-10, -10, W + 20, H + 20);
 
     // score watermark
@@ -702,6 +773,8 @@
 
   canvas.addEventListener('pointerdown', function (e) {
     if (!game) return;
+    e.preventDefault();
+    canvas.setPointerCapture(e.pointerId);
     var p = stageY(e);
     pointers[e.pointerId] = pointerPaddle(p.x);
     pointers[e.pointerId].target = p.y;
@@ -716,6 +789,7 @@
     if (pointers[e.pointerId]) pointers[e.pointerId].target = p.y;
   });
   function releasePointer(e) {
+    if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
     if (pointers[e.pointerId]) {
       if (e.pointerType !== 'mouse') pointers[e.pointerId].target = null;
       delete pointers[e.pointerId];
@@ -788,8 +862,15 @@
       burst(g.ball.x, g.ball.y, d.b[2] > 0 ? '#c77dff' : '#ff6fae');
       G.Sound.beep(d.b[2] > 0 ? 440 : 392, 0.05);
     }
-    if (d.sc[0] !== g.score[0] || d.sc[1] !== g.score[1]) { G.Sound.beep(180, 0.25, 'sawtooth', 0.05); g.trail = []; }
+    var scoredSide = d.sc[0] !== g.score[0] ? 0 : d.sc[1] !== g.score[1] ? 1 : -1;
+    if (scoredSide !== -1) { G.Sound.beep(180, 0.25, 'sawtooth', 0.05); g.trail = []; }
     g.score = d.sc;
+    if (scoredSide !== -1) scored(scoredSide);
+    if (d.r > g.rally) {
+      g.maxRally = Math.max(g.maxRally, d.r);
+      ACH.event('hit', { rally: d.r, mine: false });
+      if (BG) { BG.hit(g.ball.x, g.ball.y, 0.8); BG.rally(d.r); }
+    }
     g.rally = d.r;
     g.serveTimer = d.sv ? 1 : 0;
     if (g.rally > best) { best = g.rally; G.Store.set('pong_best_rally', best); }
@@ -803,10 +884,12 @@
       case 'hello':
         settings.target = String(d.target);
         net.them = G.Profile.sanitize(d.profile);
+        net.them.card = SOC ? SOC.cleanCard(d.card) : null;
         renderLobby();
         break;
       case 'hi':
         net.them = G.Profile.sanitize(d.profile);
+        net.them.card = SOC ? SOC.cleanCard(d.card) : null;
         renderLobby();
         break;
       case 'ready':
@@ -841,6 +924,7 @@
 
   function finishGuest(side) {
     var youWon = side === 1;
+    reportMatch(youWon);
     G.Sound.beep(youWon ? 660 : 200, 0.4, 'triangle', 0.07);
     showFinish(youWon ? 'You win!' : 'You lose');
   }
@@ -863,12 +947,19 @@
     var guestRow = net.role === 'host'
       ? (connected ? G.lobbyRow(net.them, net.them ? net.them.name : 'Opponent', theirs[0], theirs[1]) : G.lobbyRow(null, 'Waiting for opponent…', '', 'waiting'))
       : G.lobbyRow(me, me.name + ' · you', mine[0], mine[1]);
+    if (SOC) {
+      var myCard = SOC.card(), theirCard = net.them && net.them.card;
+      var decorate = function (row, card) { if (card) SOC.decorateName(row.querySelector('.lobby-who > span:not(.avatar)'), card); };
+      decorate(hostRow, net.role === 'host' ? myCard : theirCard);
+      decorate(guestRow, net.role === 'host' ? (connected ? theirCard : null) : myCard);
+    }
     list.appendChild(hostRow);
     list.appendChild(guestRow);
     $('#lobbyTarget').textContent = settings.target === 'inf' ? 'Endless' : 'First to ' + settings.target;
     var connected = net.role === 'guest' || (net.session && net.session.conns.length);
     $('#readyBtn').disabled = !connected;
     $('#readyBtn').textContent = net.myReady ? 'Not ready' : 'Ready';
+    if (SOC) SOC.lobbyChanged();
   }
 
   function createLobby() {
@@ -879,13 +970,14 @@
     net.session = G.Net.host('pong', {
       maxGuests: 1,
       onReady: function (code) {
+        net.code = code;
         $('#lobbyCode').textContent = code;
         G.show($('#lobbyCodeBox'));
         screen('lobbyPanel');
         renderLobby();
       },
       onJoin: function (conn) {
-        net.session.send(conn, { t: 'hello', target: settings.target, profile: G.Profile.get() });
+        net.session.send(conn, { t: 'hello', target: settings.target, profile: G.Profile.get(), card: SOC ? SOC.card() : null });
         G.Sound.beep(660, 0.1, 'triangle');
         renderLobby();
       },
@@ -899,12 +991,13 @@
     var code = G.cleanCode($('#joinCode').value);
     if (code.length !== 5) { netError('Lobby codes are 5 characters.'); return; }
     net.role = 'guest';
+    net.code = code;
     net.myReady = net.theirReady = false;
     $('#onlineNotice').textContent = 'Connecting…';
     $('#onlineNotice').className = 'notice';
     net.session = G.Net.join('pong', code, {
       onOpen: function () {
-        net.session.send({ t: 'hi', profile: G.Profile.get() });
+        net.session.send({ t: 'hi', profile: G.Profile.get(), card: SOC ? SOC.card() : null });
         G.hide($('#lobbyCodeBox'));
         screen('lobbyPanel');
         renderLobby();
@@ -919,6 +1012,7 @@
     if (!net.session) return;
     if (net.role === 'host' && (!game || game.over || $('#gameView').classList.contains('hidden'))) {
       net.theirReady = false;
+      net.them = null;
       renderLobby();
       G.banner('Opponent left');
       if (game && game.over) quitToLobby();
@@ -954,7 +1048,8 @@
   function init() {
     loadSkins();
     renderSkinPicker();
-    G.Profile.mount($('#profileEditor'));
+    if (BG) { BG.mount($('.game-page')); BG.setCourt(canvas); BG.scene(Math.floor(Math.random() * 6)); }
+    mountProfileEditor();
     $('#uploadBall').addEventListener('click', uploadBall);
     $('#gifBall').addEventListener('click', function () {
       var panel = $('#gifPanel');
@@ -995,12 +1090,74 @@
     $('#lobbyLeave').addEventListener('click', quitToMenu);
     $('#pauseBtn').addEventListener('click', function () { if (game) setPaused(!game.paused); });
     $('#quitBtn').addEventListener('click', quitToMenu);
+    $('#achBtn').addEventListener('click', function () { ACH.open(); });
+    $('#hudAch').addEventListener('click', function () { ACH.open(); });
+    if (ACH.onOpen) ACH.onOpen(function () { if (game && !game.over && !game.paused && settings.mode !== 'online') setPaused(true); });
+    var paintAch = function () { var c = ACH.count(); $('#achCount').textContent = c.unlocked + '/' + c.total; };
+    ACH.onChange(paintAch);
+    paintAch();
+    ['#shuffleBg', '#hudShuffleBg'].forEach(function (id) { $(id).addEventListener('click', function () { if (BG) BG.shuffle(); }); });
     G.Sound.bindButton($('#soundBtn'));
     G.chatEasterEgg();
 
     $('#best').textContent = best;
     screen('menuPanel');
+    joinFromLink();
+  }
+
+  // The name/picture editor on the Online panel; changes reach the lobby and the social profile.
+  function mountProfileEditor() {
+    G.Profile.mount($('#profileEditor'), function () {
+      profileChanged();
+      if (SOC) SOC.localProfileChanged(G.Profile.get());
+    });
+  }
+  function profileChanged() {
+    if (!net.session || game) return;
+    var msg = net.role === 'host' ? { t: 'hello', target: settings.target, profile: G.Profile.get(), card: SOC ? SOC.card() : null }
+      : { t: 'hi', profile: G.Profile.get(), card: SOC ? SOC.card() : null };
+    sendNet(msg);
+    renderLobby();
+  }
+
+  // For games-social.js: join by code (invite links, the lobby finder, the bell) and read the current lobby.
+  window.GameApp = window.PongApp = {
+    join: function (code) {
+      code = G.cleanCode(code);
+      if (code.length !== 5) return;
+      if (game && !game.over && settings.mode === 'online') { G.banner('Finish or leave this match first'); return; }
+      if (net.session && net.code === code) { screen(game ? 'gameView' : 'lobbyPanel'); return; }
+      quitToMenu();
+      screen('onlinePanel');
+      $('#joinCode').value = code;
+      joinLobby();
+    },
+    lobby: function () {
+      if (!net.session || !net.role || !net.code) return null;
+      var connected = net.role === 'guest' || !!(net.session.conns && net.session.conns.length);
+      return { code: net.code, role: net.role, count: connected ? 2 : 1, max: 2, rules: settings.target === 'inf' ? 'Endless' : 'First to ' + settings.target,
+        inGame: !!(game && !game.over) };
+    },
+    pause: function () { if (game && !game.over && !game.paused && settings.mode !== 'online') setPaused(true); },
+    profileChanged: function () { mountProfileEditor(); profileChanged(); }
+  };
+
+  // Invite links (pong?join=CODE) open straight into that lobby; the parameter is then removed from the URL.
+  function joinFromLink() {
+    var m = location.search.match(/[?&]join=([A-Za-z0-9]{5})(?:&|$)/);
+    if (!m) return;
+    var rest = location.search.replace(/^\?/, '').split('&').filter(function (kv) { return kv && !/^join=/.test(kv); }).join('&');
+    history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+    window.GameApp.join(m[1]);
   }
 
   init();
+
+  // Testing aid, only with ?debug in the URL: inspect the match and force points or rallies from the console.
+  if (/[?&]debug\b/.test(location.search)) window.PongDebug = {
+    game: function () { return game; },
+    point: function (side) { if (game && !game.over) point(side); },
+    rally: function (n) { if (game) { game.rally = n; game.maxRally = Math.max(game.maxRally, n); ACH.event('hit', { rally: n, mine: true }); if (BG) BG.rally(n); updateHud(); } },
+    scene: function (n) { if (BG) BG.scene(n); }
+  };
 })();

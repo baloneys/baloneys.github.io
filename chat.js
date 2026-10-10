@@ -16,6 +16,8 @@
   // ---------- Config ----------
 
   const params = new URLSearchParams(location.search);
+  const MINI = params.has('mini');
+  if (MINI) document.body.classList.add('mini-chat');
   const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   // PeerJS broker. The free public one by default; a local one for testing (?peerhost=127.0.0.1&peerport=9001).
   const PEER_OPTS = LOCAL && params.get('peerhost')
@@ -189,14 +191,34 @@
     open() {
       if (this.db) return Promise.resolve(this.db);
       return new Promise((res, rej) => {
-        const req = indexedDB.open('baloneys-chat', 1);
-        req.onupgradeneeded = () => {
+        const req = indexedDB.open('baloneys-chat', 2);
+        req.onupgradeneeded = (event) => {
           const d = req.result;
-          d.createObjectStore('kv', { keyPath: 'k' });
-          const m = d.createObjectStore('msgs', { keyPath: ['conv', 'id'] });
-          m.createIndex('byConvTs', ['conv', 'ts']);
+          if (event.oldVersion < 1) {
+            d.createObjectStore('kv', { keyPath: 'k' });
+            const m = d.createObjectStore('msgs', { keyPath: ['conv', 'id'] });
+            m.createIndex('byConvTs', ['conv', 'ts']);
+          }
+          if (event.oldVersion < 2) {
+            const out = d.createObjectStore('outbox', { keyPath: 'opId' });
+            out.createIndex('byPeer', 'peer');
+            // Keep messages queued by older chat versions when upgrading to per-op storage.
+            const cursor = req.transaction.objectStore('kv').openCursor();
+            cursor.onsuccess = () => {
+              const c = cursor.result;
+              if (!c) return;
+              if (typeof c.key === 'string' && c.key.startsWith('outbox:') && Array.isArray(c.value.v)) {
+                const peer = c.key.slice(7);
+                c.value.v.forEach((op, index) => {
+                  if (op && op.opId) out.put(Object.assign({}, op, { peer, queuedAt: Number(op.msg && op.msg.ts) || Date.now() + index }));
+                });
+              }
+              c.continue();
+            };
+          }
         };
-        req.onsuccess = () => { this.db = req.result; res(this.db); };
+        req.onsuccess = () => { this.db = req.result; this.db.onversionchange = () => { this.db.close(); this.db = null; location.reload(); }; res(this.db); };
+        req.onblocked = () => { const message = 'Refresh your other open chat or game tabs to finish updating shared messages.'; const bootView = $('boot'); if (bootView) bootView.textContent = message; const banner = $('netBanner'); if (banner) { banner.textContent = message; banner.classList.remove('hidden'); } };
         req.onerror = () => rej(req.error || new Error("This browser can't store chat data (private mode?)."));
       });
     },
@@ -211,6 +233,19 @@
     get(k) { return this.tx('kv', 'readonly', (s) => s.get(k)).then((r) => (r ? r.v : undefined)); },
     set(k, v) { return this.tx('kv', 'readwrite', (s) => s.put({ k, v })); },
     del(k) { return this.tx('kv', 'readwrite', (s) => s.delete(k)); },
+    putOutbox(op) { return this.tx('outbox', 'readwrite', (s) => s.put(op)); },
+    putPendingMsgAndOp(msg, op) {
+      return this.open().then((d) => new Promise((res, rej) => {
+        const t = d.transaction(['msgs', 'outbox'], 'readwrite');
+        t.objectStore('msgs').put(msg);
+        t.objectStore('outbox').put(op);
+        t.oncomplete = res;
+        t.onerror = () => rej(t.error);
+      }));
+    },
+    getOutbox(opId) { return this.tx('outbox', 'readonly', (s) => s.get(opId)); },
+    outboxFor(peer) { return this.tx('outbox', 'readonly', (s) => s.index('byPeer').getAll(peer)); },
+    delOutbox(opId) { return this.tx('outbox', 'readwrite', (s) => s.delete(opId)); },
     putMsg(m) { return this.tx('msgs', 'readwrite', (s) => s.put(m)); },
     getMsg(conv, id) { return this.tx('msgs', 'readonly', (s) => s.get([conv, id])); },
     // Newest `limit` messages of a conversation, oldest first.
@@ -243,7 +278,9 @@
     clearTimeout(saveTimers[name]);
     delete saveTimers[name];
     const val = { contacts: S.contacts, blocks: S.blocks, rooms: S.rooms, meta: S.meta, customs: S.customs, profiles: S.profiles }[name];
-    return DB.set(name, val).catch((e) => console.warn('save', name, e));
+    return DB.set(name, val).then(() => {
+      if (peerBus && ['contacts', 'profiles', 'meta'].includes(name)) peerBus.postMessage({ type: 'state', name, from: tabId });
+    }).catch((e) => console.warn('save', name, e));
   }
   function persist(name) {
     // Rooms, contacts, blocks and emoji save straight away; read markers and profile caches batch.
@@ -304,6 +341,17 @@
   // ---------- Profiles ----------
 
   // Clean a profile that came from someone else.
+  function cleanGameData(raw) {
+    raw = raw && typeof raw === 'object' ? raw : {};
+    const achievements = {};
+    const source = raw.achievements && typeof raw.achievements === 'object' ? raw.achievements : {};
+    for (const key of Object.keys(source).slice(0, 160)) {
+      const full = key.includes(':') ? key : 'tetris:' + key;
+      if (/^(tetris|pong|battleships|chess):[A-Za-z0-9_]{1,32}$/.test(full) && Number(source[key]) >= 0) achievements[full] = Math.max(0, Math.min(Date.now(), Number(source[key])));
+    }
+    const featured = (Array.isArray(raw.featured) ? raw.featured : []).filter((key) => typeof key === 'string' && achievements[key]).slice(0, 12);
+    return { achievements, featured, xp: Math.max(0, Math.min(100000000, Number(raw.xp) || 0)) };
+  }
   function cleanProfile(p) {
     p = p || {};
     const out = {
@@ -315,6 +363,7 @@
     if (typeof p.banner === 'string' && p.banner.length < 170000 && /^data:image\/(png|jpeg|webp|gif);base64,/.test(p.banner)) out.banner = p.banner;
     if (isHexPair(p.nameGrad)) out.nameGrad = p.nameGrad.slice(0, 2);
     if (isHexPair(p.bannerGrad)) out.bannerGrad = p.bannerGrad.slice(0, 2);
+    if (p.gameData) out.gameData = cleanGameData(p.gameData);
     return out;
   }
 
@@ -323,7 +372,7 @@
 
   function myProfile() {
     const m = S.me;
-    return { name: m.name, color: m.color, bio: m.bio || '', avatar: m.avatar || undefined, banner: m.banner || undefined, nameGrad: m.nameGrad || undefined, bannerGrad: m.bannerGrad || undefined };
+    return { name: m.name, color: m.color, bio: m.bio || '', avatar: m.avatar || undefined, banner: m.banner || undefined, nameGrad: m.nameGrad || undefined, bannerGrad: m.bannerGrad || undefined, gameData: m.gameData || undefined };
   }
   // Rooms send only this light version on every update; pictures travel once, on join or change.
   function lightProfile(p) { return p ? { name: p.name, color: p.color, bio: p.bio, nameGrad: p.nameGrad, bannerGrad: p.bannerGrad } : {}; }
@@ -335,6 +384,7 @@
       // Light updates carry no pictures: keep the ones we already have.
       if (old.avatar) clean.avatar = old.avatar;
       if (old.banner) clean.banner = old.banner;
+      if (old.gameData) clean.gameData = old.gameData;
     }
     if (old && JSON.stringify(old) === JSON.stringify(clean)) return;
     S.profiles[id] = clean;
@@ -546,9 +596,30 @@
     loadGlobalBlocks().then(queueRerender);
     renderMe();
     renderSidebar();
-    startPeer();
+    claimPeer(!MINI);
+    syncGameProfile();
     route();
   }
+
+  let gameProfileBusy = false;
+  async function syncGameProfile() {
+    if (!S.me || !window.ChatGamesProfile || gameProfileBusy) return;
+    gameProfileBusy = true;
+    try {
+      const row = await window.ChatGamesProfile.load(S.me);
+      if (!row) return;
+      const data = cleanGameData(row);
+      const changed = row.name !== S.me.name || row.avatar !== S.me.avatar || row.banner !== S.me.banner || row.bio !== S.me.bio || JSON.stringify(data) !== JSON.stringify(S.me.gameData);
+      if (!changed) return;
+      Object.assign(S.me, { name: row.name || S.me.name, avatar: row.avatar || null, banner: row.banner || null, bio: row.bio || '', gameData: data });
+      await DB.set('identity', S.me);
+      if (peerBus) peerBus.postMessage({ type: 'profile', from: tabId });
+      broadcastProfile();
+      queueRerender();
+    } catch (error) { console.warn('[chat game profile]', error); }
+    finally { gameProfileBusy = false; }
+  }
+  window.addEventListener('storage', (e) => { if (e.key === 'chat.game-profile-changed') syncGameProfile(); });
 
   // ---------- Networking ----------
   // One PeerJS peer per identity (PREFIX + id). Links are data connections that finish a signed
@@ -556,11 +627,105 @@
 
   const net = { peer: null, ready: false, links: new Map(), pending: new Map(), retry: null };
 
+  // Chat and game iframes share IndexedDB, but PeerJS allows only one address per identity.
+  // The active view claims a short lease; an idle game iframe takes over after it closes.
+  const tabId = randomId(16);
+  let miniOpen = !MINI;
+  const peerLeaseKey = 'chat.peer-owner';
+  const peerBus = 'BroadcastChannel' in window ? new BroadcastChannel('chat.peer-sync') : null;
+  function peerLease() {
+    try { return JSON.parse(localStorage.getItem(peerLeaseKey) || 'null'); } catch (e) { return null; }
+  }
+  function ownsPeer() {
+    const lease = peerLease();
+    return !!(S.me && lease && lease.id === S.me.id && lease.tab === tabId);
+  }
+  function releasePeer() {
+    if (ownsPeer()) localStorage.removeItem(peerLeaseKey);
+    clearInterval(net.retry);
+    net.retry = null;
+    net.ready = false;
+    for (const link of net.links.values()) { try { link.conn.close(); } catch (e) { /* closed */ } }
+    net.links.clear();
+    for (const code in hosts) { try { hosts[code].peer.destroy(); } catch (e) { /* closed */ } delete hosts[code]; }
+    for (const code in roomLinks) { try { roomLinks[code].conn.close(); } catch (e) { /* closed */ } delete roomLinks[code]; }
+    try { if (net.peer) net.peer.destroy(); } catch (e) { /* closed */ }
+    net.peer = null;
+    S.online = {};
+    queueRerender();
+  }
+  async function claimPeer(force) {
+    if (!S.me) return;
+    const lease = peerLease();
+    if (!force && lease && lease.id === S.me.id && lease.tab !== tabId && lease.until > Date.now()) return;
+    localStorage.setItem(peerLeaseKey, JSON.stringify({ id: S.me.id, tab: tabId, until: Date.now() + 8000 }));
+    await new Promise((resolve) => setTimeout(resolve, 280));
+    if (!ownsPeer()) return;
+    const [contacts, meta, profiles] = await Promise.all(['contacts', 'meta', 'profiles'].map((k) => DB.get(k)));
+    S.contacts = contacts || S.contacts; S.meta = meta || S.meta; S.profiles = profiles || S.profiles;
+    renderSidebar();
+    if (!net.peer) startPeer();
+  }
+  setInterval(() => {
+    if (!S.me) return;
+    if (ownsPeer()) localStorage.setItem(peerLeaseKey, JSON.stringify({ id: S.me.id, tab: tabId, until: Date.now() + 8000 }));
+    else if (net.peer) releasePeer();
+    else { const lease = peerLease(); if (!lease || lease.id !== S.me.id || lease.until < Date.now()) claimPeer(false); }
+  }, 3000);
+  window.addEventListener('storage', (e) => {
+    if (e.key !== peerLeaseKey || !S.me) return;
+    if (net.peer && !ownsPeer()) releasePeer();
+    if (!e.newValue) setTimeout(() => claimPeer(false), 400 + Math.random() * 500);
+  });
+  window.addEventListener('focus', () => { if (!MINI && S.me && !ownsPeer()) claimPeer(true); });
+  window.addEventListener('message', (e) => {
+    if (!MINI || e.origin !== location.origin) return;
+    if (e.data === 'chat:open') { miniOpen = true; claimPeer(true); markRead(); }
+    if (e.data === 'chat:close') miniOpen = false;
+    if (e.data && e.data.type === 'chat:open-contact' && S.me) {
+      const id = parseCode(e.data.code);
+      if (!/^[a-z2-9]{16}$/.test(id) || id === S.me.id) return;
+      miniOpen = true;
+      claimPeer(true);
+      setHash(isContact(id) ? '#dm/' + id : '#add/' + id);
+      route();
+    }
+  });
+  if (peerBus) peerBus.onmessage = async (e) => {
+    if (!S.me || !e.data || e.data.from === tabId) return;
+    if (e.data.type === 'outbox' && ownsPeer()) {
+      await flushOutbox(e.data.id);
+    }
+    if (e.data.type === 'state' && ['contacts', 'profiles', 'meta'].includes(e.data.name)) {
+      S[e.data.name] = (await DB.get(e.data.name)) || S[e.data.name];
+      if (e.data.name === 'contacts' && ownsPeer()) reconnectAll();
+      queueRerender();
+    }
+    if (e.data.type === 'profile') {
+      S.me = (await DB.get('identity')) || S.me;
+      broadcastProfile();
+      queueRerender();
+    }
+    if (e.data.type === 'message' || e.data.type === 'changed') {
+      const m = e.data.conv && e.data.msgId ? await DB.getMsg(e.data.conv, e.data.msgId) : null;
+      if (m) {
+        if (e.data.type === 'message') touchMeta(m.conv, m);
+        if (S.conv && S.conv.key === m.conv) {
+          S.msgs.set(m.id, m);
+          S.msgNodes.delete(m.id);
+          scheduleRender(e.data.type === 'message');
+        }
+      }
+      renderSidebar();
+    }
+  };
+
   function peerOptions() {
     return Object.assign({ debug: 1, config: { iceServers: ICE_SERVERS } }, PEER_OPTS);
   }
 
   function startPeer() {
+    if (!ownsPeer()) return;
     if (!window.Peer) { setNetStatus("Couldn't load the connection library. Check your connection and reload."); return; }
     const peer = new window.Peer(PREFIX + S.me.id, peerOptions());
     net.peer = peer;
@@ -569,7 +734,7 @@
       net.idRetries = 0;
       setNetStatus('');
       reconnectAll();
-      resumeRooms();
+      if (!MINI) resumeRooms();
     });
     peer.on('connection', (conn) => {
       const pid = conn.peer || '';
@@ -594,7 +759,7 @@
         // A tab that just closed can hold the address for a moment; retry before giving up.
         peer.destroy();
         net.idRetries = (net.idRetries || 0) + 1;
-        if (net.idRetries <= 4) { setNetStatus('Connecting…'); setTimeout(startPeer, 2500 * net.idRetries); return; }
+        if (net.idRetries <= 4 && ownsPeer()) { setNetStatus('Connecting…'); setTimeout(startPeer, 2500 * net.idRetries); return; }
         setNetStatus('Chat is open in another tab or window. Close it and reload this page to use chat here.');
         return;
       }
@@ -603,7 +768,7 @@
       if (['network', 'server-error', 'socket-error', 'socket-closed'].includes(type)) setNetStatus('Connection problem. Retrying…');
     });
     clearInterval(net.retry);
-    net.retry = setInterval(() => { if (net.ready) { reconnectAll(); retryOfflineRooms(); } }, 20000);
+    net.retry = setInterval(() => { if (net.ready) { reconnectAll(); if (!MINI) retryOfflineRooms(); } }, 20000);
   }
 
   // Heartbeat: a browser that vanished without saying goodbye is dropped after ~30s.
@@ -627,7 +792,8 @@
     flushSaves();
     for (const link of allLinks()) { try { link.conn.send({ t: 'bye' }); link.conn.close(); } catch (e) { /* closed */ } }
     for (const code in hosts) { try { hosts[code].peer.destroy(); } catch (e) { /* closed */ } }
-    try { if (net.peer) net.peer.destroy(); } catch (e) { /* closed */ }
+    releasePeer();
+    if (peerBus) peerBus.close();
   });
 
   function setNetStatus(text) {
@@ -841,33 +1007,28 @@
   // ---------- DM outbox ----------
   // Ops (new message, edit, delete, reaction) wait here until the other side acknowledges them.
 
-  const outboxes = {};
-  async function outbox(id) {
-    if (!outboxes[id]) outboxes[id] = (await DB.get('outbox:' + id)) || [];
-    return outboxes[id];
-  }
-  function saveOutbox(id) { DB.set('outbox:' + id, outboxes[id] || []).catch(() => {}); }
-
-  async function queueDmOp(id, op) {
+  async function queueDmOp(id, op, localMsg) {
     op.opId = randomId(12);
-    const box = await outbox(id);
-    box.push(op);
-    saveOutbox(id);
-    if (isContact(id)) sendTo(id, { t: 'op', op });
+    op.peer = id;
+    op.queuedAt = Date.now();
+    if (localMsg) await DB.putPendingMsgAndOp(localMsg, op);
+    else await DB.putOutbox(op);
+    if (peerBus) peerBus.postMessage({ type: 'outbox', id, from: tabId });
+    if (peerBus && op.k === 'msg') peerBus.postMessage({ type: 'message', conv: dmKey(id), msgId: op.msg.id, from: tabId });
+    if (isContact(id) && ownsPeer()) sendTo(id, { t: 'op', op });
   }
 
   async function flushOutbox(id) {
     if (!isContact(id)) return;
-    const box = await outbox(id);
+    const box = (await DB.outboxFor(id)).sort((a, b) => a.queuedAt - b.queuedAt);
     for (const op of box) if (!sendTo(id, { t: 'op', op })) break;
   }
 
   async function ackOutbox(id, opId) {
-    const box = await outbox(id);
-    const i = box.findIndex((o) => o.opId === opId);
-    if (i < 0) return;
-    const [op] = box.splice(i, 1);
-    saveOutbox(id);
+    const op = await DB.getOutbox(opId);
+    if (!op || op.peer !== id) return;
+    await DB.delOutbox(opId);
+    if (peerBus) peerBus.postMessage({ type: 'changed', conv: dmKey(id), msgId: op.msg && op.msg.id, from: tabId });
     if (op.k === 'msg') {
       const m = await DB.getMsg(dmKey(id), op.msg.id);
       if (m && m.status === 'pending') { m.status = 'sent'; await DB.putMsg(m); msgUpdated(m); }
@@ -945,7 +1106,8 @@
   async function storeIncoming(m) {
     await DB.putMsg(m);
     touchMeta(m.conv, m);
-    const viewing = S.conv && S.conv.key === m.conv;
+    if (peerBus && m.conv.startsWith('dm_')) peerBus.postMessage({ type: 'message', conv: m.conv, msgId: m.id, from: tabId });
+    const viewing = S.conv && S.conv.key === m.conv && miniOpen;
     if (viewing) { S.msgs.set(m.id, m); scheduleRender(true); }
     if (m.from !== S.me.id && m.kind !== 'system' && !isBlocked(m.from) && (!viewing || document.hidden)) {
       const where = m.conv.startsWith('room_') ? ' in ' + roomName(m.conv.slice(5)) : '';
@@ -954,6 +1116,7 @@
   }
 
   function msgUpdated(m) {
+    if (peerBus && m.conv.startsWith('dm_')) peerBus.postMessage({ type: 'changed', conv: m.conv, msgId: m.id, from: tabId });
     if (S.conv && S.conv.key === m.conv) { S.msgs.set(m.id, m); S.msgNodes.delete(m.id); scheduleRender(false); }
   }
 
@@ -1716,7 +1879,9 @@
     });
     $('roomList').replaceChildren(...(roomNodes.length ? roomNodes : [el('p', { class: 'side-empty', text: 'No rooms yet. Create one or join with a code.' })]));
 
-    const unread = contacts.filter((c) => isUnread(dmKey(c.id))).length + rooms.filter((r) => isUnread(roomKey(r.code))).length + requests.length;
+    const unreadDm = contacts.filter((c) => isUnread(dmKey(c.id))).length + requests.length;
+    if (MINI) parent.postMessage({ type: 'chat:unread', count: unreadDm }, location.origin);
+    const unread = unreadDm + rooms.filter((r) => isUnread(roomKey(r.code))).length;
     document.title = (unread ? '(' + unread + ') ' : '') + 'chat | baloneys';
   }
 
@@ -1868,7 +2033,7 @@
 
   function markRead() {
     const c = S.conv;
-    if (!c || document.hidden || !atBottom()) return;
+    if (!c || document.hidden || !miniOpen || !atBottom()) return;
     const meta = S.meta[c.key];
     if (!meta || (meta.lastRead || 0) >= (meta.updatedAt || 0)) return;
     meta.lastRead = meta.updatedAt;
@@ -2366,6 +2531,28 @@
 
   // ---------- Profiles, blocking, reports ----------
 
+  const GAME_ACHIEVEMENTS = { tetris: 'TetrisAchievements', pong: 'PongAchievements', battleships: 'BattleshipsAchievements', chess: 'ChessAchievements' };
+  function gameShowcase(raw) {
+    if (!raw) return null;
+    const data = cleanGameData(raw);
+    const rows = Object.keys(GAME_ACHIEVEMENTS).map((game) => {
+      const catalog = window[GAME_ACHIEVEMENTS[game]];
+      if (!catalog) return null;
+      const keys = Object.keys(data.achievements).filter((key) => key.startsWith(game + ':') && catalog.get(key.slice(game.length + 1)));
+      if (!keys.length) return null;
+      const preferred = data.featured.filter((key) => keys.includes(key));
+      const selected = (preferred.length ? preferred : keys.sort((a, b) => data.achievements[b] - data.achievements[a])).slice(0, 3);
+      return el('div', { class: 'pc-game-row' },
+        el('div', { class: 'pc-game-head' }, el('b', { text: game.charAt(0).toUpperCase() + game.slice(1) }), el('span', { text: keys.length + ' earned' })),
+        el('div', { class: 'pc-game-awards' }, selected.map((key) => {
+          const id = key.slice(game.length + 1), ach = catalog.get(id);
+          return el('div', { class: 'pc-game-award', title: ach.desc || ach.name }, catalog.badge(id, 38), el('span', { text: ach.name }));
+        })));
+    }).filter(Boolean);
+    if (!rows.length) return null;
+    return el('div', { class: 'pc-section pc-games' }, el('p', { class: 'side-title', text: 'Game achievements' }), rows);
+  }
+
   // A profile card: banner, avatar overlapping it, gradient name, code, bio.
   function profileCard(id) {
     const p = profileOf(id) || {};
@@ -2386,7 +2573,8 @@
           S.globalBlocks[id] ? el('span', { class: 'badge badge-ban', text: 'blocked on this site' }) : null,
           S.blocks[id] ? el('span', { class: 'badge', text: 'blocked' }) : null,
           isContact(id) ? el('span', { class: 'badge badge-mod', text: 'contact' }) : null),
-        p.bio ? el('div', { class: 'pc-section' }, el('p', { class: 'side-title', text: 'About' }), el('p', { class: 'profile-bio', text: p.bio })) : null));
+        p.bio ? el('div', { class: 'pc-section' }, el('p', { class: 'side-title', text: 'About' }), el('p', { class: 'profile-bio', text: p.bio })) : null,
+        gameShowcase(p.gameData)));
   }
 
   let shownProfile = null;
@@ -2579,11 +2767,10 @@
     if (c.type === 'dm') {
       if (!isContact(c.id)) return Promise.reject(new Error('They need to accept your request first.'));
       const local = Object.assign({ conv: c.key, from: S.me.id, status: 'pending' }, msg);
-      return DB.putMsg(local).then(() => {
+      return queueDmOp(c.id, { k: 'msg', msg }, local).then(() => {
         touchMeta(c.key, local);
         S.msgs.set(local.id, local);
         scheduleRender(true);
-        return queueDmOp(c.id, { k: 'msg', msg });
       });
     }
     if (!roomSend(c.id, { k: 'msg', msg })) return Promise.reject(new Error("You're not connected to this room right now."));
@@ -3336,6 +3523,8 @@
   async function saveMe(patch) {
     Object.assign(S.me, patch);
     await DB.set('identity', S.me);
+    if (peerBus) peerBus.postMessage({ type: 'profile', from: tabId });
+    if (window.ChatGamesProfile) window.ChatGamesProfile.save(patch).catch((e) => console.warn('[chat game profile save]', e));
     S.msgNodes.clear();
     broadcastProfile();
     queueRerender();
@@ -3460,7 +3649,7 @@
   const NAME_GRADS = [['#9d00ff', '#e60065'], ['#22d3ee', '#a78bfa'], ['#f59e0b', '#ef4444'], ['#34d399', '#3b82f6'], ['#f472b6', '#facc15'], ['#ffffff', '#a1a1aa']];
   const LOOK_DEFAULT = {
     bg: 'default', theme: 'baloneys', grad: { stops: ['#12001f', '#3b0764', '#e60065'], angle: 150, three: true },
-    solid: '#0b0b12', imgBlur: 0, imgDim: 35, imgFit: 'cover',
+    solid: '#0b0b12', imgBlur: 0, imgDim: 35, imgFit: 'cover', sceneGame: 'tetris', sceneIndex: 0, scenePixel: 1,
     panel: 78, glassBlur: 16, text: 'default', textColor: '#ece6ff', accent: '#9d00ff', accent2: null, accentFlat: false, size: 15
   };
 
@@ -3499,6 +3688,23 @@
   const lookAccent = () => [look.accent, isHex(look.accent2) ? look.accent2 : accentPartner(look.accent)];
   const roomAccent = (r) => (r && isHex(r.accent) ? [r.accent, isHex(r.accent2) ? r.accent2 : accentPartner(r.accent)] : null);
   const gradCss = (g) => 'linear-gradient(' + g.angle + 'deg, ' + (g.three ? g.stops : g.stops.slice(0, 2)).join(', ') + ')';
+  const GAME_SCENES = {
+    tetris: ['Surge', 'Pulse', 'Tide', 'Afterglow', 'Strata', 'Storm', 'Warp', 'Clockwork', 'Party', 'Stars', 'Fog', 'Kaleidoscope', 'Circuit City', 'Prism Portal', 'Meteor Rain', 'Pixel Aurora'],
+    pong: ['Neon Court', 'Ping Waves', 'LED Rain', 'Arcade Sunset', 'Orbit', 'Split Field'],
+    battleships: ['Sonar Sweep', 'Night Swell', 'The Deep', 'War Table', 'Storm'],
+    chess: ['Endless Board', 'Marble', "Knight's Tour", 'Velvet', 'Star Board']
+  };
+  const SCENE_COLOURS = {
+    tetris: ['#7331e5','#eb389d','#256dde','#ba36cd','#7047bf','#4f75df','#6239ee','#d549b4','#e93b96','#415dda','#577bbf','#a332dc','#187cc9','#9341ef','#6389d9','#397dbf'],
+    pong: ['#8836df','#3c94df','#42b6b4','#da478b','#a75cee','#cd4cc7'],
+    battleships: ['#33bcae','#496ec8','#289dac','#6692d3','#7287c8'],
+    chess: ['#a472ed','#9c81d5','#6596df','#d96aab','#819bdb']
+  };
+  function sceneUrl(game, scene, pixel) {
+    const safeGame = Object.prototype.hasOwnProperty.call(GAME_SCENES, game) ? game : 'tetris';
+    const safeScene = Math.max(0, Math.min(GAME_SCENES[safeGame].length - 1, scene | 0));
+    return 'chat-scene.html?game=' + safeGame + '&scene=' + safeScene + '&pixel=' + Math.max(1, Math.min(5, pixel | 0 || 1));
+  }
 
   // The room you're in can bring its own background and accent (unless you've turned room themes off).
   function activeRoomLook() {
@@ -3525,6 +3731,20 @@
     bg.className = 'chat-bg' + (custom || (room && room.theme) ? ' on' : '');
     bg.style.background = '';
     bg.style.setProperty('--img', 'none');
+    let sceneFrame = bg.querySelector('iframe');
+    if (look.bg === 'animated' && !(room && room.theme)) {
+      if (!sceneFrame) {
+        sceneFrame = el('iframe', { title: 'Animated game background', tabIndex: -1 });
+        sceneFrame.setAttribute('aria-hidden', 'true');
+        bg.appendChild(sceneFrame);
+      }
+      const url = sceneUrl(look.sceneGame, look.sceneIndex, look.scenePixel);
+      if (sceneFrame.getAttribute('src') !== url) sceneFrame.src = url;
+      bg.style.background = '#070710';
+      bg.style.setProperty('--scene-blur', look.imgBlur + 'px');
+      bg.style.setProperty('--img-dim', String(look.imgDim / 100));
+      bg.classList.add('animated');
+    } else if (sceneFrame) sceneFrame.remove();
     if (look.bg === 'gradient') bg.style.background = gradCss(look.grad);
     else if (look.bg === 'solid') bg.style.background = look.solid;
     else if (look.bg === 'image' && lookImage) {
@@ -3693,6 +3913,50 @@
 
   function setLook(patch) { Object.assign(look, patch); saveLook(); applyLook(); }
 
+  let sceneBrowsePick = null;
+  function sceneBrowser() {
+    let picked = sceneBrowsePick || { game: look.sceneGame || 'tetris', index: look.sceneIndex || 0 };
+    sceneBrowsePick = picked;
+    const previewFrame = el('iframe', { title: 'Animated scene preview', src: sceneUrl(picked.game, picked.index, look.scenePixel) });
+    const previewTitle = el('div', { class: 'scene-preview-title' });
+    const previewSub = el('div', { class: 'scene-preview-sub' });
+    const use = btn('Use this background', 'btn-primary', () => {
+      sceneBrowsePick = picked;
+      setLook({ bg: 'animated', sceneGame: picked.game, sceneIndex: picked.index });
+      drawStudio();
+    });
+    const thumbs = [];
+    const groups = Object.keys(GAME_SCENES).map((game) => el('div', { class: 'scene-group' },
+      el('h4', { text: game }),
+      el('div', { class: 'scene-thumbs' }, GAME_SCENES[game].map((name, index) => {
+        const tile = el('button', { type: 'button', class: 'scene-thumb', title: game + ' · ' + name,
+          onclick: () => choose(game, index), onfocus: () => choose(game, index), onmouseenter: () => choose(game, index) },
+          el('span', { class: 'scene-thumb-visual', style: { '--tile': SCENE_COLOURS[game][index] } }),
+          el('span', { text: name }));
+        thumbs.push({ tile, game, index });
+        return tile;
+      }))));
+    function choose(game, index) {
+      if (picked.game === game && picked.index === index) return;
+      picked = { game, index };
+      sceneBrowsePick = picked;
+      update();
+    }
+    function update() {
+      thumbs.forEach(({ tile, game, index }) => tile.classList.toggle('on', game === picked.game && index === picked.index));
+      previewTitle.textContent = GAME_SCENES[picked.game][picked.index];
+      previewSub.textContent = picked.game.charAt(0).toUpperCase() + picked.game.slice(1) + ' · animated live preview';
+      const url = sceneUrl(picked.game, picked.index, look.scenePixel);
+      if (previewFrame.getAttribute('src') !== url) previewFrame.src = url;
+      use.textContent = look.bg === 'animated' && look.sceneGame === picked.game && look.sceneIndex === picked.index ? 'Using this background' : 'Use this background';
+    }
+    update();
+    return el('div', { class: 'scene-browser' },
+      el('div', { class: 'scene-gallery' }, groups),
+      el('div', { class: 'scene-preview' },
+        el('div', { class: 'scene-preview-screen' }, previewFrame), previewTitle, previewSub, use));
+  }
+
   function studioTheme() {
     const sec = svSec;
     const presets = el('div', { class: 'theme-grid' },
@@ -3727,6 +3991,9 @@
 
     return el('div', null,
       sec('Presets', presets),
+      sec('Animated game scenes', sceneBrowser(),
+        slider('Pixelation', 1, 5, look.scenePixel || 1, '×', (v) => { setLook({ scenePixel: v }); const frame = $('studio').querySelector('.scene-preview-screen iframe'); if (frame) frame.src = sceneUrl(sceneBrowsePick.game, sceneBrowsePick.index, v); }),
+        el('p', { class: 'field-hint', text: 'Scenes from Tetris, Pong, Battleships and Chess. Preview a scene on the right, then apply it.' })),
       sec('Custom gradient', gradBar, stops,
         slider('Angle', 0, 360, g.angle, '°', (v) => { setGrad({ angle: v }); redrawBar(); }),
         look.bg !== 'gradient' || look.theme !== 'custom' ? btn('Use custom gradient', 'btn-sm btn-outline', () => { setGrad({}); drawStudio(); }) : null),
@@ -3740,8 +4007,8 @@
           look.bg !== 'image' ? btn('Use image', 'btn-sm btn-primary', () => { setLook({ bg: 'image' }); drawStudio(); }) : null,
           btn('Remove image', 'btn-sm btn-ghost', async () => { await DB.del('lookImage'); lookImage = null; if (look.bg === 'image') setLook({ bg: 'default' }); else applyLook(); drawStudio(); })) : null,
         lookImage ? choice([['cover', 'Fill'], ['contain', 'Fit'], ['tile', 'Tile']], look.imgFit, (v) => setLook({ imgFit: v })) : null,
-        lookImage ? slider('Background blur', 0, 40, look.imgBlur, 'px', (v) => setLook({ imgBlur: v })) : null,
-        lookImage ? slider('Darken', 0, 90, look.imgDim, '%', (v) => setLook({ imgDim: v })) : null),
+        (lookImage || look.bg === 'animated') ? slider('Background blur', 0, 40, look.imgBlur, 'px', (v) => setLook({ imgBlur: v })) : null,
+        (lookImage || look.bg === 'animated') ? slider('Darken', 0, 90, look.imgDim, '%', (v) => setLook({ imgDim: v })) : null),
       sec('Glass & panels',
         slider('Panel opacity', 10, 100, look.panel, '%', (v) => setLook({ panel: v })),
         slider('Glass blur', 0, 30, look.glassBlur == null ? 16 : look.glassBlur, 'px', (v) => setLook({ glassBlur: v })),

@@ -256,7 +256,8 @@
     // window gets ~64 rows, a phone in portrait ~320), clamped so nothing degenerates.
     var r = S.canvas.getBoundingClientRect();
     var cw = r.width || window.innerWidth || 1000, ch = r.height || window.innerHeight || 600;
-    var w = 150, h = Math.max(24, Math.min(400, Math.round(150 * ch / Math.max(1, cw))));
+    var w = Math.max(30, Math.round(150 / (window.ChatScenePixel || 1)));
+    var h = Math.max(24, Math.min(400, Math.round(w * ch / Math.max(1, cw))));
     if (S.canvas.width !== w || S.canvas.height !== h) { S.canvas.width = w; S.canvas.height = h; S.dirty = true; }
     kick();
   }

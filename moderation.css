@@ -1,0 +1,37 @@
+/* moderation.css: the staff portal (moderation.html). */
+body { min-height: 100vh; background: radial-gradient(ellipse at 20% 0%, rgba(129,43,205,.22), transparent 55%), radial-gradient(ellipse at 90% 100%, rgba(230,0,101,.14), transparent 50%), #050505; color: #ece6ff; font-family: Inter, system-ui, sans-serif; }
+.mod-top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 14px; padding: 14px 24px; border-bottom: 1px solid rgba(255,255,255,.08); background: rgba(8,6,16,.85); backdrop-filter: blur(12px); }
+.mod-logo { font-family: var(--font-family-heading); font-weight: 800; font-size: 1.2rem; color: #c77dff; text-decoration: none; }
+.mod-top-title { font-family: var(--font-family-heading); font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: #a99fbe; }
+.mod-who { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: .8rem; color: #d9c7f5; }
+.mod-main { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
+.mod-login { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.mod-card { padding: 24px; }
+.mod-form { display: grid; gap: 12px; margin-top: 14px; }
+.mod-form label { display: grid; gap: 6px; }
+.notice.error { color: #ff9ab0; }
+.mod-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.mod-tabs .chip { cursor: pointer; background: rgba(5,7,16,.4); }
+.mod-pane { display: grid; gap: 14px; }
+.mod-box { padding: 16px 18px; border-radius: 16px; border: 1px solid rgba(219,194,255,.14); background: linear-gradient(145deg, rgba(24,18,39,.62), rgba(7,10,20,.58)); }
+.mod-box h2 { margin: 0 0 10px; font-family: var(--font-family-heading); font-size: .95rem; }
+.mod-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid rgba(255,255,255,.06); }
+.mod-row:first-of-type { border-top: 0; }
+.mod-row .grow { flex: 1; min-width: 200px; }
+.mod-row small, .mod-sub { color: #a99fbe; font-size: .74rem; }
+.mod-msg { padding: 6px 10px; border-radius: 10px; background: rgba(255,255,255,.04); font-size: .85rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.mod-msg.deleted { opacity: .5; font-style: italic; }
+.mod-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.mod-actions .btn { font-size: .74rem; padding: 5px 10px; min-height: 0; }
+.mod-danger { border-color: rgba(255,77,109,.5) !important; color: #ffb3c2 !important; }
+.mod-search { display: flex; gap: 8px; margin-bottom: 8px; }
+.mod-search .text-input { flex: 1; }
+.mod-ban { display: inline-flex; gap: 6px; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(255,77,109,.4); font-size: .7rem; color: #ffc2cd; }
+.mod-ban.old { opacity: .5; border-color: rgba(255,255,255,.15); color: #a99fbe; }
+.mod-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.mod-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 4px 3px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.12); font-size: .78rem; }
+.mod-chip button { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; color: #c6bdd6; }
+.mod-chip button:hover { background: rgba(255,255,255,.1); }
+.mod-level { padding: 2px 8px; border-radius: 999px; background: rgba(176,38,255,.25); font-family: var(--font-family-heading); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; }
+.mod-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.mod-empty { color: #a99fbe; font-size: .85rem; padding: 8px 0; }

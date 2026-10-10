@@ -45,7 +45,9 @@
     { id: 'online_win5', cat: 'online', tier: 'gold', icon: 'crown', name: 'Ranked Up', desc: 'Win 5 online matches.', stat: 'onlineWins', goal: 5 },
     { id: 'custom_ball', cat: 'style', tier: 'bronze', icon: 'shell', name: 'Bring Your Own Ball', desc: 'Play with your own uploaded picture as the ball.' },
     { id: 'emoji_ball', cat: 'style', tier: 'bronze', icon: 'cake', name: 'Emoji Physics', desc: 'Play with an emoji as the ball.' },
-    { id: 'gif_ball', cat: 'style', tier: 'bronze', icon: 'sparkle', name: 'Animated', desc: 'Play with a GIF as the ball.' }
+    { id: 'gif_ball', cat: 'style', tier: 'bronze', icon: 'sparkle', name: 'Animated', desc: 'Play with a GIF as the ball.' },
+    { id: 'skull_try', cat: 'style', tier: 'bronze', icon: 'skull', name: 'Skull Curious', desc: 'Play a match with a skull on.' },
+    { id: 'skull_win', cat: 'style', tier: 'silver', icon: 'skull', name: 'Bone Crusher', desc: 'Win a match with 2 or more skulls on.' }
   ];
 
   window.PongAchievements = window.GameAchievements.create({
@@ -74,6 +76,7 @@
         },
         // a match started with this ball: { ball: 'classic' | 'builtin' | 'image' | 'gif' | 'emoji' }
         start: function (d) {
+          if (d.skulls > 0) unlock('skull_try');
           if (d.ball === 'image') unlock('custom_ball');
           else if (d.ball === 'gif') unlock('gif_ball');
           else if (d.ball === 'emoji') unlock('emoji_ball');
@@ -84,6 +87,7 @@
           if (d.mode === 'local') { unlock('local'); return; }
           if (!d.won) return;
           unlock('first_win');
+          if (d.skulls >= 2) unlock('skull_win');
           addStat('wins', 1);
           if (d.mode === 'cpu') {
             if (d.difficulty === 'easy') unlock('easy_win');

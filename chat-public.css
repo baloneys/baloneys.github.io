@@ -1,0 +1,27 @@
+/* chat-public.css: the database-backed public chatroom in /chat (chat-public.js). Reuses chat.css's message
+   styles; these are only the extras. */
+.pub-entry-icon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 12px; font-size: 1.15rem;
+  background: linear-gradient(135deg, rgba(176,38,255,.45), rgba(255,63,164,.3)); box-shadow: 0 0 14px rgba(176,38,255,.35); }
+.pub-head-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; font-size: 1.1rem; background: linear-gradient(135deg, rgba(176,38,255,.45), rgba(255,63,164,.3)); }
+.pub-view .messages { padding-top: 8px; }
+.pub-avatar { cursor: pointer; }
+.pub-view .msg-head .soc-badge { font-size: .62rem; }
+.pub-view .msg-head .soc-role-pill { font-size: .55rem; padding: 1px 7px; }
+.pub-view .msg.pinned { box-shadow: inset 3px 0 0 #ffd640; }
+.pub-pin-tag { font-size: .62rem; color: #ffd640; }
+.pub-pinned { padding: 6px var(--spacing-lg, 16px); border-bottom: 1px solid var(--color-border); background: rgba(255,214,64,.06); }
+.pub-pinned-btn { display: flex; gap: 6px; width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #f3e9c2; font-size: .8rem; text-align: left; cursor: pointer; }
+.pub-older { display: block; margin: 8px auto; padding: 4px 14px; border-radius: 999px; border: 1px solid var(--color-border); color: #d9c7f5; font-size: .75rem; cursor: pointer; }
+.pub-notice { margin: 0 var(--spacing-lg, 16px); padding: 6px 10px; border-radius: 10px; background: rgba(255,214,64,.1); color: #f3e9c2; font-size: .78rem; }
+.pub-notice.bad { background: rgba(255,77,109,.14); color: #ffc2cd; }
+.pub-notice.hidden { display: none; }
+.pub-rules { margin: 6px 4px 0; color: var(--color-on-surface-secondary); font-size: .66rem; }
+.pub-rules kbd { padding: 0 5px; border: 1px solid var(--color-border); border-radius: 4px; font-size: .9em; }
+.pub-react-pop { position: absolute; right: 0; top: -44px; z-index: 5; display: flex; gap: 2px; padding: 4px; border-radius: 999px; border: 1px solid rgba(219,194,255,.25);
+  background: rgba(20,14,34,.96); box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+.pub-react-pop button { width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; }
+.pub-react-pop button:hover { background: rgba(255,255,255,.1); transform: scale(1.15); }
+.pub-view .msg-tools { position: absolute; }
+.pub-empty { margin: auto; text-align: center; }
+html[data-game="chat"] .pub-view .conv-head { padding-right: 150px; }
+@media (max-width: 600px) { html[data-game="chat"] .pub-view .conv-head { padding-right: 120px; } }

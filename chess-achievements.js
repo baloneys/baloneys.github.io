@@ -40,6 +40,8 @@
     { id: 'games10', cat: 'lifetime', tier: 'bronze', icon: 'pad', name: 'Regular', desc: 'Finish 10 games.', stat: 'games', goal: 10 },
     { id: 'wins25', cat: 'lifetime', tier: 'gold', icon: 'trophy', name: 'Rated Up', desc: 'Win 25 games.', stat: 'wins', goal: 25 },
     { id: 'online_win', cat: 'online', tier: 'silver', icon: 'sword', name: 'Correspondence', desc: 'Win an online game.' },
+    { id: 'skull_try', cat: 'skill', tier: 'bronze', icon: 'skull', name: 'Skull Curious', desc: 'Start a game against the CPU with a skull on.' },
+    { id: 'skull_win', cat: 'skill', tier: 'silver', icon: 'skull', name: 'Bone Crusher', desc: 'Beat the CPU with 2 or more skulls on.' },
     { id: 'online_win5', cat: 'online', tier: 'gold', icon: 'crown', name: 'Titled Player', desc: 'Win 5 online games.', stat: 'onlineWins', goal: 5 }
   ];
 
@@ -62,12 +64,14 @@
         },
         // a game ended: { mode, won (true/false/null for draws and local), method: 'mate'|'time'|'resign'|'draw'|'stalemate'|...,
         //   difficulty, color, myMoves, matePiece, worstDeficit (centipawns behind at worst) }
+        start: function (d) { if (d.skulls > 0) unlock('skull_try'); },
         game: function (d) {
           addStat('games', 1);
           if (d.method === 'stalemate') unlock('stalemate');
           if (d.mode === 'local') { unlock('local'); return; }
           if (!d.won) return;
           unlock('first_win');
+          if (d.skulls >= 2) unlock('skull_win');
           addStat('wins', 1);
           if (d.mode === 'cpu') {
             if (d.difficulty === 'easy') unlock('easy_win');

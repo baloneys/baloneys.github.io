@@ -258,11 +258,13 @@
   }
 
   // The strongest tier keeps the mobile search bounded at three plies.
-  var LEVELS = { easy: { depth: 1, noise: 120 }, normal: { depth: 2, noise: 25 }, hard: { depth: 3, noise: 12 }, ultra: { depth: 3, noise: 0 } };
+  // Tuned down (Oct 2026): shallower search, more randomness, and a chance of simply playing a random legal move.
+  var LEVELS = { easy: { depth: 1, noise: 260, blunder: 0.3 }, normal: { depth: 1, noise: 70, blunder: 0.1 }, hard: { depth: 2, noise: 30, blunder: 0.03 }, ultra: { depth: 3, noise: 8, blunder: 0 } };
 
   function bestMove(s, level) {
     var cfg = LEVELS[level] || LEVELS.normal;
     var moves = order(legalMoves(s));
+    if (cfg.blunder && moves.length && Math.random() < cfg.blunder) return moves[Math.floor(Math.random() * moves.length)];
     var best = null, bestV = -Infinity;
     moves.forEach(function (m) {
       var v = -negamax(apply(s, m), cfg.depth - 1, -Infinity, Infinity, 1) + (Math.random() * 2 - 1) * cfg.noise;
@@ -287,8 +289,38 @@
   var game = null;
   var clockTimer = null;
 
+  /* ---------- skulls (vs CPU only; online and local games are always straight) ---------- */
+  var SKULLS = [
+    { id: 'blindfold', name: 'Blindfold', sym: '🙈', kind: 'harder', desc: 'The CPU\'s pieces are invisible, except the one it just moved.' },
+    { id: 'fog', name: 'Fog of War', sym: '☁', kind: 'harder', desc: 'You only see CPU pieces on squares your pieces attack.' },
+    { id: 'queenless', name: 'Queenless', sym: '♛', kind: 'harder', desc: 'You start without your queen.' },
+    { id: 'rush', name: 'Rush Hour', sym: '⏱', kind: 'harder', desc: 'You have two minutes for the whole game. The CPU has all day.' },
+    { id: 'ironman', name: 'Iron Man', sym: '⛓', kind: 'harder', desc: 'No take-backs.' },
+    { id: 'shuffle', name: 'Shuffled Ranks', sym: '🔀', kind: 'chaos', desc: 'The back-rank pieces start in a random order (mirrored), and nobody can castle.' },
+    { id: 'odds', name: 'Queen Odds', sym: '♕', kind: 'easier', desc: 'The CPU starts without its queen.' },
+    { id: 'coach', name: 'Coach', sym: '💡', kind: 'easier', desc: 'A good move is highlighted on your turn.' }
+  ];
+  var skulls = null;
+  function skull(id) { return !!skulls && game && game.mode === 'cpu' && skulls.has(id); }
+  function skullOn(id, mode) { return !!skulls && mode === 'cpu' && skulls.has(id); }
+
+  // Starting-position skulls: remove queens, shuffle the back ranks (mirrored, so it stays fair).
+  function applyStartSkulls(s, mode, myColor) {
+    if (skullOn('shuffle', mode)) {
+      var back = 'rnbqkbnr'.split('');
+      for (var i = back.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = back[i]; back[i] = back[j]; back[j] = tmp; }
+      for (var c = 0; c < 8; c++) { s.board[c] = back[c]; s.board[56 + c] = back[c].toUpperCase(); }
+      s.castle = { K: false, Q: false, k: false, q: false };
+    }
+    var cpu = myColor === 'w' ? 'b' : 'w';
+    if (skullOn('queenless', mode)) removeQueen(s, myColor);
+    if (skullOn('odds', mode)) removeQueen(s, cpu);
+    return s;
+  }
+  function removeQueen(s, color) { var q = color === 'w' ? 'Q' : 'q', at = s.board.indexOf(q); if (at !== -1) s.board[at] = '.'; }
+
   function newGame(mode, myColor) {
-    var s = initial();
+    var s = applyStartSkulls(initial(), mode, myColor);
     var mins = parseInt(settings.clock, 10) || 0;
     game = {
       mode: mode,
@@ -301,7 +333,7 @@
       over: false,
       result: '',
       flipped: myColor === 'b',
-      clock: mins ? { w: mins * 60000, b: mins * 60000, inc: mins === 3 ? 2000 : 0, last: null } : null,
+      clock: skullOn('rush', mode) ? rushClock(myColor) : mins ? { w: mins * 60000, b: mins * 60000, inc: mins === 3 ? 2000 : 0, last: null } : null,
       thinking: false,
       drawOfferFrom: null,
       startedAt: performance.now(),
@@ -310,6 +342,9 @@
       reported: false
     };
   }
+
+  // Rush Hour: two minutes for you, practically unlimited for the CPU.
+  function rushClock(myColor) { var c = { w: 99 * 60000, b: 99 * 60000, inc: 0, last: null }; c[myColor] = 2 * 60000; return c; }
 
   var SCREENS = ['menuPanel', 'onlinePanel', 'lobbyPanel', 'gameView'];
   function screen(id) { SCREENS.forEach(function (x) { $('#' + x).classList.toggle('hidden', x !== id); }); }
@@ -325,6 +360,8 @@
     G.hide($('#overlay'));
     $('#undoBtn').classList.toggle('hidden', mode === 'online');
     $('#drawBtn').classList.toggle('hidden', mode !== 'online');
+    if (mode === 'cpu' && skulls && skulls.count() && ACH) ACH.event('start', { skulls: skulls.count() });
+    $('#undoBtn').classList.toggle('hidden', mode === 'online' || skull('ironman'));
     render();
     startClock();
     maybeCpu();
@@ -344,11 +381,19 @@
 
   function viewIndex(k) { return game.flipped ? 63 - k : k; }
 
+  // Coach skull: the CPU's own pick for you, worked out once per position on your turn.
+  function coachHint() {
+    if (!skull('coach') || game.over || game.thinking || game.state.turn !== game.myColor) return null;
+    if (game.hintAt !== game.history.length) { game.hintAt = game.history.length; game.hint = bestMove(game.state, 'hard'); }
+    return game.hint;
+  }
+
   function render() {
     var s = game.state, el = $('#board');
     var lastMove = game.history.length ? game.history[game.history.length - 1].move : null;
     var checkSq = inCheck(s, s.turn) ? kingSquare(s, s.turn) : -1;
     var targets = game.selected != null ? game.legal.filter(function (m) { return m.from === game.selected; }) : [];
+    var cpuColor = game.myColor === 'w' ? 'b' : 'w', hint = coachHint();
 
     for (var k = 0; k < 64; k++) {
       var i = viewIndex(k);
@@ -361,8 +406,15 @@
       if (i === checkSq) cls += ' check';
       var t = targets.filter(function (m) { return m.to === i; })[0];
       if (t) cls += s.board[i] !== '.' || t.flag === 'ep' ? ' capture' : ' target';
+      if (hint && (hint.from === i || hint.to === i)) cls += ' hint';
       btn.className = cls;
       var p = s.board[i];
+      // Blindfold / Fog of War: the CPU's piece is there, you just can't see it
+      if (p !== '.' && colorOf(p) === cpuColor && !game.over) {
+        if (skull('blindfold') && !(lastMove && lastMove.to === i)) p = '.';
+        else if (skull('fog') && !attacked(s, i, game.myColor)) p = '.';
+      }
+      if (p === '.' && s.board[i] !== '.') btn.className = btn.className.replace(' capture', ' target');   // don't give hidden pieces away
       btn.textContent = '';
       if (p !== '.') {
         var glyph = document.createElement('span');
@@ -591,6 +643,7 @@
     return {
       mode: game.mode, won: won, method: method, difficulty: settings.difficulty,
       color: game.myColor, myMoves: myMoves, matePiece: matePiece, worstDeficit: game.worstDeficit,
+      skulls: skulls && game.mode === 'cpu' ? skulls.active() : [],
       material: materialFor(game.state, game.myColor) / 100,
       clock: game.clockSetting,
       elapsed: (performance.now() - game.startedAt) / 1000,
@@ -610,11 +663,11 @@
     if (!game.reported) {
       game.reported = true;
       var info = finishInfo(text, won);
-      if (ACH) ACH.event('game', info);
+      if (ACH) ACH.event('game', Object.assign({}, info, { skulls: info.skulls.length }));
       if (SOC && game.mode !== 'local') SOC.chessFinished({
         online: game.mode === 'online', won: won, myMoves: info.myMoves,
         material: info.material, method: info.method, color: info.color,
-        difficulty: info.difficulty, opponent: info.opponent, clock: info.clock, elapsed: info.elapsed
+        difficulty: info.difficulty, opponent: info.opponent, clock: info.clock, elapsed: info.elapsed, skulls: info.skulls
       });
       if (BG) BG.flash(won ? 1.4 : 0.8);
     }
@@ -638,6 +691,7 @@
 
   function undo() {
     if (!game || game.over || game.mode === 'online' || game.thinking || !game.history.length) return;
+    if (skull('ironman')) { G.banner('Iron Man: no take-backs'); return; }
     var steps = game.mode === 'cpu' ? (game.state.turn === game.myColor ? 2 : 1) : 1;
     for (var i = 0; i < steps && game.history.length; i++) {
       var h = game.history.pop();
@@ -844,6 +898,7 @@
      ================================================================= */
 
   function init() {
+    if (window.GameSkulls) skulls = window.GameSkulls.mount({ after: $('#clockChips'), list: SKULLS, storeKey: 'chess_skulls' });
     G.chips($('#difficultyChips'), settings.difficulty, function (v) { settings.difficulty = v; G.Store.set('chess_difficulty', v); });
     G.chips($('#sideChips'), settings.side, function (v) { settings.side = v; G.Store.set('chess_side', v); });
     G.chips($('#clockChips'), settings.clock, function (v) { settings.clock = v; G.Store.set('chess_clock', v); });
@@ -942,7 +997,8 @@
         rules: 'Chess · ' + (settings.clock === '0' ? 'no clock' : settings.clock + ' min'), inGame: !!(game && !game.over) };
     },
     pause: function () {},
-    profileChanged: function () { mountProfileEditor(); if (net.session && !game) renderLobby(); }
+    profileChanged: function () { mountProfileEditor(); if (net.session && !game) renderLobby(); },
+    skullList: function () { return SKULLS; }
   };
 
   function joinFromLink() {

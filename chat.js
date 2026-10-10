@@ -1920,7 +1920,8 @@
     if (!S.me) return;
     const h = decodeURIComponent(location.hash.slice(1));
     let m;
-    if ((m = /^dm\/([a-z2-9]{16})$/.exec(h))) openDm(m[1]);
+    if (h === 'public') openPublic();
+    else if ((m = /^dm\/([a-z2-9]{16})$/.exec(h))) openDm(m[1]);
     else if ((m = /^add\/(.+)$/.exec(h))) {
       const id = parseCode(m[1]);
       setHash('');
@@ -1933,6 +1934,18 @@
     else openHome(true);
   }
   window.addEventListener('hashchange', route);
+
+  // For chat-public.js and games-social.js on this page: open a DM by friend code, or go home.
+  window.ChatApp = {
+    openContact: function (code) {
+      const id = parseCode(code);
+      if (!S.me || !/^[a-z2-9]{16}$/.test(id) || id === S.me.id) return;
+      setHash(isContact(id) ? '#dm/' + id : '#add/' + id);
+      route();
+    },
+    home: function () { openHome(); },
+    myCode: function () { return S.me ? S.me.id : null; }
+  };
 
   function setHash(h) { if (location.hash !== h) history.replaceState(null, '', h || location.pathname + location.search); }
 
@@ -1949,7 +1962,20 @@
 
   // ---------- Opening conversations ----------
 
+  // The public chatroom (chat-public.js) lives in the database, not peer-to-peer; it takes over the main pane.
+  function openPublic() {
+    if (!window.ChatPublic) { openHome(); return; }
+    closeConv();
+    $('welcome').classList.add('hidden');
+    $('convView').classList.add('hidden');
+    $('membersPane').classList.add('hidden');
+    $('appView').classList.add('in-conv');
+    $('appView').classList.remove('with-members');
+    window.ChatPublic.show();
+  }
+
   function closeConv() {
+    if (window.ChatPublic) window.ChatPublic.hide();
     stopTyping();
     S.conv = null;
     S.msgs = new Map(); S.msgNodes = new Map();

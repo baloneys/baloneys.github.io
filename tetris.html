@@ -9,7 +9,8 @@
     <meta property="og:title" content="Tetris | balcade" />
     <meta property="og:description" content="Tetris: solo marathon, local versus, or online with up to 4 players." />
     <link rel="canonical" href="https://kanaris-beans.com/tetris" />
-    <link rel="icon" href="public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" sizes="32x32" />
+    <link rel="shortcut icon" href="/public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" />
 
     <script>document.documentElement.classList.remove("no-js")</script>
     <script defer src="https://analytics.baloneys.studio/script.js" data-website-id="03418d76-12f0-4a2b-94ba-24dff73a6f6b"></script>
@@ -28,22 +29,24 @@
       button { font: inherit; color: inherit; background: transparent; }
     </style>
     <!-- Bump the version on local assets when deploying Tetris changes so cached files cannot mix releases. -->
-    <link rel="stylesheet" href="style.css?v=20261010-18" />
-    <link rel="stylesheet" href="home.css?v=20261010-18" />
-    <link rel="stylesheet" href="games.css?v=20261010-18" />
-    <link rel="stylesheet" href="tetris.css?v=20261010-18" />
-    <link rel="stylesheet" href="games-achievements.css?v=20261010-18" />
-    <link rel="stylesheet" href="games-social.css?v=20261010-18" />
+    <link rel="stylesheet" href="style.css?v=20261010-19" />
+    <link rel="stylesheet" href="home.css?v=20261010-19" />
+    <link rel="stylesheet" href="games.css?v=20261010-19" />
+    <link rel="stylesheet" href="tetris.css?v=20261010-19" />
+    <link rel="stylesheet" href="games-achievements.css?v=20261010-19" />
+    <link rel="stylesheet" href="games-social.css?v=20261010-19" />
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
-    <script src="games-common.js?v=20261010-18" defer></script>
-    <script src="tetris-bg.js?v=20261010-18" defer></script>
-    <script src="games-achievements.js?v=20261010-18" defer></script>
-    <script src="tetris-achievements.js?v=20261010-18" defer></script>
-    <script src="games-config.js?v=20261010-18" defer></script>
-    <script src="games-social.js?v=20261010-18" defer></script>
-    <link rel="stylesheet" href="game-chat.css?v=20261010-18" />
-    <script src="game-chat.js?v=20261010-18" defer></script>
-    <script src="tetris.js?v=20261010-18" defer></script>
+    <script src="games-common.js?v=20261010-19" defer></script>
+    <script src="tetris-bg.js?v=20261010-19" defer></script>
+    <script src="games-achievements.js?v=20261010-19" defer></script>
+    <script src="tetris-achievements.js?v=20261010-19" defer></script>
+    <script src="games-config.js?v=20261010-19" defer></script>
+    <script src="games-social.js?v=20261010-19" defer></script>
+    <link rel="stylesheet" href="game-chat.css?v=20261010-19" />
+    <script src="game-chat.js?v=20261010-19" defer></script>
+    <script src="tetris.js?v=20261010-19" defer></script>
+    <link rel="stylesheet" href="tetris-cinematic.css?v=20261010-1" />
+    <script src="tetris-cinematic.js?v=20261010-1" defer></script>
   </head>
   <body>
     <!-- shared icons -->
@@ -135,7 +138,7 @@
           <div class="menu-section">
             <div class="option-row" style="margin-top:0"><span class="option-label">Skulls</span></div>
             <div class="skull-summary" id="menuSkulls"></div>
-            <div class="chip-row"><button class="btn btn-sm btn-outline" id="skullsBtn" type="button">Choose skulls</button><button class="btn btn-sm btn-outline ach-launch" id="achBtn" type="button">Achievements <span class="ach-count" id="achCount"></span></button><button class="btn btn-sm btn-outline" id="shuffleBg" type="button">Shuffle background</button></div>
+            <div class="chip-row"><button class="btn btn-sm btn-outline" id="skullsBtn" type="button">Choose skulls</button><button class="btn btn-sm btn-outline ach-launch" id="achBtn" type="button">Achievements <span class="ach-count" id="achCount"></span></button><button class="btn btn-sm btn-outline" id="shuffleBg" type="button">Shuffle background</button><button class="btn btn-sm btn-outline" id="cinematicBtn" type="button">Watch cinematic</button></div>
           </div>
           <div class="option-row" id="streakOutlineChips">
             <span class="option-label">Streak outlines</span>

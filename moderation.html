@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moderation | balcade</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#050505" />
+    <link rel="icon" href="/public/pw64s5dmavz539gvjm065tw71xp1.png" type="image/png" sizes="32x32" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; border-width: 0; border-style: solid; -webkit-font-smoothing: antialiased; }
+      body { margin: 0; }
+      p, h1, h2, h3 { margin: 0; padding: 0; }
+      button { font: inherit; color: inherit; background: transparent; }
+    </style>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="games.css?v=20261010-19" />
+    <link rel="stylesheet" href="games-social.css?v=20261010-19" />
+    <link rel="stylesheet" href="moderation.css?v=20261010-19" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
+    <script src="games-common.js?v=20261010-19" defer></script>
+    <script src="games-config.js?v=20261010-19" defer></script>
+    <script src="moderation.js?v=20261010-19" defer></script>
+  </head>
+  <body>
+    <header class="mod-top">
+      <a href="index.html" class="mod-logo">balcade</a>
+      <span class="mod-top-title">moderation</span>
+      <span class="mod-who" id="modWho"></span>
+      <button class="btn btn-sm btn-outline hidden" id="modLogout" type="button">Log out</button>
+    </header>
+
+    <main class="mod-main" id="main">
+      <!-- signed out -->
+      <section class="mod-login" id="loginView">
+        <div class="panel mod-card">
+          <h1 class="panel-title">Master login</h1>
+          <p class="notice" id="masterNote">The "baloneys" account can do everything here.</p>
+          <form id="masterLogin" class="mod-form hidden" autocomplete="on">
+            <label><span class="option-label">Username</span><input class="text-input" id="mUser" autocomplete="username" value="baloneys" /></label>
+            <label><span class="option-label">Password</span><input class="text-input" id="mPass" type="password" autocomplete="current-password" /></label>
+            <button class="btn btn-primary" type="submit">Log in</button>
+          </form>
+          <form id="masterSetup" class="mod-form hidden" autocomplete="off">
+            <p class="notice">First login: enter the one-time setup code you were given, then choose the master password.</p>
+            <label><span class="option-label">Setup code</span><input class="text-input" id="sCode" placeholder="XXXX-XXXX-XXXX-XXXX" /></label>
+            <label><span class="option-label">New password (10+ characters)</span><input class="text-input" id="sPass" type="password" autocomplete="new-password" /></label>
+            <label><span class="option-label">Again</span><input class="text-input" id="sPass2" type="password" autocomplete="new-password" /></label>
+            <button class="btn btn-primary" type="submit">Set password and log in</button>
+          </form>
+          <p class="notice error hidden" id="loginError"></p>
+        </div>
+        <div class="panel mod-card">
+          <h2 class="panel-title">Staff login</h2>
+          <p class="notice" id="staffNote">Checking your player account…</p>
+          <button class="btn btn-primary hidden" id="staffEnter" type="button">Open the portal</button>
+        </div>
+      </section>
+
+      <!-- signed in -->
+      <section class="mod-app hidden" id="appView">
+        <nav class="mod-tabs" id="modTabs" role="tablist"></nav>
+        <div class="mod-pane" id="modPane"></div>
+      </section>
+    </main>
+  </body>
+</html>

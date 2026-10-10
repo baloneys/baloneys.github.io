@@ -20,11 +20,12 @@
   var MAX_ANGLE = Math.PI / 3;     // 60° off horizontal at the paddle edge
   var NET_HZ = 30;
 
+  // Tuned down (Oct 2026): slower paddles, bigger aiming error and slower reactions at every level.
   var CPU = {
-    easy: { speed: 0.55, error: 60, react: 0.35 },
-    normal: { speed: 0.8, error: 26, react: 0.18 },
-    hard: { speed: 1.0, error: 6, react: 0.05 },
-    ultra: { speed: 1.12, error: 2, react: 0.035 }
+    easy: { speed: 0.4, error: 95, react: 0.45 },
+    normal: { speed: 0.6, error: 50, react: 0.28 },
+    hard: { speed: 0.8, error: 22, react: 0.14 },
+    ultra: { speed: 0.95, error: 8, react: 0.07 }
   };
 
   var BUILTIN = ['classic', 'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b9'];
@@ -55,10 +56,30 @@
   var sprite = null;
   var best = G.Store.get('pong_best_rally', 0);
 
+  /* ---------- skulls ----------
+     Modifiers for CPU and local matches (online matches are always played straight). "Your" paddle is the
+     left one; in local matches paddle skulls apply to both players. */
+  var SKULLS = [
+    { id: 'tiny', name: 'Tiny Paddle', sym: '▁', kind: 'harder', desc: 'Your paddle is half the size.' },
+    { id: 'shrink', name: 'Shrinking Paddle', sym: '↧', kind: 'harder', desc: 'Your paddle shrinks every time you score.' },
+    { id: 'hyper', name: 'Hyperball', sym: '⚡', kind: 'harder', desc: 'The ball serves faster and speeds up twice as quickly.' },
+    { id: 'ghost', name: 'Ghost Ball', sym: '◌', kind: 'harder', desc: 'The ball vanishes in the middle of the court.' },
+    { id: 'invert', name: 'Upside Down', sym: '⇅', kind: 'harder', desc: 'Up and down are swapped for you.' },
+    { id: 'curve', name: 'Curveball', sym: '↶', kind: 'chaos', desc: 'Every return bends the ball up or down.' },
+    { id: 'wind', name: 'Crosswind', sym: '≋', kind: 'chaos', desc: 'A drifting wind pushes the ball up and down.' },
+    { id: 'chaos', name: 'Wonky Walls', sym: '✷', kind: 'chaos', desc: 'Wall bounces come off at random angles.' },
+    { id: 'giant', name: 'Big Paddle', sym: '▇', kind: 'easier', desc: 'Your paddle is half as big again.' }
+  ];
+  var skulls = null;   // the picker (games-skulls.js); null if it isn't loaded
+  function skull(id) { return !!skulls && settings.mode !== 'online' && skulls.has(id); }
+  function myPaddleH() { return Math.round(PH * (skull('tiny') ? 0.55 : 1) * (skull('giant') ? 1.5 : 1)); }
+
   function newGame() {
+    var h1 = myPaddleH(), h2 = settings.mode === 'local' ? myPaddleH() : PH;
     return {
-      p1: { y: H / 2 - PH / 2, vy: 0, target: null },
-      p2: { y: H / 2 - PH / 2, vy: 0, target: null },
+      p1: { y: H / 2 - h1 / 2, vy: 0, target: null, h: h1 },
+      p2: { y: H / 2 - h2 / 2, vy: 0, target: null, h: h2 },
+      wind: 0, curve: 0,
       ball: { x: W / 2, y: H / 2, dx: 0, dy: 0, speed: BALL_START },
       score: [0, 0],
       rally: 0,
@@ -308,7 +329,7 @@
     var page = $('.game-page');
     if (page) page.classList.add('playing');
     if (BG) { BG.score(0, 0); BG.rally(0); }
-    ACH.event('start', { ball: ballKind() });
+    ACH.event('start', { ball: ballKind(), skulls: skulls && mode !== 'online' ? skulls.count() : 0 });
     if (SOC && mode === 'online') SOC.lobbyChanged();
     $('#targetLabel').textContent = settings.target === 'inf' ? 'Endless' : 'First to ' + settings.target;
     $('#help').innerHTML = helpText();
@@ -395,7 +416,7 @@
 
   function movePaddle(p, dir, dt) {
     if (p.target != null) {
-      var centre = p.y + PH / 2;
+      var centre = p.y + p.h / 2;
       var diff = p.target - centre;
       var step = PADDLE_SPEED * 1.4 * dt;
       p.vy = Math.abs(diff) < 2 ? 0 : Math.sign(diff) * Math.min(Math.abs(diff), step) / dt;
@@ -404,7 +425,7 @@
       p.vy = dir * PADDLE_SPEED;
       p.y += p.vy * dt;
     }
-    p.y = Math.max(0, Math.min(H - PH, p.y));
+    p.y = Math.max(0, Math.min(H - p.h, p.y));
   }
 
   function keyDir(up, down) {
@@ -418,11 +439,12 @@
     var g = game;
     var both = ['w', 'arrowup'], bothDown = ['s', 'arrowdown'];
 
+    var inv = skull('invert') ? -1 : 1;
     if (settings.mode === 'local') {
-      movePaddle(g.p1, keyDir(['w'], ['s']), dt);
-      movePaddle(g.p2, keyDir(['arrowup'], ['arrowdown']), dt);
+      movePaddle(g.p1, inv * keyDir(['w'], ['s']), dt);
+      movePaddle(g.p2, inv * keyDir(['arrowup'], ['arrowdown']), dt);
     } else if (settings.mode === 'cpu') {
-      movePaddle(g.p1, keyDir(both, bothDown), dt);
+      movePaddle(g.p1, inv * keyDir(both, bothDown), dt);
       cpuMove(dt);
     } else {
       // online host: left paddle is mine, right paddle comes from the guest
@@ -447,9 +469,11 @@
   function serve() {
     var g = game;
     var angle = (Math.random() * 0.8 - 0.4);
-    g.ball.speed = BALL_START;
-    g.ball.dx = Math.cos(angle) * BALL_START * g.serveDir;
-    g.ball.dy = Math.sin(angle) * BALL_START;
+    var start = BALL_START * (skull('hyper') ? 1.3 : 1);
+    g.ball.speed = start;
+    g.ball.dx = Math.cos(angle) * start * g.serveDir;
+    g.ball.dy = Math.sin(angle) * start;
+    g.curve = 0;
     g.rally = 0;
     G.Sound.beep(520, 0.06, 'triangle');
   }
@@ -459,12 +483,15 @@
     // Sub-step so fast balls can't skip through a paddle.
     var steps = Math.max(1, Math.ceil(Math.hypot(b.dx, b.dy) * dt / (BALL_R * 0.8)));
     var h = dt / steps;
+    if (skull('wind')) g.wind = Math.sin(performance.now() / 2600) * 260;
     for (var i = 0; i < steps; i++) {
+      if (skull('wind')) b.dy += g.wind * h;
+      if (g.curve) b.dy += g.curve * h;
       b.x += b.dx * h;
       b.y += b.dy * h;
 
-      if (b.y - BALL_R < 0) { b.y = BALL_R; b.dy = Math.abs(b.dy); wallHit(); }
-      else if (b.y + BALL_R > H) { b.y = H - BALL_R; b.dy = -Math.abs(b.dy); wallHit(); }
+      if (b.y - BALL_R < 0) { b.y = BALL_R; b.dy = Math.abs(b.dy); wonky(b); wallHit(); }
+      else if (b.y + BALL_R > H) { b.y = H - BALL_R; b.dy = -Math.abs(b.dy); wonky(b); wallHit(); }
 
       if (b.dx < 0 && paddleHit(g.p1, PX + PW, 1)) continue;
       if (b.dx > 0 && paddleHit(g.p2, W - PX - PW, -1)) continue;
@@ -481,11 +508,12 @@
     var crossing = dir === 1 ? (b.x - BALL_R <= face && b.x - BALL_R >= face - PW - BALL_R)
                              : (b.x + BALL_R >= face && b.x + BALL_R <= face + PW + BALL_R);
     if (!crossing) return false;
-    if (b.y + BALL_R < p.y || b.y - BALL_R > p.y + PH) return false;
+    if (b.y + BALL_R < p.y || b.y - BALL_R > p.y + p.h) return false;
 
-    var rel = Math.max(-1, Math.min(1, (b.y - (p.y + PH / 2)) / (PH / 2)));
+    var rel = Math.max(-1, Math.min(1, (b.y - (p.y + p.h / 2)) / (p.h / 2)));
     var angle = rel * MAX_ANGLE + (p.vy / PADDLE_SPEED) * 0.12;
-    b.speed = Math.min(BALL_MAX, b.speed + BALL_STEP);
+    b.speed = Math.min(BALL_MAX, b.speed + BALL_STEP * (skull('hyper') ? 2 : 1));
+    game.curve = skull('curve') ? (Math.random() < 0.5 ? -1 : 1) * (380 + Math.random() * 320) : 0;
     b.dx = Math.cos(angle) * b.speed * dir;
     b.dy = Math.sin(angle) * b.speed;
     b.x = dir === 1 ? face + BALL_R : face - BALL_R;
@@ -505,12 +533,24 @@
     return true;
   }
 
+  // Wonky Walls: the bounce keeps its direction but takes a random steepness.
+  function wonky(b) {
+    if (!skull('chaos')) return;
+    var sp = Math.hypot(b.dx, b.dy), ang = (0.15 + Math.random() * 0.9) * MAX_ANGLE * Math.sign(b.dy || 1);
+    b.dx = Math.cos(ang) * sp * Math.sign(b.dx || 1);
+    b.dy = Math.sin(ang) * sp;
+  }
+
   function wallHit() { G.Sound.beep(300, 0.03, 'square', 0.03); }
 
   function point(side) {
     var g = game;
     g.score[side]++;
     g.serveDir = side === 0 ? 1 : -1;      // serve towards the player who conceded
+    if (skull('shrink')) {
+      var shrinkP = side === 0 ? g.p1 : settings.mode === 'local' ? g.p2 : null;
+      if (shrinkP) { shrinkP.h = Math.max(36, shrinkP.h - 8); shrinkP.y = Math.min(shrinkP.y, H - shrinkP.h); }
+    }
     g.serveTimer = 1.0;
     g.trail = [];
     g.ball.dx = g.ball.dy = 0;
@@ -540,9 +580,10 @@
     g.reported = true;
     var me = mySide(), mode = settings.mode;
     var myScore = me === null ? 0 : g.score[me], theirScore = me === null ? 0 : g.score[1 - me];
-    if (won !== null) ACH.event('match', { mode: mode, won: !!won, difficulty: settings.difficulty, target: settings.target, myScore: myScore, theirScore: theirScore, maxDeficit: g.maxDeficit });
+    var sk = skulls && mode !== 'online' ? skulls.active() : [];
+    if (won !== null) ACH.event('match', { mode: mode, won: !!won, difficulty: settings.difficulty, target: settings.target, myScore: myScore, theirScore: theirScore, maxDeficit: g.maxDeficit, skulls: sk.length });
     if (!SOC || me === null || (won === null && myScore + theirScore === 0)) return;
-    SOC.pongFinished({ online: mode === 'online', won: won === null ? myScore > theirScore : !!won, myScore: myScore, theirScore: theirScore,
+    SOC.pongFinished({ skulls: sk, online: mode === 'online', won: won === null ? myScore > theirScore : !!won, myScore: myScore, theirScore: theirScore,
       rally: g.maxRally, elapsed: (performance.now() - g.startedAt) / 1000, target: settings.target, difficulty: settings.difficulty,
       opponent: net.them ? net.them.name : '', ball: ballKind(), speed: Math.round(g.topSpeed) });
   }
@@ -602,12 +643,12 @@
       var b = g.ball;
       g.cpuAim = b.dx > 0 ? predictY(b, W - PX - PW) + (Math.random() * 2 - 1) * c.error : H / 2 + (b.y - H / 2) * 0.3;
     }
-    var centre = g.p2.y + PH / 2;
+    var centre = g.p2.y + g.p2.h / 2;
     var diff = g.cpuAim - centre;
     var maxStep = PADDLE_SPEED * c.speed * dt;
     var step = Math.sign(diff) * Math.min(Math.abs(diff), maxStep);
     g.p2.vy = step / dt;
-    g.p2.y = Math.max(0, Math.min(H - PH, g.p2.y + step));
+    g.p2.y = Math.max(0, Math.min(H - g.p2.h, g.p2.y + step));
   }
 
   /* ---------- effects ---------- */
@@ -662,11 +703,11 @@
     ctx.setLineDash([]);
 
     // paddles
-    paddle(PX, g.p1.y, '#9d00ff');
-    paddle(W - PX - PW, g.p2.y, '#e60065');
+    paddle(PX, g.p1.y, '#9d00ff', g.p1.h);
+    paddle(W - PX - PW, g.p2.y, '#e60065', g.p2.h);
 
     // trail (classic ball only; it would cover custom balls)
-    if (skinInfo(settings.skin).kind === 'classic') g.trail.forEach(function (t, i) {
+    if (skinInfo(settings.skin).kind === 'classic' && !skull('ghost')) g.trail.forEach(function (t, i) {
       ctx.fillStyle = 'rgba(199, 125, 255,' + (i / g.trail.length) * 0.35 + ')';
       ctx.beginPath();
       ctx.arc(t.x, t.y, BALL_R * (0.4 + 0.6 * i / g.trail.length), 0, Math.PI * 2);
@@ -683,6 +724,10 @@
 
     // ball
     var b = g.ball, info = skinInfo(settings.skin);
+    // Ghost Ball: fades out across the middle of the court
+    var ghostA = skull('ghost') ? Math.min(1, Math.abs(b.x - W / 2) / (W * 0.16) - 0.25) : 1;
+    ctx.globalAlpha = Math.max(0, ghostA);
+    if (sprite) sprite.style.opacity = String(Math.max(0, ghostA));
     if (sprite) {
       placeSprite(b);
     } else if (info.kind === 'emoji') {
@@ -699,6 +744,7 @@
       ctx.fill();
       ctx.shadowBlur = 0;
     }
+    ctx.globalAlpha = 1;
 
     // serve countdown
     if (g.serveTimer > 0 && !g.over) {
@@ -718,11 +764,11 @@
     ctx.restore();
   }
 
-  function paddle(x, y, color) {
+  function paddle(x, y, color, h) {
     ctx.shadowBlur = 14;
     ctx.shadowColor = color;
     ctx.fillStyle = color;
-    roundRect(x, y, PW, PH, 5);
+    roundRect(x, y, PW, h || PH, 5);
     ctx.fill();
     ctx.shadowBlur = 0;
   }
@@ -908,7 +954,7 @@
         maybeStartOnline();
         break;
       case 'p':
-        if (game && net.role === 'host') game.p2.y = Math.max(0, Math.min(H - PH, +d.y || 0));
+        if (game && net.role === 'host') game.p2.y = Math.max(0, Math.min(H - game.p2.h, +d.y || 0));
         break;
       case 's':
         if (net.role === 'guest') guestApplyState(d);
@@ -1046,6 +1092,7 @@
   /* ---------- wiring ---------- */
 
   function init() {
+    if (window.GameSkulls) skulls = window.GameSkulls.mount({ after: $('#targetChips'), list: SKULLS, storeKey: 'pong_skulls', title: 'Skulls · vs CPU and local' });
     loadSkins();
     renderSkinPicker();
     if (BG) { BG.mount($('.game-page')); BG.setCourt(canvas); BG.scene(Math.floor(Math.random() * 6)); }
@@ -1139,7 +1186,8 @@
         inGame: !!(game && !game.over) };
     },
     pause: function () { if (game && !game.over && !game.paused && settings.mode !== 'online') setPaused(true); },
-    profileChanged: function () { mountProfileEditor(); profileChanged(); }
+    profileChanged: function () { mountProfileEditor(); profileChanged(); },
+    skullList: function () { return SKULLS; }
   };
 
   // Invite links (pong?join=CODE) open straight into that lobby; the parameter is then removed from the URL.

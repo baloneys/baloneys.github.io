@@ -26,6 +26,19 @@
   var state = null;
   var placing = null;
 
+  /* ---------- skulls (vs CPU only; online battles are always straight) ---------- */
+  var SKULLS = [
+    { id: 'fog', name: 'Fog of War', sym: '☁', kind: 'harder', desc: 'Your misses fade from the grid after three more shots.' },
+    { id: 'noextra', name: 'One Shot Only', sym: '①', kind: 'harder', desc: 'Hits no longer give you another shot.' },
+    { id: 'silent', name: 'Silent Running', sym: '🔇', kind: 'harder', desc: 'You aren\'t told when a ship sinks.' },
+    { id: 'clock', name: 'Shot Clock', sym: '⏱', kind: 'harder', desc: '7 seconds to fire, or a random shot goes off.' },
+    { id: 'salvo', name: 'Enemy Salvo', sym: '💥', kind: 'harder', desc: 'Every 4th CPU miss, it gets to fire again.' },
+    { id: 'radar', name: 'Radar Ping', sym: '📡', kind: 'easier', desc: 'Every 5th shot tells you how many ship squares are around it.' }
+  ];
+  var skulls = null;
+  function skull(id) { return !!skulls && settings.mode === 'cpu' && skulls.has(id); }
+  var shotClock = null;
+
   /* =================================================================
      Board helpers
      ================================================================= */
@@ -200,8 +213,10 @@
     for (var r = 0; r < N; r++) for (var c = 0; c < N; c++) {
       var el = cellEl(grid, r, c);
       var s = state.myShots[r][c];
-      el.className = 'bs-cell target' + (s === 'hit' ? ' hit' : s === 'miss' ? ' miss' : '') + (state.enemySunkCells[r + ',' + c] ? ' sunk' : '');
-      el.textContent = s === 'hit' ? '×' : s === 'miss' ? '•' : '';
+      var fogged = s === 'miss' && skull('fog') && state.shotOrder.indexOf(r + ',' + c) < state.shotOrder.length - 3;
+      var showSunk = state.enemySunkCells[r + ',' + c] && !skull('silent');
+      el.className = 'bs-cell target' + (s === 'hit' ? ' hit' : s === 'miss' ? ' miss' : '') + (showSunk ? ' sunk' : '') + (fogged ? ' fogged' : '');
+      el.textContent = s === 'hit' ? '×' : s === 'miss' && !fogged ? '•' : '';
       el.disabled = !!s || !state.myTurn || state.over;
     }
     grid.classList.toggle('your-turn', state.myTurn && !state.over);
@@ -228,6 +243,26 @@
     if (state.over) return;
     t.textContent = state.myTurn ? 'Your turn · pick a square to fire at' : (settings.mode === 'cpu' ? 'CPU is aiming…' : 'Waiting for your opponent…');
     t.classList.toggle('mine', state.myTurn);
+    startShotClock();
+  }
+
+  // Shot Clock skull: 7 seconds to fire, then a random untried square is fired at for you.
+  function stopShotClock() { clearInterval(shotClock); shotClock = null; }
+  function startShotClock() {
+    stopShotClock();
+    if (!skull('clock') || !state || !state.myTurn || state.over) return;
+    var until = performance.now() + 7000;
+    shotClock = setInterval(function () {
+      if (!state || state.over || !state.myTurn) return stopShotClock();
+      var left = Math.ceil((until - performance.now()) / 1000);
+      $('#turnText').textContent = 'Your turn · ' + Math.max(0, left) + 's to fire';
+      if (left > 0) return;
+      stopShotClock();
+      var open = [];
+      for (var r = 0; r < N; r++) for (var c = 0; c < N; c++) if (!state.myShots[r][c]) open.push([r, c]);
+      var pick = open[Math.floor(Math.random() * open.length)];
+      if (pick) { log('Too slow! A shot went off by itself.'); applyMyShot(pick[0], pick[1], resolveShot(state.enemyShips, state.myShots, pick[0], pick[1])); }
+    }, 200);
   }
 
   function log(text) {
@@ -348,7 +383,8 @@
       ai: null,
       pendingShot: null,
       // for achievements, the leaderboard and the background
-      streak: 0, enemyHits: 0, startedAt: performance.now(), reported: false
+      streak: 0, enemyHits: 0, startedAt: performance.now(), reported: false,
+      shotOrder: [], cpuMisses: 0
     };
   }
 
@@ -408,6 +444,7 @@
 
   function startCpuBattle() {
     state = newBattleState();
+    ACH.event('start', { skulls: skulls ? skulls.count() : 0 });
     state.enemyShips = randomFleet();
     state.ai = { shots: emptyGrid(null), sunk: [], sunkCells: {} };
     beginBattle(Math.random() < 0.5);
@@ -418,6 +455,7 @@
     if (!state || !state.myTurn || state.over || state.pendingShot) return;
     var r = +e.currentTarget.dataset.r, c = +e.currentTarget.dataset.c;
     if (state.myShots[r][c]) return;
+    stopShotClock();
     if (settings.mode === 'cpu') {
       applyMyShot(r, c, resolveShot(state.enemyShips, state.myShots, r, c));
     } else {
@@ -431,6 +469,8 @@
 
   function applyMyShot(r, c, res) {
     state.shots++;
+    state.shotOrder.push(r + ',' + c);
+    var silent = skull('silent') && res.result === 'sunk';
     state.myShots[r][c] = res.result === 'miss' ? 'miss' : 'hit';
     var coord = LETTERS[r] + (c + 1);
     if (res.result === 'miss') {
@@ -442,9 +482,12 @@
         var firstSink = !state.enemySunk.length;
         state.enemySunk.push(res.ship.id);
         shipCells(res.ship).forEach(function (x) { state.enemySunkCells[x[0] + ',' + x[1]] = true; });
-        log('You sank their ' + res.ship.name + '!');
-        G.banner('You sank their ' + res.ship.name + '!');
-        G.Sound.beep(880, 0.3, 'triangle', 0.07);
+        if (silent) { log('You fired at ' + coord + ': hit!'); G.Sound.beep(660, 0.1, 'square', 0.05); }
+        else {
+          log('You sank their ' + res.ship.name + '!');
+          G.banner('You sank their ' + res.ship.name + '!');
+          G.Sound.beep(880, 0.3, 'triangle', 0.07);
+        }
       } else {
         log('You fired at ' + coord + ': hit!');
         G.Sound.beep(660, 0.1, 'square', 0.05);
@@ -453,13 +496,26 @@
     state.streak = res.result === 'miss' ? 0 : state.streak + 1;
     ACH.event('shot', { hit: res.result !== 'miss', sunk: res.result === 'sunk' ? res.ship.id : null, streak: state.streak, firstSink: res.result === 'sunk' && firstSink });
     bgShot($('#enemyGrid'), r, c, res);
-    // Hits keep the turn; misses pass it.
-    state.myTurn = res.result !== 'miss';
-    renderFleetStatus($('#enemyFleet'), state.enemySunk);
+    // Hits keep the turn; misses pass it (unless One Shot Only is on).
+    state.myTurn = res.result !== 'miss' && !skull('noextra');
+    if (skull('radar') && state.shots % 5 === 0) radarPing(r, c);
+    renderFleetStatus($('#enemyFleet'), skull('silent') ? [] : state.enemySunk);
     if (res.win) return gameOver(true);
     paintTarget();
     setTurnText();
     if (!state.myTurn && settings.mode === 'cpu') setTimeout(cpuTurn, 650 + Math.random() * 400);
+  }
+
+  // Radar Ping skull: how many enemy ship squares are in the 3x3 around a shot (not counting ones already hit).
+  function radarPing(r, c) {
+    var n = 0;
+    for (var dr = -1; dr <= 1; dr++) for (var dc = -1; dc <= 1; dc++) {
+      var rr = r + dr, cc = c + dc;
+      if (rr < 0 || cc < 0 || rr >= N || cc >= N || state.myShots[rr][cc]) continue;
+      if (shipAt(state.enemyShips, rr, cc)) n++;
+    }
+    log('Radar ping around ' + LETTERS[r] + (c + 1) + ': ' + n + ' ship square' + (n === 1 ? '' : 's') + ' nearby.');
+    G.banner('Radar: ' + n + ' nearby');
   }
 
   function cpuTurn() {
@@ -497,6 +553,7 @@
     renderFleetStatus($('#myFleet'), state.mySunk);
     if (res.win) return gameOver(false);
     state.myTurn = res.result === 'miss';
+    if (state.myTurn && skull('salvo') && ++state.cpuMisses % 4 === 0) { state.myTurn = false; log('Enemy salvo! The CPU fires again.'); }
     paintTarget();
     setTurnText();
     if (!state.myTurn && settings.mode === 'cpu') setTimeout(cpuTurn, 650 + Math.random() * 400);
@@ -525,10 +582,12 @@
   function reportBattle(won, acc) {
     if (state.reported) return;
     state.reported = true;
-    var d = { mode: settings.mode, won: won, difficulty: settings.difficulty, shots: state.shots, accuracy: acc, shipsLost: state.mySunk.length, enemyHits: state.enemyHits };
+    stopShotClock();
+    var sk = skulls && settings.mode === 'cpu' ? skulls.active() : [];
+    var d = { mode: settings.mode, won: won, difficulty: settings.difficulty, shots: state.shots, accuracy: acc, shipsLost: state.mySunk.length, enemyHits: state.enemyHits, skulls: sk.length };
     ACH.event('battle', d);
     if (BG) BG.flash(1);
-    if (SOC) SOC.battleshipsFinished({ online: settings.mode === 'online', won: won, shots: d.shots, accuracy: acc, shipsLost: d.shipsLost, enemyHits: d.enemyHits,
+    if (SOC) SOC.battleshipsFinished({ skulls: sk, online: settings.mode === 'online', won: won, shots: d.shots, accuracy: acc, shipsLost: d.shipsLost, enemyHits: d.enemyHits,
       elapsed: (performance.now() - state.startedAt) / 1000, difficulty: settings.difficulty, opponent: net.them ? net.them.name : '' });
   }
 
@@ -755,6 +814,7 @@
      ================================================================= */
 
   function init() {
+    if (window.GameSkulls) skulls = window.GameSkulls.mount({ after: $('#difficultyChips'), list: SKULLS, storeKey: 'bs_skulls' });
     renderStats();
     G.chips($('#difficultyChips'), settings.difficulty, function (v) { settings.difficulty = v; G.Store.set('bs_difficulty', v); });
 
@@ -842,7 +902,8 @@
       return { code: net.code, role: net.role, count: connected ? 2 : 1, max: 2, rules: 'Classic fleet · hits keep your turn', inGame: !!(state && !state.over) };
     },
     pause: function () {},
-    profileChanged: function () { mountProfileEditor(); if (net.session && !state) renderLobby(); }
+    profileChanged: function () { mountProfileEditor(); if (net.session && !state) renderLobby(); },
+    skullList: function () { return SKULLS; }
   };
 
   // Invite links (battleships?join=CODE) open straight into that lobby; the parameter is then removed.

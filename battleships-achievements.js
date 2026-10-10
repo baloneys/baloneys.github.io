@@ -34,6 +34,8 @@
     { id: 'battles10', cat: 'lifetime', tier: 'bronze', icon: 'pad', name: 'Sea Legs', desc: 'Finish 10 battles.', stat: 'battles', goal: 10 },
     { id: 'wins25', cat: 'lifetime', tier: 'gold', icon: 'trophy', name: 'Rule the Waves', desc: 'Win 25 battles.', stat: 'wins', goal: 25 },
     { id: 'online_win', cat: 'online', tier: 'silver', icon: 'sword', name: 'Naval Duel', desc: 'Win an online battle.' },
+    { id: 'skull_try', cat: 'skill', tier: 'bronze', icon: 'skull', name: 'Skull Curious', desc: 'Start a battle with a skull on.' },
+    { id: 'skull_win', cat: 'skill', tier: 'silver', icon: 'skull', name: 'Bone Crusher', desc: 'Win a battle with 2 or more skulls on.' },
     { id: 'online_win5', cat: 'online', tier: 'gold', icon: 'crown', name: 'Commodore', desc: 'Win 5 online battles.', stat: 'onlineWins', goal: 5 }
   ];
 
@@ -53,10 +55,12 @@
           if (d.sunk) { unlock('first_sink'); addStat('sinks', 1); if (d.firstSink && d.sunk === 'carrier') unlock('carrier_first'); }
         },
         // a battle ended: { mode: 'cpu'|'online', won, difficulty, shots, accuracy (0-100), shipsLost, enemyHits }
+        start: function (d) { if (d.skulls > 0) unlock('skull_try'); },
         battle: function (d) {
           addStat('battles', 1);
           if (!d.won) return;
           unlock('first_win');
+          if (d.skulls >= 2) unlock('skull_win');
           addStat('wins', 1);
           if (d.mode === 'cpu' && d.difficulty === 'easy') unlock('easy_win');
           if (d.mode === 'cpu' && (d.difficulty === 'hard' || d.difficulty === 'ultra')) { unlock('hard_win'); if (d.shipsLost === 0) unlock('hard_flawless'); }

@@ -19,16 +19,24 @@
 
   // Which game this page is (<html data-game=...>): picks the achievements shown on profiles and the leaderboard.
   var GAMES = { tetris: 'Tetris', pong: 'Pong', battleships: 'Battleships', chess: 'Chess' };
-  var GAME = GAMES[document.documentElement.getAttribute('data-game')] ? document.documentElement.getAttribute('data-game') : 'tetris';
-  var GAME_NAME = GAMES[GAME];
+  var PAGE = document.documentElement.getAttribute('data-game');
+  // /chat uses data-game="chat": same profile, friends, bell and invites, but no achievements or leaderboard.
+  var GAME = GAMES[PAGE] ? PAGE : PAGE === 'chat' ? 'chat' : 'tetris';
+  var GAME_NAME = GAMES[GAME] || 'Chat';
   var G = window.Games;
-  var ACH = { tetris: window.TetrisAchievements, pong: window.PongAchievements, battleships: window.BattleshipsAchievements, chess: window.ChessAchievements }[GAME];
+  var ALL_ACH = { tetris: window.TetrisAchievements, pong: window.PongAchievements, battleships: window.BattleshipsAchievements, chess: window.ChessAchievements };
+  var NO_ACH = { list: function () { return []; }, get: function () { return null; }, count: function () { return { unlocked: 0, total: 0 }; },
+    badge: function () { return document.createElement('span'); } };
+  var ACH = ALL_ACH[GAME] || NO_ACH;
   var CFG = window.GAMES_SUPABASE || {};
   // The game's hooks (window.GameApp, set by each game script); harmless defaults until it exists.
   var NO_APP = { lobby: function () { return null; } };
   function App() { return window.GameApp || NO_APP; }
   var MOCK = /[?&]mockdb\b/.test(location.search);
   var ENABLED = MOCK || !!(CFG.url && CFG.anonKey);
+  // The little DM window games embed (chat.html?mini=1) is a chat page inside a game page: the game page's own
+  // dock and bell already cover it, so the embedded copy stays quiet.
+  if (GAME === 'chat' && /[?&]mini/.test(location.search)) ENABLED = false;
   var SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
   var POLL_MS = 20000, LOBBY_BEAT_MS = 15000;
   var PROFILE_URL = location.origin + location.pathname.replace(/\.html$/, '');
@@ -81,6 +89,10 @@
     { id: 'grandmaster', name: 'Grandmaster', sym: '♞', a: '#f3e6ff', b: '#7a3cff', desc: 'Chess: beat the Hard CPU.', test: function (p) { return !!gameAch(p, 'chess').hard_win; } },
     { id: 'allrounder', name: 'All-Rounder', sym: '✚', a: '#ffd6f0', b: '#c77dff', desc: 'Unlock 5 achievements in three different games.', test: function (p) { return Object.keys(GAMES).filter(function (g) { return Object.keys(gameAch(p, g)).length >= 5; }).length >= 3; } },
     { id: 'collector', name: 'Collector', sym: '◆', a: '#b8ff4d', b: '#2dd4bf', desc: 'Unlock 25 achievements across the site.', test: function (p) { return Object.keys(achOf(p)).length >= 25; } },
+    { id: 'staff_dev', name: 'Developer', sym: '⌘', a: '#9dfcff', b: '#2a7bff', desc: 'Staff: balcade developer.', test: function (p) { return p.role === 'dev'; } },
+    { id: 'staff_admin', name: 'Admin', sym: '★', a: '#ffe27a', b: '#ff5a1f', desc: 'Staff: admin.', test: function (p) { return p.role === 'admin' || p.role === 'dev'; } },
+    { id: 'staff_mod', name: 'Moderator', sym: '⚔', a: '#b8ff4d', b: '#14a37f', desc: 'Staff: moderator.', test: function (p) { return ['moderator', 'admin', 'dev'].indexOf(p.role) !== -1; } },
+    { id: 'staff_helper', name: 'Helper', sym: '✚', a: '#ffd6f0', b: '#ff3fa4', desc: 'Staff: helper.', test: function (p) { return !!p.role; } },
     { id: 'bean', name: 'Bean', sym: '●', a: '#d99a59', b: '#7a4a1f', desc: 'From the points shop.', shop: true },
     { id: 'skull', name: 'Skull', sym: '☠', a: '#e9e4ff', b: '#6b5d8f', desc: 'From the points shop.', shop: true },
     { id: 'heart', name: 'Sweetheart', sym: '♥', a: '#ff9ac8', b: '#ff3f7f', desc: 'From the points shop.', shop: true },
@@ -193,8 +205,22 @@
       owned: (Array.isArray(p.owned) ? p.owned : []).filter(function (i) { return SHOP_BY[i]; }),
       equipped: cleanEquipped(p.equipped),
       created_at: p.created_at || new Date().toISOString(),
-      last_seen: p.last_seen || null
+      last_seen: p.last_seen || null,
+      status: String(p.status || '').slice(0, 60),
+      status_kind: ['online', 'away', 'busy', 'invisible'].indexOf(p.status_kind) !== -1 ? p.status_kind : 'online',
+      presence: p.presence && typeof p.presence === 'object' ? { page: String(p.presence.page || ''), at: p.presence.at || null, lobby: /^[A-Z0-9]{5}$/.test(p.presence.lobby || '') ? p.presence.lobby : null } : null,
+      role: ['helper', 'moderator', 'admin', 'dev'].indexOf(p.role) !== -1 ? p.role : null
     };
+  }
+
+  // Where a player is right now: online (and which game or chat) if their page checked in during the last
+  // 2.5 minutes and they aren't invisible; otherwise when they were last seen.
+  var ROLE_NAMES = { helper: 'Helper', moderator: 'Moderator', admin: 'Admin', dev: 'Developer' };
+  function presenceOf(p) {
+    var pr = p && p.presence, on = !!(pr && pr.at && Date.now() - new Date(pr.at).getTime() < 150000) && p.status_kind !== 'invisible';
+    if (!on) return { on: false, kind: 'offline', text: p && p.last_seen ? 'Last seen ' + ago(p.last_seen) : 'Offline' };
+    var where = pr.page === 'chat' ? 'In chat' : GAMES[pr.page] ? 'Playing ' + GAMES[pr.page] : 'Online';
+    return { on: true, kind: p.status_kind, page: pr.page, lobby: pr.lobby, text: where + (p.status_kind === 'away' ? ' · away' : p.status_kind === 'busy' ? ' · busy' : '') };
   }
 
   /* =================================================================
@@ -240,7 +266,15 @@
         return sb.from('tetris_friends').delete().or('and(requester.eq.' + uid + ',addressee.eq.' + id + '),and(requester.eq.' + id + ',addressee.eq.' + uid + ')').then(check);
       },
       notes: function () { return sb.from('tetris_notifications').select('*').eq('to_id', uid).order('created_at', { ascending: false }).limit(40).then(check); },
-      sendNote: function (to, kind, lobby) { return sb.from('tetris_notifications').insert({ to_id: to, from_id: uid, kind: kind, lobby: lobby || null }).then(check); },
+      sendNote: function (to, kind, lobby, game) {
+        var row = { to_id: to, from_id: uid, kind: kind, lobby: lobby || null };
+        if (game) row.game = game;
+        return sb.from('tetris_notifications').insert(row).then(function (r) {
+          if (r.error && game && /game/.test(r.error.message || '')) { delete row.game; return sb.from('tetris_notifications').insert(row).then(check); }
+          return check(r);
+        });
+      },
+      client: function () { return sb; },
       markRead: function () { return sb.from('tetris_notifications').update({ read: true }).eq('to_id', uid).eq('read', false).then(check); },
       clearNote: function (id) { return sb.from('tetris_notifications').delete().eq('id', id).then(check); },
       addRun: function (row) { row.user_id = uid; row.game = GAME; return sb.from('tetris_runs').insert(row).then(check); },
@@ -317,9 +351,9 @@
       notes: function () {
         return later(db().notes.filter(function (n) { return n.to_id === uid; }).sort(function (a, b) { return a.created_at < b.created_at ? 1 : -1; }).slice(0, 40));
       },
-      sendNote: function (to, kind, lobby) {
+      sendNote: function (to, kind, lobby, game) {
         var d = db();
-        d.notes.push({ id: Date.now() + Math.random(), to_id: to, from_id: uid, kind: kind, lobby: lobby || null, read: false, created_at: nowIso() });
+        d.notes.push({ id: Date.now() + Math.random(), to_id: to, from_id: uid, kind: kind, lobby: lobby || null, game: game || null, read: false, created_at: nowIso() });
         save(d); return later(null);
       },
       markRead: function () { var d = db(); d.notes.forEach(function (n) { if (n.to_id === uid) n.read = true; }); save(d); return later(null); },
@@ -399,7 +433,11 @@
       refreshFriends();
       refreshNotes();
       S.pollTimer = setInterval(function () { if (!document.hidden) refreshNotes(); }, POLL_MS);
-      document.addEventListener('visibilitychange', function () { if (!document.hidden) refreshNotes(); });
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) { refreshNotes(); heartbeat(); } });
+      heartbeat();
+      setInterval(heartbeat, 60000);
+      setInterval(function () { if (!document.hidden) refreshFriends(); }, 90000);
+      checkBan();
       paintDock();
       S.readyFns.splice(0).forEach(function (fn) { try { fn(); } catch (e) { console.warn('[social]', e); } });
       handleUrl();
@@ -408,6 +446,26 @@
       console.warn('[social] offline:', err);
       paintDock();
     });
+  }
+
+  // Tell friends where you are (this page, and a public lobby code if you're hosting one).
+  function heartbeat() {
+    if (!S.ready || document.hidden || S.me.status_kind === 'invisible' || S.noPresence) return;
+    var lob = App().lobby && App().lobby(), lobby = lob && lob.role === 'host' && S.lobby.publicOn ? lob.code : null;
+    B.updateProfile({ presence: { page: GAME, at: new Date().toISOString(), lobby: lobby } }).then(function (row) {
+      S.me.presence = cleanProfile(row).presence;
+    }).catch(function (e) { if (/presence|column/i.test(e.message || '')) S.noPresence = true; });
+  }
+
+  // A ban or mute shows once, so the player knows why posting or hosting fails.
+  function checkBan() {
+    if (!B.client) return;
+    B.client().rpc('my_ban').then(function (r) {
+      var b = r.data;
+      if (!b) return;
+      S.ban = b;
+      G.banner((b.scope === 'all' ? 'You are banned' : 'You are muted in public chat') + (b.expires_at ? ' until ' + new Date(b.expires_at).toLocaleString('en-AU') : '') + (b.reason ? ': ' + b.reason : ''));
+    }).catch(function () {});
   }
 
   function saveMe(patch) {
@@ -537,7 +595,7 @@
   function inviteToLobby(id) {
     var lob = App().lobby();
     if (!lob || !lob.code) { G.banner('Create or join a lobby first'); return; }
-    B.sendNote(id, 'invite', lob.code).then(function () { G.banner('Invite sent'); }).catch(function () { G.banner('Couldn\'t send the invite'); });
+    B.sendNote(id, 'invite', lob.code, GAMES[GAME] ? GAME : null).then(function () { G.banner('Invite sent'); }).catch(function () { G.banner('Couldn\'t send the invite'); });
   }
 
   /* =================================================================
@@ -599,10 +657,33 @@
   }
 
   function profileLink(id) { return PROFILE_URL + '?profile=' + id; }
+  // Your status (online / away / busy / invisible, plus a short message), shown to friends.
+  function statusEditor() {
+    var box = el('form', 'soc-status-edit');
+    var kind = el('select', 'text-input');
+    [['online', '🟢 Online'], ['away', '🌙 Away'], ['busy', '⛔ Busy'], ['invisible', '👻 Invisible']].forEach(function (o) {
+      var op = el('option', null, o[1]); op.value = o[0]; if (S.me.status_kind === o[0]) op.selected = true; kind.appendChild(op);
+    });
+    var text = el('input', 'text-input');
+    text.maxLength = 60; text.placeholder = 'Set a status, e.g. grinding Sprint 40'; text.value = S.me.status;
+    var save = el('button', 'btn btn-sm btn-primary', 'Set');
+    save.type = 'submit';
+    box.appendChild(kind); box.appendChild(text); box.appendChild(save);
+    box.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var k = kind.value;
+      saveMe({ status: text.value.trim().slice(0, 60), status_kind: k, presence: k === 'invisible' ? null : { page: GAME, at: new Date().toISOString(), lobby: null } })
+        .then(function () { G.banner(k === 'invisible' ? 'You\'re invisible: friends see you as offline' : 'Status set'); })
+        .catch(function (err) { G.banner(/status/.test(err.message || '') ? 'Statuses need the database update first' : 'Couldn\'t save your status'); });
+    });
+    return box;
+  }
+
   function messagePlayer(p) {
     var code = p && p.equipped && p.equipped.chatCode;
     if (!code) return;
-    if (window.GameChatDock) window.GameChatDock.openTo(code);
+    if (window.ChatApp && window.ChatApp.openContact) window.ChatApp.openContact(code);
+    else if (window.GameChatDock) window.GameChatDock.openTo(code);
     else window.open('chat.html#add/' + code, '_blank', 'noopener');
   }
   function inviteLink(code) { return PROFILE_URL + '?join=' + code; }
@@ -702,6 +783,12 @@
         nameRow.appendChild(bRow);
       }
       main.appendChild(nameRow);
+      // staff role, presence and status
+      var pres = presenceOf(p), meta = el('div', 'soc-card-meta');
+      if (p.role) meta.appendChild(el('span', 'soc-role-pill role-' + p.role, ROLE_NAMES[p.role]));
+      var where = el('span', 'soc-presence ' + pres.kind); where.appendChild(el('i')); where.appendChild(document.createTextNode(pres.text)); meta.appendChild(where);
+      main.appendChild(meta);
+      if (p.status) main.appendChild(el('p', 'soc-status-line', '“' + p.status + '”'));
       if (p.tags.length) {
         var tags = el('div', 'soc-tags');
         p.tags.forEach(function (t) { tags.appendChild(el('span', 'soc-tag', t)); });
@@ -725,6 +812,16 @@
           grid.appendChild(f);
         });
         fs.appendChild(grid);
+      }
+      // On /chat there's no game of its own, so show how far they are in each game instead.
+      if (ACH === NO_ACH) {
+        var allSec = sect('Achievements'), sum = el('div', 'soc-ach-summary');
+        Object.keys(GAMES).forEach(function (g) {
+          var A = ALL_ACH[g]; if (!A) return;
+          var have = gameAch(p, g), n = A.list().filter(function (a) { return have[a.id]; }).length;
+          var d = el('div'); d.appendChild(el('b', null, n + '/' + A.count().total)); d.appendChild(el('span', null, GAMES[g])); sum.appendChild(d);
+        });
+        allSec.appendChild(sum);
       }
       var gotIds = ACH.list().filter(function (a) { return got[a.id]; });
       if (gotIds.length) {
@@ -998,13 +1095,18 @@
       who.appendChild(avatarEl(p, 36));
       var t = el('span', 'soc-who-text');
       t.appendChild(nameSpan(p));
-      t.appendChild(el('small', null, 'Level ' + levelOf(p.xp) + (p.tags[0] ? ' · ' + p.tags[0] : '')));
+      var pres = presenceOf(p);
+      var line = el('small', 'soc-presence ' + (f.status === 'accepted' ? pres.kind : 'offline'));
+      line.appendChild(el('i'));
+      line.appendChild(document.createTextNode(f.status === 'accepted' ? pres.text + (p.status ? ' · ' + p.status : '') : 'Level ' + levelOf(p.xp)));
+      t.appendChild(line);
       who.appendChild(t);
       who.addEventListener('click', function () { modal.close(); ProfileView.open(p.id); });
       li.appendChild(who);
       var act = el('span', 'soc-row-actions');
       if (f.status === 'accepted') {
         var lob = App().lobby();
+        if (pres.on && pres.lobby && GAMES[pres.page]) act.appendChild(btn('Join ' + GAMES[pres.page], null, function () { modal.close(); joinGame(pres.page, pres.lobby); }));
         if (p.equipped.chatCode) act.appendChild(btn('Message', 'btn-primary', function () { modal.close(); messagePlayer(p); }));
         if (lob && lob.code) act.appendChild(btn('Invite', 'btn-primary', function () { inviteToLobby(p.id); }));
         act.appendChild(btn('Remove', null, function () { removeFriend(p.id); }));
@@ -1022,8 +1124,11 @@
     function render() {
       var body = modal.body();
       body.textContent = '';
-      var friends = S.friends.filter(function (f) { return f.status === 'accepted'; });
+      var friends = S.friends.filter(function (f) { return f.status === 'accepted'; }).sort(function (a, b) {
+        return (presenceOf(b.profile).on - presenceOf(a.profile).on) || a.profile.name.localeCompare(b.profile.name);
+      });
       var pending = S.friends.filter(function (f) { return f.status !== 'accepted'; });
+      body.appendChild(statusEditor());
       var tabs = el('div', 'soc-tabs');
       [['friends', 'Friends · ' + friends.length], ['requests', 'Requests · ' + pending.length]].forEach(function (x) {
         var c = el('button', 'chip' + (tab === x[0] ? ' active' : ''), x[1]);
@@ -1159,14 +1264,15 @@
         var t = el('span', 'soc-who-text');
         var line = el('span');
         line.appendChild(nameSpan(n.profile));
-        line.appendChild(document.createTextNode(n.kind === 'invite' ? ' invited you to a game' : n.kind === 'friend_request' ? ' wants to be friends' : ' accepted your friend request'));
+        line.appendChild(document.createTextNode(noteText(n)));
         t.appendChild(line);
         t.appendChild(el('small', null, ago(n.created_at) + (n.kind === 'invite' ? ' · lobby ' + n.lobby : '')));
         who.appendChild(t);
         who.addEventListener('click', function () { close(); ProfileView.open(n.from_id); });
         li.appendChild(who);
         var act = el('span', 'soc-row-actions');
-        if (n.kind === 'invite' && n.lobby) act.appendChild(btn('Join', 'btn-primary', function () { close(); B.clearNote(n.id).then(refreshNotes); joinCode(n.lobby); }));
+        if (n.kind === 'invite' && n.lobby) act.appendChild(btn('Join', 'btn-primary', function () { close(); B.clearNote(n.id).then(refreshNotes); joinGame(n.game, n.lobby); }));
+        if (n.kind === 'mention') act.appendChild(btn('View', 'btn-primary', function () { close(); B.clearNote(n.id).then(refreshNotes); openPublicChat(); }));
         if (n.kind === 'friend_request' && friendState(n.from_id) === 'incoming') {
           act.appendChild(btn('Accept', 'btn-primary', function () { acceptFriend(n.from_id).then(function () { return B.clearNote(n.id); }).then(refreshNotes); }));
         }
@@ -1185,6 +1291,26 @@
 
   function joinCode(code) {
     if (App().join) App().join(code);
+  }
+
+  function noteText(n) {
+    if (n.kind === 'invite') return ' invited you to ' + (GAMES[n.game] ? 'play ' + GAMES[n.game] : 'a game');
+    if (n.kind === 'friend_request') return ' wants to be friends';
+    if (n.kind === 'friend_accept') return ' accepted your friend request';
+    if (n.kind === 'mention') return ' mentioned you in public chat';
+    if (n.kind === 'staff') return ': you\'ve been given a staff role. Thanks for helping out!';
+    return '';
+  }
+
+  // Invites work across games: an invite to Pong opened on the Tetris page goes to Pong's lobby.
+  function pageUrl(game) { return /\.html$/.test(location.pathname) ? game + '.html' : game; }
+  function joinGame(game, code) {
+    if (!game || game === GAME) return joinCode(code);
+    location.href = pageUrl(game) + '?join=' + encodeURIComponent(code);
+  }
+  function openPublicChat() {
+    if (GAME === 'chat') { location.hash = '#public'; return; }
+    window.open(pageUrl('chat') + '#public', '_blank', 'noopener');
   }
 
   /* =================================================================
@@ -1355,7 +1481,7 @@
     sub: function (r, p, sub) {
       sub.appendChild(document.createTextNode((r.won ? 'Won ' : 'Lost ') + r.score + '–' + r.lines + ' · ' + pongOpp(r)));
     },
-    meta: function (r) { var i = r.info || {}; return (i.target === 'inf' ? 'endless' : 'first to ' + (i.target || '?')) + ' · ' + ago(r.created_at); },
+    meta: function (r) { var i = r.info || {}; return skullTag(r) + (i.target === 'inf' ? 'endless' : 'first to ' + (i.target || '?')) + ' · ' + ago(r.created_at); },
     kicker: function (r) { return 'Pong · ' + pongOpp(r); },
     stats: function (r) {
       var i = r.info || {};
@@ -1364,6 +1490,7 @@
     },
     sections: function (r, pane) {
       var i = r.info || {};
+      skullSection(r, pane);
       if (!i.ball) return;
       var s = el('section', 'soc-sect');
       s.appendChild(el('h3', null, 'Ball'));
@@ -1397,14 +1524,14 @@
     },
     value: function (r, F) { return F && F.board === 'accuracy' ? r.score + '%' : r.value + ' shots'; },
     sub: function (r, p, sub) { sub.appendChild(document.createTextNode(oppOf(r) + ' · ' + r.score + '% accuracy')); },
-    meta: function (r) { return (r.lines ? r.lines + ' ship' + (r.lines > 1 ? 's' : '') + ' lost' : 'no ships lost') + ' · ' + ago(r.created_at); },
+    meta: function (r) { return skullTag(r) + (r.lines ? r.lines + ' ship' + (r.lines > 1 ? 's' : '') + ' lost' : 'no ships lost') + ' · ' + ago(r.created_at); },
     kicker: function (r) { return 'Battleships · ' + oppOf(r); },
     stats: function (r) {
       var i = r.info || {};
       return [['Shots', String(r.value)], ['Accuracy', r.score + '%'], ['Ships lost', String(r.lines)], ['Hits taken', String(i.enemyHits | 0)],
         ['Time', clockTenths(Math.round((r.elapsed || 0) / 100))], ['Opponent', r.kind === 'online' ? 'Online' : (i.difficulty || 'CPU')]];
     },
-    sections: function () {}
+    sections: function (r, pane) { skullSection(r, pane); }
   };
 
   // Chess: Quickest win (fewest of your own moves), filtered by opponent, colour and how it was won.
@@ -1442,15 +1569,25 @@
     },
     value: function (r) { return r.value + ' moves'; },
     sub: function (r, p, sub) { var i = r.info || {}; sub.appendChild(document.createTextNode((i.color === 'b' ? 'Black' : 'White') + ' · ' + oppOf(r))); },
-    meta: function (r) { var i = r.info || {}; return chessMethod(i.method) + ' · ' + ago(r.created_at); },
+    meta: function (r) { var i = r.info || {}; return skullTag(r) + chessMethod(i.method) + ' · ' + ago(r.created_at); },
     kicker: function (r) { return 'Chess · ' + oppOf(r); },
     stats: function (r) {
       var i = r.info || {};
       return [['Moves', String(r.value)], ['Finish', chessMethod(i.method)], ['Colour', i.color === 'b' ? 'Black' : 'White'],
         ['Material', ((i.material | 0) > 0 ? '+' : '') + (i.material | 0)], ['Time', clockTenths(Math.round((r.elapsed || 0) / 100))], ['Clock', i.clock && i.clock !== '0' ? i.clock + ' min' : 'None']];
     },
-    sections: function () {}
+    sections: function (r, pane) { skullSection(r, pane); }
   };
+  // Pong, Battleships and Chess runs note their skulls (names come from the game page when it lists them).
+  function skullTag(r) { return r.skulls && r.skulls.length ? '☠ ' + r.skulls.length + ' · ' : ''; }
+  function skullSection(r, pane) {
+    if (!r.skulls || !r.skulls.length) return;
+    var known = App().skullList ? App().skullList() : [];
+    var sec = el('section', 'soc-sect');
+    sec.appendChild(el('h3', null, 'Skulls on'));
+    sec.appendChild(el('p', 'soc-note', r.skulls.map(function (id) { var k = known.filter(function (x) { return x.id === id; })[0]; return k ? k.name : id; }).join(', ')));
+    pane.appendChild(sec);
+  }
   function chessMethod(m) { return { mate: 'Checkmate', time: 'On time', resign: 'Resignation', abandon: 'Opponent left' }[m] || 'Win'; }
 
   // Shared bits for the two-player games' opponent tag: anyone, a CPU difficulty, or online players.
@@ -1471,7 +1608,7 @@
     return 'vs ' + (i.difficulty || 'normal') + ' CPU';
   }
 
-  var BOARD = { tetris: TETRIS_BOARD, pong: PONG_BOARD, battleships: BATTLESHIPS_BOARD, chess: CHESS_BOARD }[GAME];
+  var BOARD = { tetris: TETRIS_BOARD, pong: PONG_BOARD, battleships: BATTLESHIPS_BOARD, chess: CHESS_BOARD }[GAME] || TETRIS_BOARD;
 
   var Leaderboard = (function () {
     var modal = Modal('socBoard', 'Leaderboard', true);
@@ -1984,6 +2121,9 @@
      Hooks from tetris.js
      ================================================================= */
 
+  // Skull ids from the game, as stored on a run (Pong, Battleships and Chess use games-skulls.js).
+  function cleanSkullIds(list) { return (Array.isArray(list) ? list : []).slice(0, 12).map(function (x) { return String(x).replace(/[^A-Za-z0-9_]/g, '').slice(0, 24); }).filter(Boolean); }
+
   function runBase(d) {
     return {
       score: Math.max(0, d.score | 0), lines: Math.max(0, d.lines | 0), level: Math.max(1, d.level | 0),
@@ -2031,7 +2171,7 @@
     var info = { target: String(d.target || '7'), ball: String(d.ball || '').slice(0, 40), speed: Math.max(0, d.speed | 0) };
     if (d.online) info.opponent = String(d.opponent || '').slice(0, 16); else info.difficulty = ['easy', 'normal', 'hard', 'ultra'].indexOf(d.difficulty) !== -1 ? d.difficulty : 'normal';
     addRun({ kind: d.online ? 'online' : 'cpu', mode: 'pong', value: Math.max(0, d.rally | 0), score: Math.max(0, d.myScore | 0), lines: Math.max(0, d.theirScore | 0),
-      level: 1, elapsed: Math.max(0, Math.round((d.elapsed || 0) * 1000)), skulls: [], multiplier: 1, won: !!d.won, info: info });
+      level: 1, elapsed: Math.max(0, Math.round((d.elapsed || 0) * 1000)), skulls: cleanSkullIds(d.skulls), multiplier: 1, won: !!d.won, info: info });
   }
 
   // A Battleships battle ended (vs CPU or online).
@@ -2043,7 +2183,7 @@
     var info = { enemyHits: Math.max(0, d.enemyHits | 0) };
     if (d.online) info.opponent = String(d.opponent || '').slice(0, 16); else info.difficulty = ['easy', 'normal', 'hard', 'ultra'].indexOf(d.difficulty) !== -1 ? d.difficulty : 'normal';
     addRun({ kind: d.online ? 'online' : 'cpu', mode: 'battleships', value: Math.max(0, d.shots | 0), score: Math.max(0, Math.min(100, d.accuracy | 0)),
-      lines: Math.max(0, Math.min(5, d.shipsLost | 0)), level: 1, elapsed: Math.max(0, Math.round((d.elapsed || 0) * 1000)), skulls: [], multiplier: 1, won: !!d.won, info: info });
+      lines: Math.max(0, Math.min(5, d.shipsLost | 0)), level: 1, elapsed: Math.max(0, Math.round((d.elapsed || 0) * 1000)), skulls: cleanSkullIds(d.skulls), multiplier: 1, won: !!d.won, info: info });
   }
 
   // A Chess game ended (vs CPU or online). d: { online, won (true/false/null for a draw), myMoves, material (pawns, your side),
@@ -2056,7 +2196,7 @@
     var info = { color: d.color === 'b' ? 'b' : 'w', method: String(d.method || '').slice(0, 12), clock: String(d.clock || '0'), material: Math.max(-99, Math.min(99, Math.round(d.material || 0))) };
     if (d.online) info.opponent = String(d.opponent || '').slice(0, 16); else info.difficulty = ['easy', 'normal', 'hard', 'ultra'].indexOf(d.difficulty) !== -1 ? d.difficulty : 'normal';
     addRun({ kind: d.online ? 'online' : 'cpu', mode: 'chess', value: Math.max(0, d.myMoves | 0), score: Math.max(0, Math.min(99, Math.round(d.material || 0))),
-      lines: 0, level: 1, elapsed: Math.max(0, Math.round((d.elapsed || 0) * 1000)), skulls: [], multiplier: 1, won: won, info: info });
+      lines: 0, level: 1, elapsed: Math.max(0, Math.round((d.elapsed || 0) * 1000)), skulls: cleanSkullIds(d.skulls), multiplier: 1, won: won, info: info });
   }
 
   // What other players should see of you in a lobby: your id (to open your profile) and name style.
@@ -2096,6 +2236,7 @@
     buildMenu();
     paintDock();
     if (ACH.onUnlock) ACH.onUnlock(function () { syncAchievements(); });
+    if (GAMES[GAME]) document.querySelector('.soc-dock').dataset.page = GAME;
     start();
   }
 
@@ -2115,6 +2256,17 @@
     openLeaderboard: function (m) { Leaderboard.open(m); },
     openFinder: function () { Finder.open(); },
     openShop: function () { Shop.open(); },
-    levelOf: levelOf
+    levelOf: levelOf,
+    // for /chat's public room (chat-public.js): the same client, profile and look as everywhere else
+    ready: onReady,
+    client: function () { return B && B.client ? B.client() : null; },
+    uid: function () { return B && S.ready ? B.uid() : null; },
+    me: function () { return S.me; },
+    friends: function () { return S.friends.slice(); },
+    loadProfiles: function (ids) { return loadProfiles(ids); },
+    cleanProfile: cleanProfile,
+    ui: { nameSpan: nameSpan, avatarEl: avatarEl, badgeChip: badgeChip, hasBadge: hasBadge, presenceOf: presenceOf, roleNames: ROLE_NAMES },
+    sendNote: function (to, kind) { return S.ready ? B.sendNote(to, kind) : Promise.resolve(); },
+    openFriends: function () { Friends.open(); }
   };
 })();

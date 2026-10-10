@@ -1966,7 +1966,8 @@
     }
 
     // One input every lv.step seconds: hold, then rotate, then slide, then drop.
-    function tick(p, dt) {
+    // onLock: who handles a hard drop's result (default afterLock; the cinematic passes its own, as it runs no game).
+    function tick(p, dt, onLock) {
       var b = p.cpu, lv = b.lv;
       if (!p.piece || p.frozen > 0) return;
       var key = p.lockedAt + ':' + p.piece.type + ':' + (p.hold || '');
@@ -1989,7 +1990,7 @@
         if (!p.move(dir * mirror)) b.plan = { hold: false, rot: p.piece.rot, x: p.piece.x }; // blocked: settle here
         return;
       }
-      if (lv.hard) afterLock(p, p.hardDrop());
+      if (lv.hard) (onLock || afterLock)(p, p.hardDrop());
       else p.softDrop();
     }
 
@@ -2757,7 +2758,14 @@
     profileChanged: function () { mountProfileEditor(); profileChanged(); },
     // the skull list and its pixel icons, for the leaderboard's Skulls filter and run details
     skulls: function () { return SKULLS.map(function (s) { return { id: s.id, name: s.name, cat: s.cat, eff: s.eff, body: s.body }; }); },
-    skullIcon: function (id) { var s = SKULL_BY_ID[id]; var e = s ? iconEl(s.index) : document.createElement('span'); if (s) e.title = s.name; return e; }
+    skullIcon: function (id) { var s = SKULL_BY_ID[id]; var e = s ? iconEl(s.index) : document.createElement('span'); if (s) e.title = s.name; return e; },
+    // For tetris-cinematic.js: the real rules, board renderer and CPU, so its shots are genuine play. It builds its own
+    // Players (with a p.ui like buildBoards makes) and never touches the running game. busy: a game is on screen.
+    cinematicKit: function () {
+      return { Player: Player, drawPlayer: drawPlayer, cpuTick: Cpu.tick, cpuBrain: Cpu.brain, NO_KEYS: Cpu.NO_KEYS, gravity: gravity,
+        randomPalette: randomPalette, myPalette: myPalette, STREAK: STREAK, COLS: COLS, ROWS: ROWS, CELL: CELL, SIDE: SIDE, GARBAGE: GARBAGE };
+    },
+    busy: function () { return !!game || currentScreen !== 'menuPanel'; }
   };
 
   function init() {

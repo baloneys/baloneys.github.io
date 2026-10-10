@@ -1,0 +1,8 @@
+Tetris cinematic music: Cyber Runner by Luis Zuno (ansimuz)
+Source: https://opengameart.org/content/cyber-runner-music
+License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/)
+
+tetris-cinematic-45.mp3 is a 45-second edit of the source track, from 00:20 to
+01:05, with a short fade in and a 2.6-second fade out ending on the track's
+natural break. The original asset's public-license.txt permits editing and
+redistribution; attribution is optional and provided here for provenance.

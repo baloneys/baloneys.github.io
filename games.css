@@ -78,16 +78,17 @@
   align-items: center;
   gap: 6px;
   padding: var(--spacing-xl) var(--spacing-lg);
-  border: 1px solid var(--color-border);
+  /* the frosted violet card Tetris uses, shared so every game's menu matches */
+  border: 1px solid rgba(227, 207, 255, 0.16);
   border-radius: var(--border-radius-lg);
-  background: var(--color-surface);
+  background: linear-gradient(160deg, rgba(170, 110, 255, 0.12), rgba(9, 8, 18, 0.42));
   color: var(--color-on-surface);
   text-align: center;
   cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.mode-card:hover { transform: translateY(-3px); border-color: var(--color-primary); box-shadow: 0 16px 40px -24px color-mix(in srgb, var(--color-primary) 90%, transparent); }
+.mode-card:hover { transform: translateY(-3px); border-color: var(--color-primary); background: rgba(150, 70, 240, 0.22); box-shadow: 0 16px 40px -24px color-mix(in srgb, var(--color-primary) 90%, transparent); }
 .mode-card .icon { font-size: 1.8rem; }
 .mode-card strong { font-family: var(--font-family-heading); }
 .mode-card span { color: var(--color-on-surface-secondary); font-size: var(--font-size-xs); }

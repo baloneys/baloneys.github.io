@@ -1,0 +1,12 @@
+Tetris opening cinematic and menu loop: temp sound
+(Balcade_Cinematic_60s_MenuReady.mp3, Balcade_Menu_Ambient_Seamless_Loop.ogg, Balcade_Menu_Ambient_Loop.mp3)
+
+Sean's Balcade_Temp_60s_Sound_Package master: placeholder music mixed with original procedural sound effects.
+
+Music: "runner2088.mp3" by wekont, Free Music Archive
+https://freemusicarchive.org/music/wekont/single/runner2088mp3/
+Licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). The music was edited and mixed with new effects.
+The cinematic shows this credit on screen while it plays (CUES.credit in tetris-cinematic.js); the menu
+loop credits it on the Music button (tetris-menu-music.js).
+
+Sound effects: synthesised for this project (noise, oscillators, envelopes, filters); no third-party recordings.

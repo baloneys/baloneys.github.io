@@ -1983,7 +1983,7 @@
     const unreadDm = contacts.filter((c) => isUnread(dmKey(c.id))).length + requests.length;
     if (MINI) parent.postMessage({ type: 'chat:unread', count: unreadDm }, location.origin);
     const unread = unreadDm + rooms.filter((r) => isUnread(roomKey(r.code))).length;
-    document.title = (unread ? '(' + unread + ') ' : '') + 'chat | baloneys';
+    document.title = (unread ? '(' + unread + ') ' : '') + 'chat | balcade';
   }
 
   // ---------- Notifications (in page) ----------

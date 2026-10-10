@@ -1,0 +1,40 @@
+BALCADE / TETRIS — TEMP CINEMATIC SOUND DESIGN CUE SHEET
+=============================================================
+Runtime 60.000 seconds | Stereo 44.1 kHz | placeholder music + ORIGINAL procedural SFX
+
+00:00–00:04  Existing synth intro, quiet CRT electrical hum, slow cabinet push
+00:04–00:07  Camera stops at controls; 8-bit logo and subtitle, faint chimes
+00:07–00:10  Cabinet/shader fades away first; title hangs, music fades
+00:10–00:12  Near silence, spark at 11.14, rising whoosh and spark burst
+00:12–00:23  Main beat DROP; 3D boards fly at 12–22, pixel car engine 15–23
+00:23–00:27  Close-up gameplay, block locking and BIG line clear ~25.6
+00:27–00:31  Escalating 2x / 6x / 10x streak chimes, transition impact
+00:31–00:38  Multiplayer boards separated in space; flying garbage attacks,
+             impact ~34.2; elimination glitch + low hit ~35.94;
+             remaining players still battling ~37
+00:38–00:43  Achievement unlock pings, UI/profile changes, panel fly-past
+00:43–00:48  Chat/message beeps, friends presence, invite confirmation
+00:48–00:54  Modes, modifiers and skulls rapidly clicked; build to peak
+00:54–00:58  Final chaotic game montage, impacts, music cut and reverse whoosh
+00:58–01:00  Soft ambient synth returns; understated CRT + menu chime
+
+MUSIC SOURCE
+'Song: runner2088.mp3' by wekont, Free Music Archive.
+https://freemusicarchive.org/music/wekont/single/runner2088mp3/
+Licensed Creative Commons Attribution 4.0 International (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+The music is EDITED and MIXED with newly generated effects for this placeholder.
+Keep the attribution and link if publishing this version; CC BY 4.0 allows
+adaptation and commercial use with attribution and indication of changes.
+
+SOUND EFFECTS
+All added effect sounds are synthetically generated for this project from
+noise, basic oscillators, envelopes, filters and simple DSP; there are no
+externally downloaded third-party SFX recordings in the mix. The SFX stem
+can be reused separately from the placeholder music.
+
+DELIVERABLES
+Balcade_Temp_60s_Master.mp3 — preview / game temp audio
+Balcade_Temp_60s_Master.wav — lossless master
+Balcade_Temp_60s_Music_Stem.wav — isolated edited track
+Balcade_Temp_60s_Original_SFX_Stem.wav — isolated original effects

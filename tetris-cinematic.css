@@ -1,167 +1,191 @@
-/* tetris-cinematic.css: the intro cinematic overlay (tetris-cinematic.js). Everything is scoped under .cine. */
+/* tetris-cinematic.css: the opening cinematic overlay (tetris-cinematic.js). Everything is scoped under .cine. */
 
 html.cine-open, html.cine-open body { overflow: hidden; }
 
 .cine {
   position: fixed; inset: 0; z-index: 9000;
-  background: #000; color: #f7f2ff; overflow: hidden;
+  background-color: #000; color: #f7f2ff; overflow: hidden;
   font-family: var(--font-family-heading, "JetBrains Mono", monospace);
-  opacity: 1; transition: opacity 0.4s ease;
   user-select: none; -webkit-user-select: none;
 }
-.cine.closing { opacity: 0; pointer-events: none; }
-.cine::before {
-  content: ''; position: absolute; inset: -8%; z-index: 2; pointer-events: none;
-  background: radial-gradient(ellipse 28% 35% at 22% 70%, rgba(75, 75, 255, 0.18), transparent 85%),
-              radial-gradient(ellipse 24% 30% at 80% 23%, rgba(255, 56, 195, 0.14), transparent 85%);
-  filter: blur(32px); mix-blend-mode: screen;
-}
-.cine::after {
-  content: ''; position: absolute; inset: -12px 0; z-index: 5; pointer-events: none;
-  background: repeating-linear-gradient(0deg, rgba(4, 1, 15, 0.19) 0 1px, transparent 1px 4px),
-              linear-gradient(180deg, transparent 0 46%, rgba(169, 69, 255, 0.055) 48%, transparent 51%);
-  background-size: 100% 4px, 100% 115%;
-  mix-blend-mode: multiply; opacity: 0.6; animation: cine-vhs-roll 9s linear infinite;
-}
-@keyframes cine-vhs-roll { to { background-position: 0 80px, 0 115%; } }
+.cine.closing { opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
+/* the last second: the real menu is already live under the fading picture */
+.cine.letting-go { pointer-events: none; }
+.cine.letting-go .cine-ui { opacity: 0; transition: opacity 0.3s ease; }
 
-.cine-bg, .cine-fx, .cine-view, .cine-rain, .cine-pixel-flash { position: absolute; inset: 0; width: 100%; height: 100%; }
-.cine-bg { display: block; filter: brightness(0.65) saturate(1.18) contrast(1.08); }
-.cine > .tetris-bg {
-  inset: 0; width: 100%; height: 100%; opacity: 1;
-  -webkit-mask-image: none; mask-image: none; transition: none;
-  filter: saturate(1.16) contrast(1.12) brightness(0.82);
-}
-.cine-rain { z-index: 1; pointer-events: none; image-rendering: pixelated; mix-blend-mode: screen; }
-.cine-pixel-flash { z-index: 4; pointer-events: none; image-rendering: pixelated; mix-blend-mode: screen; opacity: 0; }
-.cine-fx { pointer-events: none; filter: drop-shadow(0 0 11px rgba(116, 194, 255, 0.7)) drop-shadow(0 0 30px rgba(207, 83, 255, 0.38)); }
+.cine-stage, .cine-bg, .cine-fx, .cine-view { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cine-stage { overflow: hidden; }
+.cine-bg { display: block; image-rendering: pixelated; }
 .cine-view { overflow: hidden; perspective-origin: 50% 50%; pointer-events: none; }
-.cine-view { z-index: 1; }
-.cine-fx { z-index: 3; }
+.cine-fx { pointer-events: none; }
 .cine-world, .cine-group { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; }
-
-.cine-falling-piece {
-  position: absolute; left: 50%; top: 0; width: clamp(100px, 11vw, 180px);
-  display: none; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr);
-  aspect-ratio: 2; pointer-events: none; z-index: 2;
-  filter: drop-shadow(0 0 20px var(--piece-color)) drop-shadow(0 0 65px var(--piece-color));
-}
-.cine-falling-piece span.on {
-  margin: 2px; border: 3px solid #fff; border-radius: 3px;
-  background: color-mix(in srgb, var(--piece-color), transparent 68%);
-  box-shadow: inset 0 0 13px var(--piece-color), 0 0 22px var(--piece-color);
-}
-
 .cine-plane { position: absolute; left: 0; top: 0; transform-origin: 0 0; transform-style: preserve-3d; will-change: transform; }
 
-/* ---------- boards: the cinematic-only look (slab layers, rim light, gloss, fog) ---------- */
+/* ---------- boards ---------- */
 
+.cine-board { --board-color: #b26bff; }
 .cine-board-head {
   position: absolute; left: 0; right: 0; top: 0; height: 40px;
   display: flex; align-items: center; justify-content: space-between; padding: 0 8px 0 120px;
   font-size: 18px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
-  text-shadow: 0 0 12px rgba(157, 0, 255, 0.9);
+  color: #fff; text-shadow: 0 0 12px var(--board-color);
 }
 .cine-board-lives { color: #ff9ac8; font-size: 15px; }
 .cine-board-face {
   position: absolute; left: 0; top: 40px; width: 504px; height: 560px; overflow: hidden;
-  box-shadow: 0 0 0 2px rgba(190, 120, 255, 0.55), 0 0 40px rgba(157, 0, 255, 0.45), 0 0 120px rgba(80, 60, 255, 0.25);
-  background: rgba(4, 5, 12, 0.55);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--board-color) 70%, transparent), 0 0 40px color-mix(in srgb, var(--board-color) 55%, transparent), 0 0 120px rgba(80, 60, 255, 0.25);
+  background: rgba(4, 5, 12, 0.6);
 }
 .cine-board-face .cine-canvas { display: block; width: 504px; height: 560px; }
-.cine-board-depth { position: absolute; left: 0; top: 40px; width: 504px; height: 560px; pointer-events: none; }
-.cine-board.hero .cine-board-face { box-shadow: 0 0 0 3px rgba(220, 170, 255, 0.75), 0 0 60px rgba(157, 0, 255, 0.6), 0 0 180px rgba(80, 60, 255, 0.35); }
-.cine-board.mini .cine-board-head { font-size: 26px; }
-.cine-board.danger .cine-board-face { box-shadow: 0 0 0 3px rgba(255, 60, 110, 0.8), 0 0 60px rgba(255, 0, 80, 0.55); }
-.cine-board.danger .cine-board-lives { color: #ff4d7a; font-size: 20px; }
-.cine-board.danger.danger-on .cine-board-face { box-shadow: 0 0 0 4px rgba(255, 90, 130, 1), 0 0 110px rgba(255, 0, 80, 0.9); }
-
-/* a specular sweep that slides as the camera turns, so the boards read as glass in 3D */
+.cine-board.hero .cine-board-face { box-shadow: 0 0 0 3px rgba(220, 170, 255, 0.8), 0 0 60px rgba(157, 0, 255, 0.6), 0 0 180px rgba(80, 60, 255, 0.35); }
+.cine-board.out .cine-board-face { box-shadow: 0 0 0 4px #ff2f6e, 0 0 120px rgba(255, 20, 90, 0.9); }
+.cine-board.out .cine-board-head { color: #ff2f6e; }
 .cine-gloss {
   position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen;
-  background: linear-gradient(112deg, transparent 38%, rgba(255, 255, 255, 0.10) 47%, rgba(200, 160, 255, 0.16) 50%, transparent 60%);
-  background-size: 300% 100%;
+  background: linear-gradient(112deg, transparent 40%, rgba(255, 255, 255, 0.08) 48%, rgba(200, 160, 255, 0.13) 50%, transparent 58%);
 }
-.cine-fog { position: absolute; inset: 0; background: #05030c; opacity: 0; pointer-events: none; }
+.cine-fog { position: absolute; inset: 0; background: #07020f; opacity: 0; pointer-events: none; }
 .cine-pieceglow {
   position: absolute; left: 0; top: 0; pointer-events: none; border-radius: 4px;
   border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 18px rgba(255, 255, 255, 0.8), 0 0 50px rgba(120, 200, 255, 0.8), inset 0 0 24px rgba(160, 220, 255, 0.55);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.8), 0 0 50px rgba(40, 232, 255, 0.8), inset 0 0 24px rgba(160, 220, 255, 0.55);
 }
 .cine-rows { position: absolute; inset: 0; pointer-events: none; opacity: 0; transform: translateZ(4px); }
 .cine-row {
-  position: absolute; background: #fff; transform-origin: 50% 50%;
-  box-shadow: 0 0 24px #fff, 0 0 60px rgba(200, 160, 255, 0.95), 0 0 140px rgba(157, 0, 255, 0.9);
+  position: absolute; transform-origin: 50% 50%;
+  background: linear-gradient(90deg, #fff 0 40%, #ffe3fb 48%, #ffffff 50%, #ffe3fb 52%, #fff 60%) 0 0 / 300% 100%;
+  box-shadow: 0 0 24px #fff, 0 0 60px rgba(255, 120, 230, 0.95), 0 0 160px rgba(157, 0, 255, 0.9);
 }
 
-/* ---------- skull and achievement walls ---------- */
+/* ---------- panels: achievements, profile, chat, friends, invite, modes, skulls ---------- */
 
-.cine-wall {
-  padding: 48px 56px; border-radius: 18px;
-  background: linear-gradient(160deg, rgba(30, 10, 60, 0.82), rgba(6, 4, 18, 0.9));
-  box-shadow: 0 0 0 2px rgba(190, 120, 255, 0.5), 0 0 80px rgba(157, 0, 255, 0.4);
+.cine-badge { filter: drop-shadow(0 0 30px rgba(255, 60, 200, 0.6)); }
+.cine-panel {
+  padding: 44px 52px; border-radius: 18px; color: #f7f2ff;
+  background: linear-gradient(160deg, rgba(30, 10, 60, 0.88), rgba(6, 4, 18, 0.92));
+  box-shadow: 0 0 0 2px rgba(190, 120, 255, 0.55), 0 0 80px rgba(157, 0, 255, 0.4), inset 0 0 60px rgba(157, 0, 255, 0.12);
 }
-.cine-wall-title { font-size: 64px; font-weight: 800; letter-spacing: 0.2em; text-shadow: 0 0 24px rgba(157, 0, 255, 1); }
-.cine-wall-sub { margin: 4px 0 26px; font-size: 22px; color: #c9a6ff; letter-spacing: 0.08em; min-height: 1.3em; }
+.cine-panel-title { font-size: 58px; font-weight: 800; letter-spacing: 0.18em; text-shadow: 3px 0 0 rgba(40, 232, 255, 0.6), -3px 0 0 rgba(255, 47, 166, 0.6), 0 0 24px rgba(157, 0, 255, 1); }
+.cine-panel-sub { margin: 4px 0 24px; font-size: 22px; color: #c9a6ff; letter-spacing: 0.08em; min-height: 1.3em; }
+.cine-panel-label { margin: 26px 0 12px; font-size: 18px; letter-spacing: 0.3em; color: #c9a6ff; }
 .cine-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 14px; }
 .cine-ach .cine-grid { grid-template-columns: repeat(10, 1fr); gap: 12px; }
 .cine-card {
   display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 6px;
   border-radius: 10px; background: rgba(255, 255, 255, 0.04); box-shadow: 0 0 0 1px rgba(190, 120, 255, 0.18);
-  text-align: center; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  text-align: center; transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
-.cine-card .skull-icon { width: 84px; height: 84px; filter: grayscale(0.8) brightness(0.7); transition: filter 0.18s ease; }
+.cine-card .skull-icon { width: 84px; height: 84px; filter: grayscale(0.8) brightness(0.7); }
 .cine-card-name { font-size: 15px; font-weight: 700; line-height: 1.15; }
 .cine-card-eff { font-size: 14px; color: #8affb0; }
 .cine-card.cat-mod .cine-card-eff, .cine-card.on .cine-card-eff { color: #ff8ab0; }
-.cine-card.on { background: rgba(157, 0, 255, 0.22); box-shadow: 0 0 0 2px rgba(220, 170, 255, 0.9), 0 0 30px rgba(157, 0, 255, 0.8); transform: translateY(-4px); }
+.cine-card.on { background: rgba(157, 0, 255, 0.24); box-shadow: 0 0 0 2px rgba(220, 170, 255, 0.9), 0 0 30px rgba(157, 0, 255, 0.8); transform: translateY(-4px); }
 .cine-card.on .skull-icon { filter: none; }
+.cine-card.pop { transform: scale(1.25); box-shadow: 0 0 0 3px #fff, 0 0 60px #ff2fa6; }
 .cine-ach .cine-card { opacity: 0.35; filter: grayscale(1); }
 .cine-ach .cine-card.on { opacity: 1; filter: none; }
-.cine-ach .cine-card.pop { transform: scale(1.22); }
 .cine-ach .cine-card-name { font-size: 13px; }
 
-/* ---------- title, caption, bars, fade, grain ---------- */
+.cine-prof-row { display: flex; align-items: center; gap: 36px; }
+.cine-prof-av .avatar { box-shadow: 0 0 0 4px #ff2fa6, 0 0 40px rgba(255, 47, 166, 0.7); }
+.cine-prof-name { font-size: 54px; font-weight: 800; text-shadow: 0 0 20px rgba(255, 47, 166, 0.8); }
+.cine-prof-lvl { margin-top: 8px; font-size: 22px; color: #c9a6ff; letter-spacing: 0.06em; }
+.cine-prof-bar { margin-top: 18px; width: 520px; height: 16px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; overflow: hidden; }
+.cine-prof-bar i { display: block; height: 100%; background: linear-gradient(90deg, #a020ff, #ff2fa6, #28e8ff); box-shadow: 0 0 20px #ff2fa6; }
+.cine-chips { display: flex; gap: 14px; }
+.cine-chip { padding: 10px 22px; border-radius: 999px; font-size: 22px; font-weight: 700; box-shadow: 0 0 0 2px rgba(190, 120, 255, 0.4); }
+.cine-chip.on { background: #9d00ff; box-shadow: 0 0 0 2px #fff, 0 0 30px #9d00ff; }
+.cine-swatches { display: flex; gap: 16px; }
+.cine-sw { width: 64px; height: 64px; border-radius: 12px; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.6); transition: transform 0.12s ease; }
+.cine-sw.on { transform: scale(1.25); box-shadow: 0 0 0 4px #fff, 0 0 30px currentColor; }
+.cine-avatar { image-rendering: pixelated; border-radius: 50%; flex: none; }
 
-.cine-title {
-  position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center;
-  pointer-events: none; z-index: 4;
+.cine-chat-list { display: flex; flex-direction: column; gap: 14px; margin-top: 26px; }
+.cine-msg { align-self: flex-start; max-width: 80%; padding: 14px 20px; border-radius: 16px 16px 16px 4px; background: rgba(255, 255, 255, 0.07); font-size: 26px; box-shadow: 0 0 0 1px rgba(190, 120, 255, 0.3); }
+.cine-msg b { display: block; font-size: 17px; color: #28e8ff; letter-spacing: 0.06em; margin-bottom: 4px; }
+.cine-msg.mine { align-self: flex-end; border-radius: 16px 16px 4px 16px; background: rgba(157, 0, 255, 0.35); }
+.cine-msg.mine b { color: #ff9be0; }
+.cine-msg.new { animation: cine-msg-in 0.25s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes cine-msg-in { from { opacity: 0; transform: translateY(26px) scale(0.9); } to { opacity: 1; transform: none; } }
+
+.cine-friend { display: flex; align-items: center; gap: 20px; margin-top: 18px; padding: 12px 16px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); }
+.cine-friend-name { flex: 1; font-size: 28px; font-weight: 700; }
+.cine-friend-st { font-size: 18px; letter-spacing: 0.08em; padding: 6px 14px; border-radius: 999px; }
+.cine-friend-st.s0 { color: #28e8ff; box-shadow: 0 0 0 2px rgba(40, 232, 255, 0.5); }
+.cine-friend-st.s1 { color: #ff9be0; box-shadow: 0 0 0 2px rgba(255, 47, 166, 0.5); }
+.cine-friend-st.s2 { color: #c9a6ff; box-shadow: 0 0 0 2px rgba(190, 120, 255, 0.4); }
+.cine-friend.lit { background: rgba(157, 0, 255, 0.25); box-shadow: 0 0 30px rgba(157, 0, 255, 0.5); }
+.cine-friend.lit .cine-friend-st { box-shadow: 0 0 0 2px currentColor, 0 0 18px currentColor; }
+
+.cine-invite { box-shadow: 0 0 0 3px #ff2fa6, 0 0 120px rgba(255, 47, 166, 0.6); }
+.cine-invite .cine-panel-title { font-size: 40px; margin-bottom: 26px; }
+.cine-invite-btns { display: flex; gap: 20px; margin-top: 34px; }
+.cine-accept, .cine-decline { padding: 16px 40px; border-radius: 999px; font-size: 28px; font-weight: 800; }
+.cine-accept { background: #9d00ff; box-shadow: 0 0 30px #9d00ff; }
+.cine-decline { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); }
+
+.cine-mode-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 30px; }
+.cine-mode { padding: 26px 22px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); box-shadow: 0 0 0 1px rgba(190, 120, 255, 0.3); transition: transform 0.1s ease; }
+.cine-mode strong { display: block; font-size: 34px; }
+.cine-mode span { font-size: 18px; color: #c9a6ff; }
+.cine-mode.on { background: rgba(157, 0, 255, 0.4); box-shadow: 0 0 0 3px #fff, 0 0 50px #9d00ff; transform: translateY(-8px) scale(1.04); }
+
+/* the cloned real menu panel: highlight whatever the camera is "picking" */
+.cine-real { margin: 0; box-sizing: border-box; overflow: hidden; }
+.cine-real .cine-hl { box-shadow: 0 0 0 3px #fff, 0 0 40px #9d00ff, 0 0 90px rgba(255, 47, 166, 0.6) !important; transform: translateY(-4px) scale(1.04); }
+.cine-flyer .skull-icon { width: 120px; height: 120px; filter: drop-shadow(0 0 20px #ff2fa6); }
+
+/* ---------- screen-space: logo, caption, toasts ---------- */
+
+.cine-logo {
+  position: absolute; left: 50%; top: 50%; display: none; flex-direction: column; align-items: center;
+  transform: translate(-50%, -50%); pointer-events: none; z-index: 4;
 }
-.cine-word { display: flex; gap: 0.02em; font-size: clamp(64px, 15vw, 240px); font-weight: 800; line-height: 1; letter-spacing: -0.065em; }
-.cine-letter {
-  display: inline-block; opacity: 0;
-  background: linear-gradient(180deg, #ffffff 0%, #e6c8ff 30%, #b26bff 62%, #5b2bff 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 18px rgba(157, 0, 255, 0.95)) drop-shadow(0 6px 0 #3a0f7a) drop-shadow(0 12px 0 #1c0638);
+.cine-logo-art {
+  display: block; height: auto; image-rendering: pixelated; image-rendering: crisp-edges;
+  filter: drop-shadow(0 0 12px rgba(255, 47, 166, 0.9)) drop-shadow(0 0 30px rgba(40, 232, 255, 0.45));
 }
-.cine-letter.l1, .cine-letter.l4 { background-image: linear-gradient(180deg, #ffffff 0%, #c7e8ff 30%, #4cc9ff 62%, #3d4bff 100%); }
-.cine-letter.l3 { background-image: linear-gradient(180deg, #ffffff 0%, #ffd0ea 30%, #ff4fa3 62%, #a020ff 100%); }
-.cine-sub {
-  margin-top: clamp(10px, 2vw, 26px); font-size: clamp(13px, 2vw, 26px); font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.32em; color: #e9dcff; text-shadow: 0 0 16px rgba(157, 0, 255, 0.9); opacity: 0; white-space: nowrap;
+.cine-logo-sub {
+  margin-top: 0.5em; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; color: #e9dcff; opacity: 0;
+  text-shadow: 0 0 12px rgba(255, 47, 166, 0.8);
 }
 
 .cine-caption {
-  position: absolute; left: 6vw; bottom: calc(max(0px, (100vh - 100vw / 2.2) / 2) + 5vh);
-  display: flex; flex-direction: column; opacity: 0; pointer-events: none; z-index: 4;
+  position: absolute; left: 6vw; bottom: 12vh; display: flex; flex-direction: column; opacity: 0; pointer-events: none; z-index: 4;
 }
-.cine-caption strong { font-size: clamp(44px, 7vw, 110px); line-height: 1; text-shadow: 0 0 30px rgba(255, 80, 200, 0.9); }
+.cine-caption strong { font-size: clamp(44px, 7vw, 110px); line-height: 1; text-shadow: 4px 0 0 rgba(40, 232, 255, 0.7), -4px 0 0 rgba(255, 47, 166, 0.7), 0 0 30px rgba(255, 80, 200, 0.9); }
 .cine-caption span { font-size: clamp(14px, 1.6vw, 24px); letter-spacing: 0.3em; color: #ffc6f0; }
-.cine-caption.show { animation: cine-caption 0.9s cubic-bezier(.2, 1.6, .4, 1) both; }
-@keyframes cine-caption { from { opacity: 0; transform: translateX(-40px) skewX(-12deg); } to { opacity: 1; transform: none; } }
+.cine-caption.show { animation: cine-caption 0.7s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes cine-caption { 0% { opacity: 0; transform: translateX(-40px) skewX(-12deg); } 20% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
 
-.cine-bars { position: absolute; left: 0; right: 0; z-index: 6; height: max(3.2vh, calc((100vh - 100vw / 2.2) / 2)); background: #000; pointer-events: none; }
-.cine-bars.top { top: 0; animation: cine-bar-top 1s cubic-bezier(.19,1,.22,1) .12s both; }
-.cine-bars.bottom { bottom: 0; animation: cine-bar-bottom 1s cubic-bezier(.19,1,.22,1) .12s both; }
-@keyframes cine-bar-top { from { transform: translateY(-102%); } to { transform: translateY(0); } }
-@keyframes cine-bar-bottom { from { transform: translateY(102%); } to { transform: translateY(0); } }
-.cine-fade { position: absolute; inset: 0; z-index: 8; background: #000; opacity: 1; pointer-events: none; }
-.cine-grain {
-  position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0.35; mix-blend-mode: overlay;
-  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.35) 0 1px, transparent 1px 3px);
+.cine-toasts { position: absolute; right: 3vw; top: 8vh; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.cine-toast {
+  display: flex; flex-direction: column; padding: 12px 18px; min-width: 240px; border-radius: 12px;
+  background: rgba(14, 6, 30, 0.9); box-shadow: 0 0 0 1px rgba(219, 194, 255, 0.45), 0 0 30px rgba(157, 0, 255, 0.6);
+  animation: cine-toast-in 0.3s cubic-bezier(.2, 1.4, .4, 1) both;
 }
+.cine-toast strong { font-size: 12px; letter-spacing: 0.2em; color: #c9a6ff; text-transform: uppercase; }
+.cine-toast span { font-size: 18px; font-weight: 800; }
+.cine-toast.out { opacity: 0; transform: translateX(60px); transition: opacity 0.4s ease, transform 0.4s ease; }
+@keyframes cine-toast-in { from { opacity: 0; transform: translateX(80px); } to { opacity: 1; transform: none; } }
+
+/* ---------- VHS: scanlines, grain, a soft vignette, a slow roll bar ---------- */
+
+.cine-vhs {
+  position: absolute; inset: 0; pointer-events: none; z-index: 5;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.32) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, transparent 0 46%, rgba(255, 255, 255, 0.035) 48%, transparent 52%),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  background-size: 100% 3px, 100% 140%, 100% 100%;
+  animation: cine-vhs-roll 7s linear infinite;
+}
+@keyframes cine-vhs-roll { to { background-position: 0 0, 0 140%, 0 0; } }
 
 /* ---------- controls ---------- */
+
+.cine-credit { position: absolute; left: 16px; bottom: 20px; z-index: 9; font-size: 11px; letter-spacing: 0.04em; color: rgba(233, 220, 255, 0.55); pointer-events: none; }
+.cine.letting-go .cine-credit { opacity: 0; transition: opacity 0.3s ease; }
 
 .cine-ui { position: absolute; right: 16px; bottom: 16px; display: flex; gap: 8px; z-index: 9; }
 .cine-btn {
@@ -177,10 +201,9 @@ html.cine-open, html.cine-open body { overflow: hidden; }
 @keyframes cine-blink { 50% { opacity: 0.55; } }
 
 @media (max-aspect-ratio: 1/1) {
-  .cine-bars { height: 4vh; }
   .cine-caption { bottom: 18vh; }
   .cine-ui { left: 16px; right: 16px; justify-content: flex-end; flex-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cine-bars, .cine::after { animation: none; }
+  .cine-vhs { animation: none; }
 }

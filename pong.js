@@ -105,9 +105,9 @@
   function loadSkins() {
     for (var i = 1; i <= 9; i++) {
       (function (n) {
-        var img = new Image();
-        img.onerror = function () { img.onerror = null; img.src = 'ball' + n + '.gif'; };
-        img.src = 'ball' + n + '.png';
+        var img = new Image(), gif = n === 3;   // ball3 only exists as a .gif (asking for .png first was a 404)
+        img.onerror = function () { img.onerror = null; img.src = 'ball' + n + (gif ? '.png' : '.gif'); };
+        img.src = 'ball' + n + (gif ? '.gif' : '.png');
         skinImages['b' + n] = img;
       })(i);
     }

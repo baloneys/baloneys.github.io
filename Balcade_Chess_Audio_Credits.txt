@@ -1,0 +1,16 @@
+Balcade Chess opening and menu music
+
+Music: “Daydreaming” by | e s c p | (FSM Team)
+Artist: https://www.escp.space
+Artist music: https://escp-music.bandcamp.com
+Source: https://www.free-stock-music.com/fsm-team-escp-daydreaming.html
+Licence: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+Changes: edited, filtered and rearranged for the 60-second Balcade Chess cinematic;
+a softer 24-second menu loop was made, and newly synthesised retro-computer,
+marble, noise, VHS and interface sounds were mixed in.
+
+The on-screen film credit is available in the cinematic overlay. The MUSIC and
+SFX stems and WAV masters are source material; the page serves only the MP3 mix
+and MP3 menu loop. Keep this credit alongside the published audio.

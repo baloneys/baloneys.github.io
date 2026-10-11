@@ -40,7 +40,7 @@
     M.button.classList.toggle('live', M.playing && M.wanted);
     M.button.classList.toggle('off', !M.wanted);
     M.button.setAttribute('aria-pressed', String(M.wanted));
-    M.button.querySelector('span:last-child').textContent = M.wanted ? 'Music on' : 'Music off';
+    M.button.querySelector('.tmm-label').textContent = M.wanted ? 'Music on' : 'Music off';
   }
   function begin(when, fade) {
     if (!M.wanted || !M.onMenu || (M.held && M.cueAt == null)) return;
@@ -135,12 +135,31 @@
       M.raf = requestAnimationFrame(frame);
     });
   }
+  // The same Music button as Tetris's (tetris-menu-music.js): pill, bottom left, three bouncing equaliser bars.
   function buildButton() {
+    var css = document.createElement('style');
+    css.textContent =
+      '.tmm-btn{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:10px;padding:10px 16px 10px 12px;' +
+      'border-radius:999px;border:1px solid rgba(190,120,255,.55);background:rgba(12,6,26,.78);color:#f7f2ff;cursor:pointer;' +
+      'font:700 13px/1 var(--font-family-heading,"JetBrains Mono",monospace);letter-spacing:.04em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);' +
+      'box-shadow:0 0 0 1px rgba(255,47,166,.15),0 10px 30px -12px rgba(157,0,255,.8);transition:background .2s ease,border-color .2s ease}' +
+      '.tmm-btn:hover,.tmm-btn:focus-visible{background:rgba(157,0,255,.4);border-color:#ff2fa6;outline:none}' +
+      '.tmm-btn[hidden]{display:none}' +
+      '.tmm-eq{display:flex;align-items:flex-end;gap:2px;height:14px}' +
+      '.tmm-eq i{display:block;width:3px;height:4px;border-radius:1px;background:#ff2fa6}' +
+      '.tmm-btn.live .tmm-eq i{animation:tmm-eq .9s ease-in-out infinite}' +
+      '.tmm-btn.live .tmm-eq i:nth-child(2){animation-delay:-.3s;background:#28e8ff}.tmm-btn.live .tmm-eq i:nth-child(3){animation-delay:-.6s}' +
+      '.tmm-btn.off .tmm-eq i{background:#6d5a8a;height:3px}' +
+      '.tmm-btn.off .tmm-label{color:#b9a6dd}' +
+      '@keyframes tmm-eq{0%,100%{height:4px}50%{height:14px}}' +
+      '@media (prefers-reduced-motion:reduce){.tmm-btn.live .tmm-eq i{animation:none;height:10px}}' +
+      'html.cine-open .tmm-btn,html.pong-cine-open .tmm-btn{display:none}';
+    document.head.appendChild(css);
     var button = document.createElement('button');
-    button.className = 'pong-music-btn'; button.type = 'button';
-    button.title = 'Menu music — Space Adventure by MintoDog (CC0)';
-    button.setAttribute('aria-label', 'Pong menu music');
-    button.innerHTML = '<span class="pong-music-eq" aria-hidden="true">▮▮▮</span><span></span>';
+    button.className = 'tmm-btn'; button.type = 'button';
+    button.title = 'Menu music: Space Adventure by MintoDog (CC0)';
+    button.setAttribute('aria-label', 'Menu music (Space Adventure by MintoDog, CC0)');
+    button.innerHTML = '<span class="tmm-eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="tmm-label"></span>';
     button.addEventListener('click', function () {
       M.wanted = !M.wanted;
       G.Store.set(KEY, M.wanted ? 'on' : 'off');

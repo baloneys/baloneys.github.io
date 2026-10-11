@@ -15,16 +15,31 @@
 
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
-  // The skull's symbol in a square, like Tetris's pixel skull icons.
+  // Pixel-art skull icons in the Tetris style: one strip, games-skulls.png, made by tools/game_skull_icons.py
+  // (same order as there). A skull missing from the sheet falls back to its symbol in a tinted square.
+  var SHEET = ['pong:tiny', 'pong:shrink', 'pong:hyper', 'pong:ghost', 'pong:invert', 'pong:curve', 'pong:wind', 'pong:chaos', 'pong:giant',
+    'battleships:fog', 'battleships:noextra', 'battleships:silent', 'battleships:clock', 'battleships:salvo', 'battleships:radar',
+    'chess:blindfold', 'chess:fog', 'chess:queenless', 'chess:rush', 'chess:ironman', 'chess:shuffle', 'chess:odds', 'chess:coach'];
+  var STORE_GAME = { pong_skulls: 'pong', bs_skulls: 'battleships', chess_skulls: 'chess' };
+
   function icon(s, size) {
-    var i = el('span', 'gsk-icon ' + (s.kind || 'harder'), s.sym || '☠');
-    if (size) { i.style.width = i.style.height = size + 'px'; i.style.fontSize = Math.round(size * 0.5) + 'px'; }
+    var i;
+    if (s.icon != null && s.icon >= 0) {
+      i = el('span', 'gsk-icon px ' + (s.kind || 'harder'));
+      i.style.backgroundPosition = (s.icon / (SHEET.length - 1) * 100) + '% 0';
+      if (size) i.style.width = i.style.height = size + 'px';
+    } else {
+      i = el('span', 'gsk-icon ' + (s.kind || 'harder'), s.sym || '☠');
+      if (size) { i.style.width = i.style.height = size + 'px'; i.style.fontSize = Math.round(size * 0.5) + 'px'; }
+    }
     i.setAttribute('aria-hidden', 'true');
     return i;
   }
 
   function mount(opts) {
     var list = opts.list, ids = list.map(function (s) { return s.id; });
+    var game = opts.game || STORE_GAME[opts.storeKey];
+    list.forEach(function (s) { if (s.icon == null) s.icon = SHEET.indexOf(game + ':' + s.id); });
     var on = (G.Store.get(opts.storeKey, []) || []).filter(function (id) { return ids.indexOf(id) !== -1; });
     var title = opts.title || 'Skulls · vs CPU';
     var selected = 0;
@@ -72,13 +87,13 @@
       label.textContent = title + (on.length ? ' · ' + on.length + ' on' : '');
       summary.textContent = '';
       if (!on.length) { summary.appendChild(el('span', 'type-note', 'No skulls · classic rules')); return; }
-      list.forEach(function (s) { if (on.indexOf(s.id) !== -1) { var i = icon(s, 30); i.title = s.name; summary.appendChild(i); } });
+      list.forEach(function (s) { if (on.indexOf(s.id) !== -1) { var i = icon(s, s.icon >= 0 ? 36 : 30); i.title = s.name; summary.appendChild(i); } });
     }
 
     function paintDetail() {
       var s = list[selected], isOn = on.indexOf(s.id) !== -1;
       detail.textContent = '';
-      detail.appendChild(icon(s, 96));
+      detail.appendChild(icon(s, 96));   // 4x the 24 px art
       detail.appendChild(el('div', 'cat ' + (s.kind || 'harder'), KIND_NAME[s.kind] || 'Harder'));
       detail.appendChild(el('h3', null, s.name));
       detail.appendChild(el('p', null, s.desc));

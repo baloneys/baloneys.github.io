@@ -25,7 +25,7 @@
 
   var state = null;
   var placing = null;
-  var keybinds = window.GameKeybinds.mount({ game: 'battleships', title: 'battleships',
+  var keybinds = window.GameKeybinds.mount({ game: 'battleships', title: 'battleships', music: true,
     groups: [
       { id: 'place', title: 'Place fleet', actions: [
         { id: 'up', label: 'Move cursor up', keys: ['arrowup'] }, { id: 'down', label: 'Move cursor down', keys: ['arrowdown'] },
@@ -179,7 +179,7 @@
      ================================================================= */
 
   var SCREENS = ['menuPanel', 'onlinePanel', 'lobbyPanel', 'placeView', 'battleView'];
-  function screen(id) { SCREENS.forEach(function (s) { $('#' + s).classList.toggle('hidden', s !== id); }); }
+  function screen(id) { SCREENS.forEach(function (s) { $('#' + s).classList.toggle('hidden', s !== id); }); if (window.BattleshipsMenuMusic) window.BattleshipsMenuMusic.screen(id); }
 
   function buildGrid(el, onCell) {
     el.textContent = '';
@@ -913,6 +913,35 @@
 
   // For games-social.js: join by code (invite links, the lobby finder, the bell) and read the current lobby.
   window.GameApp = window.BattleshipsApp = {
+    // Detached boards for the opening film. These use the same cells, fleet rules and
+    // paint functions as a match, without changing the player's active game.
+    cinematicKit: function () {
+      return {
+        fleet: FLEET.map(function (f) { return { id: f.id, name: f.name, size: f.size }; }),
+        makeBoard: function () {
+          var grid = document.createElement('div');
+          grid.className = 'bs-grid';
+          buildGrid(grid);
+          return grid;
+        },
+        fleetBoard: function (grid, ships, count) {
+          var visible = ships.slice(0, count);
+          paintOwn(grid, visible, null);
+        },
+        targetBoard: function (grid, marks, reveal) {
+          for (var r = 0; r < N; r++) for (var c = 0; c < N; c++) {
+            var cell = cellEl(grid, r, c), mark = marks[r + ',' + c];
+            cell.className = 'bs-cell target' + (mark ? ' ' + mark : '') + (reveal && reveal[r + ',' + c] ? ' reveal' : '');
+            cell.textContent = mark === 'hit' || mark === 'sunk' ? '×' : mark === 'miss' ? '•' : '';
+          }
+        },
+        profile: function () { return SOC && SOC.me && SOC.me() || G.Profile.get(); },
+        avatar: function (profile) { return G.Profile.avatar(profile, 64); },
+        achievementCount: function () { return ACH.count(); },
+        achievements: function () { return ACH.list ? ACH.list() : []; },
+        badge: function (id) { return ACH.badge ? ACH.badge(id, 44) : document.createElement('span'); }
+      };
+    },
     join: function (code) {
       code = G.cleanCode(code);
       if (code.length !== 5) return;

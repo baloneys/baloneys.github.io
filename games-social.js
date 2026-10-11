@@ -260,7 +260,8 @@
       },
       uid: function () { return uid; },
       linkCreate: function (data, label) { return sb.rpc('link_code_create', { data: data || {}, dev_label: label || null }).then(check); },
-      linkRedeem: function (code, label) { return sb.rpc('link_code_redeem', { link: code, dev_label: label || 'Device' }).then(check); },
+      linkRedeem: function (code, label, merge) { return sb.rpc('link_code_redeem', { link: code, dev_label: label || 'Device', merge: merge !== false }).then(check); },
+      ownAccount: function () { return sb.rpc('my_own_account').then(check); },
       devices: function () { return sb.rpc('my_devices').then(check); },
       unlinkDevice: function (dev) { return sb.rpc('device_unlink', { dev: dev }).then(check); },
       getProfile: function (id) { return sb.from('tetris_profiles').select('*').eq('id', id).maybeSingle().then(check); },
@@ -943,6 +944,7 @@
         actions.appendChild(btn('Edit profile', 'btn-primary', function () { edit(); }));
         actions.appendChild(btn('Copy profile link', null, function () { G.copyText(profileLink(p.id)); }));
         actions.appendChild(btn('Points shop · ' + fmt(S.me.points), null, function () { modal.close(); Shop.open(); }));
+        actions.appendChild(btn('Link a device', null, function () { modal.close(); Link.open(); }));
       } else {
         var st = friendState(p.id);
         if (st === 'accepted') {
@@ -2093,6 +2095,154 @@
   })();
 
   /* =================================================================
+     Linking devices (also in chat's Devices & sync settings)
+     One account on several devices. "Link another device" makes a one-time code (QR or link, 10 minutes) that the
+     other device opens; "I already have an account" takes a code made on the other device. If this device already
+     has its own profile, it can be merged in: XP and points add up, achievements, items, friends and runs move across
+     (supabase/migrations/2026-10-11-device-links.sql, link_code_redeem).
+     ================================================================= */
+
+  var Link = (function () {
+    var modal = Modal('socLink', 'Link a device');
+    var qrLib = null;
+    function loadQr() {
+      if (window.QRCode) return Promise.resolve();
+      if (!qrLib) qrLib = new Promise(function (res, rej) {
+        var s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+        s.onload = res; s.onerror = function () { qrLib = null; rej(new Error('Couldn\'t load the QR code maker.')); };
+        document.head.appendChild(s);
+      });
+      return qrLib;
+    }
+    function label() { return window.ChatGamesProfile && window.ChatGamesProfile.deviceLabel ? window.ChatGamesProfile.deviceLabel() : deviceKind(); }
+    function deviceKind() {
+      var ua = navigator.userAgent || '';
+      return /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'Windows PC' : /Macintosh/.test(ua) ? 'Mac' : 'Device';
+    }
+    // this device's settings, skins and bests travel with the code (big custom pictures stay behind)
+    function pack() {
+      var out = {}, size = 0;
+      Sync.keys().forEach(function (k) {
+        var v = localStorage.getItem(k);
+        if (v == null || v.length > 60000 || size + v.length > 180000) return;
+        out[k] = v; size += v.length;
+      });
+      return out;
+    }
+    function niceError(e, fallback) {
+      return /function|schema|does not exist/i.test((e && e.message) || '') ? 'Linking devices needs the device-links database update first.' : (e && e.message) || fallback;
+    }
+    function linkUrl(code) { return PROFILE_URL + '?link=' + code; }
+
+    function open(code) {
+      var body = modal.open();
+      if (!S.ready) { notReady(body); onReady(function () { if (modal.isOpen()) open(code); }); return; }
+      render(code);
+    }
+
+    function render(code) {
+      var body = modal.body();
+      body.textContent = '';
+      if (MOCK || !B.linkCreate) { body.appendChild(el('p', 'type-note', 'Linking devices needs the site\'s database.')); return; }
+
+      // 1. show a code for another device
+      var give = el('section', 'soc-link-card');
+      give.appendChild(el('h3', null, 'Add another device to this account'));
+      give.appendChild(el('p', 'type-note', 'Scan the QR code with your other device\'s camera, or send yourself the link. It joins this account: profile, friends, XP, achievements, and this device\'s settings and skins.'));
+      var out = el('div', 'soc-link-out');
+      var row = el('div', 'soc-actions');
+      row.appendChild(btn('Show QR code', 'btn-primary', function () { make(out, false); }));
+      row.appendChild(btn(navigator.share && /Mobi|Android|iPhone|iPad/.test(navigator.userAgent) ? 'Share a link to myself' : 'Copy a link to myself', null, function () { make(out, true); }));
+      give.appendChild(row);
+      give.appendChild(out);
+      body.appendChild(give);
+
+      // 2. join an account from a code made on another device
+      var take = el('form', 'soc-link-card');
+      take.appendChild(el('h3', null, 'Already have an account on another device?'));
+      take.appendChild(el('p', 'type-note', 'On that device open your profile, choose Link a device and copy the link or code. Then enter the code here.'));
+      var input = el('input', 'text-input soc-link-code');
+      input.placeholder = 'ABCD-EFGH'; input.maxLength = 9; input.autocomplete = 'off'; input.spellcheck = false;
+      if (code) input.value = code.slice(0, 4) + '-' + code.slice(4);
+      take.appendChild(input);
+      var mergeBox = el('label', 'soc-link-merge');
+      var merge = el('input'); merge.type = 'checkbox'; merge.checked = true;
+      mergeBox.appendChild(merge);
+      var mergeText = el('span', null, 'Merge this device\'s progress into that account');
+      mergeBox.appendChild(mergeText);
+      var mergeNote = el('p', 'type-note');
+      take.appendChild(mergeBox); take.appendChild(mergeNote);
+      var go = btn('Link this device', 'btn-primary'); go.type = 'submit';
+      var goRow = el('div', 'soc-actions'); goRow.appendChild(go);
+      take.appendChild(goRow);
+      body.appendChild(take);
+
+      // what a merge would bring (this device's own profile, if it has one)
+      var mine = S.me;
+      mergeNote.textContent = mine ? 'This device is ' + mine.name + ' (' + fmt(mine.xp) + ' XP, ' + fmt(mine.points) + ' points). Merging adds the XP and points, keeps every achievement and item, and moves friends and runs across. Unticked, ' + mine.name + ' stays behind on its own.' : '';
+      if (B.ownAccount) B.ownAccount().then(function (a) {
+        if (!a) { mergeBox.classList.add('hidden'); mergeNote.textContent = 'This device has no profile of its own, so there\'s nothing to merge.'; return; }
+        mergeNote.textContent = 'This device is ' + a.name + ' (' + fmt(a.xp) + ' XP, ' + fmt(a.points) + ' points, ' + a.achievements + ' achievements, ' + a.friends + ' friends). Merging adds the XP and points, keeps every achievement and item, and moves friends and runs across. Unticked, ' + a.name + ' stays behind on its own.';
+      }).catch(function () { /* not migrated yet: the note above stands */ });
+      merge.addEventListener('change', function () { go.textContent = merge.checked ? 'Merge and link' : 'Link this device'; });
+      go.textContent = 'Merge and link';
+
+      take.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var c = input.value.toUpperCase().replace(/[^A-Z2-9]/g, '');
+        var m = /link=([A-Za-z2-9]{8})|link\/([A-Za-z2-9]{8})/.exec(input.value);
+        if (m) c = (m[1] || m[2]).toUpperCase();
+        if (!/^[A-Z2-9]{8}$/.test(c)) { G.banner('Link codes are 8 letters and numbers'); return; }
+        redeem(c, merge.checked, go);
+      });
+    }
+
+    function make(out, asLink) {
+      out.textContent = '';
+      out.appendChild(el('p', 'type-note', 'Making a code…'));
+      B.linkCreate(pack(), label()).then(function (code) {
+        var url = linkUrl(code);
+        out.textContent = '';
+        if (asLink) {
+          if (navigator.share && /Mobi|Android|iPhone|iPad/.test(navigator.userAgent)) {
+            navigator.share({ title: 'Link my balcade account', text: 'Open this on your other device to link it (works once, for 10 minutes):', url: url }).catch(function () { G.copyText(url); });
+          } else G.copyText(url);
+        }
+        var qr = el('div', 'soc-link-qr');
+        if (!asLink) out.appendChild(qr);
+        out.appendChild(el('div', 'soc-link-big', code.slice(0, 4) + '-' + code.slice(4)));
+        var u = el('code', 'soc-link-url', url); out.appendChild(u);
+        var left = el('p', 'type-note'); out.appendChild(left);
+        var ends = Date.now() + 600000;
+        (function tick() {
+          var s = Math.max(0, Math.round((ends - Date.now()) / 1000));
+          left.textContent = s ? 'Works once, for ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + ' more.' : 'This code has expired. Make a new one.';
+          if (s && left.isConnected) setTimeout(tick, 1000);
+        })();
+        if (!asLink) loadQr().then(function () {
+          new window.QRCode(qr, { text: url, width: 200, height: 200, colorDark: '#12001f', colorLight: '#ffffff', correctLevel: window.QRCode.CorrectLevel.M });
+        }).catch(function (e) { qr.textContent = e.message + ' Use the link or code instead.'; });
+      }).catch(function (e) { out.textContent = ''; out.appendChild(el('p', 'type-note', niceError(e, 'Couldn\'t make a link code.'))); });
+    }
+
+    function redeem(code, merge, button) {
+      if (button) button.disabled = true;
+      B.linkRedeem(code, label(), merge).then(function (res) {
+        var data = (res && res.data) || {};
+        try { Object.keys(data).forEach(function (k) { if (k.indexOf('games_') === 0 && !Sync.SKIP[k] && typeof data[k] === 'string') localStorage.setItem(k, data[k]); }); } catch (e) { /* storage full */ }
+        G.banner(res && res.merged ? 'Merged and linked. Loading your account…' : 'Linked. Loading your account…');
+        setTimeout(function () { location.replace(location.pathname); }, 900);
+      }).catch(function (e) {
+        if (button) button.disabled = false;
+        G.banner(niceError(e, 'Couldn\'t link this device'));
+      });
+    }
+
+    return { open: open, close: modal.close };
+  })();
+
+  /* =================================================================
      Points shop
      ================================================================= */
 
@@ -2213,6 +2363,14 @@
   // ?profile=ID opens someone's profile (with Add friend). (?join=CODE invite links are handled by tetris.js,
   // so they work even with the social features off.)
   function handleUrl() {
+    // ?link=CODE: a link made with "Link a device" on another device
+    var link = (new URLSearchParams(location.search).get('link') || '').toUpperCase();
+    if (/^[A-Z2-9]{8}$/.test(link)) {
+      var rest0 = location.search.replace(/^\?/, '').split('&').filter(function (kv) { return kv && !/^link=/.test(kv); }).join('&');
+      history.replaceState(null, '', location.pathname + (rest0 ? '?' + rest0 : '') + location.hash);
+      Link.open(link);
+      return;
+    }
     var prof = (new URLSearchParams(location.search).get('profile') || '').toLowerCase();
     if (!uuidOk(prof)) return;
     // Remove only this parameter, leaving any others exactly as written (e.g. ?debug).
@@ -2380,7 +2538,9 @@
     device: {
       available: function () { return !!(B && B.linkCreate && !MOCK); },
       create: function (data, label) { return B.linkCreate(data, label); },
-      redeem: function (code, label) { return B.linkRedeem(code, label); },
+      redeem: function (code, label, merge) { return B.linkRedeem(code, label, merge); },
+      own: function () { return B.ownAccount ? B.ownAccount() : Promise.resolve(null); },
+      open: function (code) { Link.open(code); },
       list: function () { return B.devices(); },
       unlink: function (dev) { return B.unlinkDevice(dev); }
     },

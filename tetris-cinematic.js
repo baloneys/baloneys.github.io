@@ -428,7 +428,7 @@
       if (!gl) return;
       var cw = cv.clientWidth || 640, ch = cv.clientHeight || 360;
       // the warehouse (pattern 3) renders sharper, so the cabinet's detail holds up
-      var w = s.pat > 2.5 ? Math.min(1280, Math.round(cw / 1.5)) : Math.min(720, Math.round(cw / 3)), h = Math.round(w * ch / cw);
+      var w = Math.round(Math.max(Math.min(cw, 180), (s.pat > 2.5 ? Math.min(1280, cw / 1.5) : Math.min(720, cw / 3)) * [1, 0.7, 0.5][Q.level])), h = Math.round(w * ch / cw);   // (never below 180 across, or a portrait phone gets mush)
       if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
       gl.viewport(0, 0, w, h);
       gl.uniform2f(u.u_res, w, h);
@@ -663,6 +663,37 @@
 
   var BW = (K.COLS + K.SIDE * 2) * K.CELL, BH = K.ROWS * K.CELL, HEAD = 40;   // board canvas 504 x 560 + name bar
 
+
+  /* =================================================================
+     Frame-rate governor
+     Phones start one step down, and anything that can't hold about 40 fps for a second steps down again (never
+     back up mid-film, so it doesn't flicker between looks). Level 1: the background shader at a lower resolution,
+     no full-screen colour-split filter, no canvas glow blurs, lighter CSS filters (.cine-lite). Level 2: lower
+     again, fewer particles (.cine-low).
+     ================================================================= */
+
+  var Q = { level: 0, avg: 16.7, slow: 0, t: 0 };
+  function qualityStart() {
+    var phone = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || /Android|iPhone|iPad|Mobi/i.test(navigator.userAgent);
+    Q.level = phone ? 1 : 0; Q.avg = 16.7; Q.slow = 0; Q.t = 0;
+    qualityApply();
+  }
+  function qualityFrame(ms) {
+    if (Cine.hold != null || ms > 250) return;   // held frames, and tab switches, say nothing about speed
+    Q.t += ms;
+    if (Q.t < 800) return;                       // the first frames are always slow (compiling, decoding)
+    Q.avg += (ms - Q.avg) * 0.12;
+    Q.slow = Q.avg > 25 ? Q.slow + ms : 0;
+    if (Q.slow > 900 && Q.level < 2) { Q.level++; Q.slow = 0; Q.avg = 16.7; qualityApply(); }
+  }
+  function qualityApply() {
+    if (!Cine.root) return;
+    Cine.root.classList.toggle('cine-lite', Q.level >= 1);
+    Cine.root.classList.toggle('cine-low', Q.level >= 2);
+  }
+  function glow(b) { return Q.level ? 0 : b; }                                       // canvas shadowBlur
+  function qn(n) { return Q.level >= 2 ? Math.ceil(n * 0.5) : Q.level ? Math.ceil(n * 0.75) : n; }   // particle counts
+
   var Cine = {
     root: null, stage: null, view: null, world: null, bgCanvas: null, fx: null, fxCtx: null, logo: null,
     soundBtn: null, hint: null, skipBtn: null, toasts: null, vhsEl: null, caption: null,
@@ -794,7 +825,7 @@
 
   /* ---------- boards: real Players, played by real CPUs ---------- */
 
-  var BOT_NAMES = ['Blocky', 'Tess', 'Gridlock', 'Spin', 'Cobalt', 'Nova', 'Pixel', 'Stack', 'Drop', 'Lumen', 'Vex', 'Orbit'];
+  var BOT_NAMES = ['Blocky', 'Tess', 'Gridlock', 'Spin', 'Cobalt', 'Lunar', 'Pixel', 'Stack', 'Drop', 'Lumen', 'Vex', 'Orbit'];
   var botCount = 0;
 
   function makePlayer(o) {
@@ -930,6 +961,7 @@
 
   function burst(x, y, n, hues, speed) {
     hues = hues || [285, 320, 190];
+    n = qn(n);
     for (var i = 0; i < n; i++) {
       var a = Math.random() * Math.PI * 2, sp = (speed || 1) * (150 + Math.random() * 800);
       Cine.sparks.push({ x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.5 + Math.random() * 0.9, age: 0, hue: hues[i % hues.length], size: 2 + Math.random() * 4 });
@@ -973,7 +1005,7 @@
         });
         ctx.strokeStyle = pass === 2 ? 'rgba(255,255,255,0.95)' : pass === 1 ? 'rgba(40,232,255,0.8)' : 'rgba(255,47,166,0.55)';
         ctx.lineWidth = (pass === 2 ? 2 : pass === 1 ? 6 : 16) * scale;
-        ctx.shadowColor = '#ff2fa6'; ctx.shadowBlur = 20;
+        ctx.shadowColor = '#ff2fa6'; ctx.shadowBlur = glow(20);
         ctx.stroke();
       }
       var R = 60 * Math.min(4, head.s + 0.4);
@@ -1263,7 +1295,7 @@
 
     S.multiplayer = { pat: 0, build: function (g) {
       var spots = [[-900, -60, -400, 22], [1400, 220, -2900, -24], [-1700, -380, -4600, 16], [2300, -300, -1500, -38]];
-      var names = [me.name, 'Blocky', 'Nova', 'Gridlock'];
+      var names = [me.name, 'Blocky', 'Lunar', 'Gridlock'];
       S.mp = spots.map(function (s, i) {
         var pal = K.randomPalette();
         var p = makePlayer({ name: names[i], palette: pal, versus: true, warm: 6 + i * 2, stack: 5 + i, speed: 1.6 });
@@ -1355,12 +1387,12 @@
 
       var chat = panel('cine-chat', 'CHAT · #tetris');
       S.chatList = el('div', 'cine-chat-list', chat);
-      S.chatMsgs = [['Nova', 'that T-spin was illegal'], ['Blocky', 'gg'], [me.name, 'rematch??'], ['Gridlock', 'who just hit 50x'], ['Tess', 'invite me next round'], [me.name, 'lobby up, join me']];
+      S.chatMsgs = [['Lunar', 'that T-spin was illegal'], ['Blocky', 'gg'], [me.name, 'rematch??'], ['Gridlock', 'who just hit 50x'], ['Tess', 'invite me next round'], [me.name, 'lobby up, join me']];
       S.chatPanel = plane(g, chat, 900, 760, { x: -900, y: 0, z: -4800, ry: 18, cull: false });
 
       var fr = panel('cine-friends', 'FRIENDS');
       el('div', 'cine-panel-sub', fr).textContent = '6 online · 2 in a match';
-      S.friendRows = ['Nova', 'Blocky', 'Tess', 'Gridlock', 'Cobalt', 'Lumen'].map(function (n, i) {
+      S.friendRows = ['Lunar', 'Blocky', 'Tess', 'Gridlock', 'Cobalt', 'Lumen'].map(function (n, i) {
         var r = el('div', 'cine-friend', fr);
         r.appendChild(avatarArt(i + 3, 56));
         el('span', 'cine-friend-name', r).textContent = n;
@@ -1373,7 +1405,7 @@
       var ir = el('div', 'cine-prof-row', inv);
       ir.appendChild(avatarArt(3, 110));
       var iw = el('div', '', ir);
-      el('div', 'cine-prof-name', iw).textContent = 'Nova';
+      el('div', 'cine-prof-name', iw).textContent = 'Lunar';
       el('div', 'cine-prof-lvl', iw).textContent = 'invited you to Versus · Elimination';
       var btns = el('div', 'cine-invite-btns', inv);
       el('span', 'cine-accept', btns).textContent = 'Accept';
@@ -1744,6 +1776,7 @@
 
   function frame(now) {
     if (!Cine.running) return;
+    qualityFrame(now - Cine.lastNow);
     var dt = Math.min(0.05, Math.max(0, (now - Cine.lastNow) / 1000));
     Cine.lastNow = now;
     var audioT = Cine.hold == null ? Audio.clock() : null;
@@ -1789,7 +1822,7 @@
     // (the last shot settles: no split while the live menu fades in, which also keeps that hand-over smooth)
     // (two full-screen drop-shadows are costly, so the split is only on during hits and fast moves, never idling)
     var ab = Math.min(1.4, Cine.aberration), off = (ab * 5).toFixed(1);
-    Cine.stage.style.filter = Cine.ending || ab < 0.08 ? '' : 'drop-shadow(' + off + 'px 0 0 rgba(255,0,110,0.5)) drop-shadow(-' + off + 'px 0 0 rgba(0,220,255,0.45))';
+    Cine.stage.style.filter = Cine.ending || ab < 0.08 || Q.level ? '' : 'drop-shadow(' + off + 'px 0 0 rgba(255,0,110,0.5)) drop-shadow(-' + off + 'px 0 0 rgba(0,220,255,0.45))';
     Cine.stage.style.transform = Cine.tear > 0.5 && Math.random() < 0.35 ? 'translateX(' + ((Math.random() - 0.5) * 30 * Cine.tear).toFixed(1) + 'px) skewX(' + ((Math.random() - 0.5) * 3 * Cine.tear).toFixed(2) + 'deg)' : '';
     Cine.raf = requestAnimationFrame(frame);
   }
@@ -1810,6 +1843,7 @@
     botCount = 0;
     window.scrollTo(0, 0);
     buildStage();
+    qualityStart();
     Cine.groups = {};
     Cine.shots = makeShots();
     Cine.shot = -1;

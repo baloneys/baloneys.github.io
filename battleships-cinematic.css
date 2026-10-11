@@ -1,0 +1,52 @@
+/* battleships-cinematic.css: the Battleships opening's own pieces. The shared look (stage, VHS, buttons, logo,
+   captions, panels) comes from tetris-cinematic.css, as on the Pong page. */
+
+/* a grid as a plane in the world: sized exactly (586 x 650) so battleships-cinematic.js knows where each cell is */
+.bsx-board { box-sizing: border-box; width: 586px; height: 650px; padding: 18px; border: 2px solid rgba(48, 226, 255, 0.8); border-radius: 16px;
+  background: rgba(5, 5, 19, 0.94); box-shadow: 0 0 0 2px rgba(200, 42, 255, 0.18), 0 0 40px rgba(40, 232, 255, 0.3), 0 0 110px rgba(186, 37, 255, 0.25);
+  color: #f8edff; font-family: "JetBrains Mono", monospace; backface-visibility: hidden; }
+.bsx-board.enemy { border-color: rgba(255, 59, 187, 0.85); box-shadow: 0 0 0 2px rgba(255, 59, 187, 0.2), 0 0 40px rgba(255, 59, 187, 0.32), 0 0 110px rgba(186, 37, 255, 0.25); }
+.bsx-board-head { display: flex; justify-content: space-between; height: 34px; margin-bottom: 10px; color: #81eaff; font: 800 17px/34px "JetBrains Mono", monospace; letter-spacing: 0.14em; }
+.bsx-board-head em { font-style: normal; color: #f550dc; }
+.bsx-board .bs-grid { box-sizing: content-box; width: 530px; padding: 10px; gap: 4px; grid-template-columns: 30px repeat(10, 46px); grid-template-rows: 24px repeat(10, 46px);
+  border: 0; border-radius: 6px; background: rgba(4, 7, 20, 0.95); box-shadow: inset 0 0 24px #0f1837; }
+.bsx-board .bs-label { color: #82cce0; font-size: 13px; }
+.bsx-board .bs-cell { width: 46px; height: 46px; aspect-ratio: auto; background: #101025; border-color: rgba(40, 212, 255, 0.26); color: #fff; border-radius: 3px; font-size: 22px; transition: none; }
+.bsx-board .bs-cell.ship { background: #1d1440; border-color: rgba(181, 107, 255, 0.55); }   /* the ship sprites (.bsx-topship) lie over these */
+.bsx-board .bs-cell.miss { background: #10182b; color: #55dafa; }
+.bsx-board .bs-cell.hit { background: #eb1d78; border-color: #ff92c3; box-shadow: 0 0 14px #e31ca1; }
+.bsx-board .bs-cell.sunk { background: #a40067; }
+.bsx-board .bs-cell.locked { outline: 4px solid #ff3bbb; outline-offset: -3px; box-shadow: 0 0 22px #ff238e; }
+.bsx-board-foot { display: block; margin-top: 10px; color: #ab8acb; font-size: 12px; letter-spacing: 0.16em; }
+.bsx-board-flash { position: absolute; inset: 0; border-radius: 16px; background: radial-gradient(circle, rgba(255, 255, 255, 0.5), rgba(255, 47, 166, 0.25) 60%, transparent); opacity: 0; pointer-events: none; }
+
+/* the radar scope and the warship are pixel art drawn on canvases */
+.bsx-radar, .bsx-ship { image-rendering: pixelated; }
+.bsx-radar { border-radius: 50%; box-shadow: 0 0 80px rgba(76, 245, 197, 0.25); }
+
+/* the classified dossier */
+.bsx-file { box-sizing: border-box; padding: 40px 44px; border: 3px solid #40dccf; background: rgba(1, 12, 19, 0.92); box-shadow: 0 0 60px rgba(28, 218, 231, 0.3);
+  color: #9af9ef; font: 700 28px/1.75 "JetBrains Mono", monospace; letter-spacing: 0.1em; }
+.bsx-file b { display: block; margin-bottom: 8px; color: #ff459f; font-size: 50px; letter-spacing: 0.25em; }
+.bsx-file .line { display: block; border-bottom: 1px solid rgba(77, 246, 228, 0.3); }
+.bsx-file .stamp { position: absolute; right: 6%; bottom: 14%; padding: 4px 22px; border: 7px solid #f43c7e; color: #f43c7e; font-size: 54px;
+  transform: rotate(-10deg); text-shadow: 0 0 18px #f43c7e; opacity: 0; }
+.bsx-file .stamp.slam { animation: bsx-slam 0.32s cubic-bezier(.2, 1.4, .4, 1) both; }
+@keyframes bsx-slam { 0% { opacity: 0; transform: rotate(-24deg) scale(3); } 100% { opacity: 1; transform: rotate(-10deg) scale(1); } }
+
+/* the naval HUD, top left, in the dossier's voice */
+.bsx-hud { position: absolute; z-index: 3; top: max(7vh, 52px); left: 4vw; display: grid; gap: 4px; pointer-events: none; transition: opacity 0.3s ease;
+  color: #8eeeff; font: 700 clamp(11px, 1vw, 15px)/1.3 "JetBrains Mono", monospace; letter-spacing: 0.12em; text-shadow: 0 0 12px rgba(36, 225, 255, 0.6); }
+.bsx-hud small { color: #977fb8; font-size: 0.75em; }
+
+/* the phone look (the frame-rate governor's cine-lite): outlines instead of big glows on moving planes */
+.cine-lite .bsx-board, .cine-lite .bsx-board.enemy { box-shadow: 0 0 0 2px rgba(200, 42, 255, 0.3); }
+.cine-lite .bsx-board .bs-cell.hit, .cine-lite .bsx-board .bs-cell.locked { box-shadow: none; }
+.cine-lite .bsx-file, .cine-lite .bsx-radar { box-shadow: none; }
+html.cine-open .gkb-launch { display: none; }
+
+/* your fleet, top-down pixel ships laid over their cells; each drops in as it deploys */
+.bsx-topship { position: absolute; image-rendering: pixelated; opacity: 0; transform: scale(1.35); pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(.2, 1.4, .4, 1); filter: drop-shadow(0 0 6px rgba(255, 79, 200, 0.55)); }
+.bsx-topship.on { opacity: 1; transform: none; }
+.cine-lite .bsx-topship { filter: none; }

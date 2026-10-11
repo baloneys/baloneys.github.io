@@ -1,0 +1,12 @@
+Music: Daydreaming by | e s c p | (FSM Team)
+https://www.escp.space
+https://escp-music.bandcamp.com
+Source: https://www.free-stock-music.com/fsm-team-escp-daydreaming.html
+Licence: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+Changes: rearranged and edited for the 60-second Balcade Chess cinematic; filtered and looped for the menu; mixed with newly synthesized retro computer, marble, noise, VHS and UI sound effects.
+
+Chess cinematic sky planets and clouds: shading adapted from PixelPlanets by Deep-Fold (GasLayers, Ring, NoAtmosphere, Craters, Clouds;
+its circle noise is by Leukbaars, shadertoy.com/view/4tK3zR)
+https://github.com/Deep-Fold/PixelPlanets
+Licence: MIT (Copyright (c) 2020 Deep-Fold); the full notice is in chess-cinematic.js beside the planet shaders.

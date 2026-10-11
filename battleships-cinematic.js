@@ -1,71 +1,70 @@
-// pong-cinematic.js: the Pong opening cinematic (60 seconds), rendered live in the page.
+// battleships-cinematic.js: the Battleships opening cinematic (60 seconds), rendered live in the page.
 //
-// After Sean's Pong direction: the same dark warehouse and painted cabinet as the Tetris opening, then a ball that
-// leads the camera through real Pong courts: low across a court lying flat, a rally that speeds up with a new angle
-// on every hit, the point (a close-up of the ball going out, then a cut to the board and POINT SCORED), a pull back
-// through the score, an arena of courts with balls flying from one to the next and landing explosively, match point
-// in slow motion and an elimination, the results, achievements, profile, chat, friends and invite, the real mode
-// and skull panels, a frantic final rally cut on every beat, then everything breaks apart into the live menu.
+// The naval-command film (first cut by ChatGPT: radar, classified dossier, missiles, a sinking warship), rebuilt on
+// the Tetris and Pong openings' engine so it moves and looks like them: one CSS-3D camera flying through a night
+// ocean (a ray-cast background shader), the real game's grids as planes in that space, the same VHS layer, buttons,
+// pixel logo and hand-over to the live menu.
 //
-// It runs on the Tetris opening's engine (tetris-cinematic.js): the same CSS-3D camera rig, ray-cast background
-// shader (warehouse, hex world), VHS layer, panels and menu hand-over, copied here so each page stays
-// self-contained. What is Pong's own: the courts are Pong's renderer and ball physics (PongApp.cinematicKit), with
-// the court's ball hidden and redrawn on top as the site's ball icon with a Terraria-style pixel flame trail.
+// The shots (times from the track's cue points, Balcade_Battleships_60s_Cinematic_Master.mp3):
+//   0  radar: the camera dives from high above onto a radar scope lying on the dark water; contacts appear
+//   7  a classified dossier floats over the sea; CLASSIFIED stamps down; the logo flickers on as the world goes dark
+//  12  the drop: the camera rushes down onto your fleet grid and glides across it as the ships deploy
+//  19  it rises and turns to the enemy grid across the water; the search locks on
+//  25  a missile streaks in and misses (a column of water); 29 the next one is a direct hit (fire)
+//  34  a flyby through the enemy sectors, missiles overtaking the camera to their targets
+//  40  the enemy warship on the open sea: three hits, and it sinks
+//  46  achievements, profile, chat and friends; then the real mode menu and skulls page
+//  52  the final salvo between two fleets, the camera circling the duel; FLEET DESTROYED; the boards shatter
+//  58  the logo flies into the page title and the live menu takes over (the menu loop is cued on the same clock)
 //
-// Music: Balcade_Pong_60s_Master.mp3 (Space Adventure by MintoDog, CC0, with Sean's synthesised effects; drop at
-// 12.0 s, 140 BPM). At its end the menu loop (pong-menu-music.js) is cued on the same audio clock, so it's gapless.
-//
-// Playback: once per browser (games_pong_cinematic_seen), then from the menu's "Watch cinematic" button. Skip
-// button, Esc or Enter skip it. Testing aids: ?cinematic=SECONDS plays from there; &hold=SECONDS freezes the clock.
-//
-// API (window.PongCinematic): play(fromSeconds), skip(), playing(), CUES
+// Music: "Shadow" by William Hector (CC BY 4.0), edited, with original synthesised radar, radio, missile and
+// explosion effects (Balcade_Battleships_Audio_Credits.txt). Playback: once per browser
+// (games_bs_cinematic_seen), then from the menu's "Watch cinematic" button. Testing aids: ?cinematic=SECONDS plays
+// from there; &hold=SECONDS freezes the clock; BattleshipsCinematic.step(t) runs frames by hand to time t.
 (function () {
   'use strict';
 
   var G = window.Games;
-  var App = window.PongApp;
+  var App = window.BattleshipsApp;
   if (!G || !App || !App.cinematicKit) return;
-  var K = App.cinematicKit();
-  var ACH = window.PongAchievements;
-  var STORE_SEEN = 'pong_cinematic_seen';
+  var KIT = App.cinematicKit();
+  var ACH = window.BattleshipsAchievements;
+  var STORE_SEEN = 'bs_cinematic_seen';
   var D2R = Math.PI / 180;
 
   /* =================================================================
      Cue sheet
      ================================================================= */
 
-  // Timed to Balcade_Pong_Cue_Sheet: the track already carries the effects, so the synthesised ones stay off.
   var CUES = {
-    track: 'Balcade_Pong_60s_Master.mp3',
-    credit: 'Music: "Space Adventure" by MintoDog (CC0), edited',
+    track: 'Balcade_Battleships_60s_Cinematic_Master.mp3',
+    credit: 'Music: "Shadow" by William Hector (CC BY 4.0), edited',
     trackHasSfx: true,
-    bpm: 140,
-    offset: 12.0,        // cinematic seconds of beat 0 (the drop)
+    bpm: 120,
+    offset: 12.0,        // the drop
     end: 60,
-    volume: 0.9,
+    volume: 0.85,
     sfx: 0.5,
     segments: [{ t0: 0, t1: 60, at: 0 }],
     duck: [],
-    spark: [1000, 1001], // (Pong has its own pixel-ball moment instead of the Tetris spark)
+    spark: [1000, 1001],
     shots: [
-      { id: 'cabinet', at: 0, nominal: 4 },
-      { id: 'logo', at: 4.0, group: 'cabinet' },
-      { id: 'subtitle', at: 7.0, group: 'cabinet' },
-      { id: 'pixel', at: 9.6, group: 'cabinet' },
-      { id: 'serve', at: 12.0 },
-      { id: 'rally', at: 18.0, group: 'serve' },
-      { id: 'score', at: 24.45, group: 'serve' },
-      { id: 'arena', at: 31.0, group: 'serve' },
-      { id: 'matchpoint', at: 37.0, group: 'serve' },
-      { id: 'results', at: 41.0, nominal: 3.0 },
-      { id: 'achievements', at: 42.8, group: 'results', nominal: 1.6 },
-      { id: 'profile', at: 44.4, group: 'results', nominal: 1.372 },
-      { id: 'chat', at: 45.8, group: 'results', nominal: 2.743 },
-      { id: 'friends', at: 47.4, group: 'results', nominal: 2.743 },
-      { id: 'modes', at: 49.0, nominal: 2.0 },
-      { id: 'skulls', at: 51.0, group: 'modes', nominal: 2.0 },
-      { id: 'final', at: 53.0 },
-      { id: 'menu', at: 57.0, group: 'final' }
+      { id: 'radar', at: 0 },
+      { id: 'dossier', at: 7.0, group: 'radar' },
+      { id: 'deploy', at: 12.0 },
+      { id: 'acquire', at: 19.0, group: 'deploy' },
+      { id: 'miss', at: 25.0, group: 'deploy' },
+      { id: 'hit', at: 29.0, group: 'deploy' },
+      { id: 'hunt', at: 34.0 },
+      { id: 'sunk', at: 40.0 },
+      { id: 'achievements', at: 46.0, nominal: 1.6 },
+      { id: 'profile', at: 47.2, group: 'achievements', nominal: 1.372 },
+      { id: 'chat', at: 48.2, group: 'achievements', nominal: 2.743 },
+      { id: 'friends', at: 49.2, group: 'achievements', nominal: 2.743 },
+      { id: 'modes', at: 50.2, nominal: 2.0 },
+      { id: 'skulls', at: 51.1, group: 'modes', nominal: 2.0 },
+      { id: 'final', at: 52.0 },
+      { id: 'menu', at: 58.0, group: 'final' }
     ]
   };
 
@@ -156,6 +155,25 @@
     '  float lx=floor(az*90.0); c+=vec3(1.0,0.5,0.9)*step(0.85,h1(lx))*smoothstep(0.004,0.0,abs(el-0.012-0.01*h1(lx+3.0)))*(0.6+0.4*sin(u_time*4.0+lx));',
     '  c+=vec3(0.6,0.05,0.5)*exp(-abs(el)*30.0)*0.6;',
     '  return c; }',
+    // The night ocean (pattern 4): the sea is the plane y = 0 (the camera's y is negative above it), rolling swells,
+    // white crests, a faint naval grid on the water, a magenta glow low on the horizon and its streak on the water.
+    "vec3 ocean(vec3 dir){",
+    "  float az=atan(dir.x,-dir.z), el=asin(clamp(-dir.y,-1.0,1.0));",
+    "  if (dir.y>0.0005){",
+    "    float t=(0.0-u_cpos.y)/dir.y; vec3 p=u_cpos+dir*t; float fade=exp(-t/14000.0);",
+    "    float w1=sin(p.x*0.0035+p.z*0.006+u_time*1.1)+0.6*sin(-p.x*0.007+p.z*0.0028+u_time*0.8);",
+    "    float crest=smoothstep(0.8,1.0,0.5+0.5*sin(p.z*0.018+w1*2.2+u_time*1.5));",
+    "    vec2 g=abs(fract(p.xz/500.0)-0.5); float gl=smoothstep(0.485,0.5,max(g.x,g.y));",
+    "    vec3 c=vec3(0.008,0.004,0.03)+vec3(0.1,0.02,0.24)*(0.45+0.55*w1)*0.6*fade;",
+    "    c+=vec3(0.2,0.75,1.0)*crest*fade*0.12;",
+    "    c+=vec3(0.45,0.08,0.95)*gl*fade*(0.22+u_level*0.35);",
+    "    c+=vec3(1.0,0.25,0.7)*exp(-abs(az-0.5)*5.0)*smoothstep(0.35,0.0,-el)*(0.25+0.35*crest);",
+    "    c+=vec3(0.45,0.05,0.5)*smoothstep(0.1,0.0,-el)*0.55;",
+    "    return c; }",
+    "  vec3 c=world(dir)*0.38;",
+    "  c+=vec3(1.0,0.3,0.8)*exp(-length(vec2(az-0.5,(el-0.08)*2.0))*5.0)*0.55;",
+    "  c+=vec3(0.6,0.05,0.5)*exp(-abs(el)*22.0)*0.75;",
+    "  return c; }",
     // ---- Scene 1: the arcade cabinet, painted flat in a dark warehouse ----
     // A head-on camera at eye height u_eye, u_dist from the cabinet's front. Each layer is a flat card at its own
     // depth (world = s * 2 tan(fov/2) * depth), so the dolly gets real parallax from flat cards alone.
@@ -361,7 +379,7 @@
     '  if (u_pat<0.5) c=world(dir);',
     '  else if (u_pat<1.5) c=road(dir);',
     '  else if (u_pat<2.5) c=vec3(0.0);',
-    '  else c=warehouse(vec2(css.x-0.5*u_css.x, 0.5*u_css.y-css.y)/u_css.y);',
+    '  else if (u_pat<3.5) c=warehouse(vec2(css.x-0.5*u_css.x, 0.5*u_css.y-css.y)/u_css.y);\n  else c=ocean(dir);',
     '  if (u_speed>0.01){ vec2 s=sp/u_css.y; float ang=atan(s.y,s.x); float rr=length(s); float id=floor(ang*70.0); float hh=h1(id);',
     '    float st=step(0.82,hh)*smoothstep(0.0,0.5,fract(rr*1.5-u_time*(3.0+hh*4.0)+hh))*smoothstep(0.08,0.5,rr);',
     '    c+=mix(vec3(0.6,0.2,1.0),vec3(1.0,0.4,0.8),hh)*st*u_speed*0.8; }',
@@ -407,7 +425,7 @@
       if (!gl) return;
       var cw = cv.clientWidth || 640, ch = cv.clientHeight || 360;
       // the warehouse (pattern 3) renders sharper, so the cabinet's detail holds up
-      var w = Math.round(Math.max(Math.min(cw, 180), (s.pat > 2.5 ? Math.min(1280, cw / 1.5) : Math.min(720, cw / 3)) * [1, 0.7, 0.5][Q.level])), h = Math.round(w * ch / cw);   // (never below 180 across, or a portrait phone gets mush)
+      var w = Math.round(Math.max(Math.min(cw, 180), (s.pat > 2.5 && s.pat < 3.5 ? Math.min(1280, cw / 1.5) : Math.min(720, cw / 3)) * [1, 0.7, 0.5][Q.level])), h = Math.round(w * ch / cw);   // (never below 180 across, or a portrait phone gets mush)
       if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
       gl.viewport(0, 0, w, h);
       gl.uniform2f(u.u_res, w, h);
@@ -441,7 +459,7 @@
       var AC = window.AudioContext || window.webkitAudioContext;
       if (!AC || this.ctx) return;
       // Share the menu music's AudioContext, so the menu loop can be cued on the same clock for a gapless hand-over.
-      var shared = window.PongMenuMusic && window.PongMenuMusic.context();
+      var shared = window.BattleshipsMenuMusic && window.BattleshipsMenuMusic.context();
       this.shared = !!shared;
       try { this.ctx = shared || new AC(); } catch (e) { return; }
       var ctx = this.ctx, self = this;
@@ -506,7 +524,7 @@
         mg.setValueAtTime(CUES.volume * duckAt(t), now);
         CUES.duck.forEach(function (d) { if (d[0] > t) mg.linearRampToValueAtTime(CUES.volume * d[1], now + d[0] - t); });
         // the menu loop picks up exactly where the cinematic's track ends
-        if (window.PongMenuMusic && t < CUES.end) window.PongMenuMusic.cue(now + (CUES.end - t));
+        if (window.BattleshipsMenuMusic && t < CUES.end) window.BattleshipsMenuMusic.cue(now + (CUES.end - t));
       }
       return ctx.state === 'running';
     },
@@ -518,7 +536,7 @@
 
     stop: function (fade, keepCue) {
       this.on = false;
-      if (!keepCue && window.PongMenuMusic) window.PongMenuMusic.cancelCue();
+      if (!keepCue && window.BattleshipsMenuMusic) window.BattleshipsMenuMusic.cancelCue();
       if (!this.ctx) return;
       var g = this.master.gain, now = this.ctx.currentTime, self = this;
       g.cancelScheduledValues(now); g.setValueAtTime(g.value, now); g.linearRampToValueAtTime(0, now + (fade || 0.25));
@@ -680,7 +698,7 @@
     cam: { x: 0, y: 0, z: 1000, yaw: 0, pitch: 0, roll: 0, fov: 50 },
     env: 1, speed: 0, variant: 0, streaks: 0, dist: 15, eye: 1.2, crt: 0, shake: 0, flash: 0, aberration: 0, tear: 0, level: 0, beat: 0,
     sparks: [], bolts: [], frags: [], flames: [], rings: [], transits: [], glass: [], ballQ: [], sprites: [], spriteLayer: null, crack: null,
-    timeScale: 1, fovKick: 0, look: { x: 0, y: 0, z: -1 },
+    timeScale: 1, fovKick: 0, look: { x: 0, y: 0, z: -1 }, missiles: [], splashes: [], fires: [], hud: null,
     soundWanted: true, beepWas: null, ending: false,
 
     needSound: function () { if (this.hint) this.hint.classList.remove('hidden'); }
@@ -690,7 +708,7 @@
     var root = el('div', 'cine');
     root.setAttribute('role', 'dialog');
     root.setAttribute('aria-modal', 'true');
-    root.setAttribute('aria-label', 'Pong opening cinematic');
+    root.setAttribute('aria-label', 'Battleships opening cinematic');
     var stage = el('div', 'cine-stage', root);
     Cine.bgCanvas = el('canvas', 'cine-bg', stage);
     Cine.view = el('div', 'cine-view', stage);
@@ -706,12 +724,13 @@
     var lc = el('canvas', 'cine-logo-art', logo);
     var sub = el('div', 'cine-logo-sub', logo);
     var tag = document.querySelector('.game-head .game-tagline');
-    sub.textContent = tag ? tag.textContent.trim() : 'first to the target wins';
+    sub.textContent = tag ? tag.textContent.trim() : 'sink the enemy fleet';
     paintLogo(lc);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { paintLogo(lc); });
     Cine.logo = { box: logo, art: lc, sub: sub };
     Cine.caption = el('div', 'cine-caption', root);
     Cine.vhsEl = el('div', 'cine-vhs', root);
+    Cine.hud = el('div', 'bsx-hud', root); el('b', '', Cine.hud); el('small', '', Cine.hud);   // the naval HUD (hud())
     if (CUES.credit) el('div', 'cine-credit', root).textContent = CUES.credit;   // the track's CC BY attribution
     var ui = el('div', 'cine-ui', root);
     Cine.hint = el('button', 'cine-btn cine-hint hidden', ui);
@@ -734,14 +753,14 @@
   }
 
   function paintLogo(cv) {
-    var w = 132, h = 40;
+    var w = 250, h = 40;
     cv.width = w; cv.height = h;
     var x = cv.getContext('2d');
     x.clearRect(0, 0, w, h);
     x.font = '800 34px "JetBrains Mono", ui-monospace, monospace';
     x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.fillStyle = '#28e8ff'; x.fillText('pong', w / 2 - 2, h / 2 + 1);
-    x.fillStyle = '#ff2fa6'; x.fillText('pong', w / 2 + 1, h / 2);
+    x.fillStyle = '#28e8ff'; x.fillText('battleships', w / 2 - 2, h / 2 + 1);
+    x.fillStyle = '#ff2fa6'; x.fillText('battleships', w / 2 + 1, h / 2);
     // hard alpha so the edges stay pixelated when it is scaled up
     var img = x.getImageData(0, 0, w, h), d = img.data;
     for (var i = 3; i < d.length; i += 4) d[i] = d[i] > 110 ? 255 : 0;
@@ -786,49 +805,7 @@
     return it;
   }
 
-  /* ---------- courts: Pong's own renderer and ball physics (PongApp.cinematicKit) ---------- */
-
-  var CW = K.width, CH = K.height, HEAD = 40, BALL_R = 8;
-  var NAMES = ['Blocky', 'Tess', 'Gridlock', 'Spin', 'Cobalt', 'Lunar', 'Pixel', 'Stack', 'Drop', 'Lumen', 'Vex', 'Orbit'];
-  var courtCount = 0;
-
-  // A court: a real Pong match from the kit. Its own ball is hidden (the cinematic draws the ball, with its flame
-  // trail, over the court in screen space) but the kit's physics, paddles and scores all keep running.
-  function makeCourt(o) {
-    o = o || {};
-    var c = K.make(o.seed != null ? o.seed : courtCount * 7 + 3);
-    c.hideBall = true;
-    c.speed = o.speed || 1.3;
-    c.names = o.names || [NAMES[courtCount % NAMES.length], NAMES[(courtCount + 5) % NAMES.length]];
-    c.lastDx = c.state.ball.dx;
-    c.lastScore = c.state.score.slice();
-    courtCount++;
-    return c;
-  }
-
-  function courtPlane(g, court, o) {
-    o = o || {};
-    var node = el('div', 'cine-board pong-court' + (o.hero ? ' hero' : ''));
-    if (o.color) node.style.setProperty('--board-color', o.color);
-    var head = el('div', 'cine-board-head pong-court-head', node);
-    el('span', 'cine-board-name', head).textContent = court.names[0];
-    var sc = el('span', 'pong-court-score', head);
-    el('span', 'cine-board-name', head).textContent = court.names[1];
-    var face = el('div', 'cine-board-face pong-court-face', node);
-    face.style.width = CW + 'px'; face.style.height = CH + 'px';
-    court.canvas.className = 'cine-canvas';
-    court.canvas.style.width = CW + 'px'; court.canvas.style.height = CH + 'px';
-    face.appendChild(court.canvas);
-    el('div', 'cine-gloss', face);
-    var flash = el('div', 'pong-court-flash', face);
-    var banner = el('div', 'pong-court-banner', face);
-    var fog = el('div', 'cine-fog', node);
-    var it = plane(g, node, CW, CH + HEAD, o);
-    it.court = court; it.face = face; it.fog = fog; it.scoreEl = sc; it.flashEl = flash; it.banner = banner;
-    it.canvas = court.canvas; it.head = HEAD; it.flashAt = -9;
-    g.courts.push(it);
-    return it;
-  }
+  /* ---------- placing things on planes ---------- */
 
   // Plane-local pixels (from the plane's top-left, the name bar included) to world space, with the same
   // transform order the CSS uses: translate, rotateY, rotateX, rotateZ, scale, centre.
@@ -839,115 +816,7 @@
     a = it.ry * D2R; c = Math.cos(a); s = Math.sin(a); t = x * c + z * s; z = -x * s + z * c; x = t;
     return { x: it.x + x, y: it.y + y, z: it.z + z };
   }
-  function ballWorld(it) { var b = it.court.state.ball; return toWorld(it, b.x, it.head + b.y); }
-  function paddleWorld(it, side) {
-    var p = side ? it.court.state.p2 : it.court.state.p1;
-    return toWorld(it, side ? CW - 31 : 31, it.head + p.y + p.h / 2);
-  }
-
-  // Run every court in the shot (they keep playing even off camera) and react to hits and points.
-  function simCourts(g, dt) {
-    g.courts.forEach(function (it) {
-      var c = it.court, d = c.state;
-      if (it.script) it.script(c, dt);
-      var step = dt * (Cine.timeScale == null ? 1 : Cine.timeScale) * (c.speed || 1), n = Math.max(1, Math.ceil(step / 0.02));
-      // physics in small steps, but one draw a frame, and none at all for a court that's off screen
-      var skip = Q.level >= 2 && !it.hero && (Cine.frameNo & 1);
-      for (var i = 0; i < n; i++) { c.noDraw = i < n - 1 || !it.visible || it.hidden || skip; K.advance(c, step / n); }
-      c.noDraw = false;
-      // the hero courts never sit out a serve pause in shot: the ball is back in play almost at once
-      if (it.hero && d.serveTimer > 0.15) d.serveTimer = 0.15;
-      if (d.ball.dx && c.lastDx && (d.ball.dx > 0) !== (c.lastDx > 0)) onHit(it);
-      if (d.ball.dx) c.lastDx = d.ball.dx;
-      if (d.score[0] !== c.lastScore[0] || d.score[1] !== c.lastScore[1]) { c.lastScore = d.score.slice(); onPoint(it); }
-      var s = d.score[0] + ' : ' + d.score[1];
-      if (it.scoreEl.textContent !== s) it.scoreEl.textContent = s;
-      var f = clamp01(1 - (Cine.t - it.flashAt) / 0.5);
-      it.flashEl.style.opacity = f.toFixed(3);
-    });
-  }
-
-  function onHit(it) {
-    it.hitCount = (it.hitCount || 0) + 1;
-    var p = it.visible && projectP(ballWorld(it));
-    if (p) burst(p.x, p.y, 16, [320, 190, 285], 0.5);
-    if (it.hero) { Cine.shake = Math.max(Cine.shake, 0.35); Cine.flash = Math.max(Cine.flash, 0.06); Cine.aberration = Math.max(Cine.aberration, 0.5); }
-    it.flashAt = Cine.t - 0.35;
-  }
-
-  function onPoint(it) {
-    it.flashAt = Cine.t; it.pointAt = Cine.t;
-    if (it.hero) { Cine.flash = Math.max(Cine.flash, 0.45); Cine.shake = Math.max(Cine.shake, 0.8); Cine.aberration = 1; }
-  }
-
   function projectP(w) { return project(w.x, w.y, w.z); }
-
-  /* ---------- the ball: the player's own ball (or the host's, on an invite link) with a pixel flame trail ---------- */
-
-  // PongApp.ball() is the skin the player picked, or on an invite link the lobby host's (it arrives with the
-  // lobby's hello). Image and GIF balls are real <img> elements over the effects canvas, so GIFs animate and the
-  // ball always sits in front of its flames; the classic pearl and emoji balls are drawn on the canvas after them.
-  var BALL = { kind: 'classic', src: null, emoji: null };
-  function pickBall() {
-    var info = App.ball ? App.ball() : null;
-    BALL.kind = 'classic'; BALL.src = null; BALL.emoji = null;
-    if (info && (info.kind === 'image' || info.kind === 'gif') && info.src) { BALL.kind = 'img'; BALL.src = info.src; }
-    else if (info && info.kind === 'emoji' && info.emoji) { BALL.kind = 'emoji'; BALL.emoji = info.emoji; }
-  }
-
-  // Balls are queued while the flames are emitted, then drawn on top of them.
-  function queueBall(x, y, r, plain, ghost) { Cine.ballQ.push({ x: x, y: y, r: r, plain: !!plain, ghost: ghost || null }); }
-
-  function drawPearl(ctx, x, y, r, alpha) {
-    ctx.save();
-    ctx.globalAlpha = alpha == null ? 1 : alpha;
-    ctx.shadowColor = '#9d00ff'; ctx.shadowBlur = glow(r * 2.2);
-    ctx.fillStyle = '#f3e6ff';
-    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath(); ctx.arc(x - r * 0.3, y - r * 0.3, r * 0.35, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
-  }
-
-  function spriteAt(i) {
-    var s = Cine.sprites[i];
-    if (!s) {
-      s = el('img', 'cine-ball-sprite', Cine.spriteLayer);
-      s.alt = '';
-      s.decoding = 'async';
-      // built-in balls: ball3 is only a .gif, the others try .png then .gif (as pong.js does)
-      s.onerror = function () { if (/ball\d\.png$/.test(s.src)) s.src = s.src.replace(/\.png$/, '.gif'); };
-      Cine.sprites[i] = s;
-    }
-    if (s.dataset.src !== BALL.src) { s.dataset.src = BALL.src; s.src = BALL.src; }
-    return s;
-  }
-
-  function flushBalls(ctx) {
-    var used = 0;
-    Cine.ballQ.forEach(function (b) {
-      if (b.plain || BALL.kind === 'classic') {
-        if (b.ghost && !b.plain) b.ghost.forEach(function (gp, i) { drawPearl(ctx, gp.x, gp.y, b.r * (0.9 - i * 0.12), 0.28 - i * 0.07); });
-        drawPearl(ctx, b.x, b.y, b.r);
-      } else if (BALL.kind === 'emoji') {
-        ctx.save();
-        ctx.font = Math.round(b.r * 2.6) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        if (b.ghost) b.ghost.forEach(function (gp, i) { ctx.globalAlpha = 0.25 - i * 0.07; ctx.fillText(BALL.emoji, gp.x, gp.y + b.r * 0.1); });
-        ctx.globalAlpha = 1;
-        ctx.fillText(BALL.emoji, b.x, b.y + b.r * 0.1);
-        ctx.restore();
-      } else {
-        var s = spriteAt(used++), size = b.r * 3.2;
-        s.style.display = '';
-        s.style.width = s.style.height = size.toFixed(1) + 'px';
-        s.style.transform = 'translate3d(' + (b.x - size / 2).toFixed(1) + 'px,' + (b.y - size / 2).toFixed(1) + 'px,0)';
-      }
-    });
-    for (var i = used; i < Cine.sprites.length; i++) if (Cine.sprites[i].style.display !== 'none') Cine.sprites[i].style.display = 'none';
-    Cine.ballQ = [];
-  }
 
   // Pixel fire in the Terraria manner: chunky square embers stepping white, pink, magenta, violet as they die.
   var FLAME = ['#fff3ff', '#ffb3ec', '#ff4fc8', '#c03dff', '#6a2aff'];
@@ -984,102 +853,6 @@
   }
 
   function ring(p, size) { if (p) Cine.rings.push({ x: p.x, y: p.y, r0: 10, r1: size || Math.max(innerWidth, innerHeight) * 0.6, age: 0 }); }
-
-  /* ---------- the hero ball's journey: scripted flights in world space ----------
-     Hero.segs: [{ t0, t1, from, to (point or function), arc, bulge (vector), ease, onEnd }]. Between courts the
-     ball is the hero; on a court it's the court's own physics ball. */
-  var Hero = { segs: [], last: null, ghost: [] };
-  function heroSeg(t) {
-    for (var i = 0; i < Hero.segs.length; i++) { var s = Hero.segs[i]; if (t >= s.t0 && t <= s.t1) return s; }
-    return null;
-  }
-  function heroAt(t) {
-    var s = heroSeg(t);
-    if (!s) return null;
-    var k = clamp01((t - s.t0) / (s.t1 - s.t0)), e = s.ease ? s.ease(k) : k;
-    var to = typeof s.to === 'function' ? s.to() : s.to, b = Math.sin(e * Math.PI);
-    var p = { x: lerp(s.from.x, to.x, e), y: lerp(s.from.y, to.y, e) - b * (s.arc || 0), z: lerp(s.from.z, to.z, e) };
-    if (s.bulge) { p.x += s.bulge.x * b; p.y += s.bulge.y * b; p.z += s.bulge.z * b; }
-    return p;
-  }
-  function heroVel(t) {
-    var a = heroAt(t - 0.02), b = heroAt(t + 0.02);
-    if (!a || !b) return null;
-    return { x: (b.x - a.x) / 0.04, y: (b.y - a.y) / 0.04, z: (b.z - a.z) / 0.04 };
-  }
-  // fire each segment's onEnd once the clock passes it (also when the film was started part way through)
-  function heroEvents(t) {
-    Hero.segs.forEach(function (s) { if (s.onEnd && !s.ended && t >= s.t1) { s.ended = true; if (t - s.t1 < 0.25) s.onEnd(); } });
-  }
-
-  // Draw the ball on every visible court in the shot, the hero in flight, then the flames, then the balls on top.
-  function drawBalls(g, dt, t) {
-    var ctx = Cine.fxCtx;
-    if (g) g.courts.forEach(function (it) {
-      if (!it.visible || it.hidden || it.noBall) return;
-      var b = it.court.state.ball, p = projectP(ballWorld(it));
-      if (!p) return;
-      var plain = !it.heroBall;
-      var r = Math.min(110, Math.max(plain ? 2 : 4, BALL_R * (plain ? 1.3 : 2.1) * it.s * p.s));   // the hero is drawn a little larger so it always reads
-      var sp = Math.hypot(b.dx, b.dy) / 600;
-      var prev = Cine.justCut ? null : it.lastBallScreen;
-      var vx = prev ? (p.x - prev.x) / Math.max(dt, 0.001) : 0, vy = prev ? (p.y - prev.y) / Math.max(dt, 0.001) : 0;
-      it.lastBallScreen = { x: p.x, y: p.y };
-      if (it.court.state.serveTimer > 0) return;
-      if (!plain) emitFlame(p.x, p.y, r, vx, vy, Math.min(6, 2 + Math.round(sp * 2)));
-      queueBall(p.x, p.y, r, plain);
-    });
-    Cine.transits = Cine.transits.filter(function (tr) {
-      var k = (t - tr.t0) / tr.dur;
-      if (k < 0) return true;
-      if (k >= 1) {
-        if (!tr.landed) {
-          tr.landed = true;
-          var lp = projectP(tr.to);
-          if (lp) { ring(lp); burst(lp.x, lp.y, 90, [320, 190, 285], 1.3); }
-          Cine.flash = Math.max(Cine.flash, tr.flash == null ? 0.4 : tr.flash); Cine.shake = Math.max(Cine.shake, 0.9); Cine.aberration = 1;
-          if (tr.onLand) tr.onLand();
-        }
-        return false;
-      }
-      var e = easeIn(k) * 0.4 + k * 0.6;
-      var w = { x: lerp(tr.from.x, tr.to.x, e), y: lerp(tr.from.y, tr.to.y, e) - Math.sin(e * Math.PI) * (tr.arc || 300), z: lerp(tr.from.z, tr.to.z, e) };
-      tr.head = w;
-      var p = projectP(w);
-      if (!p) return true;
-      var r = Math.min(160, Math.max(3, BALL_R * 1.6 * p.s));
-      var prev = tr.last; tr.last = { x: p.x, y: p.y };
-      var vx = prev ? (p.x - prev.x) / Math.max(dt, 0.001) : 0, vy = prev ? (p.y - prev.y) / Math.max(dt, 0.001) : 0;
-      emitFlame(p.x, p.y, r, vx, vy, 7);
-      queueBall(p.x, p.y, r);
-      return true;
-    });
-    // the hero in flight between courts
-    heroEvents(t);
-    var hw = heroAt(t), hp = hw && projectP(hw);
-    if (hp && hp.d > 25) {
-      var hr = Math.min(150, Math.max(4, BALL_R * 2.1 * hp.s));
-      var last = Cine.justCut ? null : Hero.last;
-      var hvx = last ? (hp.x - last.x) / Math.max(dt, 0.001) : 0, hvy = last ? (hp.y - last.y) / Math.max(dt, 0.001) : 0;
-      Hero.last = { x: hp.x, y: hp.y };
-      var fast = Math.hypot(hvx, hvy) > 900;
-      Hero.ghost.unshift({ x: hp.x, y: hp.y }); Hero.ghost.length = Math.min(Hero.ghost.length, 4);
-      emitFlame(hp.x, hp.y, hr, hvx, hvy, 7);
-      queueBall(hp.x, hp.y, hr, false, fast ? Hero.ghost.slice(1) : null);
-    } else { Hero.last = null; Hero.ghost = []; }
-    drawPixel(t);
-    drawFlames(ctx, dt);
-    flushBalls(ctx);
-    Cine.justCut = false;
-  }
-
-  // A ball leaving one place for another: from/to are world points; it lands with a shockwave.
-  function transit(from, to, t0, dur, onLand, o) {
-    var tr = { from: from, to: to, t0: t0, dur: dur, onLand: onLand, landed: false };
-    Object.keys(o || {}).forEach(function (k) { tr[k] = o[k]; });
-    Cine.transits.push(tr);
-    return tr;
-  }
 
   // Screen-space cards (achievement toasts) that sit over the picture rather than in the world.
   function toast(title, body) {
@@ -1477,291 +1250,463 @@
   }
   function centreOf(it) { return { x: it.x, y: it.y, z: it.z }; }
 
-  // The lone CRT pixel in the dark that becomes the ball and launches at the lens on the drop.
-  function drawPixel(t) {
-    var ctx = Cine.fxCtx, w = innerWidth, h = innerHeight, x = w / 2, y = h / 2;
-    if (t < 10.4 || t >= 12.05) return;
-    if (t < 11.75) {
-      var on = t < 11.15 ? (Math.random() < 0.55 ? 1 : 0.15) : 1, sz = t < 11.15 ? 4 : 6 + (t - 11.15) * 10;
-      ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      ctx.fillStyle = 'rgba(243,230,255,' + on + ')';
-      ctx.shadowColor = '#9d00ff'; ctx.shadowBlur = t < 11.15 ? 8 : 26;
-      ctx.fillRect(Math.round(x - sz / 2), Math.round(y - sz / 2), Math.round(sz), Math.round(sz));
-      ctx.restore();
-      return;
+  /* ---------- Battleships scenery: the real grids as planes, the radar, the dossier, the warship ---------- */
+
+  // A grid: the game's own markup and paint functions (BattleshipsApp.cinematicKit), sized exactly by
+  // battleships-cinematic.css so a cell's place on the plane is known without measuring (cellWorld).
+  var BW = 586, BH = 650;
+  function boardPlane(g, title, o) {
+    var node = el('div', 'bsx-board' + (o && o.enemy ? ' enemy' : ''));
+    var head = el('div', 'bsx-board-head', node);
+    el('span', '', head).textContent = title;
+    el('em', '', head).textContent = o && o.enemy ? '● TARGET' : '● LIVE FEED';
+    var grid = KIT.makeBoard();
+    node.appendChild(grid);
+    el('small', 'bsx-board-foot', node).textContent = 'BALCADE NAVAL COMMAND · 10 × 10';
+    var flash = el('div', 'bsx-board-flash', node);
+    var it = plane(g, node, BW, BH, o);
+    it.grid = grid; it.flashEl = flash; it.marks = {}; it.flashAt = -9; it.canvas = null;
+    g.boards.push(it);
+    return it;
+  }
+  function cellLocal(r, c) { return { x: 88 + 50 * c, y: 126 + 50 * r }; }
+  function cellWorld(it, r, c) { var l = cellLocal(r, c); return toWorld(it, l.x, l.y); }
+  function paintBoard(it, lock) {
+    KIT.targetBoard(it.grid, it.marks, null);
+    if (lock) { var cell = it.grid.querySelector('.bs-cell[data-r="' + lock[0] + '"][data-c="' + lock[1] + '"]'); if (cell) cell.classList.add('locked'); }
+  }
+  function boardFlashes(g) {
+    g.boards.forEach(function (it) { it.flashEl.style.opacity = clamp01(1 - (Cine.t - it.flashAt) / 0.5).toFixed(3); });
+  }
+  // A plane's picture for the glass shatter (shatterGlass copies item.canvas): a quick raster of the grid's state.
+  function boardRaster(it) {
+    var cv = document.createElement('canvas'); cv.width = BW; cv.height = BH;
+    var x = cv.getContext('2d');
+    x.fillStyle = 'rgba(6,5,20,0.95)'; x.fillRect(0, 0, BW, BH);
+    x.strokeStyle = it.enemy ? '#ff3bbb' : '#30e2ff'; x.lineWidth = 4; x.strokeRect(2, 2, BW - 4, BH - 4);
+    for (var r = 0; r < 10; r++) for (var c = 0; c < 10; c++) {
+      var l = cellLocal(r, c), m = it.marks[r + ',' + c];
+      x.fillStyle = m === 'hit' || m === 'sunk' ? '#eb1d78' : m === 'miss' ? '#10182b' : '#101025';
+      x.fillRect(l.x - 23, l.y - 23, 46, 46);
     }
-    var k = easeIn(span(t, 11.75, 12.0)), r = lerp(6, h * 0.75, k);
-    emitFlame(x, y, Math.max(4, r * 0.2), 0, 0, 10);
-    queueBall(x, y, r);
-    Cine.aberration = Math.max(Cine.aberration, k);
+    it.canvas = cv; it.head = 0;
+    return cv;
+  }
+
+  // The radar scope, drawn every frame: rings, the sweep, contacts that ping in on cue.
+  function radarPlane(g, o) {
+    var cv = document.createElement('canvas'); cv.width = 900; cv.height = 900; cv.className = 'bsx-radar';
+    var it = plane(g, cv, 900, 900, o);
+    it.radar = cv; it.ctx = cv.getContext('2d');
+    return it;
+  }
+  var CONTACTS = [[0.62, -0.35, 4.2], [-0.48, 0.22, 6.0], [0.18, 0.55, 6.15], [-0.2, -0.6, 6.3], [0.7, 0.3, 6.45]];
+  function paintRadar(it, t) {
+    var x = it.ctx, R = 440, c = 450;
+    x.clearRect(0, 0, 900, 900);
+    x.fillStyle = 'rgba(2,14,16,0.86)'; x.beginPath(); x.arc(c, c, R, 0, Math.PI * 2); x.fill();
+    x.strokeStyle = 'rgba(76,245,197,0.35)'; x.lineWidth = 2;
+    for (var i = 1; i <= 4; i++) { x.beginPath(); x.arc(c, c, R * i / 4, 0, Math.PI * 2); x.stroke(); }
+    x.beginPath(); x.moveTo(c - R, c); x.lineTo(c + R, c); x.moveTo(c, c - R); x.lineTo(c, c + R); x.stroke();
+    var a = t * 1.6;
+    for (var k = 0; k < 40; k++) {                                     // the sweep: a fading fan behind the arm
+      x.strokeStyle = 'rgba(76,245,197,' + (0.5 * (1 - k / 40)) + ')'; x.lineWidth = 6;
+      x.beginPath(); x.moveTo(c, c); x.lineTo(c + Math.cos(a - k * 0.025) * R, c + Math.sin(a - k * 0.025) * R); x.stroke();
+    }
+    CONTACTS.forEach(function (p, j) {
+      if (t < p[2]) return;
+      var age = t - p[2], px = c + p[0] * R, py = c + p[1] * R, hot = j === 0 ? '#ff3bbb' : '#4cf5c5';
+      x.fillStyle = hot; x.fillRect(Math.round(px - 9), Math.round(py - 9), 18, 18);
+      x.strokeStyle = hot; x.lineWidth = 3; x.globalAlpha = Math.max(0, 1 - (age % 1.2) / 1.2);
+      x.beginPath(); x.arc(px, py, 14 + (age % 1.2) * 60, 0, Math.PI * 2); x.stroke(); x.globalAlpha = 1;
+    });
+  }
+
+  // The classified dossier (ChatGPT's text), as a panel in the world.
+  function dossierPlane(g, o) {
+    var d = el('div', 'bsx-file');
+    d.innerHTML = '<b>▲ CLASSIFIED</b><span class="line">NAVAL INTELLIGENCE // SECTOR 07</span><span class="line">CONTACTS: MULTIPLE VESSELS</span>' +
+      '<span class="line">IDENTITY: UNKNOWN</span><span class="line">AUTHORIZATION: GRANTED</span><span class="stamp">CLASSIFIED</span>';
+    var it = plane(g, d, 900, 520, o);
+    it.stamp = d.querySelector('.stamp');
+    return it;
+  }
+
+  // The enemy warship: pixel art drawn at 160 x 70 and scaled 3x with hard pixels. It's lit like the rest of the
+  // scene: a navy-black hull, a magenta rim where the horizon glow catches the deck edges, cyan portholes and bridge
+  // windows, a red masthead light, a glowing waterline, a wake, and its reflection broken up in the water below.
+  var SHIP_WL = 52;   // the waterline, in sprite pixels
+  function paintShip(cv) {
+    var x = cv.getContext('2d'), P = function (c, px, py, w, h) { x.fillStyle = c; x.fillRect(px, py, w || 1, h || 1); };
+    x.clearRect(0, 0, 160, 70);
+    var hull = '#110a2a', hull2 = '#1b1142', deck = '#2c1d66', rim = '#ff4fc8', rim2 = '#b56bff', glass = '#7beeff', steel = '#3b2c7a';
+    // hull: square stern on the left, a raked bow on the right
+    for (var y = 40; y < SHIP_WL; y++) {
+      var l = 8 + Math.round((y - 40) * 0.35), r = 152 - Math.round((y - 40) * 1.5);
+      P(y < 46 ? hull2 : hull, l, y, r - l, 1);
+    }
+    P(rim, 8, 40, 144, 1); P(rim2, 8, 41, 143, 1);                  // deck edge catching the light
+    for (var i = 12; i < 148; i += 6) P('#ffb3ec', i, 40, 2, 1);     // glints along the rail
+    P(deck, 10, 46, 136, 1);                                       // a darker band along the hull
+    for (i = 18; i < 136; i += 7) P(glass, i, 43, 2, 1);           // portholes
+    // superstructure: two decks, the bridge, the mast and radar
+    P(hull2, 50, 31, 50, 9); P(rim2, 50, 31, 50, 1); P(rim, 50, 31, 3, 1);
+    for (i = 53; i < 98; i += 5) P(glass, i, 34, 3, 1);
+    P(hull2, 66, 23, 28, 8); P(rim2, 66, 23, 28, 1);
+    P(glass, 70, 26, 20, 2); P('#ffffff', 72, 26, 3, 1);           // the bridge windows, one glint
+    P(steel, 82, 8, 2, 15); P(steel, 76, 12, 14, 1); P(steel, 78, 16, 10, 1);
+    P(glass, 75, 11, 2, 1); P(glass, 89, 11, 2, 1);                  // radar arms
+    P('#ff3b6e', 82, 6, 2, 2); P('#ff9ec0', 82, 6, 1, 1);           // masthead light
+    // the funnel, smoke-stained, its rim glowing
+    P(hull2, 100, 25, 9, 15); P(rim, 100, 25, 9, 1); P('#0a0618', 101, 26, 7, 2);
+    // turrets fore and aft, barrels reaching out
+    P(hull2, 116, 35, 13, 5); P(rim2, 117, 35, 11, 1); P(steel, 129, 36, 17, 1); P(steel, 129, 38, 15, 1);
+    P(hull2, 28, 35, 13, 5); P(rim2, 29, 35, 11, 1); P(steel, 12, 36, 16, 1); P(steel, 14, 38, 14, 1);
+    P(steel, 136, 33, 6, 2);                                       // a small fore gun on its mount
+    // waterline: a hot magenta line where the hull meets the sea, foam at the bow and a wake off the stern
+    P('#ff3bbb', 8, SHIP_WL - 1, 146, 1);
+    for (i = 0; i < 18; i++) P(i % 3 ? '#8cf4ff' : '#ffffff', 132 + i, SHIP_WL - 1 - (i % 2), 1, 1);
+    for (i = 0; i < 28; i += 2) P('rgba(140,244,255,' + (0.8 - i / 40) + ')', 7 - i / 2 - i, SHIP_WL - 1 + (i % 4 ? 0 : 1), 2, 1);
+    // the reflection: the hull flipped below the waterline, faint, broken into every other row by the swell
+    x.save(); x.globalAlpha = 0.28;
+    for (y = 0; y < 16; y += 2) {
+      var sy = SHIP_WL - 1 - y, off = Math.round(Math.sin(y * 0.9) * 2);
+      x.drawImage(cv, 0, sy, 160, 1, off, SHIP_WL + y, 160, 1);
+    }
+    x.restore();
+  }
+  function shipPlane(g, o) {
+    var cv = document.createElement('canvas'); cv.width = 160; cv.height = 70; cv.className = 'bsx-ship';
+    paintShip(cv);
+    var it = plane(g, cv, 480, 210, o);
+    it.canvas = cv; it.head = 0;
+    return it;
+  }
+  function shipPoint(it, fx, fy) { return toWorld(it, 240 + fx * 210, 120 + fy * 36); }   // fx, fy: -1..1 across the hull
+
+  // Your fleet, seen from above on the grid: a pixel ship per FLEET entry laid over its cells, in the same light as
+  // the warship (navy hull, magenta rim, cyan glass, gun turrets, a wake). They drop in one by one as the fleet deploys.
+  function paintTopShip(size) {
+    var w = size * 16, h = 14, cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    var x = cv.getContext('2d'), P = function (c, px, py, pw, ph) { x.fillStyle = c; x.fillRect(px, py, pw || 1, ph || 1); };
+    // hull: square stern on the left, the bow drawn to a point on the right
+    for (var px = 1; px < w - 1; px++) {
+      var nose = Math.max(0, px - (w - 8)), half = 5 - Math.round(nose * 0.62);
+      P('#1b1142', px, 7 - half, 1, half * 2);
+      P('#ff4fc8', px, 7 - half - 1, 1, 1); P('#7a2a9a', px, 7 + half, 1, 1);   // lit edge on top, shadowed below
+    }
+    P('#2c1d66', 3, 6, w - 11, 2);                                           // the deck's centre line
+    for (var i = 0; i < size - 1; i++) {                                     // turrets, one per section
+      var tx = 6 + i * 16;
+      P('#3b2c7a', tx, 4, 5, 6); P('#b56bff', tx, 4, 5, 1); P('#8a6cff', tx + 5, 6, 5, 1);
+    }
+    P('#241a50', w - 22, 4, 7, 6); P('#7beeff', w - 21, 5, 5, 1); P('#7beeff', w - 21, 8, 5, 1);   // the bridge
+    P('#ff3b6e', w - 18, 6, 1, 1);
+    for (i = 0; i < 6; i++) P(i % 2 ? '#8cf4ff' : 'rgba(140,244,255,0.5)', 0, 3 + i * 2, 1, 1);   // wake at the stern
+    return cv;
+  }
+  function addFleetSprites(it) {
+    it.ships = FLEET.map(function (f) {
+      var art = paintTopShip(f.size), cv = document.createElement('canvas');
+      if (f.horizontal) { cv.width = art.width; cv.height = art.height; cv.getContext('2d').drawImage(art, 0, 0); }
+      else { cv.width = art.height; cv.height = art.width; var x = cv.getContext('2d'); x.translate(art.height, 0); x.rotate(Math.PI / 2); x.drawImage(art, 0, 0); }
+      cv.className = 'bsx-topship';
+      var a = cellLocal(f.r, f.c), lenPx = f.size * 50 - 6;
+      cv.style.left = (a.x - 2 - 22) + 'px'; cv.style.top = (a.y - 2 - 22) + 'px';
+      cv.style.width = (f.horizontal ? lenPx : 44) + 'px'; cv.style.height = (f.horizontal ? 44 : lenPx) + 'px';
+      it.el.appendChild(cv);
+      return cv;
+    });
+  }
+  function showFleet(it, count) { if (it.ships) it.ships.forEach(function (cv, i) { cv.classList.toggle('on', i < count); }); }
+
+  /* ---------- missiles, splashes and fireballs (world points, drawn on the effects canvas) ---------- */
+
+  // A missile from one world point to another, landing at t0 + dur: a white-hot pixel head with a flame trail.
+  // kind 'miss' throws up water, 'hit' a fireball; onLand runs when it lands (marks the grid, shakes the camera).
+  function missile(from, to, t0, dur, kind, onLand, arc) {
+    Cine.missiles.push({ from: from, to: to, t0: t0, dur: dur, kind: kind, onLand: onLand, arc: arc == null ? 260 : arc, landed: false, last: null });
+  }
+  function missileAt(m, k) {
+    var to = typeof m.to === 'function' ? m.to() : m.to, e = k * 0.4 + easeIn(k) * 0.6;
+    return { x: lerp(m.from.x, to.x, e), y: lerp(m.from.y, to.y, e) - Math.sin(e * Math.PI) * m.arc, z: lerp(m.from.z, to.z, e) };
+  }
+  function splash(w, size) { Cine.splashes.push({ w: w, age: 0, size: size || 1 }); }
+  function fireball(w, size) { Cine.fires.push({ w: w, age: 0, size: size || 1 }); }
+
+  function drawMissiles(dt, t) {
+    var ctx = Cine.fxCtx;
+    Cine.missiles = Cine.missiles.filter(function (m) {
+      var k = (t - m.t0) / m.dur;
+      if (k < 0) return true;
+      if (k >= 1) {
+        if (!m.landed) {
+          m.landed = true;
+          var to = typeof m.to === 'function' ? m.to() : m.to, p = projectP(to);
+          if (m.kind === 'miss') { splash(to, m.size || 1.6); Cine.shake = Math.max(Cine.shake, 0.35); }
+          else { fireball(to, m.size || 2); if (p) { ring(p, 420 * Math.min(2, p.s)); burst(p.x, p.y, 70, [20, 35, 320, 50], 1.2); }
+            Cine.shake = Math.max(Cine.shake, 0.9); Cine.flash = Math.max(Cine.flash, 0.22); Cine.aberration = 1; Cine.fovKick = -8; }
+          if (m.onLand) m.onLand();
+        }
+        return false;
+      }
+      var w = missileAt(m, k), p = projectP(w);
+      if (!p || p.d < 30) return true;
+      var vx = m.last ? (p.x - m.last.x) / Math.max(dt, 0.001) : 0, vy = m.last ? (p.y - m.last.y) / Math.max(dt, 0.001) : 0;
+      m.last = { x: p.x, y: p.y };
+      var r = Math.min(40, Math.max(3, 7 * p.s));
+      emitFlame(p.x, p.y, r, vx, vy, 5);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = '#ffb249'; ctx.fillRect(Math.round(p.x - r), Math.round(p.y - r), Math.round(r * 2), Math.round(r * 2));
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(Math.round(p.x - r * 0.55), Math.round(p.y - r * 0.55), Math.round(r * 1.1), Math.round(r * 1.1));
+      ctx.restore();
+      return true;
+    });
+    // splashes: a column of white water that rises and falls back, and rings spreading on the surface
+    Cine.splashes = Cine.splashes.filter(function (s) {
+      s.age += dt; if (s.age > 1.5) return false;
+      var p = projectP(s.w); if (!p) return true;
+      var age = s.age, k = Math.min(3, p.s) * s.size, rise = Math.sin(Math.min(1, age / 1.15) * Math.PI) * 125 * k, wide = (1 + age * 1.4) * k;
+      for (var q = 0; q < qn(84); q++) {
+        var u = ((q * 37) % 100) / 100 - 0.5, v = ((q * 53) % 100) / 100;
+        var wx = p.x + u * 44 * wide + Math.sin(q) * 4 * age * k, wy = p.y - rise * v * (1 - Math.abs(u) * 0.9) + age * age * 30 * v * k;
+        var sz = Math.max(2, Math.round((3 + (q % 3) * 2) * (1 - age * 0.45) * Math.max(0.6, k)));
+        ctx.fillStyle = q % 4 === 0 ? '#ffffff' : q % 2 ? '#8cf4ff' : '#2bb8e8';
+        ctx.fillRect(Math.round(wx / 3) * 3, Math.round(wy / 3) * 3, sz, sz);
+      }
+      ctx.strokeStyle = 'rgba(140,244,255,' + Math.max(0, 1 - age / 1.5) + ')'; ctx.lineWidth = 2;
+      for (var rr = 0; rr < 3; rr++) { var R = (14 + Math.max(0, age - rr * 0.18) * 110) * k; ctx.beginPath(); ctx.ellipse(p.x, p.y + 6 * k, R, R * 0.22, 0, 0, Math.PI * 2); ctx.stroke(); }
+      return true;
+    });
+    // fireballs: a pixel blast, white core through yellow and orange to magenta, with sparks thrown up
+    Cine.fires = Cine.fires.filter(function (f) {
+      f.age += dt; if (f.age > 1.3) return false;
+      var p = projectP(f.w); if (!p) return true;
+      var age = f.age, k = Math.min(3, p.s) * f.size, radius = (24 + age * 120) * k;
+      for (var i = 0; i < qn(92); i++) {
+        var ang = i * 2.39996, ringk = Math.sqrt(((i * 67) % 97) / 97), dd = ringk * radius;
+        var fx = p.x + Math.cos(ang) * dd, fy = p.y + Math.sin(ang) * dd * 0.76 - age * 14 * k;
+        var size = Math.max(3, Math.round((4 + (i * 17) % 11) * (1 - age * 0.55) * Math.max(0.6, k * 0.8)));
+        ctx.fillStyle = ringk < 0.25 ? (i % 3 === 0 ? '#ffffff' : '#fff4a3') : ringk < 0.58 ? (i % 3 === 0 ? '#ffef67' : '#ff8123') : (i % 2 === 0 ? '#ff2f77' : '#f044a8');
+        ctx.globalAlpha = Math.max(0, 1 - age / 1.3);
+        ctx.fillRect(Math.round(fx / 3) * 3, Math.round(fy / 3) * 3, size, size);
+      }
+      ctx.globalAlpha = 1;
+      return true;
+    });
+    drawFlames(ctx, dt);
+  }
+
+  // The naval HUD (top left): what's happening, in the dossier's typewriter voice.
+  function hud(label, sub) {
+    var h = Cine.hud;
+    if (!h) return;
+    if (!label) { h.style.opacity = '0'; return; }
+    h.style.opacity = '1';
+    if (h.dataset.label !== label) { h.dataset.label = label; h.firstChild.textContent = label; }
+    h.lastChild.textContent = sub || '';
+  }
+
+  // The logo, centred, flickering on like the CRT in the other openings (the dossier shot).
+  function logoCentre(lt, st, alpha) {
+    var L = Cine.logo, width = Math.min(innerWidth * 0.62, 900);
+    alpha = alpha == null ? 1 : alpha;
+    L.box.style.display = 'flex';
+    L.art.style.width = width + 'px';
+    L.sub.style.fontSize = Math.max(11, width * 0.024) + 'px';
+    L.box.style.left = (innerWidth / 2) + 'px';
+    L.box.style.top = (innerHeight * 0.45 + (L.box.offsetHeight - L.art.offsetHeight) / 2) + 'px';
+    var on = lt < 0 ? 0 : lt < 0.06 ? 1 : lt < 0.12 ? 0 : lt < 0.2 ? 0.7 : lt < 0.26 ? 0.1 : 1;
+    L.art.style.opacity = (on * alpha).toFixed(3);
+    L.art.style.transform = 'scaleY(' + (lt < 0.3 ? Math.max(0.05, lt * 3.3) : 1).toFixed(3) + ')';
+    L.sub.style.opacity = st == null || st < 0 ? '0' : (smooth(span(st, 0, 0.6)) * alpha).toFixed(3);
+  }
+
+  // The fleet as the dossier describes it (ChatGPT's layout).
+  var FLEET = [
+    { id: 'carrier', name: 'Carrier', size: 5, r: 1, c: 2, horizontal: true },
+    { id: 'battleship', name: 'Battleship', size: 4, r: 4, c: 4, horizontal: true },
+    { id: 'cruiser', name: 'Cruiser', size: 3, r: 7, c: 1, horizontal: true },
+    { id: 'submarine', name: 'Submarine', size: 3, r: 0, c: 8, horizontal: false },
+    { id: 'destroyer', name: 'Destroyer', size: 2, r: 8, c: 7, horizontal: true }
+  ];
+  function shipMid(f) { return [f.r + (f.horizontal ? 0 : (f.size - 1) / 2), f.c + (f.horizontal ? (f.size - 1) / 2 : 0)]; }
+  // The FOV kick a hit gives a path-driven shot, easing back out.
+  function kick(dt) { Cine.fovKick = (Cine.fovKick || 0) * Math.max(0, 1 - dt * 5); Cine.cam.fov += Cine.fovKick; }
+  function once(S, key, t, at, fn) { if (t >= at && !S.done[key]) { S.done[key] = true; if (t - at < 0.4) fn(); } }
+  function burning(it, list) {   // grid cells (or hull points) on fire keep throwing flames
+    list.forEach(function (w) { var p = projectP(typeof w === 'function' ? w() : w); if (p) emitFlame(p.x, p.y, Math.min(26, Math.max(4, 9 * p.s)), 0, -60, 1); });
   }
 
   function makeShots() {
-    var S = {}, me = (G.Profile && G.Profile.get()) || { name: 'Player' };
-    var FLOOR = 300;
-    pickBall();
+    var S = { done: {} }, me = (G.Profile && G.Profile.get()) || { name: 'Player' };
 
-    /* ---------- Scene 1: the same painted cabinet as Tetris, head-on ---------- */
+    /* ---------- 0 to 12: the radar in the dark, the dossier, the logo ---------- */
 
-    function dolly(t) { return lerp(15, CAB_STOP, easeOut(span(t, 0, 3.9))); }
-    S.cabinet = { pat: 3, update: function (t, lt) { Cine.dist = dolly(lt); Cine.crt = 0; Cine.env = smooth(span(lt, 0, 1.2)); } };
-    S.logo = { pat: 3, update: function (t, lt) { Cine.dist = CAB_STOP; Cine.crt = smooth(span(lt, 0, 0.3)); logoOnScreen(lt, lt - 1.3); } };
-    S.subtitle = { pat: 3, update: function (t, lt) {
-      Cine.dist = CAB_STOP;
-      var dark = smooth(span(lt, 0.4, 2.4));
-      Cine.env = 1 - dark; Cine.crt = 1 - smooth(span(lt, 1.2, 2.4));
-      logoOnScreen(3 + lt, 1.7 + lt);
+    S.radar = { pat: 4, build: function (g) {
+      S.R = radarPlane(g, { x: 0, y: -20, z: 0, rx: 90, s: 1.8, cull: false });
+      S.D = dossierPlane(g, { x: 0, y: -560, z: -1500, s: 1.3, cull: false });
+    }, enter: function () { S.done = {}; S.D.stamp.classList.remove('slam'); S.D.op = 1; S.R.op = 1; }, update: function (t, lt) {
+      paintRadar(S.R, t);
+      path([
+        { t: 0, x: 0, y: -3400, z: 300, tx: 0, ty: 0, tz: 0, fov: 46, roll: 0 },
+        { t: 4.5, x: 260, y: -1500, z: 900, tx: 0, ty: 0, tz: -100, fov: 52, roll: -6 },
+        { t: 7, x: -200, y: -700, z: 1500, tx: 0, ty: -400, tz: -1200, fov: 56, roll: -2 }
+      ], lt);
+      Cine.env = smooth(span(lt, 0, 1.6));
+      // each contact pings in with a flicker of the tape
+      CONTACTS.forEach(function (c, i) { once(S, 'ping' + i, t, c[2], function () {
+        var p = projectP(toWorld(S.R, 450 + c[0] * 440, 450 + c[1] * 440)); if (p) { ring(p, 160); burst(p.x, p.y, 14, [160, 190], 0.4); }
+        Cine.tear = Math.max(Cine.tear, i ? 0.4 : 0.8); }); });
+      hud('RADAR CONTACT', 'SCAN ' + String(Math.floor(t * 12)).padStart(3, '0') + ' · CONTACTS ' + (t < 4.2 ? '00' : t < 6 ? '01' : '05'));
     } };
-    // darkness, then the single pixel (drawn by drawPixel) that becomes the ball
-    S.pixel = { pat: 2, update: function (t, lt) {
-      Cine.dist = CAB_STOP; Cine.env = 0;
-      logoOnScreen(5.6 + lt, 4.3 + lt, 1 - smooth(span(lt, 0, 0.6)));
+    S.dossier = { pat: 4, update: function (t, lt) {
+      paintRadar(S.R, t);
+      path([
+        { t: 0, x: -200, y: -700, z: 1500, tx: 0, ty: -400, tz: -1200, fov: 56, roll: -2 },
+        { t: 2.2, x: -560, y: -600, z: -250, tx: 0, ty: -560, tz: -1500, fov: 50, roll: 3 },
+        { t: 5, x: -60, y: -560, z: -150, tx: 0, ty: -560, tz: -1500, fov: 44, roll: 0 }
+      ], lt);
+      once(S, 'stamp', t, 9.0, function () { S.D.stamp.classList.add('slam'); Cine.shake = Math.max(Cine.shake, 0.6); Cine.flash = Math.max(Cine.flash, 0.18); Cine.aberration = 1; });
+      // the world goes dark around the logo, then black for the drop
+      Cine.env = 1 - 0.85 * smooth(span(lt, 3.0, 4.0)) - 0.15 * smooth(span(lt, 4.6, 4.95));
+      S.D.op = Cine.env; S.R.op = Cine.env;   // the planes go dark with the world
+      if (lt >= 3.3) logoCentre(lt - 3.3, lt - 3.9, 1 - smooth(span(lt, 4.55, 4.95))); else hideLogo();
+      hud(lt < 3.2 ? 'CLASSIFIED INTELLIGENCE' : '', 'NAVAL INTELLIGENCE // SECTOR 07');
     }, exit: function () { hideLogo(); } };
 
-    /* ---------- Scenes 2 to 6: one unbroken follow of the ball ----------
-       The serve: the camera rides low behind the ball until the first paddle hits it, then rises to show the board.
-       The rally speeds up under a slow orbit. On POINT SCORED the ball hops out of the court and flies to the next
-       board, where the nearest paddle whacks it on to the next: a run of boards lined up diagonally, like a surf map,
-       whose players miss their own balls. The camera never cuts: it swings round the ball on springs, and the field of
-       view opens with speed. Then a long soaring arc to the last board, slow motion as that player is eliminated,
-       and the ball smashes through the glass, the camera close behind it through the shards. */
+    /* ---------- 12 to 34: your fleet, the enemy grid, the miss and the hit ---------- */
 
-    var NP = 8;                                             // boards in the surf run, before the one that breaks
-    function hitT(i) { return B(33 + 3 * i); }              // the run's paddle hits, three beats apart
-    var T_POINT = 24.45, T_SLOW = 37.0, T_RUSH = 38.05, T_BREAK = 38.25, T_THROUGH_END = 41.0;
-    var SURF_NAMES = [['Blocky', 'Tess'], ['Lunar', 'Spin'], ['Cobalt', 'Pixel'], ['Stack', 'Drop'], ['Lumen', 'Vex'], ['Orbit', 'Gridlock'], ['Tess', 'Lunar'], ['Spin', 'Blocky']];
-    var SURF_COLORS = ['#c77dff', '#4cc9ff', '#ff2fa6', '#7c6cff', '#28e8ff', '#a020ff', '#ff5a7a', '#3d8bff'];
-    function normalOf(it) { var a = it.ry * D2R; return { x: Math.sin(a), y: 0, z: Math.cos(a) }; }
-    function scale3(v, k) { return { x: v.x * k, y: v.y * k, z: v.z * k }; }
-    function onFace(it, lx, ly) { return add3(toWorld(it, lx, it.head + ly), scale3(normalOf(it), 6)); }
-
-    S.serve = { pat: 0, build: function (g) {
-      var a = makeCourt({ seed: 4, speed: 1.4, names: [me.name, 'Blocky'] });
-      S.A = courtPlane(g, a, { x: 0, y: FLOOR, z: 0, rx: 90, hero: true, cull: false });
-      S.A.heroBall = true;
-      S.exitW = toWorld(S.A, CW + 12, HEAD + CH * 0.5);
-      // the surf run: down and away to the right, each board angled a little to the path
-      // The run (after Sean's sketch): boards zig-zag right and left up a line that climbs away from the camera,
-      // each tilted like a diamond and turned a little towards the middle. The ball crosses each board to the far
-      // paddle, which knocks it back across to the next board on the other side (right boards: in from the left,
-      // off the right paddle; left boards the other way round). The last board, centred at the top, shatters.
-      S.surf = [];
-      for (var i = 0; i < NP; i++) {
-        var right = i % 2 === 0;
-        var it = courtPlane(g, makeCourt({ seed: 9 + i * 5, speed: 1.5, names: SURF_NAMES[i] }),
-          { x: (right ? 1 : -1) * 640, y: 120 - i * 250, z: -1400 - i * 1300, ry: (right ? -1 : 1) * 14, rz: (right ? 1 : -1) * 30, color: SURF_COLORS[i] });
-        it.right = right;
-        it.entryL = { x: right ? CW * 0.1 : CW * 0.9, y: CH * (0.3 + 0.4 * hash(i + 1)) };
-        it.hitL = { x: right ? CW - 31 - 12 : 31 + 12, y: CH * (0.25 + 0.5 * hash(i + 7)) };
-        S.surf.push(it);
+    S.deploy = { pat: 4, build: function (g) {
+      S.Fb = boardPlane(g, 'YOUR FLEET', { x: 0, y: -14, z: 0, rx: 90, s: 1.5, cull: false });
+      S.Eb = boardPlane(g, 'ENEMY WATERS', { x: 0, y: -760, z: -3000, s: 1.7, cull: false, enemy: true });
+      S.Eb.enemy = true;
+      addFleetSprites(S.Fb);
+    }, enter: function () { S.Eb.marks = {}; paintBoard(S.Eb); KIT.fleetBoard(S.Fb.grid, FLEET, 0); showFleet(S.Fb, 0); S.shown = 0; S.Eb.fire = []; }, update: function (t, lt, u, dt) {
+      var count = clamp01((t - 12) / 6) * 5.4 | 0;
+      if (count > 5) count = 5;
+      if (count !== S.shown) {
+        S.shown = count; KIT.fleetBoard(S.Fb.grid, FLEET, count); showFleet(S.Fb, count); S.Fb.flashAt = Cine.t;
+        var f = FLEET[count - 1]; if (f) { var m = shipMid(f); splash(cellWorld(S.Fb, m[0], m[1]), 0.8); Cine.shake = Math.max(Cine.shake, 0.25); }
       }
-      // the board that breaks: bigger, red, centred at the end of the line, square on to the ball
-      S.PE = courtPlane(g, makeCourt({ seed: 77, speed: 1.3, names: ['Gridlock', 'Vex'] }),
-        { x: 0, y: 120 - NP * 250 - 150, z: -1400 - NP * 1300 - 700, s: 1.3, color: '#ff2f6e' });
-      S.journey = buildJourney();
+      path([
+        { t: 0, x: 0, y: -2600, z: 2200, tx: 0, ty: 0, tz: 0, fov: 70, roll: 0 },
+        { t: 0.8, x: -420, y: -330, z: 760, tx: -60, ty: 0, tz: 100, fov: 62, roll: -8, e: easeOut },
+        { t: 7, x: 420, y: -360, z: 420, tx: 80, ty: 0, tz: -260, fov: 56, roll: 4 }
+      ], lt);
+      kick(dt);
+      Cine.speed = 1 - smooth(span(lt, 0.2, 1.0)); Cine.streaks = Cine.speed;
+      hud('DEPLOYING THE FLEET', 'SHIPS ' + count + ' / 5 · SIGNAL ENCRYPTED');
+    } };
+    var SEARCH = [[0, 2], [2, 6], [7, 3], [5, 8], [3, 1], [4, 1]];
+    S.acquire = { pat: 4, update: function (t, lt, u, dt) {
+      var lock = SEARCH[Math.min(5, Math.floor((t - 19) * 1.35))];
+      if (S.lockKey !== lock.join()) { S.lockKey = lock.join(); paintBoard(S.Eb, lock); }
+      path([
+        { t: 0, x: 420, y: -360, z: 420, tx: 80, ty: 0, tz: -260, fov: 56, roll: 4 },
+        { t: 1.8, x: 0, y: -640, z: 600, tx: 0, ty: -760, tz: -3000, fov: 50, roll: 0 },
+        { t: 6, x: 120, y: -720, z: -1100, tx: 0, ty: -760, tz: -3000, fov: 44, roll: -1 }
+      ], lt);
+      kick(dt);
+      hud('TARGET ACQUISITION', 'TARGET SEARCH · ' + String(Math.floor((t - 19) * 17)).padStart(3, '0') + '°');
+    } };
+    S.miss = { pat: 4, enter: function () { S.done.missile1 = false; }, update: function (t, lt, u, dt) {
+      once(S, 'missile1', t, 25.25, function () {
+        var hitAt = cellWorld(S.Eb, 4, 1);
+        missile({ x: -1000, y: -260, z: -1250 }, hitAt, 25.25, 0.65, 'miss', function () {
+          S.Eb.marks['4,1'] = 'miss'; paintBoard(S.Eb, [4, 1]); S.Eb.flashAt = Cine.t; caption('MISS', 'GRID E-2 · WATER');
+        }, 320);
+      });
+      path([
+        { t: 0, x: 120, y: -720, z: -1100, tx: 0, ty: -760, tz: -3000, fov: 44 },
+        { t: 0.9, x: -220, y: -620, z: -1500, tx: -120, ty: -560, tz: -2900, fov: 46, roll: -3 },
+        { t: 4, x: -60, y: -700, z: -1800, tx: 0, ty: -700, tz: -3000, fov: 42, roll: 0 }
+      ], lt);
+      kick(dt);
+      hud('MISSED SHOT', 'RELOADING · TUBE 2');
+    } };
+    S.hit = { pat: 4, update: function (t, lt, u, dt) {
+      once(S, 'missile2', t, 29.7, function () {
+        missile({ x: 900, y: -340, z: -1350 }, function () { return cellWorld(S.Eb, 4, 4); }, 29.7, 0.6, 'hit', function () {
+          S.Eb.marks['4,4'] = 'hit'; paintBoard(S.Eb); S.Eb.flashAt = Cine.t; S.Eb.fire = [cellWorld(S.Eb, 4, 4)]; caption('DIRECT HIT', 'GRID E-5 · BATTLESHIP');
+        }, 260);
+      });
+      path([
+        { t: 0, x: -60, y: -700, z: -1800, tx: 0, ty: -700, tz: -3000, fov: 42 },
+        { t: 1.5, x: 60, y: -740, z: -1650, tx: 0, ty: -740, tz: -3000, fov: 44, roll: 2 },
+        { t: 5, x: -1300, y: -1100, z: 900, tx: 0, ty: -380, tz: -1500, fov: 58, roll: -4 }
+      ], lt);
+      kick(dt);
+      burning(S.Eb, S.Eb.fire || []);
+      hud('DIRECT HIT', 'FLEET LINK ACTIVE · SIGNAL ENCRYPTED');
+    } };
+
+    /* ---------- 34 to 40: a flyby through the enemy sectors ---------- */
+
+    var SECTORS = [[-900, -620, -1600, 24, -4, 'ALPHA'], [950, -820, -3300, -22, 5, 'BRAVO'], [-1000, -560, -5000, 28, 3, 'CHARLIE'],
+      [900, -900, -6800, -26, -6, 'DELTA'], [0, -700, -8800, 0, 0, 'ECHO']];
+    var SALVO = [[34.35, 0, 3, 6, 'hit'], [35.0, 1, 1, 7, 'miss'], [35.7, 1, 4, 5, 'hit'], [36.6, 2, 6, 2, 'hit'], [37.6, 3, 2, 8, 'hit'], [38.6, 4, 4, 6, 'hit']];
+    S.hunt = { pat: 4, build: function (g) {
+      S.sec = SECTORS.map(function (s, i) {
+        var it = boardPlane(g, 'SECTOR / ' + s[5], { x: s[0], y: s[1], z: s[2], ry: s[3], rz: s[4], s: 1.2, enemy: true });
+        it.enemy = true; return it;
+      });
     }, enter: function () {
-      var st = S.A.court.state;
-      st.ball.x = 140; st.ball.y = CH * 0.45; st.ball.dx = Math.abs(st.ball.dx || 500); st.serveTimer = 0;
-      S.A.banner.textContent = ''; S.A.banner.style.opacity = '0'; S.A.court.cinematicMiss = false; S.A.noBall = false; S.A.hitCount = 0;
-      S.firstHit = null; S.lastB = null; S.steerT = null; S.pointed = false; S.elim = false; S.elimShown = false; S.cracked = false; S.broke = false;
-      S.surf.concat([S.PE]).forEach(function (it) { it.hidden = false; it.el.classList.remove('out'); it.banner.textContent = ''; it.court.cinematicMiss = false; it.court.cinematicMissLeft = false; it.court.speed = 1.5; });
-      Rig.on = false;
+      S.sec.forEach(function (it, i) { it.marks = {}; if (i % 2) it.marks['6,3'] = 'miss'; it.marks['8,8'] = 'miss'; paintBoard(it); it.fire = []; });
     }, update: function (t, lt, u, dt) {
-      var A = S.A, b = ballWorld(A), v = S.lastB && dt ? scale3(add3(b, scale3(S.lastB, -1)), 1 / dt) : { x: 1, y: 0, z: 0 };
-      S.lastB = b;
-      if (S.firstHit == null && (A.hitCount || 0) > 0) S.firstHit = t;
-      var head = rigHeading(v, dt);
-      var k = S.firstHit == null ? 0 : smooth(span(t, S.firstHit, S.firstHit + 1.4));
-      var follow = orbitPos(b, head, 0, 300, 55), look = add3(b, { x: Math.cos(head) * 260, y: 0, z: Math.sin(head) * 260 });
-      var wide = { x: -260, y: FLOOR - 940, z: 980 }, wideL = { x: 0, y: FLOOR, z: 0 };
-      rigTo(mix3(follow, wide, k), mix3(look, wideL, k), lerp(64, 56, k), -Math.cos(head) * 5 * (1 - k), dt, lerp(9, 3.2, k), lerp(14, 6, k));
-      Cine.streaks = 0.4 * (1 - k) + 0.1; Cine.speed = 0.3 * (1 - k);
+      path([
+        { t: 0, x: 0, y: -560, z: 900, tx: 0, ty: -650, tz: -3000, fov: 58 },
+        { t: 6, x: 150, y: -760, z: -6200, tx: 0, ty: -700, tz: -10000, fov: 74 }
+      ], lt);
+      Cine.cam.roll = Math.sin(lt * 0.9) * 6;
+      kick(dt);
+      // missiles overtake the camera to their targets
+      SALVO.forEach(function (m, i) { once(S, 'salvo' + i, t, m[0] - 0.75, function () {
+        var it = S.sec[m[1]], c = Cine.cam, cell = cellWorld(it, m[2], m[3]);
+        var to = m[4] === 'miss' ? { x: cell.x, y: -4, z: it.z + 220 } : cell;
+        missile({ x: c.x + (i % 2 ? 260 : -260), y: c.y + 140, z: c.z - 120 }, to, m[0] - 0.75, 0.75, m[4], function () {
+          it.marks[m[2] + ',' + m[3]] = m[4]; paintBoard(it); it.flashAt = Cine.t; if (m[4] === 'hit') it.fire.push(cell);
+        }, 160);
+      }); });
+      S.sec.forEach(function (it) { if (it.visible) burning(it, it.fire); });
+      Cine.speed = 0.35 + u * 0.4; Cine.streaks = 0.3 + u * 0.5;
+      hud('HUNTING THE FLEET', 'SECTORS 05 · TARGETS LOCKED');
     } };
 
-    S.rally = { pat: 0, update: function (t, lt, u, dt) {
-      var A = S.A, c = A.court, st = c.state, bl = st.ball;
-      c.speed = lerp(1.4, 2.6, u);
-      // the last rally: once the ball is heading right, it's steered past the right-hand paddle onto the point
-      if (S.steerT == null && t >= 23.2 && (bl.dx > 0 || t >= 23.85)) { S.steerT = t; S.steerFrom = { x: bl.x, y: bl.y }; }
-      if (S.steerT != null) {
-        var k = span(t, S.steerT, T_POINT);
-        c.cinematicMiss = true; c.speed = 0.0001;
-        bl.x = lerp(S.steerFrom.x, CW + 12, k); bl.y = lerp(S.steerFrom.y, CH * 0.5, smooth(k)); bl.dx = 900; bl.dy = 0;
-      }
-      var b = ballWorld(A), a = 0.5 + lt * 0.2, R = lerp(1100, 860, u);
-      var pos = { x: Math.sin(a) * R, y: FLOOR - 700 - 120 * Math.sin(lt * 0.6), z: Math.cos(a) * R }, look = { x: b.x * 0.3, y: FLOOR, z: b.z * 0.3 };
-      // at the end, ease down towards the ball as it goes out
-      var e = S.steerT == null ? 0 : smooth(span(t, S.steerT, T_POINT));
-      var near = { x: b.x + 300, y: FLOOR - 420, z: b.z + 760 };
-      rigTo(mix3(pos, near, e), mix3(look, b, e), lerp(56, 62, e) + (Cine.fovKick || 0), Math.sin(lt * 0.5) * 4, dt, 3.4, 6);
-      Cine.streaks = 0.2 + u * 0.6; Cine.speed = u * 0.5;
+    /* ---------- 40 to 46: the warship, three hits, and it sinks ---------- */
+
+    var HULL = [[40.8, -0.5, 0.4], [42.4, 0.05, -0.6], [44.0, 0.55, 0.3]];
+    var SHIP_Y = -(SHIP_WL * 3 - 105) * 3.6;   // the plane's centre, so the sprite's waterline sits on the sea (y = 0)
+    S.sunk = { pat: 4, build: function (g) {
+      S.Sh = shipPlane(g, { x: 0, y: SHIP_Y, z: -1800, ry: -12, s: 3.6, cull: false });
+    }, enter: function () { S.Sh.y = SHIP_Y; S.Sh.rz = 0; S.Sh.op = 1; S.Sh.fire = []; S.Sh.el.style.clipPath = ''; }, update: function (t, lt, u, dt) {
+      var Sh = S.Sh;
+      HULL.forEach(function (h, i) { once(S, 'hull' + i, t, h[0] - 0.6, function () {
+        missile({ x: -900 + i * 300, y: -900, z: 400 }, function () { return shipPoint(Sh, h[1], h[2]); }, h[0] - 0.6, 0.6, 'hit', function () {
+          Sh.fire.push(function () { return shipPoint(Sh, h[1], h[2]); }); Cine.tear = Math.max(Cine.tear, 0.6);
+        }, 380);
+      }); });
+      // the sinking: down by the bow, under the waterline (clipped there), the sea closing over it
+      var k = easeIn(span(t, 44.1, 46));
+      Sh.y = SHIP_Y + k * 640; Sh.rz = 13 * k; Sh.op = 1 - smooth(span(t, 45.3, 46));
+      // once it starts going down, only what's still above the water shows (the reflection goes with it)
+      var drop = Sh.y - SHIP_Y, above = SHIP_WL * 3 - drop / 3.6;
+      Sh.el.style.clipPath = drop > 0.5 ? 'inset(0 0 ' + clamp01((210 - above) / 210 * 1) * 100 + '% 0)' : '';
+      once(S, 'sink1', t, 44.3, function () { splash({ x: Sh.x - 200, y: -4, z: Sh.z + 120 }, 2.2); Cine.shake = Math.max(Cine.shake, 0.8); });
+      once(S, 'sink2', t, 45.0, function () { splash({ x: Sh.x + 250, y: -4, z: Sh.z + 80 }, 1.8); });
+      once(S, 'sunkCap', t, 45.05, function () { caption('SUNK', 'ENEMY BATTLESHIP'); Cine.flash = Math.max(Cine.flash, 0.3); });
+      if (Sh.op > 0.2) burning(Sh, Sh.fire.filter(function (f) { var w = f(); return w.y < -10; }));
+      path([
+        { t: 0, x: -1500, y: -560, z: 100, tx: 0, ty: -300, tz: -1800, fov: 50, roll: -3 },
+        { t: 6, x: 1200, y: -420, z: -650, tx: 0, ty: -220, tz: -1800, fov: 48, roll: 3 }
+      ], lt);
+      kick(dt);
+      hud(t < 44.9 ? 'MULTIPLE IMPACTS' : 'ENEMY SHIP SUNK', 'OPERATION STATUS · LIVE');
     } };
 
-    // the whole journey as hero segments (deterministic, so the film can start part way through)
-    function buildJourney() {
-      var segs = [], P = S.surf;
-      var hop = add3(S.exitW, { x: 260, y: -330, z: -60 });
-      segs.push({ kind: 'hop', t0: T_POINT, t1: 25.0, from: S.exitW, to: hop, ease: easeOut });
-      var prev = hop, prevT = 25.0;
-      P.forEach(function (it, i) {
-        var entry = onFace(it, it.entryL.x, it.entryL.y), hit = onFace(it, it.hitL.x, it.hitL.y);
-        segs.push({ kind: 'fly', i: i, t0: prevT, t1: hitT(i) - SPB, from: prev, to: entry, arc: i ? 220 : 160,
-          bulge: i ? scale3(normalOf(P[i - 1]), 260) : null, ease: function (k) { return k * 0.55 + smooth(k) * 0.45; },
-          onEnd: function () { land(it); } });
-        segs.push({ kind: 'ride', i: i, it: it, t0: hitT(i) - SPB, t1: hitT(i), from: entry, to: hit, onEnd: function () { paddleHit(it); } });
-        prev = hit; prevT = hitT(i);
-      });
-      var PE = S.PE, n = normalOf(PE), mid = toWorld(PE, PE.w / 2, PE.head + CH / 2);
-      var appr = add3(mid, scale3(n, 900)), appr2 = add3(mid, scale3(n, 360)), through = add3(mid, scale3(n, 4));
-      segs.push({ kind: 'long', t0: prevT, t1: T_SLOW, from: prev, to: appr, arc: 700, bulge: scale3(normalOf(P[NP - 1]), 500), ease: easeInOut });
-      segs.push({ kind: 'slow', t0: T_SLOW, t1: T_RUSH, from: appr, to: appr2 });
-      segs.push({ kind: 'rush', t0: T_RUSH, t1: T_BREAK, from: appr2, to: through, ease: easeIn, onEnd: function () { breakThrough(); } });
-      segs.push({ kind: 'through', t0: T_BREAK, t1: T_THROUGH_END, from: through, to: add3(mid, { x: 1100, y: 600, z: -7000 }), arc: 260,
-        ease: function (k) { return 1 - Math.pow(1 - k, 1.35); } });
-      S.through = through; S.dirThrough = scale3(n, -1);
-      return segs;
-    }
+    /* ---------- 46 to 52: achievements, profile, chat, friends, then the real modes and skulls ---------- */
 
-    // the ball lands on a board: a small shockwave, the board lights, and its right-hand player stops (and so misses
-    // their own ball) to meet ours instead
-    function land(it) {
-      var p = projectP(heroAt(Cine.t) || centreOf(it));
-      if (p) { ring(p, 260 * Math.min(2, p.s)); burst(p.x, p.y, 26, [320, 190, 285], 0.6); }
-      it.flashAt = Cine.t;
-      if (it.right) it.court.cinematicMiss = true; else it.court.cinematicMissLeft = true;
-      Cine.shake = Math.max(Cine.shake, 0.22);
-    }
-    function paddleHit(it) {
-      var p = projectP(heroAt(Cine.t) || centreOf(it));
-      if (p) { burst(p.x, p.y, 60, [320, 190, 285, 50], 1.0); ring(p, 420 * Math.min(2, p.s)); }
-      it.flashAt = Cine.t;
-      Cine.shake = Math.max(Cine.shake, 0.45); Cine.flash = Math.max(Cine.flash, 0.14); Cine.aberration = Math.max(Cine.aberration, 0.8);
-      Cine.tear = Math.max(Cine.tear, 0.35); Cine.fovKick = -9;
-    }
-    function breakThrough() {
-      var PE = S.PE;
-      Cine.flash = Math.max(Cine.flash, 0.75); Cine.shake = Math.max(Cine.shake, 1.3); Cine.aberration = 1.4; Cine.tear = Math.max(Cine.tear, 1.2);
-      var p = projectP(S.through); if (p) { burst(p.x, p.y, 160, [340, 320, 190, 300], 1.6); ring(p); }
-      PE.noBall = true;
-      shatterGlass(PE, S.through, scale3(S.dirThrough, 2600));   // blown along with the ball, so the camera flies through them
-    }
-
-    // the right-hand paddle on the board the ball is riding slides to meet it
-    function ridePaddles(t) {
-      S.surf.forEach(function (it, i) {
-        var t1 = hitT(i), t0 = t1 - SPB;
-        if (t < t0 - 0.25 || t > t1 + 0.1) return;
-        var pd = it.right ? it.court.state.p2 : it.court.state.p1, want = it.hitL.y - pd.h / 2;
-        pd.y = lerp(pd.y, want, Math.min(1, 0.25 + span(t, t0 - 0.25, t1) * 0.75));
-      });
-    }
-
-    // where the camera sits in each part of the journey: [orbit angle round the ball, distance, height, fov]
-    function journeyCam(s, k, i, speed) {
-      var side = i % 2 ? -1 : 1, fast = clamp01(speed / 2600);
-      switch (s.kind) {
-        case 'hop': return [-115, 820, 420, 62];          // out ahead, looking back at the court and POINT SCORED
-        case 'fly': return [side * 10, 950, 190, 58 + fast * 22];
-        case 'ride': return [side * 6, 1050, 110, 56];
-        case 'long': return [-38 * Math.sin(smooth(k) * Math.PI), 700, lerp(220, 120, smooth(k)), 62 + fast * 18];   // a swing out to the side and back
-        case 'slow': return [lerp(20, 2, smooth(k)), lerp(460, 250, k), lerp(110, 40, k), lerp(68, 36, smooth(k))];   // dolly zoom, from just behind
-        case 'rush': return [0, 220, 30, lerp(40, 70, k)];
-        default: return [0, 320, 70, 84];
-      }
-    }
-
-    var RUN_HEAD = Math.atan2(-1300, 0);   // the run climbs straight away from the camera (towards -z)
-
-    // the orbit angle that puts the camera out along a board's facing direction
-    function azToward(n, head) {
-      var a = (Math.atan2(n.z, n.x) - head - Math.PI) / D2R;
-      while (a > 180) a -= 360;
-      while (a < -180) a += 360;
-      return a;
-    }
-
-    function journey(t, lt, u, dt) {
-      var A = S.A;
-      // the point
-      if (!S.pointed && t >= T_POINT) {
-        S.pointed = true;
-        var st = A.court.state;
-        if (t - T_POINT < 0.3) { st.score[0]++; A.court.lastScore = st.score.slice(); onPoint(A); }
-        A.noBall = true; A.court.cinematicMiss = false; A.court.speed = 1.3; st.ball.x = CW / 2; st.ball.y = CH / 2; st.serveTimer = 0.8;
-        A.banner.textContent = 'POINT SCORED';
-      }
-      A.banner.style.opacity = (1 - smooth(span(t, T_POINT + 0.8, T_POINT + 1.3))).toFixed(3);
-      ridePaddles(t);
-      // slow motion as the last board's player is eliminated
-      Cine.timeScale = 1 - 0.8 * smooth(span(t, T_SLOW - 0.15, T_SLOW + 0.15)) * (1 - smooth(span(t, T_RUSH - 0.05, T_RUSH + 0.1)));
-      if (!S.elim && t >= T_SLOW + 0.5) { S.elim = true; S.PE.court.cinematicMiss = true; }
-      if (!S.elimShown && t >= T_RUSH + 0.05) { S.elimShown = true; S.PE.banner.textContent = 'ELIMINATED'; S.PE.banner.style.opacity = '1'; S.PE.el.classList.add('out'); }
-      if (!S.cracked && t >= T_BREAK - 0.1) { S.cracked = true; Cine.crack = { t0: T_BREAK - 0.1, at: S.through, seed: 3 }; }
-      var dim = smooth(span(t, T_SLOW, T_SLOW + 0.4)) * (1 - smooth(span(t, T_BREAK, T_BREAK + 0.4)));
-      Cine.env = 1 - dim * 0.55;
-
-      var s = heroSeg(t), bw = heroAt(t);
-      if (!s || !bw) return;
-      var v = heroVel(t) || { x: 1, y: 0, z: 0 }, speed = Math.hypot(v.x, v.y, v.z);
-      var k = clamp01((t - s.t0) / (s.t1 - s.t0)), cam = journeyCam(s, k, s.i || 0, speed);
-      // along the run, the camera faces up the line (mostly), not wherever the ball bounces to next
-      var hv = v;
-      if (s.kind === 'fly' || s.kind === 'ride' || s.kind === 'long') {
-        var vh = Math.atan2(v.z, v.x), d = vh - RUN_HEAD;
-        while (d > Math.PI) d -= Math.PI * 2;
-        while (d < -Math.PI) d += Math.PI * 2;
-        var hh = RUN_HEAD + d * 0.25;
-        hv = { x: Math.cos(hh), y: 0, z: Math.sin(hh) };
-      }
-      var head = rigHeading(hv, dt);
-      var az = rigAz(cam[0], dt, s.kind === 'slow' || s.kind === 'long' ? 6 : 3.2);
-      var pos = orbitPos(bw, head, az, cam[1], cam[2]), look = add3(bw, scale3(v, 0.08));
-      // along the zig-zag run the camera trails the ball's own path a third of a second behind, drawn in towards
-      // the line's middle, so it glides up the line while the ball weaves from board to board in front of it
-      var trail = (s.kind === 'fly' || s.kind === 'ride') && heroAt(t - 0.32);
-      if (trail) {
-        pos = { x: lerp(trail.x, 0, 0.45) + (s.i % 2 ? -1 : 1) * cam[0] * 8, y: trail.y - cam[2], z: trail.z + cam[1] * 0.75 };
-        look = mix3(bw, add3(bw, { x: 0, y: -60, z: -900 }), 0.35);
-      }
-      // in the slow motion, frame the ball against the board it's about to break
-      if (s.kind === 'slow' || s.kind === 'long') look = mix3(look, centreOf(S.PE), s.kind === 'slow' ? 0.4 : 0.25 * smooth(k));
-      Cine.fovKick = (Cine.fovKick || 0) * Math.max(0, 1 - dt * 5);
-      var roll = Math.max(-12, Math.min(12, -Rig.azv * 0.05)) + (s.kind === 'through' ? Math.sin(t * 2) * 3 : 0);
-      // lead the targets by the ball's velocity: a spring trails a moving target by 2v/w, so this cancels the lag and
-      // the camera holds its place round the ball while still easing through every change of direction
-      var wp = s.kind === 'rush' || s.kind === 'through' || s.kind === 'slow' ? 9 : 6, wl = 11;
-      // (capped, so a sudden burst of speed, like the rush at the glass, can't throw the camera through it)
-      var lead = trail ? 0 : Math.min(1, (s.kind === 'rush' ? 120 : 420) / Math.max(1, speed * 2 / wp));
-      rigTo(add3(pos, scale3(v, 2 / wp * lead)), add3(look, scale3(v, 2 / wl * lead)), cam[3] + Cine.fovKick, roll, dt, wp, wl);
-      Cine.streaks = s.kind === 'slow' ? 0.05 : s.kind === 'through' || s.kind === 'rush' ? 1 : 0.2 + clamp01(speed / 2400) * 0.8;
-      Cine.speed = s.kind === 'slow' ? 0 : clamp01(speed / 3000) * 0.7;
-      if (s.kind === 'through' || s.kind === 'rush') Cine.aberration = Math.max(Cine.aberration, 0.35);
-    }
-
-    S.score = { pat: 0, update: journey };
-    S.arena = { pat: 0, update: journey };
-    S.matchpoint = { pat: 0, update: journey, exit: function () { Cine.timeScale = 1; } };
-
-    /* ---------- Scenes 7 and 8: results, achievements, profile, chat, friends, invite (one space) ---------- */
-
-    S.results = { pat: 0, build: function (g) {
-      var rp = panel('cine-results', 'MATCH RESULTS');
-      var rows = [[me.name, 7, 5, 'WIN'], ['Lunar', 7, 3, 'WIN'], ['Blocky', 5, 7, ''], ['Tess', 2, 7, ''], ['Gridlock', 0, 7, 'OUT']];
-      rows.forEach(function (r, i) {
-        var row = el('div', 'cine-result' + (r[3] === 'WIN' ? ' win' : r[3] === 'OUT' ? ' out' : ''), rp);
-        row.appendChild(avatarArt(i + 2, 54));
-        el('span', 'cine-result-name', row).textContent = r[0];
-        el('span', 'cine-result-score', row).textContent = r[1] + ' – ' + r[2];
-        el('span', 'cine-result-tag', row).textContent = r[3];
-      });
-      S.resultsPanel = plane(g, rp, 1100, 760, { x: -900, y: 0, z: 2600, ry: 15, cull: false });
-      var tw = el('div', 'cine-toast cine-toast-world');
-      el('strong', '', tw).textContent = 'Achievement unlocked';
-      var first = ACH && ACH.list ? ACH.list()[0] : null;
-      el('span', '', tw).textContent = first ? first.name : 'First Point';
-      S.toastPlane = plane(g, tw, 520, 120, { x: 120, y: -60, z: 1400, s: 1.6, cull: false });
-
-      // achievements, profile, chat, friends and invite: the same real data and look as the Tetris opening
+    S.achievements = { pat: 0, build: function (g) {
       var wall = panel('cine-ach', 'ACHIEVEMENTS');
       var count = el('div', 'cine-panel-sub', wall);
       var grid = el('div', 'cine-grid', wall);
@@ -1775,20 +1720,8 @@
       S.achItems = items; S.achCount = count;
       S.achWall = plane(g, wall, 1900, 760, { x: 0, y: 0, z: 0, ry: 14, rx: 6, cull: false });
       buildSocial(g, S, me);
-    }, enter: function () { S.achWall.x = 0; S.achWall.ry = 14; S.invite.op = 0; S.profPanel.x = 300; S.toasted = false; }, update: function (t, lt) {
-      path([
-        { t: 0, x: -200, y: -150, z: 3900, tx: -900, ty: 0, tz: 2600, fov: 54 },
-        { t: 1.3, x: -1400, y: 100, z: 3800, tx: -900, ty: 0, tz: 2600, fov: 54 },
-        { t: 2.1, x: 100, y: -40, z: 2300, tx: 120, ty: -60, tz: 1400, fov: 56, e: easeInOut },
-        { t: 3.0, x: 300, y: 100, z: 950, tx: 200, ty: 60, tz: 0, fov: 54, e: easeIn }
-      ], lt);
-      var n = S.achItems.length, on = Math.floor(easeOut(span(lt, 2.0, 3.0)) * n);
-      S.achItems.forEach(function (it, i) { it.classList.toggle('on', i < on); it.classList.toggle('pop', i === on - 1); });
-      S.achCount.textContent = Math.min(n, on) + ' / ' + n + ' unlocked';
-      S.toastPlane.op = smooth(span(lt, 1.0, 1.3));
-    } };
-
-    S.achievements = { pat: 0, update: function (t, lt) {
+    }, enter: function () { S.achWall.x = 0; S.achWall.ry = 14; S.invite.op = 0; S.profPanel.x = 300; hud(''); },
+    update: function (t, lt) {
       path([{ t: 0, x: 300, y: 100, z: 950, tx: 200, ty: 60, tz: 0, fov: 54 }, { t: 1.0, x: -400, y: -150, z: 1050, tx: -300, ty: -60, tz: 0, fov: 54 },
         { t: 1.6, x: -200, y: -100, z: -600, tx: 300, ty: 80, tz: -2600, fov: 56, e: easeIn }], lt);
       var n = S.achItems.length, on = Math.min(n, Math.floor(n * (0.6 + lt * 0.4)));
@@ -1844,63 +1777,51 @@
       if (lt > 1.75) { Cine.flash = Math.max(Cine.flash, (lt - 1.75) * 3); Cine.tear = Math.max(Cine.tear, 1); }
     } };
 
-    /* ---------- Scene 10: the final rally, then everything breaks apart ---------- */
+    /* ---------- 52 to 58: the final salvo between two fleets, then everything breaks apart ---------- */
 
-    S.final = { pat: 0, build: function (g) {
-      var f = makeCourt({ seed: 21, speed: 3.0, names: [me.name, 'Lunar'] });
-      S.F = courtPlane(g, f, { x: 0, y: 0, z: 0, hero: true, cull: false });
-      S.F.heroBall = true;
-      S.mon = [];
-      for (var i = 0; i < 6; i++) {
-        var a = i * 1.05;
-        S.mon.push(courtPlane(g, makeCourt({ seed: 30 + i, speed: 2.2 }), { x: Math.cos(a) * 1700, y: Math.sin(a) * 900, z: -1500 - i * 500, ry: (hash(i) - 0.5) * 60, s: 0.8 }));
-      }
+    var FINAL = [[52.7, 'F', 3, 3], [53.7, 'E', 2, 5], [54.9, 'F', 6, 7], [56.1, 'E', 7, 2], [57.2, 'F', 4, 4]];
+    S.final = { pat: 4, build: function (g) {
+      S.F2 = boardPlane(g, 'YOUR FLEET', { x: -950, y: -560, z: -200, ry: 32, s: 1.3, cull: false });
+      S.E2 = boardPlane(g, 'ENEMY FLEET', { x: 950, y: -560, z: -900, ry: -32, s: 1.3, cull: false, enemy: true });
+      S.E2.enemy = true;
+      addFleetSprites(S.F2);
     }, enter: function () {
-      var st = S.F.court.state, b = st.ball;
-      // the ball comes back in from the opposite direction to the one it left in
-      b.x = CW * 0.85; b.y = CH * 0.4; b.dx = -Math.abs(b.dx || 700) * 1.2; st.serveTimer = 0;
-      S.F.court.cinematicMiss = false; S.F.hidden = false; S.F.noBall = true; S.F.returned = false;   // our ball flies back in (laterSegs) S.F.el.classList.remove('out'); S.F.banner.textContent = '';
-      S.blasted = false; S.cut = -1; S.mon.forEach(function (it) { it.hidden = false; });
-      snap(frontOf(S.F, 950, 40), centreOf(S.F));
+      showFleet(S.F2, 5);
+      [S.F2, S.E2].forEach(function (it) { it.marks = { '1,1': 'miss', '5,8': 'miss', '8,4': 'hit' }; it.fire = []; it.hidden = false; paintBoard(it); });
+      KIT.fleetBoard(S.F2.grid, FLEET, 5);
+      S.blasted = false;
     }, update: function (t, lt, u, dt) {
-      var F = S.F, st = F.court.state, b = ballWorld(F), dir = st.ball.dx >= 0 ? 1 : -1;
-      if (!F.returned && !S.blasted && t >= T_RETURN) { F.returned = true; F.noBall = false; }
-      // the last point lands on the track's final impact: the ball is steered past the right paddle from 55.6 s
-      if (t >= 55.6 && !S.blasted) {
-        F.court.cinematicMiss = true;
-        var bb = st.ball, k = span(t, 55.6, 56.3);
-        bb.x = lerp(CW * 0.35, CW + 20, k * k); bb.y = CH * 0.5 + Math.sin(k * 4) * 40; bb.dx = 950; bb.dy = 0;
-        F.court.speed = 0.0001;
-      }
-      // a hard cut to a new angle on every beat
-      var cut = Math.floor(lt / SPB), mode = cut % 4, pos, look;
-      if (mode === 0) { pos = add3(b, { x: -dir * 320, y: -40, z: 260 }); look = add3(b, { x: dir * 320, y: 0, z: 0 }); }
-      else if (mode === 1) { pos = { x: F.x, y: F.y - 1100, z: F.z + 260 }; look = centreOf(F); }
-      else if (mode === 2) { var pd = paddleWorld(F, dir > 0 ? 1 : 0); pos = add3(pd, { x: -dir * 190, y: -30, z: 230 }); look = pd; }
-      else { pos = frontOf(F, 850, 40); look = centreOf(F); }
-      if (!S.blasted) {
-        if (cut !== S.cut) { S.cut = cut; snap(pos, look); Cine.tear = Math.max(Cine.tear, 0.7); Cine.aberration = Math.max(Cine.aberration, 0.6); }
-        else chase(pos, look, dt, 8);
-        Cine.cam.roll = (mode % 2 ? 1 : -1) * 6;
-      }
-      if (!S.blasted && t >= 56.3) {
-        st.score[0]++; F.court.lastScore = st.score.slice(); F.court.speed = 1;
-        S.blasted = true; S.blastAt = t;
+      FINAL.forEach(function (m, i) { once(S, 'final' + i, t, m[0] - 0.55, function () {
+        var src = m[1] === 'F' ? S.F2 : S.E2, dst = m[1] === 'F' ? S.E2 : S.F2, cell = cellWorld(dst, m[2], m[3]);
+        missile(cellWorld(src, 5, 5), cell, m[0] - 0.55, 0.55, 'hit', function () {
+          dst.marks[m[2] + ',' + m[3]] = 'hit'; paintBoard(dst); dst.flashAt = Cine.t; dst.fire.push(cell);
+        }, 420);
+      }); });
+      once(S, 'destroyed', t, 56.7, function () { caption('FLEET DESTROYED', 'FINAL NAVAL ASSAULT'); });
+      var C = { x: 0, y: -560, z: -550 }, a = lerp(-0.55, 0.6, smooth(span(lt, 0, 5.8))), R = 2100 - 300 * u;
+      var pos = { x: Math.sin(a) * R, y: -760 + Math.sin(lt * 0.8) * 80, z: C.z + Math.cos(a) * R };
+      if (t >= 57.45 && !S.blasted) {
+        S.blasted = true; S.blastAt = t; S.blastFrom = pos;
         Cine.flash = 1; Cine.shake = 1.5; Cine.aberration = 1.4;
-        F.flashAt = t; F.noBall = true;
-        shatter(F);
-        S.mon.forEach(function (it) { shatter(it); it.hidden = true; });
-        snap(frontOf(F, 950, 40), centreOf(F));
+        [S.F2, S.E2].forEach(function (it) { boardRaster(it); shatterGlass(it, centreOf(it), { x: 0, y: -200, z: 600 }); });
       }
-      if (S.blasted) {
-        var k = easeOut(span(t, S.blastAt, S.blastAt + 1.6));
-        Cine.cam.z = lerp(950, 9000, k); Cine.cam.roll = 0; lookAt(0, 0, -2000);
+      var c = Cine.cam;
+      if (S.blasted) {   // pull back to where the menu shot takes over
+        var k = easeOut(span(t, S.blastAt, 58.0)), end = { x: 0, y: 0, z: 9000 };
+        var p = mix3(S.blastFrom, end, k);
+        c.x = p.x; c.y = p.y; c.z = p.z; c.roll = 0; c.fov = lerp(58, 40, k);
+        var L = mix3(C, { x: 0, y: 0, z: -2000 }, k); lookAt(L.x, L.y, L.z);
+      } else {
+        c.x = pos.x; c.y = pos.y; c.z = pos.z; c.roll = Math.sin(lt * 1.1) * 4; c.fov = 58 + u * 6;
+        lookAt(C.x, C.y, C.z);
+        kick(dt);
       }
-      Cine.streaks = S.blasted ? 0 : 1; Cine.speed = S.blasted ? 0 : 0.6;
+      [S.F2, S.E2].forEach(function (it) { if (!it.hidden) burning(it, it.fire); });
+      Cine.speed = S.blasted ? 0 : 0.25;
+      hud(S.blasted ? '' : 'FINAL NAVAL ASSAULT', 'OPERATION STATUS · LIVE');
     } };
-    S.final.enter = (function (base) { return function () { base(); var st = S.F.court.state; S.F.startTotal = st.score[0] + st.score[1]; }; })(S.final.enter);
 
-    S.menu = { pat: 0, update: function (t, lt) {
+    S.menu = { pat: 4, update: function (t, lt) {
       var c = Cine.cam; c.x = 0; c.y = 0; c.z = 9000; c.fov = 40; c.roll = 0; lookAt(0, 0, -2000);
       if (!S.menu.hit) { S.menu.hit = true; caption(); }
       logoFinale(lt);
@@ -1919,28 +1840,8 @@
       if (shot.build && !s.group) shot.build(shot.group);
       return shot;
     });
-    Hero.segs = S.journey.concat(laterSegs(S));
     Cine.S = S;   // (for the ?cinematic testing aid)
     return shots;
-  }
-
-  // The ball's later appearances: it smacks into the results panel and bounces off out of shot, then flies back in
-  // for the final rally.
-  var T_RETURN = 53.38;
-  function laterSegs(S) {
-    var rp = S.resultsPanel, rc = toWorld(rp, rp.w / 2, rp.h * 0.42);
-    rc.z += 12;
-    return [
-      { kind: 'bounce', t0: 41.0, t1: 41.3, from: { x: -260, y: -40, z: 3600 }, to: rc, ease: easeIn, onEnd: function () {
-        var p = projectP(rc); if (p) { ring(p, 700); burst(p.x, p.y, 70, [320, 190, 285], 1.1); }
-        rp.shakeUntil = Cine.t + 0.22; Cine.shake = Math.max(Cine.shake, 0.6); Cine.flash = Math.max(Cine.flash, 0.2); Cine.aberration = 1;
-      } },
-      { kind: 'away', t0: 41.3, t1: 41.85, from: rc, to: { x: -200, y: -1700, z: 3400 }, ease: easeOut },
-      { kind: 'return', t0: 53.0, t1: T_RETURN, from: { x: -1100, y: -650, z: 700 }, to: function () { return ballWorld(S.F); }, arc: 150, ease: easeIn, onEnd: function () {
-        var p = projectP(ballWorld(S.F)); if (p) { ring(p, 600); burst(p.x, p.y, 80, [320, 190, 285], 1.2); }
-        Cine.shake = Math.max(Cine.shake, 0.7); Cine.flash = Math.max(Cine.flash, 0.3);
-      } }
-    ];
   }
 
   // The profile, chat, friends and invite panels (the same real data and look as the Tetris opening).
@@ -1961,9 +1862,9 @@
     S.profSw = ['#c77dff', '#a020ff', '#7c6cff', '#4cc9ff', '#3d8bff', '#ff2fa6', '#28e8ff'].map(function (c) { var s = el('span', 'cine-sw', sw); s.style.background = c; return s; });
     S.profPanel = plane(g, prof, 1100, 720, { x: 300, y: 80, z: -2600, ry: -10, cull: false });
 
-    var chat = panel('cine-chat', 'CHAT · #pong');
+    var chat = panel('cine-chat', 'CHAT · #battleships');
     S.chatList = el('div', 'cine-chat-list', chat);
-    S.chatMsgs = [['Lunar', 'that angle was unreal'], ['Blocky', 'gg'], [me.name, 'rematch??'], ['Gridlock', 'rally of 69 lets go'], ['Tess', 'invite me next round'], [me.name, 'lobby up, join me']];
+    S.chatMsgs = [['Lunar', 'that salvo was unreal'], ['Blocky', 'gg'], [me.name, 'rematch??'], ['Gridlock', 'five ships in five shots??'], ['Tess', 'invite me next round'], [me.name, 'lobby up, join me']];
     S.chatPanel = plane(g, chat, 900, 760, { x: -900, y: 0, z: -4800, ry: 18, cull: false });
 
     var fr = panel('cine-friends', 'FRIENDS');
@@ -1982,7 +1883,7 @@
     ir.appendChild(avatarArt(3, 110));
     var iw = el('div', '', ir);
     el('div', 'cine-prof-name', iw).textContent = 'Lunar';
-    el('div', 'cine-prof-lvl', iw).textContent = 'invited you to Pong · first to 7';
+    el('div', 'cine-prof-lvl', iw).textContent = 'invited you to Battleships · salvo rules';
     var btns = el('div', 'cine-invite-btns', inv);
     el('span', 'cine-accept', btns).textContent = 'Accept';
     el('span', 'cine-decline', btns).textContent = 'Decline';
@@ -2062,7 +1963,7 @@
     L.art.style.opacity = (flick * (1 - smooth(span(lt, 1.6, 1.98)))).toFixed(3);
     L.art.style.transform = 'scale(' + (1 + 0.15 * (1 - smooth(span(lt, 0, 0.4)))).toFixed(3) + ')';
     L.sub.style.opacity = (smooth(span(lt, 0.2, 0.6)) * (1 - smooth(span(lt, 1.0, 1.6)))).toFixed(3);
-    L.sub.style.fontSize = Math.max(11, w * 0.05) + 'px';
+    L.sub.style.fontSize = Math.max(11, w * 0.028) + 'px';   // (Battleships' tagline is long)
   }
 
   function hideLogo() { Cine.logo.box.style.display = 'none'; }
@@ -2158,11 +2059,11 @@
 
     var view = applyCamera();
     layoutGroup(shot.group, view);
-    simCourts(shot.group, dt);
+    boardFlashes(shot.group);
     Bg.draw({ time: t, pat: shot.pat, level: Cine.level, beat: Cine.beat, flash: Math.min(1, Cine.flash), env: Cine.env, tear: Cine.tear,
       speed: Cine.speed, variant: Cine.variant, P: view.P, cam: Cine.cam, dist: Cine.dist, eye: Cine.eye, crt: Cine.crt });
     drawFx(dt, t);
-    drawBalls(shot.group, dt, t);   // (the CRT pixel too, and the hero ball between courts)
+    drawMissiles(dt, t);   // missiles, splashes, fireballs and every flame
     // VHS: the chromatic split and tearing grow with hits and speed; a calm floor of it is always there
     // (the last shot settles: no split while the live menu fades in, which also keeps that hand-over smooth)
     // (two full-screen drop-shadows are costly, so the split is only on during hits and fast moves, never idling)
@@ -2185,7 +2086,6 @@
   function play(fromSeconds) {
     if (Cine.running) return;
     G.Store.set(STORE_SEEN, Date.now());
-    courtCount = 0;
     window.scrollTo(0, 0);
     buildStage();
     qualityStart();
@@ -2196,9 +2096,9 @@
     Cine.ending = false;
     Cine.sparkBurst = false;
     Cine.hold = null;
-    Hero.last = null; Hero.ghost = []; Rig.on = false; Cine.timeScale = 1; Cine.fovKick = 0;
+    Rig.on = false; Cine.timeScale = 1; Cine.fovKick = 0; Cine.missiles = []; Cine.splashes = []; Cine.fires = [];
     document.documentElement.classList.add('cine-open');
-    if (window.PongMenuMusic) window.PongMenuMusic.hold(true);
+    if (window.BattleshipsMenuMusic) window.BattleshipsMenuMusic.hold(true);
     // The cinematic's boards would beep on every move and lock; hush the game's sound effects while it plays.
     if (G.Sound) { Cine.beepWas = G.Sound.beep; G.Sound.beep = function () {}; }
     document.addEventListener('keydown', onKey, true);
@@ -2220,7 +2120,7 @@
     var last = CUES.segments[CUES.segments.length - 1];
     Audio.close(skipped ? 0.3 : Math.max(0.5, (last.fadeOut ? last.fadeOut[1] : CUES.end) - CUES.end), !skipped);
     // the menu loop: already cued on the audio clock if the film ran to the end with sound; otherwise start it now
-    if (window.PongMenuMusic) { window.PongMenuMusic.hold(false); window.PongMenuMusic.startNow(skipped ? 1.2 : 1.5); }
+    if (window.BattleshipsMenuMusic) { window.BattleshipsMenuMusic.hold(false); window.BattleshipsMenuMusic.startNow(skipped ? 1.2 : 1.5); }
     if (G.Sound && Cine.beepWas) G.Sound.beep = Cine.beepWas;
     document.removeEventListener('keydown', onKey, true);
     var root = Cine.root;
@@ -2228,13 +2128,13 @@
     setTimeout(function () { root.remove(); }, skipped ? 450 : 50);
     document.documentElement.classList.remove('cine-open');
     Cine.groups = {}; Cine.shots = null; Cine.bolts = []; Cine.sparks = []; Cine.frags = []; Cine.flames = []; Cine.rings = []; Cine.transits = [];
-    Cine.glass = []; Cine.ballQ = []; Cine.sprites = []; Cine.crack = null; Hero.segs = []; Rig.on = false;
-    var btn = document.getElementById('pongCinematicBtn');
+    Cine.glass = []; Cine.crack = null; Cine.missiles = []; Cine.splashes = []; Cine.fires = []; Rig.on = false;
+    var btn = document.getElementById('battleshipsCinematicBtn');
     if (btn && skipped) btn.focus({ preventScroll: true });
   }
 
   function init() {
-    var btn = document.getElementById('pongCinematicBtn');
+    var btn = document.getElementById('battleshipsCinematicBtn');
     if (btn) btn.addEventListener('click', function () { play(0); });
     var forced = location.search.match(/[?&]cinematic(?:=(\d+(?:\.\d+)?))?(?:&|$)/);
     if (forced) {
@@ -2245,25 +2145,16 @@
       return;
     }
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // First visit only (players who have been before but never saw it get it too), and not for people who asked for
-    // less motion. Someone arriving on an invite link sees it as well, with the host's ball: wait a moment for the
-    // lobby's hello to bring it (pong.js), then play.
+    // First visit only (players who have been before but never saw it get it too, and first-timers arriving on an
+    // invite link), and not for people who asked for less motion.
     if (G.Store.get(STORE_SEEN, 0) || reduced) return;
-    if (App.fromInvite) {
-      var waited = 0, poll = setInterval(function () {
-        waited += 200;
-        if (Cine.running || G.Store.get(STORE_SEEN, 0)) { clearInterval(poll); return; }
-        if ((App.hostBall && App.hostBall()) || waited >= 6000) { clearInterval(poll); play(0); }
-      }, 200);
-      return;
-    }
-    if (!(App.lobby && App.lobby())) play(0);
+    play(0);
   }
 
-  window.PongCinematic = { play: play, skip: function () { finish(true); }, playing: function () { return Cine.running; }, CUES: CUES };
-  if (/[?&]cinematic\b/.test(location.search)) window.PongCinematic.state = function () { Cine.bgDraw = Bg; Cine.audio = Audio; return Cine; };   // testing aid
+  window.BattleshipsCinematic = { play: play, skip: function () { finish(true); }, playing: function () { return Cine.running; }, CUES: CUES };
+  if (/[?&]cinematic\b/.test(location.search)) window.BattleshipsCinematic.state = function () { Cine.bgDraw = Bg; Cine.audio = Audio; return Cine; };   // testing aid
   // testing aid: run the film's frames by hand (silently) up to `to` seconds at `fps`, then hold there
-  if (/[?&]cinematic\b/.test(location.search)) window.PongCinematic.step = function (to, fps) {
+  if (/[?&]cinematic\b/.test(location.search)) window.BattleshipsCinematic.step = function (to, fps) {
     if (!Cine.running) return;
     setSound(false); Cine.hold = null;
     var now = Cine.lastNow;

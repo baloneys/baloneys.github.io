@@ -270,3 +270,17 @@ html[data-game="chat"] .soc-panel .option-label { font-family: var(--font-family
 html[data-game="chat"] .soc-status-edit select.text-input { width: auto; }
 html[data-game="chat"] .soc-status-edit input.text-input { width: auto; flex: 1; }
 .soc-ach-game { margin-top: 12px; } .soc-ach-game h4 { margin: 0 0 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-on-surface-secondary); }
+
+/* Link a device (profile → Link a device, and chat's #link/ links) */
+.soc-link-card { margin: 0 0 14px; padding: 14px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); }
+.soc-link-card h3 { margin: 0 0 6px; font-size: 1rem; }
+.soc-link-card .type-note { margin: 0 0 10px; }
+.soc-link-out:empty { display: none; }
+.soc-link-out { margin-top: 10px; display: grid; justify-items: center; gap: 6px; text-align: center; }
+.soc-link-qr { padding: 10px; border-radius: 12px; background: #fff; line-height: 0; }
+.soc-link-qr img, .soc-link-qr canvas { display: block; }
+.soc-link-big { font: 700 1.5rem/1 ui-monospace, Consolas, monospace; letter-spacing: .12em; }
+.soc-link-url { max-width: 100%; overflow-wrap: anywhere; font-size: .72rem; opacity: .75; }
+.soc-link-code { width: 100%; max-width: 220px; font: 700 1.15rem ui-monospace, Consolas, monospace; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px; }
+.soc-link-merge { display: flex; gap: 8px; align-items: center; font-size: .88rem; margin-bottom: 4px; cursor: pointer; }
+.soc-link-merge.hidden { display: none; }

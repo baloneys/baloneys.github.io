@@ -3847,6 +3847,8 @@
   async function redeemLink(code) {
     const social = window.GameSocial, dev = social && social.device;
     if (!dev || !dev.available()) { toast('Linking devices needs the site’s database.'); openHome(); return; }
+    // the same Link a device window as the game pages, with the code filled in and a choice to merge this device's account
+    if (dev.open) { openHome(); dev.open(code); return; }
     const me = social.me && social.me();
     const ok = await confirmBox('Link this device?', 'This device will join the account that made code ' + code.slice(0, 4) + '-' + code.slice(4) +
       ': its profile, friends, XP and achievements, and its game settings.' + (me && me.name ? ' The profile on this device now (' + me.name + ') stops being used here.' : ''), 'Link this device');

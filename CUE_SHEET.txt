@@ -1,0 +1,41 @@
+BALCADE / CHESS — CINEMATIC AUDIO CUE SHEET
+Temporary cue: Daydreaming by | e s c p | (FSM Team)
+Project version: 2026-10-11 | 80 BPM | 60-second in-engine cinematic
+
+TIME          SHOT / INTENT           MUSIC / SOUND DESIGN
+00:00–00:06   BOOT                    Muffled Rhodes/lo-fi opening, CRT hum and an original retro-computer chime; tiny boot/interface clicks. Camera emerges from Mac CRT.
+00:06–00:12   DESKTOP                 Music opens up as cursor double-clicks; window opens, title ＣＨＥＳＳ / チェス. Airy riser and portal buildup.
+00:12–00:22   PORTAL / OPENING        Full beat enters at 00:12 as camera falls onto chessboard; whoosh, low impact, marble pieces rising and sliding.
+00:22–00:30   CAPTURE                 Sweeping knight move; marble impact at ~00:25.4 with small crystalline debris. Error alert at ~00:26.5.
+00:30–00:38   CHECK                   Cascade of original vintage-computer alert beeps and subtle window clicks as camera circles king.
+00:38–00:43   CHECKMATE               Tape-stop deceleration at ~00:37.7–00:39; king marble crash ~00:39.1; a few seconds of eerie near-silence / VHS air.
+00:43–00:49   SOCIAL                  Groove returns on 00:43; floating Mac windows, profile/achievements/chat/friends; interface clicks and glides.
+00:49–00:53   CHOICE                  Finder-style mode and skull icons; soft selecting chimes, clicks.
+00:53–00:58   FINALE                  Slightly stronger groove and rhythmic impacts; checkerboard tunnel and reverse zoom into CRT.
+00:58–01:00   LIVE MENU HANDOVER      Music cross-transitions to quieter menu texture; soft confirmation chime.
+
+FILES
+Balcade_Chess_Cinematic_60s_MIX.mp3 — full 60s cue with built-in sound design.
+Balcade_Chess_Cinematic_60s_MUSIC.mp3 — source music edit without original SFX, for rebalancing.
+Balcade_Chess_Cinematic_60s_SFX.mp3 — the separately created effects/ambience, with no music track.
+Balcade_Chess_Cinematic_60s_MIX.wav — uncompressed stereo master for in-engine use / editing.
+Balcade_Chess_Menu_LOOP_24s.wav — loopable stereo PCM for the live menu. Prefer WAV for seamless playback.
+Balcade_Chess_Menu_LOOP_24s.mp3 — convenient preview; MP3 players may add encoder padding at loop points.
+
+IMPLEMENTATION
+- Cinematic mix is exactly 60.000 seconds, 44.1 kHz stereo.
+- The cinematic MIX already previews the first 2.0 seconds of the loop at 58–60. To avoid a jump at 60, either start the menu loop at 58s and crossfade away the cinematic, or at 60s continue the menu loop from +2.0 seconds instead of restarting at 0.
+- In implementation, don't stack the MIX with SFX or MUSIC stems: the MIX already includes both.
+- If the engine can only start menu audio from zero at the 60s handover, use a short ~0.5s crossfade to mask the restart; for best results use the offset method above.
+- Adjust the cut or SFX timing if shot lengths change.
+- All extra Mac-like alert and startup sounds are ORIGINAL SYNTHESIZED EFFECTS (not recordings of Apple's proprietary sounds).
+
+LICENSE / CREDITS
+Music: “Daydreaming” by | e s c p | (FSM Team).
+Source: https://www.free-stock-music.com/fsm-team-escp-daydreaming.html
+CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+Required artist credit per download page:
+Daydreaming by | e s c p | https://www.escp.space
+https://escp-music.bandcamp.com
+Changes: edited, filtered, rearranged and overlaid with originally synthesised sound design for the Balcade Chess cinematic; additionally made a softer menu loop.
+Do not present the adapted music as a new standalone music work on a streaming service. Credit must remain available where the game/video is published unless a separate attribution-free licence is purchased.

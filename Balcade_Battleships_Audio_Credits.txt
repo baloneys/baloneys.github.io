@@ -1,0 +1,11 @@
+Balcade / Battleships opening and menu audio
+
+"Shadow" by William Hector
+Source: https://opengameart.org/content/shadow-spy-cinematic-synthsorchestral-music
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+License text: https://creativecommons.org/licenses/by/4.0/
+
+The user-provided music was edited into Balcade_Battleships_60s_Cinematic_Master.mp3
+and Balcade_Battleships_Seamless_Menu_Loop.ogg. The cinematic master also contains
+original synthesized radar, radio, missile, interface, and pixel explosion effects.
+The unmodified source recording is not included here.

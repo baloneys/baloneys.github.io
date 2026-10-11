@@ -658,6 +658,7 @@
       [['solo', KEYS_SOLO], ['p1', KEYS_P1], ['p2', KEYS_P2]].forEach(function (pair) {
         Object.keys(pair[1]).forEach(function (action) { pair[1][action] = binds.keys(pair[0], action); });
       });
+      if (game && keybinds && $('#help')) $('#help').innerHTML = helpText();
     },
     onOpen: function () { if (game && !game.over && !game.paused && game.mode !== 'online') setPaused(true); }
   });
@@ -722,12 +723,17 @@
   }
 
   function helpText() {
-    if (settings.mode === 'local') {
-      return 'Left player: <kbd>A</kbd>/<kbd>D</kbd> move · <kbd>S</kbd> soft drop · <kbd>W</kbd> rotate · <kbd>Q</kbd> hard drop · <kbd>E</kbd> hold<br>' +
-        'Right player: <kbd>←</kbd>/<kbd>→</kbd> move · <kbd>↓</kbd> soft drop · <kbd>↑</kbd> rotate · <kbd>Space</kbd> hard drop · <kbd>Enter</kbd> hold · <kbd>P</kbd> pause';
+    function hint(group, action) {
+      return '<kbd>' + keybinds.keys(group, action).slice(0, 2).map(function (k) {
+        return window.GameKeybinds.label(k).replace(/[&<>\"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; });
+      }).join('</kbd>/<kbd>') + '</kbd>';
     }
-    return '<kbd>←</kbd>/<kbd>→</kbd> move · <kbd>↓</kbd> soft drop · <kbd>↑</kbd>/<kbd>X</kbd> rotate · <kbd>Z</kbd> rotate back · <kbd>Space</kbd> hard drop · <kbd>C</kbd> hold' +
-      (settings.mode === 'online' ? '' : ' · <kbd>P</kbd> pause');
+    if (settings.mode === 'local') {
+      return 'Left player: ' + hint('p1','left') + '/' + hint('p1','right') + ' move · ' + hint('p1','soft') + ' soft drop · ' + hint('p1','cw') + ' rotate · ' + hint('p1','hard') + ' hard drop · ' + hint('p1','hold') + ' hold<br>' +
+        'Right player: ' + hint('p2','left') + '/' + hint('p2','right') + ' move · ' + hint('p2','soft') + ' soft drop · ' + hint('p2','cw') + ' rotate · ' + hint('p2','hard') + ' hard drop · ' + hint('p2','hold') + ' hold · ' + hint('system','pause') + ' pause';
+    }
+    return hint('solo','left') + '/' + hint('solo','right') + ' move · ' + hint('solo','soft') + ' soft drop · ' + hint('solo','cw') + ' rotate · ' + hint('solo','ccw') + ' rotate back · ' + hint('solo','hard') + ' hard drop · ' + hint('solo','hold') + ' hold' +
+      (settings.mode === 'online' ? '' : ' · ' + hint('system','pause') + ' pause');
   }
 
   function stop() {
@@ -1770,7 +1776,8 @@
   document.addEventListener('keydown', function (e) {
     if (!game || $('#gameView').classList.contains('hidden') || e.target.closest('input, textarea')) return;
     var k = keyName(e);
-    if ([' ', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].indexOf(k) !== -1) e.preventDefault();
+    if (keybinds.matches(e, 'system', 'pause') || keybinds.matches(e, 'system', 'focus') ||
+        ['solo','p1','p2'].some(function (group) { return ['left','right','soft','cw','ccw','hard','hold'].some(function (action) { return keybinds.matches(e, group, action); }); })) e.preventDefault();
     if (keybinds.matches(e, 'system', 'focus') && focusAvailable()) { e.preventDefault(); if (!e.repeat) toggleFocus(); return; }
     if (keybinds.matches(e, 'system', 'pause') && !game.over) { setPaused(!game.paused); return; }
     if (game.paused || game.over || e.repeat) return;
@@ -1888,7 +1895,7 @@
     };
     function levelOf(key) { return key === 'insane' ? 'ultra' : (LEVELS[key] ? key : 'normal'); }
     var NO_KEYS = { left: [], right: [], soft: [], cw: [], ccw: [], hard: [], hold: [] };
-    var NAMES = ['Blocky', 'Tess', 'Gridlock', 'Spin', 'Cobalt', 'Nova'];
+    var NAMES = ['Blocky', 'Tess', 'Gridlock', 'Spin', 'Cobalt', 'Lunar'];
 
     function cellsOf(type, rot, x, y) {
       var m = SHAPES[type][rot], out = [];

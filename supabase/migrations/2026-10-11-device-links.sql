@@ -103,11 +103,13 @@ begin
     update public.tetris_chat set user_id = r.owner where user_id = me;
     delete from public.tetris_chat_reactions x where x.user_id = me and exists (select 1 from public.tetris_chat_reactions y where y.user_id = r.owner and y.message_id = x.message_id and y.emoji = x.emoji);
     update public.tetris_chat_reactions set user_id = r.owner where user_id = me;
+    update public.tetris_reports set reporter = r.owner where reporter = me;
+    update public.tetris_reports set target_user = r.owner where target_user = me;
     merged := true;
   end if;
   -- devices that were linked to this device's old account now belong to the account it's joining
   update public.tetris_device_links set owner = r.owner where owner = me;
-  if found and old.id is not null and merge then delete from public.tetris_profiles where id = me; end if;
+  if merged then delete from public.tetris_profiles where id = me; end if;
   insert into public.tetris_device_links (device, owner, label) values (me, r.owner, left(coalesce(dev_label, 'Device'), 40))
     on conflict (device) do update set owner = excluded.owner, label = excluded.label, linked_at = now();
   return jsonb_build_object('owner', r.owner, 'data', r.data, 'merged', merged);

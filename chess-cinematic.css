@@ -1,0 +1,66 @@
+/* Chess-only scenery. The camera, controls, VHS, credits and logo are shared with Tetris/Pong/Battleships. */
+.cx-mac { position: relative; image-rendering: pixelated; }
+.cx-mac-art, .cx-mac-floor { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+.cx-screen, .cx-desktop { position: absolute; left: 23%; top: 20%; width: 48%; height: 40%; overflow: hidden;
+  color: #dffbe9; background: #111820; font: 700 27px/1.4 "JetBrains Mono", monospace; text-align: center; }
+.cx-screen { display: grid; place-content: center; gap: 20px; transition: opacity .18s; }
+.cx-boot-mark { display: grid; justify-items: center; font-size: 105px; line-height: 1; }
+.cx-boot-mark small { font-size: 23px; letter-spacing: -.08em; }
+.cx-happy-mac { display: block; position: relative; width: 94px; height: 94px; margin: 0 auto 12px; border: 8px solid #dffbe9; border-radius: 9px; font: 700 56px/90px "JetBrains Mono",monospace; }
+.cx-happy-mac::before, .cx-happy-mac::after { content: ''; position: absolute; top: 24px; width: 8px; height: 8px; background: #dffbe9; }
+.cx-happy-mac::before { left: 20px; } .cx-happy-mac::after { right: 20px; }
+.cx-happy-mac b { display: block; margin-top: -6px; font-size: 45px; }
+.cx-happy-mac i { position: absolute; bottom: -18px; left: 13px; width: 52px; height: 7px; background: #dffbe9; }
+.cx-progress { margin: 16px auto; width: 72%; height: 16px; border: 2px solid #dffbe9; text-align: left; }
+.cx-progress i { display: block; height: 100%; background: #dffbe9; }
+.cx-desktop { background: #d5dcdf; color: #11151b; text-align: left; transition: opacity .18s; }
+.cx-menubar { height: 28px; padding: 2px 8px; background: #fffaf7; border-bottom: 2px solid #11151b; font-size: 15px; white-space: nowrap; }
+.cx-menubar span { float: right; }
+.cx-icon { position: absolute; top: 40px; left: 30px; display: grid; justify-items: center; font-size: 65px; line-height: 1; }
+.cx-icon small { font-size: 16px; }
+.cx-folder { top: 156px; }
+.cx-finder { position: absolute; left: 150px; top: 55px; width: 290px; height: 245px; background: #fffaf7; border: 3px solid #11151b; box-shadow: 8px 8px 0 #7f8995; transform-origin: 25% 30%; }
+.cx-titlebar { height: 29px; border-bottom: 3px solid #11151b; background: repeating-linear-gradient(0deg,#fff 0 2px,#111 2px 3px); color: #111; font-size: 15px; text-align: center; }
+.cx-finder-body { display: grid; justify-items: center; gap: 5px; padding-top: 9px; font-size: 29px; }
+.cx-finder-body strong { font-size: 27px; letter-spacing: .12em; }
+.cx-finder-body small { font-size: 20px; }
+.cx-cursor { position: absolute; top: 150px; left: 150px; z-index: 2; font-size: 34px; transition: transform .05s linear; }
+.cx-board-frame { width: 840px; height: 880px; padding: 36px 40px 40px; border: 6px solid #e6cee2; background: #ecd7e0; color: #432345;
+  box-shadow: 0 0 0 7px #5d405f; }
+.cx-board-label { height: 38px; font: 800 17px/1.2 "JetBrains Mono", monospace; letter-spacing: .22em; }
+.cx-board-frame .chess-board { width: 752px; height: 752px; aspect-ratio: auto; border: 4px solid #1b1627; border-radius: 0; box-shadow: none; }
+.cx-board-frame .sq { font-size: 70px; line-height: 1; cursor: default; display: grid; place-items: center; }
+/* the pieces are the game's own (.piece.white-piece / .black-piece from games.css), drawn a little bolder for the camera */
+.cx-board-frame .piece { text-shadow: 0 4px 0 #140f1f, 0 0 18px rgba(199, 125, 255, 0.6); }
+.cx-board-frame .black-piece { text-shadow: 0 4px 0 #140f1f, 0 0 18px rgba(230, 0, 101, 0.65); }
+.cx-board-frame .sq.light { background: #e6e0ff; }
+.cx-board-frame .sq.dark { background: #463a86; }
+.cx-board-frame .sq.last { box-shadow: inset 0 0 0 100px rgba(255,113,206,.26); }
+.cx-board-frame .sq.check { box-shadow: inset 0 0 0 7px #ff71ce; }
+.cx-board-frame .cx-pixel-piece { width: 80%; height: 80%; object-fit: contain; image-rendering: pixelated; }
+.cx-marble { image-rendering: pixelated; backface-visibility: hidden; }
+.cx-holo { image-rendering: pixelated; backface-visibility: hidden; }
+/* VHS over the board (vhsBoard): a low-res canvas stretched over the frame */
+.cx-vhs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+.cx-decor { image-rendering: pixelated; backface-visibility: hidden; }
+.cx-float-tile { border: 5px solid #eed8e2; background: #ffdef0; box-shadow: 5px 5px 0 #9e789f; }
+.cx-float-tile.dark { background: #5d4a70; }
+.cx-alert { color: #191628; background: #fbf4f4; border: 4px solid #251e31; border-radius: 0; box-shadow: 9px 9px 0 #b967ff; font-family: "JetBrains Mono", monospace; }
+.cx-alert .cine-panel-title { color: #191628; background: repeating-linear-gradient(0deg,#fff 0 4px,#1f1a29 4px 5px); border-bottom: 3px solid #251e31; text-align: center; text-shadow: 1px 1px #fff; }
+.cx-alert-body { display: flex; align-items: center; gap: 20px; padding: 17px 25px 12px; font-size: 24px; line-height: 1.2; }
+.cx-alert-mark { font-size: 46px; }
+.cx-alert-ok { margin: 0 25px 12px auto; width: 105px; padding: 4px; border: 3px solid #251e31; text-align: center; }
+.cx-hud { position: absolute; z-index: 3; top: max(7vh,52px); left: 4vw; display: grid; gap: 4px; pointer-events: none;
+  color: #ffdff2; font: 700 clamp(11px,1vw,15px)/1.3 "JetBrains Mono",monospace; letter-spacing: .12em; }
+.cx-hud small { color: #c5b5d3; font-size: .75em; }
+/* (the social, modes and skulls panels keep the shared look of the other openings: no Mac restyle) */
+.cx-logo3d { image-rendering: pixelated; backface-visibility: hidden; }
+.cine-lite .cx-board-frame, .cine-lite .cx-alert { box-shadow: none; }
+.cine-lite .cx-board-frame .sq.check { box-shadow: inset 0 0 0 7px #ff71ce; }
+html.cine-open .gkb-launch { display: none; }
+@media (max-width: 600px) { .cx-hud { left: 6vw; right: 6vw; top: 12vh; } .cine-credit { max-width: 65vw; } }
+/* phones: the music credit is long, so it sits above the buttons instead of running under them */
+@media (max-width: 600px) { .cine-credit { bottom: 66px; max-width: calc(100vw - 32px); } }
+.cx-king-shadow { image-rendering: auto; }
+/* the capture burst sprite sheet (burstPlane): 4 x 4 frames, stepped by background-position */
+.cx-burst { background: url("chess-capture-burst.png") 0 0 / 400% 400% no-repeat; image-rendering: pixelated; backface-visibility: hidden; pointer-events: none; }

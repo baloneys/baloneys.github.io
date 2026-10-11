@@ -127,3 +127,10 @@ html.cine-open .pong-music-btn { display: none; }
   box-shadow: 0 0 0 3px rgba(255, 47, 166, 0.75), 0 0 60px rgba(157, 0, 255, 0.6), 0 0 160px rgba(40, 232, 255, 0.18) !important;
 }
 .cine .pong-court-face .cine-canvas { filter: brightness(1.7) saturate(1.4) contrast(1.1); mix-blend-mode: screen; }
+
+/* image and GIF balls ride over the effects canvas (in front of their flame trail) as real images, so GIFs animate */
+.cine-sprites { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.cine-ball-sprite { position: absolute; left: 0; top: 0; object-fit: contain; will-change: transform; filter: drop-shadow(0 0 10px rgba(157, 0, 255, 0.75)); }
+/* the frame-rate governor's lighter look (see tetris-cinematic.css) */
+.cine-lite .pong-court-face .cine-canvas { filter: none; mix-blend-mode: normal; }
+.cine-lite .cine-ball-sprite { filter: none; }

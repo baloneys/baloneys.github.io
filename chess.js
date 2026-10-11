@@ -288,7 +288,7 @@
 
   var game = null;
   var clockTimer = null;
-  var keybinds = window.GameKeybinds.mount({ game: 'chess', title: 'chess',
+  var keybinds = window.GameKeybinds.mount({ game: 'chess', title: 'chess', music: true,
     groups: [{ id: 'board', title: 'Board', actions: [
       { id: 'up', label: 'Move cursor up', keys: ['arrowup'] }, { id: 'down', label: 'Move cursor down', keys: ['arrowdown'] },
       { id: 'left', label: 'Move cursor left', keys: ['arrowleft'] }, { id: 'right', label: 'Move cursor right', keys: ['arrowright'] },
@@ -356,7 +356,7 @@
   function rushClock(myColor) { var c = { w: 99 * 60000, b: 99 * 60000, inc: 0, last: null }; c[myColor] = 2 * 60000; return c; }
 
   var SCREENS = ['menuPanel', 'onlinePanel', 'lobbyPanel', 'gameView'];
-  function screen(id) { SCREENS.forEach(function (x) { $('#' + x).classList.toggle('hidden', x !== id); }); }
+  function screen(id) { SCREENS.forEach(function (x) { $('#' + x).classList.toggle('hidden', x !== id); }); if (window.ChessMenuMusic) window.ChessMenuMusic.screen(id); }
 
   function startMode(mode, myColor) {
     settings.mode = mode;
@@ -1008,6 +1008,55 @@
   }
 
   window.GameApp = window.ChessApp = {
+    // Detached board for the opening film. It uses the same squares, piece glyphs and move/check classes as the live game.
+    cinematicKit: function () {
+      function index(v) { return typeof v === 'number' ? v : (typeof v === 'string' && v.length === 2 ? (8 - Number(v[1])) * 8 + FILES.indexOf(v[0].toLowerCase()) : -1); }
+      function square(board, v) { return board.children[index(v)]; }
+      return {
+        makeBoard: function () {
+          var board = document.createElement('div'); board.className = 'chess-board'; board.setAttribute('role', 'grid');
+          for (var i = 0; i < 64; i++) { var b = document.createElement('div'); b.className = 'sq'; board.appendChild(b); }
+          this.setPosition(board, START);
+          return board;
+        },
+        setPosition: function (board, position) {
+          var cells = Array.isArray(position) ? position : typeof position === 'string' && position.indexOf('/') !== -1 ? position.split(' ')[0].split('/').join('').replace(/[1-8]/g, function (n) { return '.'.repeat(Number(n)); }).split('') : String(position || START).split('');
+          if (cells.length !== 64) return false;
+          for (var i = 0; i < 64; i++) {
+            var btn = board.children[i], p = cells[i]; btn.className = 'sq ' + (((rowOf(i) + colOf(i)) % 2 === 0) ? 'light' : 'dark'); btn.dataset.sq = i;
+            btn.textContent = '';
+            if (p !== '.') {
+              // the game's own pieces: the same glyph, classes and look as the live board (render())
+              var glyph = document.createElement('span');
+              glyph.className = 'piece ' + (colorOf(p) === 'w' ? 'white-piece' : 'black-piece');
+              glyph.textContent = GLYPH[lower(p)] + '︎';
+              btn.appendChild(glyph);
+            }
+            if (rowOf(i) === 7) { var f = document.createElement('span'); f.className = 'coord file'; f.textContent = FILES[colOf(i)]; btn.appendChild(f); }
+            if (colOf(i) === 0) { var rk = document.createElement('span'); rk.className = 'coord rank'; rk.textContent = String(8 - rowOf(i)); btn.appendChild(rk); }
+          }
+          return true;
+        },
+        highlight: function (board, from, to) { board.querySelectorAll('.sq.last').forEach(function (s) { s.classList.remove('last'); }); [from, to].forEach(function (v) { var s = square(board, v); if (s) s.classList.add('last'); }); },
+        check: function (board, v) { board.querySelectorAll('.sq.check').forEach(function (s) { s.classList.remove('check'); }); var s = square(board, v); if (s) s.classList.add('check'); },
+        glyph: function (p) { return GLYPH[lower(p)] || ''; },
+        // Legal positions for a miniature Légal's mate. Reject a mistyped film move rather than painting impossible chess.
+        script: function (moves) {
+          var state = initial(), frames = [{ squares: state.board.slice(), move: null, check: null }];
+          moves.forEach(function (uci) {
+            var from = index(uci.slice(0, 2)), to = index(uci.slice(2, 4));
+            var move = legalMoves(state).filter(function (m) { return m.from === from && m.to === to; })[0];
+            if (!move) throw new Error('Illegal cinematic chess move: ' + uci);
+            state = apply(state, move);
+            frames.push({ squares: state.board.slice(), move: { from: from, to: to }, check: inCheck(state, state.turn) ? kingSquare(state, state.turn) : null,
+              mate: inCheck(state, state.turn) && legalMoves(state).length === 0 });
+          });
+          return frames;
+        },
+        achievements: function () { return ACH && ACH.list ? ACH.list() : []; },
+        badge: function (id) { return ACH && ACH.badge ? ACH.badge(id, 44) : document.createElement('span'); }
+      };
+    },
     join: function (code) {
       code = G.cleanCode(code);
       if (code.length !== 5) return;

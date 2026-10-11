@@ -58,6 +58,7 @@
       { id: 'p2', title: 'Local · right', actions: [{ id: 'up', label: 'Paddle up', keys: ['arrowup'] }, { id: 'down', label: 'Paddle down', keys: ['arrowdown'] }] },
       { id: 'system', title: 'Game', actions: [{ id: 'pause', label: 'Pause', keys: ['p', 'escape'] }] }
     ],
+    onChange: function () { if (game && $('#help')) $('#help').innerHTML = helpText(); },
     onOpen: function () { keys = {}; if (game && !game.over && !game.paused && settings.mode !== 'online') setPaused(true); }
   });
   var pointers = {};
@@ -319,6 +320,22 @@
     return null;
   }
 
+  // The host's ball goes to the guest with the lobby's hello, so someone arriving on an invite link sees it in the
+  // opening cinematic (pong-cinematic.js). Built-in balls go as their file name; big uploads stay behind.
+  function shareBall() {
+    var info = skinInfo(settings.skin);
+    if (info.kind === 'emoji') return { kind: 'emoji', emoji: String(info.emoji || '').slice(0, 16) };
+    if ((info.kind === 'image' || info.kind === 'gif') && info.src && info.src.length < 400000) return { kind: info.kind, src: info.src };
+    return { kind: 'classic' };
+  }
+  function cleanBall(b) {
+    if (!b || typeof b !== 'object') return null;
+    if (b.kind === 'emoji' && typeof b.emoji === 'string') return { kind: 'emoji', emoji: b.emoji.slice(0, 16) };
+    if ((b.kind === 'image' || b.kind === 'gif') && typeof b.src === 'string' && b.src.length < 400000 &&
+      /^(data:image\/(png|jpeg|gif|webp);base64,|https:\/\/[a-z0-9.]*giphy\.com\/|ball\d\.(png|gif)$|https?:\/\/[^?#\s]+\/ball\d\.(png|gif)$)/.test(b.src)) return { kind: b.kind, src: b.src };
+    return { kind: 'classic' };
+  }
+
   function ballKind() {
     var id = settings.skin, info = skinInfo(id);
     if (info.kind === 'classic') return 'classic';
@@ -352,8 +369,9 @@
   }
 
   function helpText() {
-    if (settings.mode === 'local') return 'Left: <kbd>W</kbd>/<kbd>S</kbd> · Right: <kbd>↑</kbd>/<kbd>↓</kbd> · Touch: drag on your half · <kbd>P</kbd> pause';
-    return 'Move: <kbd>W</kbd>/<kbd>S</kbd> or <kbd>↑</kbd>/<kbd>↓</kbd> or drag / move the mouse · <kbd>P</kbd> pause';
+    function hint(group, action) { return keybinds.keys(group, action).map(function (k) { return '<kbd>' + window.GameKeybinds.label(k).replace(/[&<>\"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }) + '</kbd>'; }).join('/'); }
+    if (settings.mode === 'local') return 'Left: ' + hint('p1','up') + '/' + hint('p1','down') + ' · Right: ' + hint('p2','up') + '/' + hint('p2','down') + ' · Touch: drag on your half · ' + hint('system','pause') + ' pause';
+    return 'Move: ' + hint('solo','up') + '/' + hint('solo','down') + ' or drag / move the mouse · ' + hint('system','pause') + ' pause';
   }
 
   function quitToMenu() {
@@ -813,7 +831,7 @@
       try {
         var g = game, speed = 380 * dt;
         [g.p1, g.p2].forEach(function (p, i) {
-          if (i === 1 && court.cinematicMiss) { p.vy = 0; return; }
+          if ((i === 1 && court.cinematicMiss) || (i === 0 && court.cinematicMissLeft)) { p.vy = 0; return; }
           var aim = g.ball.y + Math.sin(performance.now() / 450 + court.seed + i) * 18 - p.h / 2;
           var move = Math.max(-speed, Math.min(speed, aim - p.y));
           p.vy = dt ? move / dt : 0;
@@ -863,7 +881,11 @@
 
   document.addEventListener('keydown', function (e) {
     var k = e.key.toLowerCase();
-    if (game && ['arrowup', 'arrowdown', ' '].indexOf(k) !== -1 && !$('#gameView').classList.contains('hidden')) e.preventDefault();
+    if (game && !$('#gameView').classList.contains('hidden') &&
+        (keybinds.matches(e, 'system', 'pause') ||
+         (settings.mode === 'local' ? ['p1','p2'] : ['solo']).some(function (group) {
+           return keybinds.matches(e, group, 'up') || keybinds.matches(e, group, 'down');
+         }))) e.preventDefault();
     if (e.target.closest('input, textarea')) return;
     keys[k] = true;
     if (keybinds.matches(e, 'system', 'pause') && game && !game.over && !$('#gameView').classList.contains('hidden')) setPaused(!game.paused);
@@ -997,6 +1019,7 @@
     switch (d.t) {
       case 'hello':
         settings.target = String(d.target);
+        net.hostBall = cleanBall(d.ball);
         net.them = G.Profile.sanitize(d.profile);
         net.them.card = SOC ? SOC.cleanCard(d.card) : null;
         renderLobby();
@@ -1091,7 +1114,7 @@
         renderLobby();
       },
       onJoin: function (conn) {
-        net.session.send(conn, { t: 'hello', target: settings.target, profile: G.Profile.get(), card: SOC ? SOC.card() : null });
+        net.session.send(conn, { t: 'hello', target: settings.target, profile: G.Profile.get(), card: SOC ? SOC.card() : null, ball: shareBall() });
         G.Sound.beep(660, 0.1, 'triangle');
         renderLobby();
       },
@@ -1229,7 +1252,7 @@
   }
   function profileChanged() {
     if (!net.session || game) return;
-    var msg = net.role === 'host' ? { t: 'hello', target: settings.target, profile: G.Profile.get(), card: SOC ? SOC.card() : null }
+    var msg = net.role === 'host' ? { t: 'hello', target: settings.target, profile: G.Profile.get(), card: SOC ? SOC.card() : null, ball: shareBall() }
       : { t: 'hi', profile: G.Profile.get(), card: SOC ? SOC.card() : null };
     sendNet(msg);
     renderLobby();
@@ -1238,6 +1261,9 @@
   // For games-social.js: join by code (invite links, the lobby finder, the bell) and read the current lobby.
   window.GameApp = window.PongApp = {
     cinematicKit: cinematicKit,
+    // the ball the opening cinematic shows: the host's on an invite link, otherwise this player's own
+    ball: function () { return net.role === 'guest' && net.hostBall ? net.hostBall : skinInfo(settings.skin); },
+    hostBall: function () { return net.role === 'guest' ? net.hostBall || null : null; },
     join: function (code) {
       code = G.cleanCode(code);
       if (code.length !== 5) return;
@@ -1265,6 +1291,7 @@
     if (!m) return;
     var rest = location.search.replace(/^\?/, '').split('&').filter(function (kv) { return kv && !/^join=/.test(kv); }).join('&');
     history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+    window.PongApp.fromInvite = m[1];   // pong-cinematic.js: a first-timer on an invite link sees the opening with the host's ball
     window.GameApp.join(m[1]);
   }
 

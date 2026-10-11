@@ -142,9 +142,15 @@
     '    k=mix(k, vec3(0.0), cover(scd-0.014,aa));',   // the dark tube surround
     '    if (scd<0.0){ vec2 uv=sc/vec2(0.25,0.195); uv*=1.0+0.1*dot(uv,uv);',
     '      vec3 sv=vec3(0.02,0.008,0.045)+vec3(0.3,0.1,0.6)*exp(-dot(uv,uv)*1.6)*(0.18+0.42*u_crt);',
-    '      vec2 cell=floor((uv*0.5+0.5)*vec2(20.0,15.0)); float fall=mod(floor(u_time*4.0+cell.x*3.7),19.0)-2.0;',
-    '      float blk=step(0.62,fract(sin(cell.x*91.3)*437.1))*step(abs(cell.y-(14.0-fall)),0.5)+step(0.8,fract(sin(cell.x*13.1+cell.y*7.7)*91.3))*step(cell.y,2.5);',
-    '      sv+=mix(vec3(0.5,0.2,1.0),vec3(1.0,0.25,0.65),fract(cell.x*0.37))*clamp(blk,0.0,1.0)*0.45*(1.0-u_crt);',
+    // attract mode: the cabinet plays Pong by itself on a chunky 48 x 36 grid (the ball bounces off the walls on two
+    // triangle waves; each paddle chases it, a touch late), until the title takes over the tube (u_crt)
+    '      vec2 pg=(floor((uv*0.5+0.5)*vec2(48.0,36.0))+0.5)/vec2(48.0,36.0)*2.0-1.0; float T=u_time;',
+    '      float bx=(abs(fract(T*0.42)*2.0-1.0)*2.0-1.0)*0.84, by=(abs(fract(T*0.31+0.27)*2.0-1.0)*2.0-1.0)*0.82;',
+    '      float lag=(abs(fract((T-0.18)*0.31+0.27)*2.0-1.0)*2.0-1.0)*0.82;',
+    '      float ly=clamp(mix(lag*0.6,by,smoothstep(0.2,-0.84,bx)),-0.72,0.72), ry=clamp(mix(lag*0.6,by,smoothstep(-0.2,0.84,bx)),-0.72,0.72);',
+    '      float png=step(abs(pg.x-bx),0.03)*step(abs(pg.y-by),0.045)+step(abs(pg.x+0.9),0.03)*step(abs(pg.y-ly),0.17)+step(abs(pg.x-0.9),0.03)*step(abs(pg.y-ry),0.17);',
+    '      float net=step(abs(pg.x),0.025)*step(0.5,fract(pg.y*6.0));',
+    '      sv+=(vec3(0.85,0.95,1.0)*clamp(png,0.0,1.0)*0.8+vec3(0.5,0.25,0.9)*net*0.35)*(1.0-u_crt);',
     '      sv*=0.72+0.28*step(0.5,fract((p.y-1.0)*480.0));',
     '      sv*=1.0-0.55*smoothstep(0.75,1.05,max(abs(uv.x),abs(uv.y)));',   // vignette into the tube edge
     '      sv+=vec3(1.0)*smoothstep(0.12,0.0,abs(uv.x*0.7+uv.y-0.75))*0.06+vec3(1.0)*smoothstep(0.05,0.0,abs(uv.x*0.7+uv.y-0.95))*0.04;',   // glass reflections

@@ -1939,16 +1939,21 @@
   // in a dither that thins out towards its tip.
   var SHADOW_LEN = 0.85;
   function castShadow(g, it, ground) {
-    var src = it.canvas, w = src.width, h = src.height, cv = document.createElement('canvas'); cv.width = w; cv.height = h; cv.className = 'cx-shadow';
-    var a = src.getContext('2d').getImageData(0, 0, w, h).data, x = cv.getContext('2d'), img = x.createImageData(w, h), d = img.data;
-    for (var y = 0; y < h; y++) for (var c = 0; c < w; c++) {
-      var sy = h - 1 - y;                                    // flipped: the prop's top lands at the shadow's far end
-      if (a[(y * w + c) * 4 + 3] < 128) continue;
-      var far = 1 - sy / h, keep = (c + sy) % 3 !== 0 || far < 0.5;
-      if (!keep) continue;
-      var k = (sy * w + c) * 4; d[k] = 14; d[k + 1] = 4; d[k + 2] = 34; d[k + 3] = Math.round(235 * (1 - far * 0.5));
-    }
-    x.putImageData(img, 0, 0);
+    var src = it.canvas, w = src.width, h = src.height, K2 = 2, W2 = w * K2, H2 = h * K2;
+    var cv = document.createElement('canvas'); cv.width = W2; cv.height = H2; cv.className = 'cx-shadow';
+    var m = document.createElement('canvas'); m.width = W2; m.height = H2;
+    var mx = m.getContext('2d'); mx.imageSmoothingEnabled = false;
+    mx.translate(0, H2); mx.scale(1, -1); mx.drawImage(src, 0, 0, W2, H2);            // flipped: the prop's top lands at the far end
+    mx.setTransform(1, 0, 0, 1, 0, 0); mx.globalCompositeOperation = 'source-in'; mx.fillStyle = '#0e0422'; mx.fillRect(0, 0, W2, H2);
+    var x = cv.getContext('2d');
+    x.filter = 'blur(' + (K2 * 1.4) + 'px)'; x.drawImage(m, 0, 0); x.filter = 'none';
+    x.globalCompositeOperation = 'destination-in';
+    var gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, 'rgba(0,0,0,0.82)'); gr.addColorStop(0.55, 'rgba(0,0,0,0.42)'); gr.addColorStop(1, 'rgba(0,0,0,0.06)');
+    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    x.globalCompositeOperation = 'source-over';
+    var rg = x.createRadialGradient(W2 / 2, 0, 0, W2 / 2, 0, W2 * 0.36);
+    rg.addColorStop(0, 'rgba(14,4,34,0.7)'); rg.addColorStop(1, 'rgba(14,4,34,0)');
+    x.save(); x.scale(1, 0.5); x.fillStyle = rg; x.fillRect(0, 0, W2, W2 * 0.72); x.restore();
     var L = it.h * it.s * SHADOW_LEN, sh = plane(g, cv, it.w, it.h * SHADOW_LEN, { x: it.x, y: ground - 3, z: it.z + L / 2, rx: 90, s: it.s, op: it.op, cull: it.cull });
     sh.h0 = it.h; sh.scaleY = SHADOW_LEN;
     sh.el.style.transformOrigin = '50% 50%';
@@ -2068,10 +2073,12 @@
     });
   }
 
+  // The F15 Gambit (named for this film: the f1 bishop's trap, mate on ply 15). A Légal-style miniature: 5.h3 Bh5 keeps
+  // the pin, 6.Nxe5!? offers the queen, 6...Bxd1 takes her, and 7.Bxf7+ Ke7 8.Nd5# mates with bishop and both knights.
   var FILM_MOVES = [
-    [13.5, 'e2e4'], [15, 'e7e5'], [16.5, 'g1f3'], [18, 'd7d6'],
-    [19.5, 'f1c4'], [21, 'c8g4'], [22.5, 'b1c3'], [24, 'g7g6'],
-    [25.4, 'f3e5'], [27, 'g4d1'], [30.5, 'c4f7'], [34, 'e8e7'], [39.1, 'c3d5']
+    [13.2, 'e2e4'], [14.3, 'e7e5'], [15.4, 'g1f3'], [16.5, 'd7d6'],
+    [17.6, 'f1c4'], [18.7, 'c8g4'], [19.8, 'b1c3'], [20.9, 'g7g6'],
+    [22.6, 'h2h3'], [23.7, 'g4h5'], [25.4, 'f3e5'], [27, 'h5d1'], [30.5, 'c4f7'], [34, 'e8e7'], [39.1, 'c3d5']
   ];
 
   function makeShots() {
@@ -2096,12 +2103,39 @@
         KIT.setPosition(S.board.board, f.squares);
         if (f.move) KIT.highlight(S.board.board, f.move.from, f.move.to);
         if (f.check != null) KIT.check(S.board.board, f.check);
-        if (S.boardFrame >= 0 && n === S.boardFrame + 1) moveFx(f);
+        if (S.boardFrame >= 0 && n === S.boardFrame + 1) { moveFx(f); slideStart(f, frames[n - 1], FILM_MOVES[n - 1][0]); } else S.slide = null;
         S.boardFrame = n;
       }
       return n;
     }
+    function slideStart(f, prev, t0) {
+      var b = S.board.board, from = b.children[f.move.from], to = b.children[f.move.to], g = to && to.querySelector('.piece');
+      if (!g || !from) { S.slide = null; return; }
+      var taken = prev.squares[f.move.to], ghost = null;
+      if (taken && taken !== '.') {
+        ghost = document.createElement('span');
+        ghost.className = 'piece cx-taken ' + (taken === taken.toUpperCase() ? 'white-piece' : 'black-piece');
+        ghost.textContent = KIT.glyph(taken) + '\uFE0E';
+        to.insertBefore(ghost, g);
+      }
+      var mover = f.squares[f.move.to];
+      S.slide = { el: g, ghost: ghost, dx: from.offsetLeft - to.offsetLeft, dy: from.offsetTop - to.offsetTop, t0: t0, knight: mover === 'n' || mover === 'N' };
+      slideTick(Cine.t);
+    }
+    function slideTick(t) {
+      var sl = S.slide; if (!sl) return;
+      var q = clamp01((t - sl.t0) / 0.38), e = easeInOut(q), lift = Math.sin(q * Math.PI) * (sl.knight ? 46 : 16);
+      sl.el.style.position = 'relative'; sl.el.style.zIndex = '5';
+      sl.el.style.transform = q >= 1 ? '' : 'translate(' + (sl.dx * (1 - e)).toFixed(1) + 'px,' + (sl.dy * (1 - e) - lift).toFixed(1) + 'px) scale(' + (1 + 0.18 * Math.sin(q * Math.PI)).toFixed(3) + ')';
+      if (sl.ghost) {
+        var k = clamp01((q - 0.72) / 0.28);
+        sl.ghost.style.opacity = (1 - k).toFixed(3);
+        sl.ghost.style.transform = 'translate(' + (k * 60).toFixed(1) + 'px,' + (-k * 40).toFixed(1) + 'px) rotate(' + (k * 70).toFixed(1) + 'deg) scale(' + (1 + k * 0.4).toFixed(3) + ')';
+      }
+      if (q >= 1) { if (sl.ghost && sl.ghost.parentNode) sl.ghost.parentNode.removeChild(sl.ghost); sl.el.style.zIndex = ''; S.slide = null; }
+    }
     function faceStatues() {
+      slideTick(Cine.t);
       S.statues.forEach(function (it) { it.ry = -Cine.cam.yaw; });
       if (S.props) S.props.forEach(function (it) { it.ry = -Cine.cam.yaw; });
       syncShadows(S.props); syncShadows(S.statues); vhsBoard(S.board, Cine.t);
@@ -2202,7 +2236,7 @@
       S.statues = [
         holoPlane(g, 'N', { x: -640, y: -220, z: 150, s: 1.7, op: 0, cull: false }),
         holoPlane(g, 'Q', { x: 550, y: -200, z: -250, s: 1.5, op: 0, cull: false }),
-        holoPlane(g, 'K', { x: 0, y: -290, z: -760, s: 2, op: 0, cull: false }),
+        holoPlane(g, 'k', { x: 0, y: -290, z: -760, s: 2, op: 0, cull: false }),
         holoPlane(g, 'p', { x: -170, y: -110, z: 50, s: 1.1, op: 0, cull: false })
       ];
       S.props = [
@@ -2262,20 +2296,20 @@
         var a = hash(k * 3.7) * Math.PI - Math.PI / 2, dist = 6500 + hash(k * 5.3) * 4500;
         S.props.push(decorPlane(g, ['palm', 'column', 'palm', 'bust'][k % 4], { x: Math.sin(a) * dist * 0.8, z: -Math.cos(a) * dist - 1500, s: 3 + hash(k) * 2.5, ground: 0, flip: k % 2 === 0, op: 0, cull: true }));
       }
-      S.kingPad = holoPadPlane(g, true, { x: 0, y: -290 + 74 * 8 - 160 * 2, z: -760, s: 2, op: 0, cull: false });
+      S.kingPad = holoPadPlane(g, false, { x: 0, y: -290 + 74 * 8 - 160 * 2, z: -760, s: 2, op: 0, cull: false });
       S.afterimages = [0, 1, 2].map(function (i) { return holoPlane(g, 'N', { x: -640, y: -220, z: 150 - i * 12, s: 1.7, op: 0, cull: false }); });
       // the alerts sit right in the camera's path, so it flies through each one (flyAlert)
-      S.captureAlert = macAlert(g, 'The application Rook has unexpectedly quit.', { x: 390, y: -430, z: 250, s: .5, op: 0, cull: false });
+      S.captureAlert = macAlert(g, 'The application Queen has unexpectedly quit.', { x: 390, y: -430, z: 250, s: .5, op: 0, cull: false });
       S.stairs = Array.from({ length: 10 }, function (_, i) {
         var tile = el('div', 'cx-float-tile ' + (i % 2 ? 'dark' : 'light'));
         return plane(g, tile, 150, 150, { x: -470 + i * 105, y: 0, z: -950 - i * 145, rx: 90, rz: 0, op: 0, cull: false });
       });
       // a cascade of the same alert, each a step down and right of the last, like a window dragged on an old Mac
-      S.checkAlerts = [2515, 2130, 1745, 1360, 975].map(   // one every 1.2 s along the run
-        function (z, i) { return macAlert(g, 'Check.', { x: (i % 2 ? 1 : -1) * 70 + i * 25, y: -415 + i * 12, z: z, rz: (i % 2 ? 1 : -1) * 4, s: .55, op: 0, cull: false }); });
+      S.checkAlerts = [2620, 2280, 1940, 1600, 1260].map(   // along the run, one about every 1.4 s
+        function (z, i) { return macAlert(g, 'Check.', { x: (2900 - z) / 1900 * 700 + (i % 2 ? 1 : -1) * 50, y: -420 + i * 6, z: z, rz: (i % 2 ? 1 : -1) * 4, s: .55, op: 0, cull: false }); });
       S.mateAlert = macAlert(g, 'Checkmate.', { x: 385, y: -355, z: 430, s: .6, op: 0, cull: false });
       S.captureAlert.baseS = .5; S.mateAlert.baseS = .6; S.checkAlerts.forEach(function (it) { it.baseS = .55; });
-    }, enter: function () { var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.rz = 0; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; S.kingPad.op = 0; S.crown.op = 0; S.boardFrame = -1; S.board.op = 0; S.statues.forEach(function (it) { it.hidden = false; it.op = 0; }); S.props.forEach(function (it) { it.op = 0; }); S.afterimages.forEach(function (it) { it.op = 0; }); resetAlert(S.captureAlert); S.checkAlerts.forEach(resetAlert); resetAlert(S.mateAlert); hideLogo(); },
+    }, enter: function () { var Qn = S.statues[1]; Qn.holo.hit = 0; Qn.holo.off = 0; var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.rz = 0; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; S.kingPad.op = 0; S.crown.op = 0; S.boardFrame = -1; S.board.op = 0; S.statues.forEach(function (it) { it.hidden = false; it.op = 0; }); S.props.forEach(function (it) { it.op = 0; }); S.afterimages.forEach(function (it) { it.op = 0; }); resetAlert(S.captureAlert); S.checkAlerts.forEach(resetAlert); resetAlert(S.mateAlert); hideLogo(); },
       update: function (t, lt) {
         boardAt(t);
         path([{ t: 0, x: 0, y: -3500, z: 1400, tx: 0, ty: 0, tz: 0, fov: 78 },
@@ -2285,17 +2319,20 @@
         S.statues.forEach(function (it, i) { it.op = smooth(span(lt, 1 + i * .7, 3 + i * .7)); it.y = lerp(110, [-220,-200,-290,-110][i], smooth(span(lt, 1 + i * .7, 3 + i * .7))); });
         S.props.forEach(function (it) { it.op = it.fadeIn = smooth(span(lt, .8, 2.4)); });
         faceStatues(); Cine.speed = 0.12 * (1 - smooth(span(lt, 0, 2)));
-        hud('OPENING GAMBIT', 'LEGAL’S MATE · ' + Math.max(0, boardAt(t)) + ' PLIES');
+        hud('F15 GAMBIT', 'PLY ' + Math.max(0, boardAt(t)) + ' / 15');
       } };
 
     S.capture = { pat: 5, enter: function () { S.boardFrame = -1; S.board.op = 1; S.statues.forEach(function (it) { it.hidden = false; it.op = 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); resetAlert(S.captureAlert); },
       update: function (t, lt, u, dt) {
         boardAt(t);
-        var k = smooth(span(t, 24.6, 25.4));
-        S.statues[0].x = lerp(-640, -210, k); S.statues[0].y = -220 - Math.sin(k * Math.PI) * 290;
-        S.statues[0].rz = k * 11; S.statues[3].op = 1 - smooth(span(t, 25.4, 25.8));
+        var N = S.statues[0], crouch = Math.sin(clamp01((t - 24.82) / 0.2) * Math.PI) * (t < 25.02 ? 1 : 0), k = clamp01((t - 25.0) / 0.4), land = clamp01((t - 25.4) / 0.35);
+        var arc = k * (2 - k);                                                 // fast off the ground, easing into the target
+        N.x = lerp(-640, -210, arc) - crouch * 30; N.y = -220 - Math.sin(k * Math.PI) * 250 + crouch * 26 + Math.sin(land * Math.PI) * 18 * (1 - land);
+        N.rz = t < 25.0 ? -crouch * 8 : t < 25.4 ? lerp(-8, 16, k) : 16 * (1 - easeOut(land)) * Math.cos(land * 9);
+        N.s = 1.7 * (1 + (t > 25.4 ? -0.07 * Math.sin(land * Math.PI) * (1 - land) : 0));
+        S.statues[3].op = 1 - smooth(span(t, 25.4, 25.6));
         var bf = Math.floor((t - 25.4) * 12); S.burst.op = bf >= 0 && bf < 16 ? 1 : 0; if (S.burst.op) burstFrame(S.burst, bf); S.burst.ry = -Cine.cam.yaw;
-        S.afterimages.forEach(function (it, i) { var q = smooth(span(t - .09 * (i + 1), 24.6, 25.4)); it.x = lerp(-640, -210, q); it.y = -220 - Math.sin(q * Math.PI) * 290; it.ry = -Cine.cam.yaw; it.op = t < 25.4 && t > 24.6 ? .23 - i * .055 : 0; });
+        S.afterimages.forEach(function (it, i) { var q = clamp01((t - .05 * (i + 1) - 25.0) / 0.4), a2 = q * (2 - q); it.x = lerp(-640, -210, a2); it.y = -220 - Math.sin(q * Math.PI) * 250; it.rz = lerp(-8, 16, q); it.ry = -Cine.cam.yaw; it.op = q > 0 && q < 1 ? .3 - i * .08 : 0; });
         path([{ t: 0, x: -920, y: -430, z: 1000, tx: -450, ty: -180, tz: 100, fov: 50 },
           { t: 3.4, x: -760, y: -420, z: 980, tx: -260, ty: -200, tz: 60, fov: 54, roll: -4 },
           { t: 5.1, x: 180, y: -440, z: 900, tx: 470, ty: -410, tz: -350, fov: 53 },
@@ -2304,18 +2341,32 @@
         faceStatues();
         once(S, 'capture', t, 25.4, function () { var p = projectP({ x: -170, y: -110, z: 50 }); if (p) { ring(p, 260); burst(p.x, p.y, qn(32), [320, 185], .5); }
           shatterGlass(S.statues[3], { x: -170, y: -110, z: 50 }, { x: 170, y: -140, z: 70 });
-          petals({ x: -170, y: -110, z: 50 }, 44); Cine.flash = Math.max(Cine.flash, .19); Cine.vhs = 1; Cine.shake = Math.max(Cine.shake, .38); });
+          petals({ x: -170, y: -110, z: 50 }, 44); Cine.flash = Math.max(Cine.flash, .19); Cine.vhs = 1; Cine.shake = Math.max(Cine.shake, .5); Cine.fovKick = -8; caption('F15 GAMBIT', 'Nxe5 · THE QUEEN IS BAIT'); });
+        // D. the queen is taken: her hologram tears and powers down, and stays gone
+        var Q = S.statues[1];
+        Q.holo.hit = t < 27 ? 0 : Math.max(0, 1 - (t - 27) / 0.6); Q.holo.off = smooth(span(t, 27.15, 27.75)); Q.holo.noPad = false;
+        once(S, 'queen', t, 27, function () { var p = projectP({ x: Q.x, y: Q.y, z: Q.z }); if (p) { ring(p, 240); burst(p.x, p.y, qn(26), [320, 285], .5); }
+          Cine.shake = Math.max(Cine.shake, .4); Cine.vhs = 1; caption('QUEEN TAKEN', '...Bxd1 · AS PLANNED'); });
         flyAlert(S.captureAlert, t, t >= 26.4);
         hud('CAPTURE · Nxe5', 'HOLOGRAM / PETALS');
       } };
 
-    S.check = { pat: 5, enter: function () { S.boardFrame = -1; S.board.op = 1; S.captureAlert.op = 0; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.statues[0].x = -210; S.statues[0].rz = 0; S.checkAlerts.forEach(resetAlert); },
+    S.check = { pat: 5, enter: function () { S.boardFrame = -1; S.board.op = 1; S.captureAlert.op = 0; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 || i === 1 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.statues[0].x = -210; S.statues[0].rz = 0; S.statues[0].s = 1.7; var K0 = S.statues[2]; K0.x = 0; K0.y = -290; K0.z = -760; K0.rz = 0; S.checkAlerts.forEach(resetAlert); },
       update: function (t, lt, u, dt) {
         boardAt(t);
-        // a run straight at the king down a corridor of Check. alerts, bursting through each one
+        S.statues[1].op = 0;
+        // a run at the king through a corridor of Check. alerts, bursting through each, weaving a little, handing straight
+        // on to the checkmate shot's opening move
         path([{ t: 0, x: 0, y: -430, z: 2900, tx: 0, ty: -260, tz: -760, fov: 50 },
-          { t: 7.95, x: 140, y: -330, z: 350, tx: 0, ty: -250, tz: -760, fov: 56, roll: 3, e: function (q) { return q; } }], lt);
-        Cine.cam.roll = Math.sin(lt * 1.3) * 4;
+          { t: 8, x: 700, y: -420, z: 1000, tx: 0, ty: -280, tz: -760, fov: 48, e: function (q) { return q * (1.15 - 0.15 * q); } }], lt);
+        Cine.cam.x += Math.sin(lt * 1.1) * 90 * (1 - span(lt, 6, 8)); Cine.cam.roll = Math.sin(lt * 1.1 + 0.6) * 4 * (1 - span(lt, 6.5, 8));
+        lookAt(0, -280, -760);
+        // Ke7: the king flinches a step forward at 34 s
+        var K = S.statues[2], fl = clamp01((t - 34) / 0.45);
+        K.y = -290 - Math.sin(fl * Math.PI) * 60; K.rz = Math.sin(fl * Math.PI) * 6;
+        once(S, 'ke7', t, 34, function () { K.holo.hit = 0.6; Cine.vhs = Math.max(Cine.vhs, 0.6); });
+        K.holo.hit = Math.max(0, (K.holo.hit || 0) - dt * 1.2);
+        once(S, 'chk', t, 30.5, function () { caption('CHECK', 'Bxf7+ · THE F1 BISHOP STRIKES'); Cine.vhs = 1; });
         kick(dt);
         S.checkAlerts.forEach(function (it) { flyAlert(it, t, true); });
         Cine.speed = 0.25; Cine.streaks = 0.3;
@@ -2323,13 +2374,13 @@
         hud('CHECK', 'THE KING IS EXPOSED');
       } };
 
-    S.mate = { pat: 5, enter: function () { var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; K.holo.frame = -1; S.kingPad.op = 0; S.boardFrame = -1; S.board.op = 1; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.checkAlerts.forEach(function (it) { it.op = 0; }); resetAlert(S.mateAlert); S.statues[2].rz = 0; },
+    S.mate = { pat: 5, enter: function () { var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; K.holo.frame = -1; S.kingPad.op = 0; S.boardFrame = -1; S.board.op = 1; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 || i === 1 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.checkAlerts.forEach(function (it) { it.op = 0; }); resetAlert(S.mateAlert); S.statues[2].rz = 0; },
       update: function (t, lt, u, dt) {
         boardAt(t);
         // hit-stop: the camera all but stops for a quarter second on the blow, then carries on
         var hs = lt < 1.1 ? lt : lt < 1.35 ? 1.1 + (lt - 1.1) * 0.12 : lt - 0.22;
         path([{ t: 0, x: 700, y: -420, z: 1000, tx: 0, ty: -280, tz: -760, fov: 48 },
-          { t: 1.1, x: 360, y: -350, z: 380, tx: 0, ty: -250, tz: -760, fov: 54, e: easeIn },   // through Checkmate. on the mating move
+          { t: 1.1, x: 360, y: -350, z: 380, tx: 0, ty: -250, tz: -760, fov: 54, e: function (q) { return q * (0.45 + 0.55 * q); } },   // through Checkmate. on the mating move
           { t: 4.9, x: 120, y: -270, z: 100, tx: -180, ty: -140, tz: -760, fov: 62, roll: -5, e: easeOut }], hs);
         kick(dt);
         flyAlert(S.mateAlert, t, true);
@@ -2655,7 +2706,7 @@
     el('span', '', c).textContent = small;
     c.classList.remove('show');
     void c.offsetWidth;
-    c.classList.add('show');
+    c.classList.add('show', 'hold');   // held about two seconds (tetris-cinematic.css)
   }
 
   /* =================================================================

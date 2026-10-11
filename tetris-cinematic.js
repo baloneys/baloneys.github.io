@@ -1827,7 +1827,7 @@
     var view = applyCamera();
     layoutGroup(shot.group, view);
     drawBoards(shot.group, dt);
-    Bg.draw({ time: t, pat: shot.pat, level: Cine.level, beat: Cine.beat, flash: Math.min(1, Cine.flash), env: Cine.env, tear: Cine.tear,
+    Bg.draw({ time: t, pat: shot.pat, level: Cine.level, beat: Cine.beat, flash: Math.min(0.14, Cine.flash * 0.45), env: Cine.env, tear: Cine.tear,
       speed: Cine.speed, variant: Cine.variant, P: view.P, cam: Cine.cam, dist: Cine.dist, eye: Cine.eye, crt: Cine.crt });
     drawFx(dt, t);
     drawSpark(t);
@@ -1836,7 +1836,7 @@
     // (two full-screen drop-shadows are costly, so the split is only on during hits and fast moves, never idling)
     var ab = Math.min(1.4, Cine.aberration), off = (ab * 5).toFixed(1);
     Cine.stage.style.filter = Cine.ending || ab < 0.08 || Q.level ? '' : 'drop-shadow(' + off + 'px 0 0 rgba(255,0,110,0.5)) drop-shadow(-' + off + 'px 0 0 rgba(0,220,255,0.45))';
-    Cine.stage.style.transform = Cine.tear > 0.5 && Math.random() < 0.35 ? 'translateX(' + ((Math.random() - 0.5) * 30 * Cine.tear).toFixed(1) + 'px) skewX(' + ((Math.random() - 0.5) * 3 * Cine.tear).toFixed(2) + 'deg)' : '';
+    Cine.stage.style.transform = Cine.tear > 0.3 ? 'translateX(' + (Math.sin(t * 13) * 7 * Cine.tear).toFixed(1) + 'px) skewX(' + (Math.sin(t * 9) * 0.7 * Cine.tear).toFixed(2) + 'deg)' : '';
     Cine.raf = requestAnimationFrame(frame);
   }
 

@@ -50,3 +50,8 @@ html.cine-open .gkb-launch { display: none; }
   transition: opacity 0.3s ease, transform 0.35s cubic-bezier(.2, 1.4, .4, 1); filter: drop-shadow(0 0 6px rgba(255, 79, 200, 0.55)); }
 .bsx-topship.on { opacity: 1; transform: none; }
 .cine-lite .bsx-topship { filter: none; }
+
+/* the letterbox bars (bars() sizes them): over the picture, under the HUD, captions and buttons */
+.bsx-bar { position: absolute; left: 0; right: 0; height: 0; background: #000; pointer-events: none; z-index: 3; }
+.bsx-bar.top { top: 0; box-shadow: 0 1px 0 rgba(48, 226, 255, 0.18); }
+.bsx-bar.bottom { bottom: 0; box-shadow: 0 -1px 0 rgba(48, 226, 255, 0.18); }

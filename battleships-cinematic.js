@@ -728,6 +728,7 @@
     paintLogo(lc);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { paintLogo(lc); });
     Cine.logo = { box: logo, art: lc, sub: sub };
+    Cine.barTop = el('div', 'bsx-bar top', root); Cine.barBot = el('div', 'bsx-bar bottom', root);   // the 32:9 letterbox (bars())
     Cine.caption = el('div', 'cine-caption', root);
     Cine.vhsEl = el('div', 'cine-vhs', root);
     Cine.hud = el('div', 'bsx-hud', root); el('b', '', Cine.hud); el('small', '', Cine.hud);   // the naval HUD (hud())
@@ -1995,16 +1996,23 @@
     el('span', '', c).textContent = small;
     c.classList.remove('show');
     void c.offsetWidth;
-    c.classList.add('show');
+    c.classList.add('show', 'hold');   // held about two seconds (tetris-cinematic.css)
   }
 
   /* =================================================================
      Frame loop
      ================================================================= */
 
+  // The letterbox: on a landscape screen the picture is a 32:9 band, the bars sliding in at the start and away for the
+  // hand-over to the menu; a portrait phone only gets thin bars (a 32:9 band there would be a sliver).
+  function bandHeight() { var vw = innerWidth, vh = innerHeight; return vw >= vh ? Math.min(vh, vw * 9 / 32) : vh * 0.88; }
+  function bars(t) {
+    var k = smooth(span(t, 0.1, 1.0)) * (1 - smooth(span(t, CUES.end - 1.4, CUES.end - 0.3))), h = (innerHeight - bandHeight()) / 2 * k;
+    Cine.barTop.style.height = Cine.barBot.style.height = h.toFixed(1) + 'px';
+  }
   function applyCamera() {
     var c = Cine.cam, vw = innerWidth, vh = innerHeight;
-    var safeH = Math.min(vh, vw * 9 / 16), P = (safeH / 2) / Math.tan(c.fov * D2R / 2);
+    var full = Math.min(vh, vw * 9 / 16), safeH = Math.sqrt(full * Math.min(full, bandHeight())), P = (safeH / 2) / Math.tan(c.fov * D2R / 2);
     var sx = 0, sy = 0, sr = 0;
     if (Cine.shake > 0.01) { sx = (Math.random() - 0.5) * 28 * Cine.shake; sy = (Math.random() - 0.5) * 28 * Cine.shake; sr = (Math.random() - 0.5) * 1.6 * Cine.shake; }
     Cine.shakeX = sx; Cine.shakeY = sy; Cine.shakeR = sr;
@@ -2079,7 +2087,7 @@
     var view = applyCamera();
     layoutGroup(shot.group, view);
     boardFlashes(shot.group);
-    Bg.draw({ time: t, pat: shot.pat, level: Cine.level, beat: Cine.beat, flash: Math.min(1, Cine.flash), env: Cine.env, tear: Cine.tear,
+    Bg.draw({ time: t, pat: shot.pat, level: Cine.level, beat: Cine.beat, flash: Math.min(0.12, Cine.flash * 0.4), env: Cine.env, tear: Cine.tear,
       speed: Cine.speed, variant: Cine.variant, P: view.P, cam: Cine.cam, dist: Cine.dist, eye: Cine.eye, crt: Cine.crt });
     drawFx(dt, t);
     drawMissiles(dt, t);   // missiles, splashes, fireballs and every flame
@@ -2088,7 +2096,8 @@
     // (two full-screen drop-shadows are costly, so the split is only on during hits and fast moves, never idling)
     var ab = Math.min(1.4, Cine.aberration), off = (ab * 5).toFixed(1);
     Cine.stage.style.filter = Cine.ending || ab < 0.08 || Q.level ? '' : 'drop-shadow(' + off + 'px 0 0 rgba(255,0,110,0.5)) drop-shadow(-' + off + 'px 0 0 rgba(0,220,255,0.45))';
-    Cine.stage.style.transform = Cine.tear > 0.5 && Math.random() < 0.35 ? 'translateX(' + ((Math.random() - 0.5) * 30 * Cine.tear).toFixed(1) + 'px) skewX(' + ((Math.random() - 0.5) * 3 * Cine.tear).toFixed(2) + 'deg)' : '';
+    Cine.stage.style.transform = Cine.tear > 0.3 ? 'translateX(' + (Math.sin(t * 13) * 7 * Cine.tear).toFixed(1) + 'px) skewX(' + (Math.sin(t * 9) * 0.7 * Cine.tear).toFixed(2) + 'deg)' : '';
+    bars(t);
     Cine.raf = requestAnimationFrame(frame);
   }
 

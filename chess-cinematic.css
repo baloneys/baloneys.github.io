@@ -64,3 +64,6 @@ html.cine-open .gkb-launch { display: none; }
 .cx-king-shadow { image-rendering: auto; }
 /* the capture burst sprite sheet (burstPlane): 4 x 4 frames, stepped by background-position */
 .cx-burst { background: url("chess-capture-burst.png") 0 0 / 400% 400% no-repeat; image-rendering: pixelated; backface-visibility: hidden; pointer-events: none; }
+.cx-shadow { image-rendering: auto; }
+/* a piece knocked off its square as the capturer lands (slideTick) */
+.cx-board-frame .cx-taken { position: absolute; pointer-events: none; }

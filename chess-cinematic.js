@@ -857,6 +857,8 @@
     root.setAttribute('aria-label', 'Chess opening cinematic');
     var stage = el('div', 'cine-stage', root);
     Cine.bgCanvas = el('canvas', 'cine-bg', stage);
+    Cine.shadowCv = el('canvas', 'cine-fx cx-shadow-layer', stage);   // the props' shadows, painted on the floor (drawShadows)
+    Cine.shadowCtx = Cine.shadowCv.getContext('2d');
     Cine.view = el('div', 'cine-view', stage);
     Cine.world = el('div', 'cine-world', Cine.view);
     Cine.fx = el('canvas', 'cine-fx', stage);
@@ -1942,38 +1944,79 @@
   }
   // The shadow: the sprite's silhouette, flipped and laid flat behind the prop (towards +z, away from the sun), drawn
   // in a dither that thins out towards its tip.
-  var SHADOW_LEN = 0.85;
+  var SHADOW_LEN = 0.8;
   function castShadow(g, it, ground) {
-    var src = it.canvas, w = src.width, h = src.height, K2 = 2, W2 = w * K2, H2 = h * K2;
+    var src = it.canvas, w = src.width, h = src.height, K2 = 2, PAD = 8, W2 = w * K2 + PAD * 2, H2 = h * K2;
     var cv = document.createElement('canvas'); cv.width = W2; cv.height = H2; cv.className = 'cx-shadow';
     var m = document.createElement('canvas'); m.width = W2; m.height = H2;
     var mx = m.getContext('2d'); mx.imageSmoothingEnabled = false;
-    mx.translate(0, H2); mx.scale(1, -1); mx.drawImage(src, 0, 0, W2, H2);            // flipped: the prop's top lands at the far end
+    mx.translate(PAD, H2); mx.scale(1, -1); mx.drawImage(src, 0, 0, w * K2, H2);            // flipped: the prop's top lands at the far end
     mx.setTransform(1, 0, 0, 1, 0, 0); mx.globalCompositeOperation = 'source-in'; mx.fillStyle = '#0e0422'; mx.fillRect(0, 0, W2, H2);
     var x = cv.getContext('2d');
-    x.filter = 'blur(' + (K2 * 1.4) + 'px)'; x.drawImage(m, 0, 0); x.filter = 'none';
+    // sharp at the foot, softer and softer towards the tip (overlapping bands, each blurred more than the last)
+    var bands = 5;
+    for (var b = 0; b < bands; b++) {
+      var y0 = Math.floor(H2 * b / bands) - (b ? 6 : 0), y1 = Math.ceil(H2 * (b + 1) / bands) + 6;
+      x.save(); x.beginPath(); x.rect(0, y0, W2, y1 - y0); x.clip();
+      x.filter = 'blur(' + (0.6 + b * b * 1.1) + 'px)'; x.drawImage(m, 0, 0); x.restore();
+    }
+    x.filter = 'none';
     x.globalCompositeOperation = 'destination-in';
-    var gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, 'rgba(0,0,0,0.82)'); gr.addColorStop(0.55, 'rgba(0,0,0,0.42)'); gr.addColorStop(1, 'rgba(0,0,0,0.06)');
+    var gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, 'rgba(0,0,0,0.95)'); gr.addColorStop(0.35, 'rgba(0,0,0,0.7)'); gr.addColorStop(0.75, 'rgba(0,0,0,0.28)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
     x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
     x.globalCompositeOperation = 'source-over';
-    var rg = x.createRadialGradient(W2 / 2, 0, 0, W2 / 2, 0, W2 * 0.36);
-    rg.addColorStop(0, 'rgba(14,4,34,0.7)'); rg.addColorStop(1, 'rgba(14,4,34,0)');
-    x.save(); x.scale(1, 0.5); x.fillStyle = rg; x.fillRect(0, 0, W2, W2 * 0.72); x.restore();
-    var L = it.h * it.s * SHADOW_LEN, sh = plane(g, cv, it.w, it.h * SHADOW_LEN, { x: it.x, y: ground - 3, z: it.z + L / 2, rx: 90, s: it.s, op: it.op, cull: it.cull });
-    sh.h0 = it.h; sh.scaleY = SHADOW_LEN;
-    sh.el.style.transformOrigin = '50% 50%';
-    sh.ground = ground; sh.caster = it; sh.len = L; sh.halfW = it.w * it.s * 0.22;
+    var rg = x.createRadialGradient(W2 / 2, 0, 0, W2 / 2, 0, W2 * 0.34);
+    rg.addColorStop(0, 'rgba(14,4,34,0.75)'); rg.addColorStop(1, 'rgba(14,4,34,0)');
+    x.save(); x.scale(1, 0.4); x.fillStyle = rg; x.fillRect(0, 0, W2, W2 * 0.85); x.restore();
+    var sh = { canvas: cv, w: it.w * W2 / (w * K2), ground: ground, caster: it, len: it.h * it.s * SHADOW_LEN, halfW: it.w * it.s * 0.22, op: 0, s: it.s };
+    (Cine.shadows = Cine.shadows || []).push(sh);
     return sh;
   }
-  // keep each shadow under its prop (props bob, bounce and fade): position, length, fade
+  /* Shadows fall away from one fixed sun (low, ahead and to the right), whatever the camera does, so as the camera
+     swivels round a prop its shadow keeps pointing the same way across the floor. Each prop is treated as a rounded
+     thing: its shadow starts at its base (centred on its foot, with a dark contact pool there) and runs straight away
+     from the sun, sharp near the foot and blurring and fading towards the tip. Laid out every frame (props bob and
+     bounce: a raised prop's shadow shortens, slides and fades). (A shadow running straight at the camera is
+     foreshortened to a sliver from the film's low angles, so the sun sits off to the right.) */
+  var SUN = { x: -0.75, z: 0.66 };   // the ground direction shadows fall in (unit)
   function syncShadows(list) {
     (list || []).forEach(function (it) {
       var sh = it.shadow; if (!sh) return;
       var lift = sh.ground - (it.y + it.h * it.s / 2);       // how far the prop is off the floor
-      sh.x = it.x; sh.z = it.z + sh.len / 2 + lift * 0.4;
-      sh.s = it.s * (1 - Math.min(0.5, lift / 900));
+      sh.L = sh.len * (1 - Math.min(0.5, lift / 900));
+      sh.s = it.s * (1 - Math.min(0.4, lift / 1100));
+      sh.fx = it.x + SUN.x * lift * 0.3; sh.fz = it.z + SUN.z * lift * 0.3;   // the base centre (slides away as the prop rises)
       sh.op = (it.op == null ? 1 : it.op) * (1 - Math.min(0.8, lift / 700));
     });
+  }
+  // Paint every shadow of the shot on screen onto the shadow layer: each a quad on the floor from the prop's base along
+  // the sun, drawn as strips (each strip an affine piece of the perspective), farthest first.
+  function drawShadows() {
+    var cv = Cine.shadowCv, x = Cine.shadowCtx, w = innerWidth, h = innerHeight;
+    if (!cv) return;
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, w, h);
+    var list = (Cine.shadows || []).filter(function (sh) {
+      var c = sh.caster;
+      if (!(sh.op > 0.01) || c.hidden || !c.el.parentNode || c.el.parentNode.style.display === 'none' || sh.L == null) return false;
+      sh.depth = camDepth(sh.fx, sh.ground, sh.fz).d;
+      return sh.depth > 60;
+    }).sort(function (a, b) { return b.depth - a.depth; });
+    var px = SUN.z, pz = -SUN.x, N = 6;
+    list.forEach(function (sh) {
+      var hw = sh.w * sh.s / 2, src = sh.canvas, SW = src.width, SH = src.height;
+      x.globalAlpha = Math.min(1, sh.op);
+      for (var k = 0; k < N; k++) {
+        var v0 = k / N, v1 = (k + 1) / N;
+        var bx = sh.fx + SUN.x * sh.L * v0, bz = sh.fz + SUN.z * sh.L * v0, ex = sh.fx + SUN.x * sh.L * v1, ez = sh.fz + SUN.z * sh.L * v1;
+        var A = project(bx - px * hw, sh.ground, bz - pz * hw), B = project(bx + px * hw, sh.ground, bz + pz * hw), C = project(ex - px * hw, sh.ground, ez - pz * hw);
+        if (!A || !B || !C) continue;
+        var y0 = v0 * SH, dh = (v1 - v0) * SH;
+        x.setTransform((B.x - A.x) / SW, (B.y - A.y) / SW, (C.x - A.x) / dh, (C.y - A.y) / dh, A.x, A.y);
+        x.drawImage(src, 0, y0, SW, dh + 0.5, 0, 0, SW, dh + 0.5);
+      }
+    });
+    x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1;
   }
   // a prop standing in another prop's shadow is darkened from its foot up to the height the shadow reaches there
   function receiveShadows(list) {
@@ -2660,7 +2703,7 @@
       lookAt(look.x, look.y, look.z);
       // the king and the logo always face the camera (they're cut-outs)
       S.finalKing.ry = -c.yaw; S.finalLogo.ry = -c.yaw;
-      S.finalProps.forEach(function (it) { it.ry = -c.yaw; });
+      S.finalProps.forEach(function (it) { it.ry = -c.yaw; }); syncShadows(S.finalProps);
       // the king bobs gently; its shadow tightens and darkens as it dips
       var bob = Math.sin(t * 1.8) * 22;
       S.finalKing.y = KING.y + bob; holoTick([S.finalKing], t); vhsBoard(S.finalBoard, t);
@@ -2913,7 +2956,7 @@
       it.el.style.visibility = vis ? '' : 'hidden';
       if (!vis) return;
       var jx = it.shakeUntil && Cine.t < it.shakeUntil ? (Math.random() - 0.5) * 40 : 0;
-      it.el.style.transform = 'translate3d(' + (it.x + jx) + 'px,' + it.y + 'px,' + it.z + 'px) rotateY(' + it.ry + 'deg) rotateX(' + it.rx + 'deg) rotateZ(' + it.rz + 'deg) scale(' + it.s + ') translate(' + (-it.w / 2) + 'px,' + (-it.h / 2) + 'px)';
+      it.el.style.transform = 'translate3d(' + (it.x + jx) + 'px,' + it.y + 'px,' + it.z + 'px) rotateY(' + it.ry + 'deg) rotateX(' + it.rx + 'deg) rotateZ(' + it.rz + 'deg)' + (it.skew ? ' skewX(' + it.skew.toFixed(2) + 'deg)' : '') + ' scale(' + (it.s * (it.sx || 1)).toFixed(4) + ',' + (it.s * (it.sy || 1)).toFixed(4) + ') translate(' + (-it.w / 2) + 'px,' + (-it.h / 2) + 'px)';
       it.el.style.opacity = it.op < 1 ? it.op.toFixed(3) : '';
       if (it.fog) it.fog.style.opacity = clamp01((cd.d - 1800) / 5000).toFixed(3);
     });
@@ -2975,6 +3018,7 @@
 
     var view = applyCamera();
     layoutGroup(shot.group, view);
+    drawShadows();
     boardFlashes(shot.group);
     Bg.draw({ time: t, pat: shot.pat, level: Cine.level, beat: Cine.beat, flash: Math.min(0.12, Cine.flash * 0.4), env: Cine.env, tear: Cine.tear,
       speed: Cine.speed, variant: Cine.variant, P: view.P, cam: Cine.cam, dist: Cine.dist, eye: Cine.eye, crt: Cine.crt });
@@ -3043,7 +3087,7 @@
     root.classList.add(skipped ? 'closing' : 'closed');
     setTimeout(function () { root.remove(); }, skipped ? 450 : 50);
     document.documentElement.classList.remove('cine-open');
-    Cine.groups = {}; Cine.shots = null; Cine.bolts = []; Cine.sparks = []; Cine.frags = []; Cine.flames = []; Cine.rings = []; Cine.transits = [];
+    Cine.groups = {}; Cine.shadows = []; Cine.shots = null; Cine.bolts = []; Cine.sparks = []; Cine.frags = []; Cine.flames = []; Cine.rings = []; Cine.transits = [];
     Cine.glass = []; Cine.crack = null; Cine.petals = []; Rig.on = false;
     var btn = document.getElementById('chessCinematicBtn');
     if (btn && skipped) btn.focus({ preventScroll: true });

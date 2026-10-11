@@ -2187,25 +2187,40 @@
     // fast, hanging at the top, dropping onto the next button); the camera rides the same curve as the bolt
     var HOP_REST = 0.2;   // it sits on the button a moment, gathering itself
     function hopArc(a, b) { return Math.min(620, 0.75 * Math.hypot(b.x - a.x, b.z - a.z)); }   // high hops: the gravity reads
-    // the camera along the whole run: chasing the ball, then the rush at the king, then a slow creep
+    // the sprung camera's z along the run: a step forward at each smash (from just in front of one box to just in front
+    // of the next), each step the response of a spring with a little overshoot; x leans towards the side the next box is on
+    function springStep(tau) { if (tau <= 0) return 0; var w = 7.5, z = 0.55, wd = w * Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w * tau) * (Math.cos(wd * tau) + z / Math.sqrt(1 - z * z) * Math.sin(wd * tau)); }
+    function runZ(t) {
+      var H = S.orbHits, z = RUN_Z[0] + 1250 + 250 * (1 - springStep(t - 30.0));   // eases in to wait before the first box
+      H.forEach(function (h, i) { z += (i + 1 < RUN_Z.length ? RUN_Z[i + 1] - RUN_Z[i] : -700) * springStep(t - h.t - 0.05); });
+      return z - 600;
+    }
+    function runX(t) {   // half-way towards the side of the box it's heading for
+      var bx = function (i) { return i < RUN_Z.length ? (i % 2 ? 1 : -1) * 45 : 0; }, x = bx(0);
+      S.orbHits.forEach(function (h, i) { x += (bx(i + 1) - bx(i)) * springStep(t - h.t - 0.05); });
+      return x;
+    }
+    // the camera along the whole run: waiting and surging box to box, then the rush at the king, then a slow creep
     function runCam(t) {
       var H = S.orbHits, lastT = H[H.length - 1].t;
-      // its own path, not following the ball: a steady dolly straight down the run, passing each box just after the
-      // ball has smashed it, looking a little up the run so the high hops stay in frame
-      var dz = RUN_Z[0] + 560 * (S.orbHits[0].t + 0.6 - Math.min(t, lastT + 0.6)), sway = Math.sin(t * 0.9) * 60;
-      var chase = { x: sway, y: -470, z: dz, tx: sway * 0.4, ty: -560, tz: dz - 1600 };
+      // its own path, not following the ball: it waits in front of the next box, and the moment the ball smashes one it
+      // surges through the debris to the next, overshooting a touch and settling (a sprung camera with inertia), banking
+      // and widening its view with the speed; looking a little up the run so the high hops stay in frame
+      var dz = runZ(t), v = (runZ(t + 0.02) - dz) / 0.02, side = runX(t);
+      var chase = { x: side, y: -470 + Math.min(80, Math.abs(v) * 0.03), z: dz, tx: side * 0.3, ty: -560, tz: dz - 1600, v: v };
       var stop = { x: 60, y: -360, z: MATE_BOX_Z + 520 }, creep = { x: 30, y: -350, z: MATE_BOX_Z + 450 };
       var k = smooth(span(t, lastT + 0.1, 37.9)), slow = smooth(span(t, 37.9, 43));
       var r = { x: lerp(chase.x, lerp(stop.x, creep.x, slow), k), y: lerp(chase.y, lerp(stop.y, creep.y, slow), k), z: lerp(chase.z, lerp(stop.z, creep.z, slow), k),
         tx: lerp(chase.tx, 0, k), ty: lerp(chase.ty, -320, k), tz: lerp(chase.tz, -760, k) };
       var rushV = Math.sin(clamp01(span(t, lastT + 0.1, 37.9)) * Math.PI);   // how fast the rush is going
-      r.fov = 52 + 24 * rushV - 6 * k;
+      r.fov = 52 + 24 * rushV - 6 * k + (1 - k) * Math.min(14, Math.abs(chase.v) / 160);
+      r.roll = (1 - k) * Math.max(-7, Math.min(7, -(runX(t + 0.02) - side) / 0.02 * 0.02));
       return r;
     }
     function applyRun(t, lt) {
       var r = runCam(t), c = Cine.cam;
       c.x = r.x + Math.sin(t * 1.1) * 30 * (1 - span(t, 36, 37.9)); c.y = r.y; c.z = r.z; c.fov = r.fov;
-      c.roll = Math.sin(t * 1.1 + 0.6) * 3 * (1 - span(t, 36, 37.9));
+      c.roll = r.roll || 0;
       lookAt(r.tx, r.ty, r.tz);
     }
     // Tetris's elimination, on a dialogue box: it lights up red (outline and glow), the picture tears and splits, and a

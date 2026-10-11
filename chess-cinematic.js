@@ -2954,9 +2954,15 @@
 
     Cine.env = 1; Cine.speed = 0; Cine.streaks = 0; Cine.variant = 0; Cine.eye = CAB_EYE; Cine.timeScale = 1;
     shot.update(t, lt, u, dt);
-    // hit-stop: on a big impact the camera holds still for a beat (Cine.hitStop seconds) while the effects play on
-    if (Cine.hitStop > 0) { if (!Cine.camHeld) Cine.camHeld = Object.assign({}, Cine.cam); else Object.assign(Cine.cam, Cine.camHeld); Cine.hitStop -= dt; }
-    else Cine.camHeld = null;
+    // hit-stop: on a big impact the camera holds still for a beat (Cine.hitStop seconds) while the effects play on,
+    // then eases back onto its path over a fifth of a second (no snap: the path kept moving underneath)
+    if (Cine.hitStop > 0 && !Cine.camHeld) { Cine.camHeld = Object.assign({}, Cine.cam); Cine.hsRel = 0; }
+    if (Cine.camHeld) {
+      if (Cine.hitStop > 0) { Cine.hitStop -= dt; Cine.hsRel = 0; } else Cine.hsRel += dt;
+      var hw = smooth(clamp01(Cine.hsRel / 0.2)), H0 = Cine.camHeld, C0 = Cine.cam;
+      ['x', 'y', 'z', 'fov', 'roll', 'yaw', 'pitch'].forEach(function (k) { if (H0[k] != null) C0[k] = lerp(H0[k], C0[k], hw); });
+      if (hw >= 1) Cine.camHeld = null;
+    }
 
     var view = applyCamera();
     layoutGroup(shot.group, view);

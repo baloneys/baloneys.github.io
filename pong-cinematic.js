@@ -1063,8 +1063,9 @@
   function heroAt(t) {
     var s = heroSeg(t);
     if (!s) return null;
-    var k = clamp01((t - s.t0) / (s.t1 - s.t0)), e = s.ease ? s.ease(k) : k;
-    var to = typeof s.to === 'function' ? s.to() : s.to, b = Math.sin(e * Math.PI);
+    var k = clamp01((t - s.t0) / (s.t1 - s.t0)), e = s.gravity ? k : s.ease ? s.ease(k) : k;
+    // s.gravity: a thrown arc (steady across, rising fast, hanging, dropping); otherwise a bow of the eased path
+    var to = typeof s.to === 'function' ? s.to() : s.to, b = s.gravity ? 4 * k * (1 - k) : Math.sin(e * Math.PI);
     var p = { x: lerp(s.from.x, to.x, e), y: lerp(s.from.y, to.y, e) - b * (s.arc || 0), z: lerp(s.from.z, to.z, e) };
     if (s.bulge) { p.x += s.bulge.x * b; p.y += s.bulge.y * b; p.z += s.bulge.z * b; }
     return p;
@@ -1690,7 +1691,7 @@
       P.forEach(function (it, i) {
         var entry = onFace(it, it.entryL.x, it.entryL.y), hit = onFace(it, it.hitL.x, it.hitL.y);
         segs.push({ kind: 'fly', i: i, t0: prevT, t1: hitT(i) - SPB, from: prev, to: entry, arc: i ? 220 : 160,
-          bulge: i ? scale3(normalOf(P[i - 1]), 260) : null, ease: function (k) { return k * 0.55 + smooth(k) * 0.45; },
+          bulge: i ? scale3(normalOf(P[i - 1]), 260) : null, gravity: true,
           onEnd: function () { land(it); } });
         segs.push({ kind: 'ride', i: i, it: it, t0: hitT(i) - SPB, t1: hitT(i), from: entry, to: hit, onEnd: function () { paddleHit(it); } });
         prev = hit; prevT = hitT(i);
@@ -1720,7 +1721,7 @@
       if (p) { burst(p.x, p.y, 60, [320, 190, 285, 50], 1.0); ring(p, 420 * Math.min(2, p.s)); }
       it.flashAt = Cine.t;
       Cine.shake = Math.max(Cine.shake, 0.45); Cine.flash = Math.max(Cine.flash, 0.14); Cine.aberration = Math.max(Cine.aberration, 0.8);
-      Cine.tear = Math.max(Cine.tear, 0.35); Cine.fovKick = -9; Cine.hitStop = 0.07;
+      Cine.tear = Math.max(Cine.tear, 0.35); Cine.fovKick = -9;   // (no hit-stop: the run keeps flowing)
     }
     function breakThrough() {
       var PE = S.PE;
@@ -1787,6 +1788,11 @@
       if (!s || !bw) return;
       var v = heroVel(t) || { x: 1, y: 0, z: 0 }, speed = Math.hypot(v.x, v.y, v.z);
       var k = clamp01((t - s.t0) / (s.t1 - s.t0)), cam = journeyCam(s, k, s.i || 0, speed);
+      var ps = heroSeg(s.t0 - 0.001);
+      if (ps && ps !== s) {   // blend from the last part's framing
+        var bw2 = smooth(clamp01((t - s.t0) / 0.5)), pc = journeyCam(ps, 1, ps.i || 0, speed);
+        cam = cam.map(function (x, j) { return lerp(pc[j], x, bw2); });
+      }
       // along the run, the camera faces up the line (mostly), not wherever the ball bounces to next
       var hv = v;
       if (s.kind === 'fly' || s.kind === 'ride' || s.kind === 'long') {
@@ -1801,10 +1807,12 @@
       var pos = orbitPos(bw, head, az, cam[1], cam[2]), look = add3(bw, scale3(v, 0.08));
       // along the zig-zag run the camera trails the ball's own path a third of a second behind, drawn in towards
       // the line's middle, so it glides up the line while the ball weaves from board to board in front of it
-      var trail = (s.kind === 'fly' || s.kind === 'ride') && heroAt(t - 0.32);
+      var longT = S.journey.filter(function (q) { return q.kind === 'long'; })[0].t0;
+      var tw = smooth(span(t, 25.0, 25.6)) * (1 - smooth(span(t, longT, longT + 0.8))), trail = tw > 0 && heroAt(Math.max(25.0, t - 0.32));
       if (trail) {
-        pos = { x: lerp(trail.x, 0, 0.45) + (s.i % 2 ? -1 : 1) * cam[0] * 8, y: trail.y - cam[2], z: trail.z + cam[1] * 0.75 };
-        look = mix3(bw, add3(bw, { x: 0, y: -60, z: -900 }), 0.35);
+        var side = (s.i || 0) % 2 ? -1 : 1;
+        pos = mix3(pos, { x: lerp(trail.x, 0, 0.45) + side * cam[0] * 8, y: trail.y - cam[2], z: trail.z + cam[1] * 0.75 }, tw);
+        look = mix3(look, mix3(bw, add3(bw, { x: 0, y: -60, z: -900 }), 0.35), tw);
       }
       // in the slow motion, frame the ball against the board it's about to break
       if (s.kind === 'slow' || s.kind === 'long') look = mix3(look, centreOf(S.PE), s.kind === 'slow' ? 0.4 : 0.25 * smooth(k));
@@ -1814,7 +1822,7 @@
       // the camera holds its place round the ball while still easing through every change of direction
       var wp = s.kind === 'rush' || s.kind === 'through' || s.kind === 'slow' ? 9 : 6, wl = 11;
       // (capped, so a sudden burst of speed, like the rush at the glass, can't throw the camera through it)
-      var lead = trail ? 0 : Math.min(1, (s.kind === 'rush' ? 120 : 420) / Math.max(1, speed * 2 / wp));
+      var lead = (1 - (tw || 0)) * Math.min(1, (s.kind === 'rush' ? 120 : 420) / Math.max(1, speed * 2 / wp));
       rigTo(add3(pos, scale3(v, 2 / wp * lead)), add3(look, scale3(v, 2 / wl * lead)), cam[3] + Cine.fovKick, roll, dt, wp, wl);
       Cine.streaks = s.kind === 'slow' ? 0.05 : s.kind === 'through' || s.kind === 'rush' ? 1 : 0.2 + clamp01(speed / 2400) * 0.8;
       Cine.speed = s.kind === 'slow' ? 0 : clamp01(speed / 3000) * 0.7;
@@ -2258,9 +2266,15 @@
 
     Cine.env = 1; Cine.speed = 0; Cine.streaks = 0; Cine.variant = 0; Cine.eye = CAB_EYE; Cine.timeScale = 1;
     shot.update(t, lt, u, dt);
-    // hit-stop: on a big impact the camera holds still for a beat (Cine.hitStop seconds) while the effects play on
-    if (Cine.hitStop > 0) { if (!Cine.camHeld) Cine.camHeld = Object.assign({}, Cine.cam); else Object.assign(Cine.cam, Cine.camHeld); Cine.hitStop -= dt; }
-    else Cine.camHeld = null;
+    // hit-stop: on a big impact the camera holds still for a beat (Cine.hitStop seconds) while the effects play on,
+    // then eases back onto its path over a fifth of a second (no snap: the path kept moving underneath)
+    if (Cine.hitStop > 0 && !Cine.camHeld) { Cine.camHeld = Object.assign({}, Cine.cam); Cine.hsRel = 0; }
+    if (Cine.camHeld) {
+      if (Cine.hitStop > 0) { Cine.hitStop -= dt; Cine.hsRel = 0; } else Cine.hsRel += dt;
+      var hw = smooth(clamp01(Cine.hsRel / 0.2)), H0 = Cine.camHeld, C0 = Cine.cam;
+      ['x', 'y', 'z', 'fov', 'roll', 'yaw', 'pitch'].forEach(function (k) { if (H0[k] != null) C0[k] = lerp(H0[k], C0[k], hw); });
+      if (hw >= 1) Cine.camHeld = null;
+    }
 
     var view = applyCamera();
     layoutGroup(shot.group, view);

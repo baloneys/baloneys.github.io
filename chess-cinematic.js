@@ -1084,6 +1084,7 @@
   // b.arc: how high it bows (default 260); b.ease: its pace along the way (default steady)
   function boltHead(b, k) {
     var e = b.ease ? b.ease(k) : k, arc = b.arc == null ? 260 : b.arc;
+    if (typeof b.to === 'function' || typeof b.from === 'function') b = { from: typeof b.from === 'function' ? b.from() : b.from, to: typeof b.to === 'function' ? b.to() : b.to, gravity: b.gravity };
     // b.gravity: a thrown arc, steady across and a parabola up and down (it rises fast, hangs, falls fast)
     if (b.gravity) return { x: lerp(b.from.x, b.to.x, k), y: lerp(b.from.y, b.to.y, k) - 4 * arc * k * (1 - k), z: lerp(b.from.z, b.to.z, k) };
     return { x: lerp(b.from.x, b.to.x, e), y: lerp(b.from.y, b.to.y, e) - Math.sin(e * Math.PI) * arc, z: lerp(b.from.z, b.to.z, e) };
@@ -2163,7 +2164,7 @@
        mating move), and the king falls with no cut until the social section. */
     function orbAt(t) {
       var H = S.orbHits;
-      H.forEach(function (h) { if (!h.p) h.p = toWorld(h.it, 200 * 3, 80 * 3); });   // the OK button (canvas 200, 80; 3x)
+      H.forEach(function (h) { if (!h.it.broken || !h.p) h.p = okButton(h.it); });   // the OK button, where it is now
       var last = H[H.length - 1];
       var pts = [{ t: 30.05, p: { x: 0, y: -380, z: 5250 } }].concat(H.map(function (h) { return { t: h.t, p: h.p }; }),
         [{ t: last.t + 0.9, p: { x: 260, y: -1500, z: last.p.z + 1900 } }]);
@@ -2201,6 +2202,7 @@
       return x;
     }
     // the camera along the whole run: waiting and surging box to box, then the rush at the king, then a slow creep
+    function okButton(it) { return toWorld(it, 200 * 3, 80 * 3); }   // (the alert canvas's OK button, 200, 80, at 3x)
     function runCam(t) {
       var H = S.orbHits, lastT = H[H.length - 1].t;
       // its own path, not following the ball: it waits in front of the next box, and the moment the ball smashes one it
@@ -2244,7 +2246,8 @@
         var nx = hops[i + 1], dep = a.t + (i ? HOP_REST : 0);
         if (nx) once(S, 'bolt' + i, t, dep, function () {
           var pa = projectP(a.p); if (pa && i) burst(pa.x, pa.y, qn(10), [190, 320], 0.4);   // a kick off the button
-          bolt(a.p, nx.p, dep, nx.t - dep, null, { arc: hopArc(a.p, nx.p), gravity: true });
+          var tgt = H[i] ? function () { return H[i].p; } : nx.p;   // (hop i lands on box i: follow its button)
+          bolt(a.p, tgt, dep, nx.t - dep, null, { arc: hopArc(a.p, nx.p), gravity: true });
         });
       });
       once(S, 'boltIn', t, 38.75, function () { var cam = runCam(38.75); bolt({ x: cam.x + 120, y: cam.y - 60, z: cam.z + 420 }, { x: 0, y: -330, z: MATE_BOX_Z }, 38.75, 0.33); });
@@ -2469,7 +2472,8 @@
         path([{ t: 0, x: -920, y: -430, z: 1000, tx: -450, ty: -180, tz: 100, fov: 50 },
           { t: 3.4, x: -760, y: -420, z: 980, tx: -260, ty: -200, tz: 60, fov: 54, roll: -4 },
           { t: 5.1, x: 180, y: -440, z: 900, tx: 470, ty: -410, tz: -350, fov: 53 },
-          { t: 7.9, x: 520, y: -420, z: -150, tx: 470, ty: -410, tz: -700, fov: 60, e: easeIn }], lt);   // straight through the alert
+          { t: 6.3, x: 120, y: -400, z: 820, tx: 0, ty: -300, tz: -760, fov: 50 },              // the queen is gone: turn to the king
+          { t: 8, x: 60, y: -370, z: 560, tx: 0, ty: -300, tz: -760, fov: 46, e: easeOut }], lt);   // and ease in on him until the cut
         kick(dt);
         faceStatues();
         once(S, 'capture', t, 25.4, function () { var p = projectP({ x: -170, y: -110, z: 50 }); if (p) { ring(p, 260); burst(p.x, p.y, qn(32), [320, 185], .5); }
@@ -2480,7 +2484,12 @@
         Q.holo.hit = t < 27 ? 0 : Math.max(0, 1 - (t - 27) / 0.6); Q.holo.off = smooth(span(t, 27.15, 27.75)); Q.holo.noPad = false;
         once(S, 'queen', t, 27, function () { var p = projectP({ x: Q.x, y: Q.y, z: Q.z }); if (p) { ring(p, 240); burst(p.x, p.y, qn(26), [320, 285], .5); }
           Cine.shake = Math.max(Cine.shake, .4); Cine.vhs = 1; caption('QUEEN TAKEN', '...Bxd1 · AS PLANNED'); });
-        flyAlert(S.captureAlert, t, t >= 26.4);
+        // the crash box for the queen pops up beside her and is eliminated with her (Tetris's break)
+        var CA = S.captureAlert;
+        if (!CA.broken) { CA.op = smooth(span(t, 26.4, 26.7)); CA.ry = -Cine.cam.yaw; }
+        once(S, 'qbox', t, 27.2, function () { eliminateBox(CA, t); });
+        if (CA.elimAt != null && !CA.shattered && t >= CA.elimAt + 0.22) { CA.shattered = true; shatter(CA); Cine.shake = Math.max(Cine.shake, 0.5); }
+        if (t >= 27.8 && !CA.broken) { CA.broken = true; CA.hidden = true; }
         hud('CAPTURE · Nxe5', 'HOLOGRAM / PETALS');
       } };
 

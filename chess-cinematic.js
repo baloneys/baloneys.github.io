@@ -2019,6 +2019,7 @@
     x.fillStyle = '#251e31'; x.fillRect(180, 76, 40, 8); x.fillStyle = '#fbf4f4'; x.font = 'bold 9px "JetBrains Mono", monospace'; x.textAlign = 'center'; x.fillText('OK', 200, 80);
     var it = plane(g, cv, 720, 300, o);
     it.canvas = cv; it.head = 0;
+    it.z0 = it.z; it.rz0 = it.rz;
     it.pristine = document.createElement('canvas'); it.pristine.width = cv.width; it.pristine.height = cv.height; it.pristine.getContext('2d').drawImage(cv, 0, 0);   // (resetAlert undoes the red)
     return it;
   }
@@ -2054,7 +2055,7 @@
     }
     var it = plane(g, cv, 40, 40, o); it.canvas = cv; return it;
   }
-  function resetAlert(it) { it.broken = false; it.hidden = false; it.op = 0; it.elimAt = null; it.shattered = false; if (it.el) it.el.style.filter = ''; if (it.pristine) { var x = it.canvas.getContext('2d'); x.clearRect(0, 0, it.canvas.width, it.canvas.height); x.drawImage(it.pristine, 0, 0); } }
+  function resetAlert(it) { it.broken = false; it.hidden = false; it.op = 0; it.elimAt = null; it.shattered = false; if (it.el) it.el.style.filter = ''; if (it.z0 != null) { it.z = it.z0; it.rz = it.rz0; } if (it.pristine) { var x = it.canvas.getContext('2d'); x.clearRect(0, 0, it.canvas.width, it.canvas.height); x.drawImage(it.pristine, 0, 0); } }
 
   // The chess logo as a cut-out in the world (the ending): the same pink-and-cyan pixel lettering as the film's
   // logo, on a tight canvas so its letters' width is known (textFrac) and can be matched to the page title.
@@ -2184,14 +2185,15 @@
     }
     // a hop between boxes: a short rest on the button, then a high thrown arc under gravity (steady across, rising
     // fast, hanging at the top, dropping onto the next button); the camera rides the same curve as the bolt
-    var HOP_REST = 0.14;
+    var HOP_REST = 0.2;   // it sits on the button a moment, gathering itself
     function hopArc(a, b) { return Math.min(620, 0.75 * Math.hypot(b.x - a.x, b.z - a.z)); }   // high hops: the gravity reads
     // the camera along the whole run: chasing the ball, then the rush at the king, then a slow creep
     function runCam(t) {
       var H = S.orbHits, lastT = H[H.length - 1].t;
-      var o = orbAt(Math.min(t, lastT + 0.15));
-      // (the camera takes only a third of the ball's rise and fall, and tilts to keep it in frame)
-      var chase = { x: o.x * 0.5, y: lerp(-420, o.y, 0.35) - 90, z: o.z + 560, tx: o.x * 0.7, ty: lerp(-420, o.y, 0.8), tz: o.z - 300 };
+      // its own path, not following the ball: a steady dolly straight down the run, passing each box just after the
+      // ball has smashed it, looking a little up the run so the high hops stay in frame
+      var dz = RUN_Z[0] + 560 * (S.orbHits[0].t + 0.6 - Math.min(t, lastT + 0.6)), sway = Math.sin(t * 0.9) * 60;
+      var chase = { x: sway, y: -470, z: dz, tx: sway * 0.4, ty: -560, tz: dz - 1600 };
       var stop = { x: 60, y: -360, z: MATE_BOX_Z + 520 }, creep = { x: 30, y: -350, z: MATE_BOX_Z + 450 };
       var k = smooth(span(t, lastT + 0.1, 37.9)), slow = smooth(span(t, 37.9, 43));
       var r = { x: lerp(chase.x, lerp(stop.x, creep.x, slow), k), y: lerp(chase.y, lerp(stop.y, creep.y, slow), k), z: lerp(chase.z, lerp(stop.z, creep.z, slow), k),
@@ -2239,9 +2241,11 @@
       S.orbHits.forEach(function (h, i) {
         if (t >= h.t + 0.4 && !h.it.broken) { h.it.broken = true; h.it.hidden = true; }   // (started past it)
         once(S, 'orb' + i, t, h.t, function () {
-          var pp = projectP(h.p); if (pp) { ring(pp, 220 * Math.min(2, pp.s)); burst(pp.x, pp.y, qn(28), [320, 190, 285], 0.6); } petals(h.p, 14);
+          // a heavy landing: a wide shockwave, a burst thrown low and outwards, the box knocked back, the camera thumped
+          var pp = projectP(h.p); if (pp) { ring(pp, 380 * Math.min(2, pp.s)); burst(pp.x, pp.y, qn(46), [320, 190, 285], 0.9); } petals(h.p, 22);
+          h.it.z -= 70; h.it.rz += (i % 2 ? -1 : 1) * 9; Cine.shake = Math.max(Cine.shake, 0.75);
           eliminateBox(h.it, t);
-          Cine.shake = Math.max(Cine.shake, 0.45); Cine.vhs = 1; Cine.fovKick = -6; Cine.hitStop = 0.06;
+          Cine.vhs = 1; Cine.fovKick = -10; Cine.hitStop = 0.1;
         });
       });
     }

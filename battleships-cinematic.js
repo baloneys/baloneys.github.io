@@ -1446,7 +1446,7 @@
           var to = typeof m.to === 'function' ? m.to() : m.to, p = projectP(to);
           if (m.kind === 'miss') { splash(to, m.size || 1.6); Cine.shake = Math.max(Cine.shake, 0.35); }
           else { fireball(to, m.size || 2); if (p) { ring(p, 420 * Math.min(2, p.s)); burst(p.x, p.y, 70, [20, 35, 320, 50], 1.2); }
-            Cine.shake = Math.max(Cine.shake, 0.9); Cine.flash = Math.max(Cine.flash, 0.22); Cine.aberration = 1; Cine.fovKick = -8; }
+            Cine.shake = Math.max(Cine.shake, 0.9); Cine.flash = Math.max(Cine.flash, 0.22); Cine.aberration = 1; Cine.fovKick = -8; Cine.hitStop = 0.12; }
           if (m.onLand) m.onLand();
         }
         return false;
@@ -1695,7 +1695,7 @@
       Sh.el.style.clipPath = drop > 0.5 ? 'inset(0 0 ' + clamp01((210 - above) / 210 * 1) * 100 + '% 0)' : '';
       once(S, 'sink1', t, 44.3, function () { splash({ x: Sh.x - 200, y: -4, z: Sh.z + 120 }, 2.2); Cine.shake = Math.max(Cine.shake, 0.8); });
       once(S, 'sink2', t, 45.0, function () { splash({ x: Sh.x + 250, y: -4, z: Sh.z + 80 }, 1.8); });
-      once(S, 'sunkCap', t, 45.05, function () { caption('SUNK', 'ENEMY BATTLESHIP'); Cine.flash = Math.max(Cine.flash, 0.3); });
+      once(S, 'sunkCap', t, 45.05, function () { caption('SUNK', 'ENEMY BATTLESHIP'); Cine.flash = Math.max(Cine.flash, 0.3); Cine.hitStop = 0.16; Cine.shake = Math.max(Cine.shake, 0.8); Cine.fovKick = -10; });
       if (Sh.op > 0.2) burning(Sh, Sh.fire.filter(function (f) { var w = f(); return w.y < -10; }));
       path([
         { t: 0, x: -1500, y: -560, z: 100, tx: 0, ty: -300, tz: -1800, fov: 50, roll: -3 },
@@ -2083,6 +2083,9 @@
 
     Cine.env = 1; Cine.speed = 0; Cine.streaks = 0; Cine.variant = 0; Cine.eye = CAB_EYE; Cine.timeScale = 1;
     shot.update(t, lt, u, dt);
+    // hit-stop: on a big impact the camera holds still for a beat (Cine.hitStop seconds) while the effects play on
+    if (Cine.hitStop > 0) { if (!Cine.camHeld) Cine.camHeld = Object.assign({}, Cine.cam); else Object.assign(Cine.cam, Cine.camHeld); Cine.hitStop -= dt; }
+    else Cine.camHeld = null;
 
     var view = applyCamera();
     layoutGroup(shot.group, view);

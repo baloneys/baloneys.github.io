@@ -851,10 +851,66 @@
     return toWorld(it, side ? CW - 31 : 31, it.head + p.y + p.h / 2);
   }
 
+  /* Pre-baked rallies: every court's game (bar the final hero court, which is steered live) is played out in advance,
+     at a fixed 120 steps a second with the film's own scripted moments played into it, and recorded 30 times a second;
+     the film replays the recording by time. So the background courts cost nothing to run, the film is the same every
+     time, and a board can't stage a miss the film didn't ask for. The baking is spread over the cabinet intro's frames;
+     a court needed sooner (a seek) finishes on the spot. */
+  var BAKE_HZ = 30, BAKE_STEP = 1 / 120;
+  function bakeCourts(shots) {
+    var spans = {};
+    shots.forEach(function (sh, i) {
+      var a = shotStart(sh.cue), b = i + 1 < shots.length ? shotStart(shots[i + 1].cue) : CUES.end, w = spans[sh.group.id];
+      if (!w) spans[sh.group.id] = { a: a, b: b, g: sh.group }; else { w.a = Math.min(w.a, a); w.b = Math.max(w.b, b); }
+    });
+    Cine.bakeJobs = [];
+    Object.keys(spans).map(function (id) { return spans[id]; }).sort(function (x, y) { return x.a - y.a; }).forEach(function (w) {
+      w.g.courts.forEach(function (it) {
+        if (it.heroBall && !it.bakeEnd) return;   // the final hero court plays live
+        var end = Math.min(w.b, it.bakeEnd || w.b);
+        if (it.bakeInit) it.bakeInit(it.court);
+        it.court.bakeJob = { it: it, t: w.a, t0: w.a, end: end, snaps: [], acc: 0 };
+        Cine.bakeJobs.push(it.court.bakeJob);
+      });
+    });
+  }
+  function bakeOne(job) {
+    var it = job.it, c = it.court;
+    job.snaps.push(JSON.stringify(c.state));
+    for (var k = 0; k < 4; k++) {   // 4 steps of 1/120 s per 1/30 s snapshot
+      if (it.bakeScript) it.bakeScript(c, job.t);
+      var ts = it.timeScale ? it.timeScale(job.t) : 1;
+      c.noDraw = true; K.advance(c, BAKE_STEP * ts * (c.speed || 1)); c.noDraw = false;
+      job.t += BAKE_STEP;
+    }
+    if (job.t >= job.end) {
+      c.baked = { t0: job.t0, end: job.end, snaps: job.snaps, i: -1 }; c.bakeJob = null;
+      var i = Cine.bakeJobs.indexOf(job); if (i >= 0) Cine.bakeJobs.splice(i, 1);
+      return true;
+    }
+    return false;
+  }
+  function bakeStep(ms) {
+    var end = performance.now() + ms;
+    while (Cine.bakeJobs && Cine.bakeJobs.length && performance.now() < end) bakeOne(Cine.bakeJobs[0]);
+  }
+  // put a court at its recorded state for time t (true while the recording covers t)
+  function replayCourt(it, t) {
+    var c = it.court, B = c.baked;
+    if (!B || t >= B.end) return false;
+    var i = Math.max(0, Math.min(B.snaps.length - 1, Math.floor((t - B.t0) * BAKE_HZ)));
+    if (i !== B.i) { B.i = i; c.state = JSON.parse(B.snaps[i]); c.dirty = true; }
+    if (c.dirty && it.visible && !it.hidden) { K.advance(c, 0); c.dirty = false; }   // a zero step just draws it
+    return true;
+  }
+
   // Run every court in the shot (they keep playing even off camera) and react to hits and points.
   function simCourts(g, dt) {
     g.courts.forEach(function (it) {
-      var c = it.court, d = c.state;
+      var c = it.court;
+      if (c.bakeJob) while (!bakeOne(c.bakeJob)) { /* needed now: finish its bake */ }
+      if (replayCourt(it, Cine.t)) { courtEvents(it); return; }
+      var d = c.state;
       if (it.script) it.script(c, dt);
       var step = dt * (Cine.timeScale == null ? 1 : Cine.timeScale) * (c.speed || 1), n = Math.max(1, Math.ceil(step / 0.02));
       // physics in small steps, but one draw a frame, and none at all for a court that's off screen
@@ -863,14 +919,19 @@
       c.noDraw = false;
       // the hero courts never sit out a serve pause in shot: the ball is back in play almost at once
       if (it.hero && d.serveTimer > 0.15) d.serveTimer = 0.15;
-      if (d.ball.dx && c.lastDx && (d.ball.dx > 0) !== (c.lastDx > 0)) onHit(it);
-      if (d.ball.dx) c.lastDx = d.ball.dx;
-      if (d.score[0] !== c.lastScore[0] || d.score[1] !== c.lastScore[1]) { c.lastScore = d.score.slice(); onPoint(it); }
-      var s = d.score[0] + ' : ' + d.score[1];
-      if (it.scoreEl.textContent !== s) it.scoreEl.textContent = s;
-      var f = clamp01(1 - (Cine.t - it.flashAt) / 0.5);
-      it.flashEl.style.opacity = f.toFixed(3);
+      courtEvents(it);
     });
+  }
+  // hits (the ball turns round) and points (the score changes), live or replayed
+  function courtEvents(it) {
+    var c = it.court, d = c.state;
+    if (d.ball.dx && c.lastDx && (d.ball.dx > 0) !== (c.lastDx > 0)) onHit(it);
+    if (d.ball.dx) c.lastDx = d.ball.dx;
+    if (d.score[0] !== c.lastScore[0] || d.score[1] !== c.lastScore[1]) { c.lastScore = d.score.slice(); onPoint(it); }
+    var s = d.score[0] + ' : ' + d.score[1];
+    if (it.scoreEl.textContent !== s) it.scoreEl.textContent = s;
+    var f = clamp01(1 - (Cine.t - it.flashAt) / 0.5);
+    it.flashEl.style.opacity = f.toFixed(3);
   }
 
   function onHit(it) {
@@ -1565,12 +1626,29 @@
       S.PE = courtPlane(g, makeCourt({ seed: 77, speed: 1.3, names: ['Gridlock', 'Vex'] }),
         { x: 0, y: 120 - NP * 250 - 150, z: -1400 - NP * 1300 - 700, s: 1.3, color: '#ff2f6e' });
       S.journey = buildJourney();
+      S.A.bakeEnd = 23.2;   // from here the rally's last ball is steered live onto the point
+      S.A.bakeInit = function (c) { var st = c.state; st.ball.x = 140; st.ball.y = CH * 0.45; st.ball.dx = Math.abs(st.ball.dx || 500); st.serveTimer = 0; };
+      S.A.bakeScript = function (c, t) { c.perfect = true; c.speed = t < 18 ? 1.4 : lerp(1.4, 2.6, span(t, 18, T_POINT)); };
+      S.surf.forEach(function (it, i) {
+        it.bakeScript = function (c, t) {
+          c.perfect = true;   // the run's boards rally cleanly: a point there would read as the hero ball's
+          if (t >= hitT(i) - SPB && !c.parked) { c.parked = true; c.state.serveTimer = 999; }
+          ridePaddle(it, i, t);
+        };
+      });
+      // its only miss is the elimination: the right-hand player freezes, out of the ball's way
+      S.PE.bakeScript = function (c, t) {
+        c.perfect = true;
+        if (t >= T_SLOW + 0.5) { var st = c.state; c.cinematicMiss = true; if (!c.dodged) { c.dodged = true; st.p2.y = st.ball.y < CH / 2 ? CH - st.p2.h : 0; } }
+        if (t >= T_BREAK + 0.1) c.state.serveTimer = 999;   // broken: no more play
+      };
+      S.PE.timeScale = function (t) { return 1 - 0.8 * smooth(span(t, T_SLOW - 0.15, T_SLOW + 0.15)) * (1 - smooth(span(t, T_RUSH - 0.05, T_RUSH + 0.1))); };
     }, enter: function () {
       var st = S.A.court.state;
       st.ball.x = 140; st.ball.y = CH * 0.45; st.ball.dx = Math.abs(st.ball.dx || 500); st.serveTimer = 0;
       S.A.banner.textContent = ''; S.A.banner.style.opacity = '0'; S.A.court.cinematicMiss = false; S.A.noBall = false; S.A.hitCount = 0;
       S.firstHit = null; S.lastB = null; S.steerT = null; S.pointed = false; S.elim = false; S.elimShown = false; S.cracked = false; S.broke = false;
-      S.surf.concat([S.PE]).forEach(function (it) { it.hidden = false; it.el.classList.remove('out'); it.banner.textContent = ''; it.court.cinematicMiss = false; it.court.cinematicMissLeft = false; it.court.speed = 1.5; });
+      S.surf.concat([S.PE]).forEach(function (it) { it.hidden = false; it.noBall = false; it.el.classList.remove('out'); it.banner.textContent = ''; it.court.cinematicMiss = false; it.court.cinematicMissLeft = false; it.court.speed = 1.5; });
       Rig.on = false;
     }, update: function (t, lt, u, dt) {
       var A = S.A, b = ballWorld(A), v = S.lastB && dt ? scale3(add3(b, scale3(S.lastB, -1)), 1 / dt) : { x: 1, y: 0, z: 0 };
@@ -1634,7 +1712,7 @@
       var p = projectP(heroAt(Cine.t) || centreOf(it));
       if (p) { ring(p, 260 * Math.min(2, p.s)); burst(p.x, p.y, 26, [320, 190, 285], 0.6); }
       it.flashAt = Cine.t;
-      if (it.right) it.court.cinematicMiss = true; else it.court.cinematicMissLeft = true;
+      it.noBall = true;   // the board's own ball is set aside for ours (the baked game parks it: no point, no loss)
       Cine.shake = Math.max(Cine.shake, 0.22);
     }
     function paddleHit(it) {
@@ -1642,7 +1720,7 @@
       if (p) { burst(p.x, p.y, 60, [320, 190, 285, 50], 1.0); ring(p, 420 * Math.min(2, p.s)); }
       it.flashAt = Cine.t;
       Cine.shake = Math.max(Cine.shake, 0.45); Cine.flash = Math.max(Cine.flash, 0.14); Cine.aberration = Math.max(Cine.aberration, 0.8);
-      Cine.tear = Math.max(Cine.tear, 0.35); Cine.fovKick = -9;
+      Cine.tear = Math.max(Cine.tear, 0.35); Cine.fovKick = -9; Cine.hitStop = 0.07;
     }
     function breakThrough() {
       var PE = S.PE;
@@ -1652,15 +1730,14 @@
       shatterGlass(PE, S.through, scale3(S.dirThrough, 2600));   // blown along with the ball, so the camera flies through them
     }
 
-    // the right-hand paddle on the board the ball is riding slides to meet it
-    function ridePaddles(t) {
-      S.surf.forEach(function (it, i) {
-        var t1 = hitT(i), t0 = t1 - SPB;
-        if (t < t0 - 0.25 || t > t1 + 0.1) return;
-        var pd = it.right ? it.court.state.p2 : it.court.state.p1, want = it.hitL.y - pd.h / 2;
-        pd.y = lerp(pd.y, want, Math.min(1, 0.25 + span(t, t0 - 0.25, t1) * 0.75));
-      });
+    // the right-hand paddle on the board the ball is riding slides to meet it (played into the baked game)
+    function ridePaddle(it, i, t) {
+      var t1 = hitT(i), t0 = t1 - SPB;
+      if (t < t0 - 0.25 || t > t1 + 0.1) return;
+      var pd = it.right ? it.court.state.p2 : it.court.state.p1, want = it.hitL.y - pd.h / 2;
+      pd.y = lerp(pd.y, want, Math.min(1, 0.25 + span(t, t0 - 0.25, t1) * 0.75));
     }
+    function ridePaddles(t) { S.surf.forEach(function (it, i) { if (!it.court.baked) ridePaddle(it, i, t); }); }
 
     // where the camera sits in each part of the journey: [orbit angle round the ball, distance, height, fov]
     function journeyCam(s, k, i, speed) {
@@ -1925,6 +2002,7 @@
     });
     Hero.segs = S.journey.concat(laterSegs(S));
     Cine.S = S;   // (for the ?cinematic testing aid)
+    bakeCourts(shots);
     return shots;
   }
 
@@ -2180,9 +2258,13 @@
 
     Cine.env = 1; Cine.speed = 0; Cine.streaks = 0; Cine.variant = 0; Cine.eye = CAB_EYE; Cine.timeScale = 1;
     shot.update(t, lt, u, dt);
+    // hit-stop: on a big impact the camera holds still for a beat (Cine.hitStop seconds) while the effects play on
+    if (Cine.hitStop > 0) { if (!Cine.camHeld) Cine.camHeld = Object.assign({}, Cine.cam); else Object.assign(Cine.cam, Cine.camHeld); Cine.hitStop -= dt; }
+    else Cine.camHeld = null;
 
     var view = applyCamera();
     layoutGroup(shot.group, view);
+    bakeStep(Q.level ? 4 : 6);
     simCourts(shot.group, dt);
     Bg.draw({ time: t, pat: shot.pat, level: Cine.level, beat: Cine.beat, flash: Math.min(0.14, Cine.flash * 0.45), env: Cine.env, tear: Cine.tear,
       speed: Cine.speed, variant: Cine.variant, P: view.P, cam: Cine.cam, dist: Cine.dist, eye: Cine.eye, crt: Cine.crt });

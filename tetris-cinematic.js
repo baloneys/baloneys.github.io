@@ -1243,7 +1243,7 @@
         var rows = fullRowsAfterLock(p);
         onLock(p, p.lock());
         S.clear.rows = rows; S.clear.at = t;
-        Cine.flash = 0.7; Cine.shake = 1.4; Cine.aberration = 1; Cine.tear = 1;
+        Cine.flash = 0.7; Cine.shake = 1.4; Cine.aberration = 1; Cine.tear = 1; Cine.hitStop = 0.14;
         p.cpu = K.cpuBrain('ultra');
         var sp = project(item.x, item.y + 200, item.z);
         if (sp) burst(sp.x, sp.y, 160, [285, 320, 190], 1.4);
@@ -1318,7 +1318,7 @@
       if (!S.multiplayer.fired && t >= 33.3) {
         S.multiplayer.fired = true;
         bolt({ x: A.x, y: A.y, z: A.z }, { x: Bb.x, y: Bb.y, z: Bb.z }, t, 0.9, function () {
-          Cine.flash = 0.6; Cine.shake = 1; Bb.shakeUntil = Cine.t + 0.5;
+          Cine.flash = 0.6; Cine.shake = 1; Bb.shakeUntil = Cine.t + 0.5; Cine.hitStop = 0.12;
           // buried: a tall garbage stack, and the player stops keeping up while gravity speeds up
           fillRows(Bb.board, 14); Bb.board.cpu = null; Bb.board.level = 16; Bb.board.speed = 1;
           var sp = project(Bb.x, Bb.y, Bb.z); if (sp) burst(sp.x, sp.y, 90, [320, 190], 1);
@@ -1606,7 +1606,7 @@
     } };
 
     // Shots that name a group share the planes of the shot that built it.
-    return CUES.shots.map(function (s) {
+    var shots = CUES.shots.map(function (s) {
       var shot = S[s.id];
       shot.id = s.id; shot.cue = s;
       var gid = s.group || s.id;
@@ -1614,6 +1614,66 @@
       if (shot.build && !s.group) shot.build(shot.group);
       return shot;
     });
+    S.mp[1].board.noBake = true; S.modeBoard.noBake = true;   // the buried board and the modes board are scripted live
+    bakeBoards(shots);
+    return shots;
+  }
+
+  /* Pre-baked games: every CPU board's game is played out in advance for the stretch of the film its group is on
+     screen, and recorded as snapshots; the film then replays the snapshots by time instead of running a dozen CPU games
+     live each frame (smoother, the same every time, and seeking just looks a snapshot up). The baking (about a quarter
+     of a second of work on a desktop) is spread over the cabinet intro's frames, earliest boards first; a board needed
+     before its bake is done (a seek) finishes baking on the spot. Boards a shot meddles with (the hero, the buried
+     board, the modes board) still run live. */
+  var BAKE_HZ = 24;
+  function snapPlayer(p) {
+    var s = {};
+    Object.keys(p).forEach(function (k) {
+      if (k === 'ui' || k === 'cpu' || k === 'baked') return;
+      var v = p[k];
+      if (v && typeof v === 'object') {
+        if (Array.isArray(v)) s[k] = v.map(function (x) { return Array.isArray(x) ? x.slice() : x && typeof x === 'object' ? Object.assign({}, x) : x; });
+        else s[k] = Object.assign({}, v);
+      } else s[k] = v;
+    });
+    return s;
+  }
+  function bakeBoards(shots) {
+    var spans = {};
+    shots.forEach(function (sh, i) {
+      var a = shotStart(sh.cue), b = i + 1 < shots.length ? shotStart(shots[i + 1].cue) : CUES.end, w = spans[sh.group.id];
+      if (!w) spans[sh.group.id] = { a: a, b: b, g: sh.group }; else { w.a = Math.min(w.a, a); w.b = Math.max(w.b, b); }
+    });
+    Cine.bakeJobs = [];
+    Object.keys(spans).map(function (id) { return spans[id]; }).sort(function (x, y) { return x.a - y.a; }).forEach(function (w) {
+      w.g.boards.forEach(function (it) {
+        var p = it.board;
+        if (!p.cpu || p.noBake) return;
+        p.bakeJob = { p: p, t0: w.a, n: Math.ceil((w.b - w.a + 0.5) * BAKE_HZ), snaps: [] };
+        Cine.bakeJobs.push(p.bakeJob);
+      });
+    });
+  }
+  function bakeOne(job) {
+    var p = job.p;
+    job.snaps.push(snapPlayer(p)); sim(p, 0.5 / BAKE_HZ); sim(p, 0.5 / BAKE_HZ);
+    if (job.snaps.length >= job.n) {
+      p.baked = { t0: job.t0, snaps: job.snaps, i: -1 }; p.bakeJob = null;
+      var k = Cine.bakeJobs.indexOf(job); if (k >= 0) Cine.bakeJobs.splice(k, 1);
+      return true;
+    }
+    return false;
+  }
+  function bakeStep(ms) {
+    var end = performance.now() + ms;
+    while (Cine.bakeJobs && Cine.bakeJobs.length && performance.now() < end) bakeOne(Cine.bakeJobs[0]);
+  }
+  function replayBoard(p, t) {
+    var B = p.baked, i = Math.max(0, Math.min(B.snaps.length - 1, Math.floor((t - B.t0) * BAKE_HZ)));
+    if (i === B.i) return;
+    B.i = i;
+    var snap = B.snaps[i];
+    for (var k in snap) p[k] = snap[k];
   }
 
   // A seed whose palette hue lands in violet with tetris-bg.js's show() (its first random number is the hue).
@@ -1776,7 +1836,8 @@
 
   function drawBoards(g, dt) {
     g.boards.forEach(function (it) {
-      sim(it.board, dt);
+      if (it.board.bakeJob) while (!bakeOne(it.board.bakeJob)) { /* needed now: finish its bake */ }
+      if (it.board.baked) replayBoard(it.board, Cine.t); else sim(it.board, dt);
       if (it.visible) K.drawPlayer(it.board);
     });
   }
@@ -1823,9 +1884,13 @@
 
     Cine.env = 1; Cine.speed = 0; Cine.streaks = 0; Cine.variant = 0; Cine.eye = CAB_EYE;
     shot.update(t, lt, u, dt);
+    // hit-stop: on a big impact the camera holds still for a beat (Cine.hitStop seconds) while the effects play on
+    if (Cine.hitStop > 0) { if (!Cine.camHeld) Cine.camHeld = Object.assign({}, Cine.cam); else Object.assign(Cine.cam, Cine.camHeld); Cine.hitStop -= dt; }
+    else Cine.camHeld = null;
 
     var view = applyCamera();
     layoutGroup(shot.group, view);
+    bakeStep(Q.level ? 4 : 6);
     drawBoards(shot.group, dt);
     Bg.draw({ time: t, pat: shot.pat, level: Cine.level, beat: Cine.beat, flash: Math.min(0.14, Cine.flash * 0.45), env: Cine.env, tear: Cine.tear,
       speed: Cine.speed, variant: Cine.variant, P: view.P, cam: Cine.cam, dist: Cine.dist, eye: Cine.eye, crt: Cine.crt });

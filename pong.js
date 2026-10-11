@@ -832,8 +832,9 @@
         var g = game, speed = 380 * dt;
         [g.p1, g.p2].forEach(function (p, i) {
           if ((i === 1 && court.cinematicMiss) || (i === 0 && court.cinematicMissLeft)) { p.vy = 0; return; }
-          var aim = g.ball.y + Math.sin(performance.now() / 450 + court.seed + i) * 18 - p.h / 2;
-          var move = Math.max(-speed, Math.min(speed, aim - p.y));
+          // court.perfect (the film's baked hero rally): the paddle always gets there, so no point happens unscripted
+          var aim = court.perfect ? g.ball.y - p.h / 2 : g.ball.y + Math.sin(performance.now() / 450 + court.seed + i) * 18 - p.h / 2;
+          var move = court.perfect ? aim - p.y : Math.max(-speed, Math.min(speed, aim - p.y));
           p.vy = dt ? move / dt : 0;
           p.y = Math.max(0, Math.min(H - p.h, p.y + move));
         });

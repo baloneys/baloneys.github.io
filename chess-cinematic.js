@@ -2026,13 +2026,28 @@
     it.ry = -Cine.cam.yaw;
     it.op = near;
     it.s = it.baseS * (1 + 0.25 * (1 - near));                              // a little pop as it arrives
-    if (cd.d < 110 && cd.d > -400) {
-      it.broken = true;
-      var c = Cine.cam, ya = c.yaw * D2R, fwd = { x: Math.sin(ya) * 900, y: -120, z: -Math.cos(ya) * 900 };
-      shatterGlass(it, { x: it.x, y: it.y, z: it.z }, fwd);
-      Cine.flash = Math.max(Cine.flash, 0.3); Cine.tear = Math.max(Cine.tear, 1.1); Cine.aberration = 1.2; Cine.shake = Math.max(Cine.shake, 0.4);
-      Cine.fovKick = 10;
+    if (cd.d < 110 && cd.d > -400) breakAlert(it);
+  }
+  function breakAlert(it, push) {
+    if (it.broken) return;
+    it.broken = true;
+    var c = Cine.cam, ya = c.yaw * D2R, fwd = push || { x: Math.sin(ya) * 900, y: -120, z: -Math.cos(ya) * 900 };
+    shatterGlass(it, { x: it.x, y: it.y, z: it.z }, fwd);
+    Cine.flash = Math.max(Cine.flash, 0.3); Cine.tear = Math.max(Cine.tear, 1.1); Cine.aberration = 1.2; Cine.shake = Math.max(Cine.shake, 0.4);
+    Cine.fovKick = 10;
+  }
+  // The orb: a glowing pixel ball the camera chases down the check run, hopping from OK button to OK button and
+  // smashing each Check. box just before the camera gets there.
+  function orbPlane(g, o) {
+    var cv = document.createElement('canvas'); cv.width = 24; cv.height = 24; cv.className = 'cx-holo';
+    var x = cv.getContext('2d');
+    for (var y = 0; y < 24; y++) for (var c = 0; c < 24; c++) {
+      var d = Math.hypot(c - 11.5, y - 11.5), hl = Math.hypot(c - 9, y - 8.5);
+      if (d > 11.5) continue;
+      x.fillStyle = d > 10.2 ? 'rgba(94,240,255,0.55)' : d > 8.6 ? '#ff71ce' : hl < 3 ? '#ffffff' : d > 6 ? '#ff9ad8' : '#ffe0f2';
+      x.fillRect(c, y, 1, 1);
     }
+    var it = plane(g, cv, 72, 72, o); it.canvas = cv; return it;
   }
   function resetAlert(it) { it.broken = false; it.hidden = false; it.op = 0; }
 
@@ -2133,6 +2148,20 @@
         sl.ghost.style.transform = 'translate(' + (k * 60).toFixed(1) + 'px,' + (-k * 40).toFixed(1) + 'px) rotate(' + (k * 70).toFixed(1) + 'deg) scale(' + (1 + k * 0.4).toFixed(3) + ')';
       }
       if (q >= 1) { if (sl.ghost && sl.ghost.parentNode) sl.ghost.parentNode.removeChild(sl.ghost); sl.el.style.zIndex = ''; S.slide = null; }
+    }
+    // the orb's flight: in from ahead of the camera, a hop from OK button to OK button, then on down to the king
+    function orbAt(t) {
+      var H = S.orbHits;
+      H.forEach(function (h) { if (!h.p) h.p = toWorld(h.it, 200 * 3, 80 * 3); });   // the OK button (canvas 200, 80; 3x)
+      var pts = [{ t: 30.05, p: { x: 0, y: -380, z: 2350 } }].concat(H.map(function (h) { return { t: h.t, p: h.p }; }), [{ t: 37.95, p: { x: 0, y: -300, z: -620 } }]);
+      for (var i = 0; i < pts.length - 1; i++) {
+        var a = pts[i], b = pts[i + 1];
+        if (t <= b.t || i === pts.length - 2) {
+          var k = clamp01((t - a.t) / (b.t - a.t)), e = k * k * (3 - 2 * k) * 0.35 + k * 0.65;
+          return { x: lerp(a.p.x, b.p.x, e), y: lerp(a.p.y, b.p.y, e) - Math.sin(k * Math.PI) * (i === 0 ? 60 : 170), z: lerp(a.p.z, b.p.z, e) };
+        }
+      }
+      return pts[pts.length - 1].p;
     }
     function faceStatues() {
       slideTick(Cine.t);
@@ -2305,8 +2334,13 @@
         return plane(g, tile, 150, 150, { x: -470 + i * 105, y: 0, z: -950 - i * 145, rx: 90, rz: 0, op: 0, cull: false });
       });
       // a cascade of the same alert, each a step down and right of the last, like a window dragged on an old Mac
-      S.checkAlerts = [2620, 2280, 1940, 1600, 1260].map(   // along the run, one about every 1.4 s
+      S.checkAlerts = [2450, 2130, 1810, 1490, 1170].map(   // along the run, one about every 1.4 s
         function (z, i) { return macAlert(g, 'Check.', { x: (2900 - z) / 1900 * 700 + (i % 2 ? 1 : -1) * 50, y: -420 + i * 6, z: z, rz: (i % 2 ? 1 : -1) * 4, s: .55, op: 0, cull: false }); });
+      S.orb = orbPlane(g, { x: 0, y: -400, z: 2700, op: 0, cull: false });
+      S.orbHits = S.checkAlerts.map(function (it) {
+        var e = (2900 - it.z) / 1900, q = (1.15 - Math.sqrt(1.3225 - 0.6 * e)) / 0.3;   // the run's camera reaches this z at 30 + 8q
+        return { it: it, t: 30 + 8 * q - 1.5 };
+      });
       S.mateAlert = macAlert(g, 'Checkmate.', { x: 385, y: -355, z: 430, s: .6, op: 0, cull: false });
       S.captureAlert.baseS = .5; S.mateAlert.baseS = .6; S.checkAlerts.forEach(function (it) { it.baseS = .55; });
     }, enter: function () { var Qn = S.statues[1]; Qn.holo.hit = 0; Qn.holo.off = 0; var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.rz = 0; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; S.kingPad.op = 0; S.crown.op = 0; S.boardFrame = -1; S.board.op = 0; S.statues.forEach(function (it) { it.hidden = false; it.op = 0; }); S.props.forEach(function (it) { it.op = 0; }); S.afterimages.forEach(function (it) { it.op = 0; }); resetAlert(S.captureAlert); S.checkAlerts.forEach(resetAlert); resetAlert(S.mateAlert); hideLogo(); },
@@ -2341,7 +2375,7 @@
         faceStatues();
         once(S, 'capture', t, 25.4, function () { var p = projectP({ x: -170, y: -110, z: 50 }); if (p) { ring(p, 260); burst(p.x, p.y, qn(32), [320, 185], .5); }
           shatterGlass(S.statues[3], { x: -170, y: -110, z: 50 }, { x: 170, y: -140, z: 70 });
-          petals({ x: -170, y: -110, z: 50 }, 44); Cine.flash = Math.max(Cine.flash, .19); Cine.vhs = 1; Cine.shake = Math.max(Cine.shake, .5); Cine.fovKick = -8; caption('F15 GAMBIT', 'Nxe5 · THE QUEEN IS BAIT'); });
+          petals({ x: -170, y: -110, z: 50 }, 44); Cine.flash = Math.max(Cine.flash, .19); Cine.vhs = 1; Cine.shake = Math.max(Cine.shake, .5); Cine.fovKick = -8; Cine.hitStop = 0.12; caption('F15 GAMBIT', 'Nxe5 · THE QUEEN IS BAIT'); });
         // D. the queen is taken: her hologram tears and powers down, and stays gone
         var Q = S.statues[1];
         Q.holo.hit = t < 27 ? 0 : Math.max(0, 1 - (t - 27) / 0.6); Q.holo.off = smooth(span(t, 27.15, 27.75)); Q.holo.noPad = false;
@@ -2354,7 +2388,7 @@
     S.check = { pat: 5, enter: function () { S.boardFrame = -1; S.board.op = 1; S.captureAlert.op = 0; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 || i === 1 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.statues[0].x = -210; S.statues[0].rz = 0; S.statues[0].s = 1.7; var K0 = S.statues[2]; K0.x = 0; K0.y = -290; K0.z = -760; K0.rz = 0; S.checkAlerts.forEach(resetAlert); },
       update: function (t, lt, u, dt) {
         boardAt(t);
-        S.statues[1].op = 0;
+        S.statues[1].op = 0;   // (the queen was taken)
         // a run at the king through a corridor of Check. alerts, bursting through each, weaving a little, handing straight
         // on to the checkmate shot's opening move
         path([{ t: 0, x: 0, y: -430, z: 2900, tx: 0, ty: -260, tz: -760, fov: 50 },
@@ -2368,13 +2402,33 @@
         K.holo.hit = Math.max(0, (K.holo.hit || 0) - dt * 1.2);
         once(S, 'chk', t, 30.5, function () { caption('CHECK', 'Bxf7+ · THE F1 BISHOP STRIKES'); Cine.vhs = 1; });
         kick(dt);
+        var o = orbAt(t);
+        S.orb.x = o.x; S.orb.y = o.y; S.orb.z = o.z; S.orb.ry = -Cine.cam.yaw; S.orb.rz = t * 240;
+        S.orb.op = smooth(span(t, 30.05, 30.35)) * (1 - smooth(span(t, 37.6, 37.95)));
+        S.orb.s = 1 + 0.35 * Math.max(0, 1 - Math.min.apply(null, S.orbHits.map(function (h) { return Math.abs(t - h.t); })) / 0.12);
+        // the camera chases the orb (a little behind and above it, along the run), then settles onto the run's last
+        // pose for the checkmate shot
+        var c = Cine.cam, rd = { x: 700 / 2024, z: -1900 / 2024 }, back = 520, hand = smooth(span(t, 36.6, 38));
+        var fx = o.x - rd.x * back + Math.sin(lt * 1.1) * 40, fy = o.y - 100, fz = o.z - rd.z * back;
+        c.x = lerp(fx, c.x, hand); c.y = lerp(fy, c.y, hand); c.z = lerp(fz, c.z, hand);
+        lookAt(lerp(o.x + rd.x * 220, 0, hand), lerp(o.y + 10, -280, hand), lerp(o.z + rd.z * 220, -760, hand));
+        if (S.orb.op > 0.2 && Math.random() < 0.7) { var op2 = projectP(o); if (op2) burst(op2.x, op2.y, 2, [320, 190], 0.3); }
+        S.orbHits.forEach(function (h, i) {
+          if (t >= h.t + 0.4 && !h.it.broken) { h.it.broken = true; h.it.op = 0; }   // (started past it)
+          once(S, 'orb' + i, t, h.t, function () {
+            var pp = projectP(h.p); if (pp) { ring(pp, 300 * Math.min(2, pp.s)); burst(pp.x, pp.y, qn(36), [320, 190, 285], 0.8); }
+            var ya = Cine.cam.yaw * D2R;
+            breakAlert(h.it, { x: Math.sin(ya) * 1400 + (i % 2 ? -300 : 300), y: -260, z: -Math.cos(ya) * 1400 });
+            Cine.shake = Math.max(Cine.shake, 0.5); Cine.vhs = 1; Cine.fovKick = -7; Cine.hitStop = 0.08;
+          });
+        });
         S.checkAlerts.forEach(function (it) { flyAlert(it, t, true); });
         Cine.speed = 0.25; Cine.streaks = 0.3;
         faceStatues();
         hud('CHECK', 'THE KING IS EXPOSED');
       } };
 
-    S.mate = { pat: 5, enter: function () { var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; K.holo.frame = -1; S.kingPad.op = 0; S.boardFrame = -1; S.board.op = 1; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 || i === 1 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.checkAlerts.forEach(function (it) { it.op = 0; }); resetAlert(S.mateAlert); S.statues[2].rz = 0; },
+    S.mate = { pat: 5, enter: function () { S.orb.op = 0; var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; K.holo.frame = -1; S.kingPad.op = 0; S.boardFrame = -1; S.board.op = 1; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 || i === 1 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.checkAlerts.forEach(function (it) { it.op = 0; }); resetAlert(S.mateAlert); S.statues[2].rz = 0; },
       update: function (t, lt, u, dt) {
         boardAt(t);
         // hit-stop: the camera all but stops for a quarter second on the blow, then carries on
@@ -2787,6 +2841,9 @@
 
     Cine.env = 1; Cine.speed = 0; Cine.streaks = 0; Cine.variant = 0; Cine.eye = CAB_EYE; Cine.timeScale = 1;
     shot.update(t, lt, u, dt);
+    // hit-stop: on a big impact the camera holds still for a beat (Cine.hitStop seconds) while the effects play on
+    if (Cine.hitStop > 0) { if (!Cine.camHeld) Cine.camHeld = Object.assign({}, Cine.cam); else Object.assign(Cine.cam, Cine.camHeld); Cine.hitStop -= dt; }
+    else Cine.camHeld = null;
 
     var view = applyCamera();
     layoutGroup(shot.group, view);

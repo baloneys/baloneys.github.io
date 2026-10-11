@@ -1828,10 +1828,11 @@
     // the game's colours: a cool white-violet for white, the hot pink for black; the edges and sweep go nearly white
     var body = M.white ? [196, 236, 255] : [255, 79, 163], edge = M.white ? [247, 242, 255] : [255, 196, 228], glow = M.white ? [94, 240, 255] : [255, 113, 206];
     var sweep = M.top + ((t * 34 + H.seed * 40) % (64 - M.top + 18)) - 9;
-    var glitchRow = hash(f * 1.7 + H.seed) > 0.86 ? Math.floor(hash(f * 3.1 + H.seed) * 60) : -99;
+    var glitchRow = hash(f * 1.7 + H.seed) > 0.86 ? Math.floor(hash(f * 3.1 + H.seed) * 60) : -99, hit = H.hit || 0;
     function put(k, c, a) { var q = k * 4; if (d[q + 3] >= a) return; d[q] = c[0]; d[q + 1] = c[1]; d[q + 2] = c[2]; d[q + 3] = a; }
     for (var y = 0; y < 64; y++) {
       var shift = Math.abs(y - glitchRow) < 2 ? (hash(f + y) > 0.5 ? 2 : -2) : 0;
+      if (hit > 0 && hash(y * 0.37 + f * 1.3) < hit * 0.45) shift = Math.round((hash(y + f * 2.1) - 0.5) * 12 * hit);   // torn rows
       var scan = (y + (f >> 1)) % 3, near = 1 - Math.min(1, Math.abs(y - sweep) / 3);
       for (var c = 0; c < W; c++) {
         var sx = c - shift; if (sx < 0 || sx >= W || !m[y * W + sx]) continue;
@@ -1839,15 +1840,16 @@
         var a = isEdge ? 235 : scan === 0 ? 150 : scan === 1 ? 95 : 55;
         a = Math.min(255, a + near * 120 + (y - M.top < 2 ? 40 : 0));
         put(k, isEdge || near > 0.5 ? edge : body, Math.round(a));
+        if (hit > 0.25) { var sp = Math.round(hit * 3); if (c - sp >= 0) put(k - sp, [255, 60, 170], Math.round(120 * hit)); if (c + sp < W) put(k + sp, [60, 230, 255], Math.round(120 * hit)); }   // colour split
         // a soft halo a pixel out, in the glow colour
         [-1, 1].forEach(function (dx) { var cx = c + dx; if (cx >= 0 && cx < W && !m[y * W + cx - shift]) put(y * W + cx, glow, 70); });
       }
     }
     // the beam: a faint stippled cone from the pad up to the piece's foot
-    for (y = 63; y < 70; y++) for (c = 14; c < 34; c++) if (((c + y + f) & 1) === 0) put(y * W + c, glow, 60);
+    if (!H.noPad) for (y = 63; y < 70; y++) for (c = 14; c < 34; c++) if (((c + y + f) & 1) === 0) put(y * W + c, glow, 60);
     // the projector pad: a dark disc with a lit rim that pulses
     var pulse = 150 + Math.round(Math.sin(t * 6 + H.seed) * 60);
-    for (y = 68; y < 80; y++) for (c = 4; c < 44; c++) {
+    if (!H.noPad) for (y = 68; y < 80; y++) for (c = 4; c < 44; c++) {
       var ex = (c - 24) / 19, ey = (y - 72) / 4.6, r = ex * ex + ey * ey;
       if (y >= 72 && Math.abs(ex) <= 1 && y < 77) r = Math.min(r, ex * ex);           // the pad's side
       if (r > 1) continue;
@@ -1857,6 +1859,31 @@
       else put(k, y === 76 ? [20, 12, 40] : [44, 30, 76], 255);                          // the casing
     }
     x.putImageData(img, 0, 0);
+    // power-down: the body squashes to a bright line through its middle, the line shrinks to a dot, the dot goes out
+    if (H.off > 0) {
+      var o = H.off, tmp = HOLO_TMP || (HOLO_TMP = document.createElement('canvas'));
+      tmp.width = W; tmp.height = 64; tmp.getContext('2d').drawImage(it.canvas, 0, 0, W, 64, 0, 0, W, 64);
+      x.clearRect(0, 0, W, 64);
+      var hy = Math.max(1, Math.round(64 * Math.pow(1 - Math.min(1, o / 0.55), 2))), wx = o < 0.55 ? W : Math.max(1, Math.round(W * (1 - (o - 0.55) / 0.35)));
+      if (o < 0.95) {
+        x.imageSmoothingEnabled = false; x.drawImage(tmp, (W - wx) / 2, 38 - hy / 2, wx, hy);
+        x.fillStyle = 'rgba(255,255,255,' + Math.min(0.9, o * 1.6).toFixed(2) + ')'; x.fillRect((W - wx) / 2, 38, wx, 1);
+      }
+    }
+  }
+  var HOLO_TMP = null;
+  // the pad on its own, for the king that falls off his (48 x 12, drawn once)
+  function holoPadPlane(g, white, o) {
+    var cv = document.createElement('canvas'); cv.width = HOLO_W; cv.height = 12; cv.className = 'cx-holo';
+    var x = cv.getContext('2d');
+    for (var y = 0; y < 12; y++) for (var c = 4; c < 44; c++) {
+      var Y = y + 68, ex = (c - 24) / 19, ey = (Y - 72) / 4.6, r = ex * ex + ey * ey;
+      if (Y >= 72 && Math.abs(ex) <= 1 && Y < 77) r = Math.min(r, ex * ex);
+      if (r > 1) continue;
+      x.fillStyle = Y < 72 && r > 0.6 ? (white ? '#3a6a86' : '#7a3a6a') : Y < 72 ? (white ? '#463478' : '#601e52') : Y === 76 ? '#140c28' : '#2c1e4c';
+      x.fillRect(c, y, 1, 1);
+    }
+    var it = plane(g, cv, HOLO_W * 4, 48, o); it.canvas = cv; return it;
   }
 
   /* The hand-pixelled props, drawn after Sean's reference sheets (pastel Ionic columns with ivy, the vaporwave starter
@@ -2235,6 +2262,7 @@
         var a = hash(k * 3.7) * Math.PI - Math.PI / 2, dist = 6500 + hash(k * 5.3) * 4500;
         S.props.push(decorPlane(g, ['palm', 'column', 'palm', 'bust'][k % 4], { x: Math.sin(a) * dist * 0.8, z: -Math.cos(a) * dist - 1500, s: 3 + hash(k) * 2.5, ground: 0, flip: k % 2 === 0, op: 0, cull: true }));
       }
+      S.kingPad = holoPadPlane(g, true, { x: 0, y: -290 + 74 * 8 - 160 * 2, z: -760, s: 2, op: 0, cull: false });
       S.afterimages = [0, 1, 2].map(function (i) { return holoPlane(g, 'N', { x: -640, y: -220, z: 150 - i * 12, s: 1.7, op: 0, cull: false }); });
       // the alerts sit right in the camera's path, so it flies through each one (flyAlert)
       S.captureAlert = macAlert(g, 'The application Rook has unexpectedly quit.', { x: 390, y: -430, z: 250, s: .5, op: 0, cull: false });
@@ -2247,7 +2275,7 @@
         function (z, i) { return macAlert(g, 'Check.', { x: (i % 2 ? 1 : -1) * 70 + i * 25, y: -415 + i * 12, z: z, rz: (i % 2 ? 1 : -1) * 4, s: .55, op: 0, cull: false }); });
       S.mateAlert = macAlert(g, 'Checkmate.', { x: 385, y: -355, z: 430, s: .6, op: 0, cull: false });
       S.captureAlert.baseS = .5; S.mateAlert.baseS = .6; S.checkAlerts.forEach(function (it) { it.baseS = .55; });
-    }, enter: function () { S.boardFrame = -1; S.board.op = 0; S.statues.forEach(function (it) { it.hidden = false; it.op = 0; }); S.props.forEach(function (it) { it.op = 0; }); S.afterimages.forEach(function (it) { it.op = 0; }); resetAlert(S.captureAlert); S.checkAlerts.forEach(resetAlert); resetAlert(S.mateAlert); hideLogo(); },
+    }, enter: function () { var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.rz = 0; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; S.kingPad.op = 0; S.crown.op = 0; S.boardFrame = -1; S.board.op = 0; S.statues.forEach(function (it) { it.hidden = false; it.op = 0; }); S.props.forEach(function (it) { it.op = 0; }); S.afterimages.forEach(function (it) { it.op = 0; }); resetAlert(S.captureAlert); S.checkAlerts.forEach(resetAlert); resetAlert(S.mateAlert); hideLogo(); },
       update: function (t, lt) {
         boardAt(t);
         path([{ t: 0, x: 0, y: -3500, z: 1400, tx: 0, ty: 0, tz: 0, fov: 78 },
@@ -2295,22 +2323,40 @@
         hud('CHECK', 'THE KING IS EXPOSED');
       } };
 
-    S.mate = { pat: 5, enter: function () { S.boardFrame = -1; S.board.op = 1; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.checkAlerts.forEach(function (it) { it.op = 0; }); resetAlert(S.mateAlert); S.statues[2].rz = 0; },
+    S.mate = { pat: 5, enter: function () { var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; K.holo.frame = -1; S.kingPad.op = 0; S.boardFrame = -1; S.board.op = 1; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.checkAlerts.forEach(function (it) { it.op = 0; }); resetAlert(S.mateAlert); S.statues[2].rz = 0; },
       update: function (t, lt, u, dt) {
         boardAt(t);
+        // hit-stop: the camera all but stops for a quarter second on the blow, then carries on
+        var hs = lt < 1.1 ? lt : lt < 1.35 ? 1.1 + (lt - 1.1) * 0.12 : lt - 0.22;
         path([{ t: 0, x: 700, y: -420, z: 1000, tx: 0, ty: -280, tz: -760, fov: 48 },
           { t: 1.1, x: 360, y: -350, z: 380, tx: 0, ty: -250, tz: -760, fov: 54, e: easeIn },   // through Checkmate. on the mating move
-          { t: 4.9, x: 120, y: -270, z: 100, tx: 0, ty: -220, tz: -760, fov: 62, roll: -5, e: easeOut }], lt);
+          { t: 4.9, x: 120, y: -270, z: 100, tx: -180, ty: -140, tz: -760, fov: 62, roll: -5, e: easeOut }], hs);
         kick(dt);
         flyAlert(S.mateAlert, t, true);
-        S.statues[2].rz = -72 * smooth(span(t, 39.1, 41));
-        var cr = smooth(span(t, 39.3, 39.9));
-        S.crown.op = cr; S.crown.y = S.crown.y0 - (1 - cr) * 700; S.crown.ry = -Cine.cam.yaw; S.crown.rz = (1 - cr) * 30;
-        if (S.crown.shadow) { S.crown.shadow.op = cr; }
+        var K = S.statues[2], KF = 23 * 4 * K.s, a = 0;           // KF: centre to the piece's foot (canvas row 63)
+        K.holo.hit = t < 39.1 ? 0 : Math.max(0, 1 - (t - 39.1) / 0.9);
+        K.holo.noPad = t >= 39.1; S.kingPad.op = t >= 39.1 ? 1 : 0; S.kingPad.ry = -Cine.cam.yaw;
+        if (t >= 39.32 && t < 39.95) a = -88 * Math.pow((t - 39.32) / 0.63, 2);                       // falls, gathering speed
+        else if (t >= 39.95) { var b = t - 39.95; a = -88 + 16 * Math.exp(-b * 6) * Math.abs(Math.sin(b * 15)); }   // and bounces
+        K.rz = a;
+        var ar = a * D2R, ry = -Cine.cam.yaw * D2R, sx = Math.sin(ar) * KF;     // pivot about the foot, in the billboard's plane
+        K.x = sx * Math.cos(ry); K.z = -760 - sx * Math.sin(ry); K.y = -290 + KF - Math.cos(ar) * KF + (t >= 39.1 && t < 39.32 ? -30 * Math.sin((t - 39.1) / 0.22 * Math.PI) : 0);
+        K.holo.off = smooth(span(t, 41.8, 42.7));
+        once(S, 'thud', t, 39.95, function () {
+          var p = projectP({ x: K.x - Math.cos(ry) * KF, y: -40, z: K.z });
+          if (p) { ring(p, 300); burst(p.x, p.y, qn(40), [285, 190, 320], 0.9); }
+          Cine.shake = Math.max(Cine.shake, .85); Cine.fovKick = -9; Cine.vhs = 1; Cine.aberration = Math.max(Cine.aberration, .6);
+        });
+        // the crown, knocked loose, lands just after him and rocks to rest
+        var cr = clamp01((t - 39.55) / 0.55), cb = t - 40.1;
+        S.crown.op = t >= 39.55 ? 1 : 0; S.crown.y = S.crown.y0 - (1 - cr * cr) * 900; S.crown.ry = -Cine.cam.yaw;
+        S.crown.rz = cr < 1 ? (1 - cr) * 160 : 9 * Math.exp(-cb * 4) * Math.sin(cb * 14);
+        if (S.crown.shadow) { S.crown.shadow.op = S.crown.op * cr; }
+        once(S, 'crown', t, 40.1, function () { var p = projectP({ x: S.crown.x, y: -30, z: S.crown.z }); if (p) burst(p.x, p.y, qn(18), [320, 285], 0.6); Cine.shake = Math.max(Cine.shake, .35); });
         S.board.op = 1 - .65 * smooth(span(t, 40.4, 42.8));
         S.stairs.forEach(function (it, i) { var k = smooth(span(t, 39.4 + i * .12, 41.8 + i * .12)); it.op = k * .9; it.y = -i * 42 * k; it.rz = (i % 2 ? -1 : 1) * 9 * k; });
         once(S, 'mate', t, 39.1, function () { var p = projectP({ x: 0, y: -250, z: -760 }); if (p) { ring(p, 390); petals({ x: 0, y: -250, z: -760 }, 55); }
-          Cine.flash = Math.max(Cine.flash, .28); Cine.shake = Math.max(Cine.shake, .55); Cine.aberration = .75; Cine.vhs = 1; caption('CHECKMATE', '♞ Nd5#'); });
+          Cine.flash = Math.max(Cine.flash, .28); Cine.shake = Math.max(Cine.shake, .7); Cine.aberration = .9; Cine.vhs = 1; Cine.fovKick = -14; caption('CHECKMATE', '♞ Nd5#'); });
         faceStatues(); hud('CHECKMATE', '♞ Nd5#');
       } };
 
@@ -2328,11 +2374,11 @@
       buildSocial(g, S, me);
     }, enter: function () { S.achWall.x = 0; S.achWall.ry = 14; S.invite.op = 0; S.profPanel.x = 300; hud(''); },
       update: function (t, lt) {
-        path([{ t: 0, x: 300, y: 100, z: 950, tx: 200, ty: 60, tz: 0, fov: 54 }, { t: 1.6, x: -200, y: -100, z: -600, tx: 300, ty: 80, tz: -2600, fov: 56, e: easeIn }], lt);
+        socialCam(socialU(S, t));
         var n = S.achItems.length, on = Math.min(n, Math.floor(n * (0.5 + lt * .55)));
         S.achItems.forEach(function (it, i) { it.classList.toggle('on', i < on); });
-        S.achCount.textContent = (ACH && ACH.count ? ACH.count() : 0) + ' unlocked';
-        S.achWall.x = lerp(0, -2600, easeIn(span(lt, .9, 1.6)));
+        S.achCount.textContent = Math.min(n, on) + ' / ' + n + ' unlocked';
+        socialPanels(S, socialU(S, t));
       } };
     addSocialShots(S, me);
     S.profile.pat = S.chat.pat = S.friends.pat = 6;
@@ -2502,38 +2548,59 @@
     S.invite.hidden = !realFriends.length;
   }
 
+  /* The social run (achievements, profile, chat, friends) is one continuous move: a smooth spline through the panels
+     over the whole stretch, in real seconds, so the camera never stops dead at a cut or snaps its aim to the next
+     panel, and each panel comes to life (and steps aside) at its point on the run. Keys: u, camera x y z, look x y z, fov. */
+  var SOCIAL_KEYS = [
+    [0.00, 300, 100, 950, 150, 40, 0, 54], [0.18, -250, -80, 1000, -150, -20, 0, 54],
+    [0.30, -100, -60, -700, 300, 80, -2600, 56], [0.40, 500, 110, -1450, 300, 80, -2600, 54], [0.48, 680, 140, -1700, 320, 80, -2600, 54],
+    [0.60, -500, 30, -3600, -900, 0, -4800, 54], [0.70, -620, 40, -3800, -900, 0, -4800, 54],
+    [0.80, -100, 0, -4300, 500, 30, -6300, 54], [0.88, 380, -40, -5300, 700, 40, -6600, 54], [1.00, 420, 0, -5450, 420, 0, -6000, 54]];
+  function socialU(S, t) { var t0 = shotStart(S.achievements.cue), t1 = shotStart(S.modes.cue); return clamp01((t - t0) / (t1 - t0)); }
+  function socialCam(u) {
+    var K = SOCIAL_KEYS, i = 0;
+    while (i < K.length - 2 && u > K[i + 1][0]) i++;
+    var a = K[i], b = K[i + 1], p = K[i - 1], n = K[i + 2], h = b[0] - a[0], s = clamp01((u - a[0]) / h);
+    var s2 = s * s, s3 = s2 * s, h00 = 2 * s3 - 3 * s2 + 1, h10 = s3 - 2 * s2 + s, h01 = -2 * s3 + 3 * s2, h11 = s3 - s2;
+    function v(j) {   // Catmull-Rom with uneven key spacing; at rest at the very start and end
+      var m0 = p ? (b[j] - p[j]) / (b[0] - p[0]) * h : 0, m1 = n ? (n[j] - a[j]) / (n[0] - a[0]) * h : 0;
+      return h00 * a[j] + h10 * m0 + h01 * b[j] + h11 * m1;
+    }
+    var c = Cine.cam; c.x = v(1); c.y = v(2); c.z = v(3); c.fov = v(7); c.roll = 0;
+    lookAt(v(4), v(5), v(6));
+  }
+  // the achievements wall and the profile slide aside just before the camera passes their planes; the invite drifts in
+  function socialPanels(S, u) {
+    var w = smooth(span(u, 0.16, 0.27)); S.achWall.x = lerp(0, -2600, w); S.achWall.ry = lerp(14, 70, w);
+    S.profPanel.x = 300 + smooth(span(u, 0.46, 0.55)) * 1800;
+    var inK = smooth(span(u, 0.88, 0.95)), outK = smooth(span(u, 0.95, 1));
+    S.invite.op = inK; S.invite.x = lerp(1600, 400, inK); S.invite.z = lerp(-6000, -5700, outK); S.invite.ry = lerp(-30, 0, inK);
+  }
   function addSocialShots(S, me) {
-    S.profile = { pat: 0, update: function (t, lt) {
-      path([{ t: 0, x: -200, y: -100, z: -600, tx: 300, ty: 80, tz: -2600, fov: 56 }, { t: 1.372, x: 650, y: 140, z: -1700, tx: 300, ty: 80, tz: -2600, fov: 54, e: easeOut }], lt);
+    S.profile = { pat: 0, update: function (t) {
+      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
       var beat = Math.floor(beatAt(t));
       S.profThemes.forEach(function (c, i) { c.classList.toggle('on', i === beat % S.profThemes.length); });
       S.profSw.forEach(function (c, i) { c.classList.toggle('on', i === (beat * 3) % S.profSw.length); });
-      S.profBar.style.width = (40 + 50 * span(lt, 0, 1.3)) + '%';
-      S.profPanel.x = 300 + easeIn(span(lt, 1.0, 1.372)) * 1800;
+      S.profBar.style.width = (40 + 50 * smooth(span(u, 0.32, 0.5))) + '%';
     } };
-    S.chat = { pat: 0, update: function (t, lt) {
-      path([{ t: 0, x: 650, y: 140, z: -1700, tx: -900, ty: 0, tz: -4800, fov: 54 }, { t: 2.4, x: -700, y: 40, z: -3900, tx: -900, ty: 0, tz: -4800, fov: 54 },
-        { t: 2.743, x: -300, y: 40, z: -4600, tx: 700, ty: 40, tz: -6600, fov: 56, e: easeIn }], lt);
-      var shown = Math.max(0, Math.min(S.chatMsgs.length, Math.floor((t - shotStart(S.chat.cue) - 0.1) / 0.24) + 1));
-      if (S.chatList.childElementCount !== shown) {
-        S.chatList.textContent = '';
-        S.chatMsgs.slice(0, shown).forEach(function (m, i) {
-          var r = el('div', 'cine-msg' + (m[0] === me.name ? ' mine' : '') + (i === shown - 1 ? ' new' : ''), S.chatList);
-          el('b', '', r).textContent = m[0];
-          el('span', '', r).textContent = m[1];
-        });
+    S.chat = { pat: 0, update: function (t) {
+      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
+      // messages arrive one at a time and stay (appended, not rebuilt), the newest one popping in
+      var shown = Math.max(0, Math.min(S.chatMsgs.length, Math.floor((u - 0.56) / 0.045) + 1));
+      if (S.chatList.childElementCount > shown) S.chatList.textContent = '';
+      while (S.chatList.childElementCount < shown) {
+        var m = S.chatMsgs[S.chatList.childElementCount];
+        if (S.chatList.lastChild) S.chatList.lastChild.classList.remove('new');
+        var r = el('div', 'cine-msg' + (m[0] === me.name ? ' mine' : '') + ' new', S.chatList);
+        el('b', '', r).textContent = m[0];
+        el('span', '', r).textContent = m[1];
       }
-      var last = S.chatList.lastChild;
-      if (last && lt > 2.2) last.style.transform = 'translateX(' + (easeIn(span(lt, 2.2, 2.743)) * 900) + 'px)';
-    }, enter: function () { S.chatList.textContent = ''; S.profPanel.x = 2100; } };
-    S.friends = { pat: 0, update: function (t, lt) {
-      path([{ t: 0, x: -300, y: 40, z: -4600, tx: 700, ty: 40, tz: -6600, fov: 56 }, { t: 1.4, x: 400, y: -60, z: -5400, tx: 700, ty: 40, tz: -6600, fov: 54, e: easeOut },
-        { t: 2.743, x: 400, y: 0, z: -5500, tx: 400, ty: 0, tz: -6000, fov: 54 }], lt);
+    }, enter: function () { S.chatList.textContent = ''; } };
+    S.friends = { pat: 0, update: function (t) {
+      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
       var beat = Math.floor(beatAt(t) * 2);
       S.friendRows.forEach(function (r, i) { r.classList.toggle('lit', (beat + i) % 4 === 0); });
-      var inK = easeOut(span(lt, 1.1, 1.6)), outK = easeIn(span(lt, 2.0, 2.743));
-      S.invite.op = inK; S.invite.x = lerp(1600, 400, inK); S.invite.z = lerp(-6000, -5250, outK); S.invite.ry = lerp(-30, 0, inK);
-      if (lt > 2.4) Cine.aberration = Math.max(Cine.aberration, 0.8);
     } };
   }
 

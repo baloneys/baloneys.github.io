@@ -1722,13 +1722,11 @@
       buildSocial(g, S, me);
     }, enter: function () { S.achWall.x = 0; S.achWall.ry = 14; S.invite.op = 0; S.profPanel.x = 300; hud(''); },
     update: function (t, lt) {
-      path([{ t: 0, x: 300, y: 100, z: 950, tx: 200, ty: 60, tz: 0, fov: 54 }, { t: 1.0, x: -400, y: -150, z: 1050, tx: -300, ty: -60, tz: 0, fov: 54 },
-        { t: 1.6, x: -200, y: -100, z: -600, tx: 300, ty: 80, tz: -2600, fov: 56, e: easeIn }], lt);
+      socialCam(socialU(S, t));
       var n = S.achItems.length, on = Math.min(n, Math.floor(n * (0.6 + lt * 0.4)));
       S.achItems.forEach(function (it, i) { it.classList.toggle('on', i < on); it.classList.toggle('pop', i === on - 1); });
       S.achCount.textContent = Math.min(n, on) + ' / ' + n + ' unlocked';
-      var k = easeIn(span(lt, 0.9, 1.6));
-      S.achWall.x = lerp(0, -2600, k); S.achWall.ry = lerp(14, 70, k);
+      socialPanels(S, socialU(S, t));
     } };
 
     addSocialShots(S, me);
@@ -1890,38 +1888,59 @@
     S.invite = plane(g, inv, 860, 420, { x: 400, y: 0, z: -6000, cull: false, op: 0 });
   }
 
+  /* The social run (achievements, profile, chat, friends) is one continuous move: a smooth spline through the panels
+     over the whole stretch, in real seconds, so the camera never stops dead at a cut or snaps its aim to the next
+     panel, and each panel comes to life (and steps aside) at its point on the run. Keys: u, camera x y z, look x y z, fov. */
+  var SOCIAL_KEYS = [
+    [0.00, 300, 100, 950, 150, 40, 0, 54], [0.18, -250, -80, 1000, -150, -20, 0, 54],
+    [0.30, -100, -60, -700, 300, 80, -2600, 56], [0.40, 500, 110, -1450, 300, 80, -2600, 54], [0.48, 680, 140, -1700, 320, 80, -2600, 54],
+    [0.60, -500, 30, -3600, -900, 0, -4800, 54], [0.70, -620, 40, -3800, -900, 0, -4800, 54],
+    [0.80, -100, 0, -4300, 500, 30, -6300, 54], [0.88, 380, -40, -5300, 700, 40, -6600, 54], [1.00, 420, 0, -5450, 420, 0, -6000, 54]];
+  function socialU(S, t) { var t0 = shotStart(S.achievements.cue), t1 = shotStart(S.modes.cue); return clamp01((t - t0) / (t1 - t0)); }
+  function socialCam(u) {
+    var K = SOCIAL_KEYS, i = 0;
+    while (i < K.length - 2 && u > K[i + 1][0]) i++;
+    var a = K[i], b = K[i + 1], p = K[i - 1], n = K[i + 2], h = b[0] - a[0], s = clamp01((u - a[0]) / h);
+    var s2 = s * s, s3 = s2 * s, h00 = 2 * s3 - 3 * s2 + 1, h10 = s3 - 2 * s2 + s, h01 = -2 * s3 + 3 * s2, h11 = s3 - s2;
+    function v(j) {   // Catmull-Rom with uneven key spacing; at rest at the very start and end
+      var m0 = p ? (b[j] - p[j]) / (b[0] - p[0]) * h : 0, m1 = n ? (n[j] - a[j]) / (n[0] - a[0]) * h : 0;
+      return h00 * a[j] + h10 * m0 + h01 * b[j] + h11 * m1;
+    }
+    var c = Cine.cam; c.x = v(1); c.y = v(2); c.z = v(3); c.fov = v(7); c.roll = 0;
+    lookAt(v(4), v(5), v(6));
+  }
+  // the achievements wall and the profile slide aside just before the camera passes their planes; the invite drifts in
+  function socialPanels(S, u) {
+    var w = smooth(span(u, 0.16, 0.27)); S.achWall.x = lerp(0, -2600, w); S.achWall.ry = lerp(14, 70, w);
+    S.profPanel.x = 300 + smooth(span(u, 0.46, 0.55)) * 1800;
+    var inK = smooth(span(u, 0.88, 0.95)), outK = smooth(span(u, 0.95, 1));
+    S.invite.op = inK; S.invite.x = lerp(1600, 400, inK); S.invite.z = lerp(-6000, -5700, outK); S.invite.ry = lerp(-30, 0, inK);
+  }
   function addSocialShots(S, me) {
-    S.profile = { pat: 0, update: function (t, lt) {
-      path([{ t: 0, x: -200, y: -100, z: -600, tx: 300, ty: 80, tz: -2600, fov: 56 }, { t: 1.372, x: 650, y: 140, z: -1700, tx: 300, ty: 80, tz: -2600, fov: 54, e: easeOut }], lt);
+    S.profile = { pat: 0, update: function (t) {
+      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
       var beat = Math.floor(beatAt(t));
       S.profThemes.forEach(function (c, i) { c.classList.toggle('on', i === beat % S.profThemes.length); });
       S.profSw.forEach(function (c, i) { c.classList.toggle('on', i === (beat * 3) % S.profSw.length); });
-      S.profBar.style.width = (40 + 50 * span(lt, 0, 1.3)) + '%';
-      S.profPanel.x = 300 + easeIn(span(lt, 1.0, 1.372)) * 1800;
+      S.profBar.style.width = (40 + 50 * smooth(span(u, 0.32, 0.5))) + '%';
     } };
-    S.chat = { pat: 0, update: function (t, lt) {
-      path([{ t: 0, x: 650, y: 140, z: -1700, tx: -900, ty: 0, tz: -4800, fov: 54 }, { t: 2.4, x: -700, y: 40, z: -3900, tx: -900, ty: 0, tz: -4800, fov: 54 },
-        { t: 2.743, x: -300, y: 40, z: -4600, tx: 700, ty: 40, tz: -6600, fov: 56, e: easeIn }], lt);
-      var shown = Math.max(0, Math.min(S.chatMsgs.length, Math.floor((t - shotStart(S.chat.cue) - 0.1) / 0.24) + 1));
-      if (S.chatList.childElementCount !== shown) {
-        S.chatList.textContent = '';
-        S.chatMsgs.slice(0, shown).forEach(function (m, i) {
-          var r = el('div', 'cine-msg' + (m[0] === me.name ? ' mine' : '') + (i === shown - 1 ? ' new' : ''), S.chatList);
-          el('b', '', r).textContent = m[0];
-          el('span', '', r).textContent = m[1];
-        });
+    S.chat = { pat: 0, update: function (t) {
+      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
+      // messages arrive one at a time and stay (appended, not rebuilt), the newest one popping in
+      var shown = Math.max(0, Math.min(S.chatMsgs.length, Math.floor((u - 0.56) / 0.045) + 1));
+      if (S.chatList.childElementCount > shown) S.chatList.textContent = '';
+      while (S.chatList.childElementCount < shown) {
+        var m = S.chatMsgs[S.chatList.childElementCount];
+        if (S.chatList.lastChild) S.chatList.lastChild.classList.remove('new');
+        var r = el('div', 'cine-msg' + (m[0] === me.name ? ' mine' : '') + ' new', S.chatList);
+        el('b', '', r).textContent = m[0];
+        el('span', '', r).textContent = m[1];
       }
-      var last = S.chatList.lastChild;
-      if (last && lt > 2.2) last.style.transform = 'translateX(' + (easeIn(span(lt, 2.2, 2.743)) * 900) + 'px)';
-    }, enter: function () { S.chatList.textContent = ''; S.profPanel.x = 2100; } };
-    S.friends = { pat: 0, update: function (t, lt) {
-      path([{ t: 0, x: -300, y: 40, z: -4600, tx: 700, ty: 40, tz: -6600, fov: 56 }, { t: 1.4, x: 400, y: -60, z: -5400, tx: 700, ty: 40, tz: -6600, fov: 54, e: easeOut },
-        { t: 2.743, x: 400, y: 0, z: -5500, tx: 400, ty: 0, tz: -6000, fov: 54 }], lt);
+    }, enter: function () { S.chatList.textContent = ''; } };
+    S.friends = { pat: 0, update: function (t) {
+      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
       var beat = Math.floor(beatAt(t) * 2);
       S.friendRows.forEach(function (r, i) { r.classList.toggle('lit', (beat + i) % 4 === 0); });
-      var inK = easeOut(span(lt, 1.1, 1.6)), outK = easeIn(span(lt, 2.0, 2.743));
-      S.invite.op = inK; S.invite.x = lerp(1600, 400, inK); S.invite.z = lerp(-6000, -5250, outK); S.invite.ry = lerp(-30, 0, inK);
-      if (lt > 2.4) Cine.aberration = Math.max(Cine.aberration, 0.8);
     } };
   }
 

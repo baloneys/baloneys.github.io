@@ -107,6 +107,7 @@
   function smooth(t) { t = clamp01(t); return t * t * (3 - 2 * t); }
   function easeIn(t) { t = clamp01(t); return t * t * t; }
   function easeOut(t) { t = clamp01(t); return 1 - Math.pow(1 - t, 3); }
+  function backOut(t) { t = clamp01(t) - 1; return 1 + 2.9 * t * t * t + 1.9 * t * t; }   // overshoots, then settles
   function easeInOut(t) { t = clamp01(t); return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
   function span(t, a, b) { return clamp01((t - a) / (b - a)); }
   function el(tag, cls, parent) { var e = document.createElement(tag); if (cls) e.className = cls; if (parent) parent.appendChild(e); return e; }
@@ -1198,22 +1199,29 @@
         var left = i % 2 === 0;
         var p = makePlayer({ warm: 5 + i, stack: 4 + (i % 4), speed: 1.8 });
         var it = boardPlane(g, p, { x: (left ? -1 : 1) * (1100 + hash(i) * 900), y: -560 - hash(i * 3) * 500, z: -1600 - i * 950, ry: left ? 38 : -38, s: 1.2 });
-        it.baseX = it.x; it.fly = i % 4 === 1 || i % 4 === 2; it.side = left ? -1 : 1;
+        it.baseX = it.x; it.baseY = it.y; it.baseRz = it.rz || 0; it.fly = true; it.drop = i % 3 === 0; it.side = left ? -1 : 1;
         S.roadBoards.push(it);
       }
       // the board that blocks the road: we fly into it for the gameplay close-up
       S.hero = makePlayer({ name: me.name, palette: K.myPalette(), level: null });
       S.heroItem = boardPlane(g, S.hero, { x: 0, y: -420, z: -12600, hero: true, cull: false });
-    }, enter: function () { prepTetris(S.hero); S.hero.piece.y = -4; }, update: function (t, lt) {
+    }, enter: function () { prepTetris(S.hero); S.hero.piece.y = -4; S.roadBoards.forEach(function (it) { it.px = null; }); }, update: function (t, lt, u, dt) {
       // the camera drives low down the road on its own (the car is gone; everything else stays)
       var k = span(lt, 0, 4.114), carZ = -9000 * (easeIn(k) * 0.6 + k * 0.4), carX = Math.sin(lt * 2.2) * 120;
       var lunge = easeIn(span(lt, 3.2, 4.114)), c = Cine.cam;
       c.x = carX * 0.5 + Math.sin(lt * 1.3) * 60; c.y = lerp(-230, -420, lunge); c.z = lerp(carZ + 780, -12600 + 560, lunge);
       c.fov = lerp(62, 56, lunge); c.roll = Math.sin(lt * 1.7) * 4 * (1 - lunge);
       lookAt(lerp(carX * 0.3, 0, lunge), lerp(-170, -420, lunge), lerp(carZ - 2500, -12600, lunge));
+      // the boards whip in from the sides (some drop in from above) as the camera nears: fast, overshooting and
+      // settling, stretched along their motion and squashed as they stop, leaning into it
       S.roadBoards.forEach(function (it) {
-        var ahead = c.z - it.z;
-        if (it.fly) it.x = it.baseX - it.side * clamp01(1 - (ahead - 600) / 2600) * (Math.abs(it.baseX) - 520);
+        var ahead = c.z - it.z, k = clamp01(1 - (ahead - 700) / 1500), e = backOut(k);
+        var px = it.baseX - it.side * e * (Math.abs(it.baseX) - 520), py = it.drop ? it.baseY - (1 - e) * 900 : it.baseY;
+        var vx = dt && it.px != null ? (px - it.px) / dt : 0, vy = dt && it.py != null ? (py - it.py) / dt : 0;
+        it.px = px; it.py = py; it.x = px; it.y = py;
+        var sp = Math.min(0.5, Math.hypot(vx, vy) / 6000), horiz = Math.abs(vx) >= Math.abs(vy);
+        it.sx = horiz ? 1 + sp : 1 - sp * 0.5; it.sy = horiz ? 1 - sp * 0.5 : 1 + sp;
+        it.rz = it.baseRz - Math.sign(vx) * sp * 16;
       });
       Cine.speed = 0.25 + lunge;
       Cine.streaks = 0.3 + lunge;
@@ -1828,7 +1836,7 @@
       it.el.style.visibility = vis ? '' : 'hidden';
       if (!vis) return;
       var jx = it.shakeUntil && Cine.t < it.shakeUntil ? (Math.random() - 0.5) * 40 : 0;
-      it.el.style.transform = 'translate3d(' + (it.x + jx) + 'px,' + it.y + 'px,' + it.z + 'px) rotateY(' + it.ry + 'deg) rotateX(' + it.rx + 'deg) rotateZ(' + it.rz + 'deg) scale(' + it.s + ') translate(' + (-it.w / 2) + 'px,' + (-it.h / 2) + 'px)';
+      it.el.style.transform = 'translate3d(' + (it.x + jx) + 'px,' + it.y + 'px,' + it.z + 'px) rotateY(' + it.ry + 'deg) rotateX(' + it.rx + 'deg) rotateZ(' + it.rz + 'deg) scale(' + (it.s * (it.sx || 1)) + ',' + (it.s * (it.sy || 1)) + ') translate(' + (-it.w / 2) + 'px,' + (-it.h / 2) + 'px)';
       it.el.style.opacity = it.op < 1 ? it.op.toFixed(3) : '';
       if (it.fog) it.fog.style.opacity = clamp01((cd.d - 1800) / 5000).toFixed(3);
     });

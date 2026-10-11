@@ -2479,11 +2479,11 @@
       buildSocial(g, S, me);
     }, enter: function () { S.achWall.x = 0; S.achWall.ry = 14; S.invite.op = 0; S.profPanel.x = 300; hud(''); },
       update: function (t, lt) {
-        socialCam(socialU(S, t));
+        chessSocial(S, 'achievements', t);
         var n = S.achItems.length, on = Math.min(n, Math.floor(n * (0.5 + lt * .55)));
         S.achItems.forEach(function (it, i) { it.classList.toggle('on', i < on); });
         S.achCount.textContent = Math.min(n, on) + ' / ' + n + ' unlocked';
-        socialPanels(S, socialU(S, t));
+  
       } };
     addSocialShots(S, me);
     S.profile.pat = S.chat.pat = S.friends.pat = 6;
@@ -2661,6 +2661,43 @@
     [0.30, -100, -60, -700, 300, 80, -2600, 56], [0.40, 500, 110, -1450, 300, 80, -2600, 54], [0.48, 680, 140, -1700, 320, 80, -2600, 54],
     [0.60, -500, 30, -3600, -900, 0, -4800, 54], [0.70, -620, 40, -3800, -900, 0, -4800, 54],
     [0.80, -100, 0, -4300, 500, 30, -6300, 54], [0.88, 380, -40, -5300, 700, 40, -6600, 54], [1.00, 420, 0, -5450, 420, 0, -6000, 54]];
+  /* Chess's social section: a cut to each panel with a different kind of shot instead of one long glide. The
+     achievements wall gets a slow low push-in; the profile two quick cuts of the camera swivelling round it while its
+     theme and colour swatches cycle; the chat a sideways tracking shot as messages arrive; the friends list a crane
+     down, with the game invite sliding in beside the list (not into the lens). */
+  function panelFrame(it) {
+    var a = it.ry * D2R;
+    return { c: { x: it.x, y: it.y, z: it.z }, n: { x: Math.sin(a), y: 0, z: Math.cos(a) }, tg: { x: Math.cos(a), y: 0, z: -Math.sin(a) } };
+  }
+  function orbitCam(it, az, dist, h, fov, roll, aim) {
+    var F = panelFrame(it), a = az * D2R, nx = F.n.x * Math.cos(a) + F.tg.x * Math.sin(a), nz = F.n.z * Math.cos(a) + F.tg.z * Math.sin(a);
+    var c = Cine.cam; c.x = F.c.x + nx * dist; c.y = F.c.y + h; c.z = F.c.z + nz * dist; c.fov = fov; c.roll = roll || 0;
+    var o = aim || 0; lookAt(F.c.x + F.tg.x * o, F.c.y, F.c.z + F.tg.z * o);
+  }
+  function chessSocial(S, id, t) {
+    var t0 = shotStart(S[id].cue), t1 = shotStart(id === 'friends' ? S.modes.cue : S[{ achievements: 'profile', profile: 'chat', chat: 'friends' }[id]].cue);
+    var q = clamp01((t - t0) / (t1 - t0)), e = smooth(q);
+    S.achWall.x = 0; S.achWall.ry = 14; S.profPanel.x = 300;
+    if (id === 'achievements') orbitCam(S.achWall, lerp(-10, 4, e), lerp(1650, 1200, e), lerp(160, 60, e), 54, lerp(-2, 0, e));
+    else if (id === 'profile') {
+      if (q < 0.5) { var a = q / 0.5; orbitCam(S.profPanel, lerp(-42, -10, smooth(a)), 1050, -60, 52, 3, -120); }
+      else { var b = (q - 0.5) / 0.5; orbitCam(S.profPanel, lerp(34, 12, smooth(b)), 820, 90, 50, -4, 160); }
+      if (Math.abs(q - 0.5) < 0.02) Cine.tear = Math.max(Cine.tear, 0.5);   // a VHS kick on the cut
+    }
+    else if (id === 'chat') {
+      var F = panelFrame(S.chatPanel), off = lerp(-560, 480, e), c = Cine.cam;
+      c.x = F.c.x + F.n.x * 1080 + F.tg.x * off; c.y = F.c.y - 40; c.z = F.c.z + F.n.z * 1080 + F.tg.z * off; c.fov = 52; c.roll = -2;
+      lookAt(F.c.x + F.tg.x * off * 0.35, F.c.y, F.c.z + F.tg.z * off * 0.35);
+    }
+    else {
+      orbitCam(S.friendsPanel, lerp(-14, -4, e), lerp(1250, 1050, e), lerp(-650, -90, easeOut(q)), 54, 0, 260);
+      var G = panelFrame(S.friendsPanel), inK = easeOut(span(q, 0.45, 0.75));
+      S.invite.op = inK; S.invite.s = 0.62;
+      S.invite.x = G.c.x + G.tg.x * lerp(1500, 760, inK) + G.n.x * 60; S.invite.y = G.c.y + 120; S.invite.z = G.c.z + G.tg.z * lerp(1500, 760, inK) + G.n.z * 60;
+      S.invite.ry = S.friendsPanel.ry; S.invite.rz = (1 - inK) * 8;
+    }
+    if (id !== 'friends') S.invite.op = 0;
+  }
   function socialU(S, t) { var t0 = shotStart(S.achievements.cue), t1 = shotStart(S.modes.cue); return clamp01((t - t0) / (t1 - t0)); }
   function socialCam(u) {
     var K = SOCIAL_KEYS, i = 0;
@@ -2683,14 +2720,14 @@
   }
   function addSocialShots(S, me) {
     S.profile = { pat: 0, update: function (t) {
-      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
+      var u = socialU(S, t); chessSocial(S, 'profile', t);
       var beat = Math.floor(beatAt(t));
       S.profThemes.forEach(function (c, i) { c.classList.toggle('on', i === beat % S.profThemes.length); });
       S.profSw.forEach(function (c, i) { c.classList.toggle('on', i === (beat * 3) % S.profSw.length); });
       S.profBar.style.width = (40 + 50 * smooth(span(u, 0.32, 0.5))) + '%';
     } };
     S.chat = { pat: 0, update: function (t) {
-      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
+      var u = socialU(S, t); chessSocial(S, 'chat', t);
       // messages arrive one at a time and stay (appended, not rebuilt), the newest one popping in
       var shown = Math.max(0, Math.min(S.chatMsgs.length, Math.floor((u - 0.56) / 0.045) + 1));
       if (S.chatList.childElementCount > shown) S.chatList.textContent = '';
@@ -2703,7 +2740,7 @@
       }
     }, enter: function () { S.chatList.textContent = ''; } };
     S.friends = { pat: 0, update: function (t) {
-      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
+      var u = socialU(S, t); chessSocial(S, 'friends', t);
       var beat = Math.floor(beatAt(t) * 2);
       S.friendRows.forEach(function (r, i) { r.classList.toggle('lit', (beat + i) % 4 === 0); });
     } };

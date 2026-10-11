@@ -1721,13 +1721,14 @@
       S.achItems = items; S.achCount = count;
       S.achWall = plane(g, wall, 1900, 760, { x: 0, y: 0, z: 0, ry: 14, rx: 6, cull: false });
       buildSocial(g, S, me);
-    }, enter: function () { S.achWall.x = 0; S.achWall.ry = 14; S.invite.op = 0; S.profPanel.x = 300; hud(''); },
+      bsSocialLayout(S);
+    }, enter: function () { bsSocialReset(S); hud(''); },
     update: function (t, lt) {
-      socialCam(socialU(S, t));
+      bsSocialCam(S, t);
       var n = S.achItems.length, on = Math.min(n, Math.floor(n * (0.6 + lt * 0.4)));
       S.achItems.forEach(function (it, i) { it.classList.toggle('on', i < on); it.classList.toggle('pop', i === on - 1); });
       S.achCount.textContent = Math.min(n, on) + ' / ' + n + ' unlocked';
-      socialPanels(S, socialU(S, t));
+      bsSocialPanels(S, t);
     } };
 
     addSocialShots(S, me);
@@ -1897,6 +1898,70 @@
     [0.30, -100, -60, -700, 300, 80, -2600, 56], [0.40, 500, 110, -1450, 300, 80, -2600, 54], [0.48, 680, 140, -1700, 320, 80, -2600, 54],
     [0.60, -500, 30, -3600, -900, 0, -4800, 54], [0.70, -620, 40, -3800, -900, 0, -4800, 54],
     [0.80, -100, 0, -4300, 500, 30, -6300, 54], [0.88, 380, -40, -5300, 700, 40, -6600, 54], [1.00, 420, 0, -5450, 420, 0, -6000, 54]];
+  /* Battleships' social run: the four panels stand one behind another on a straight line, already up, and the camera
+     dollies straight down it at a steady speed. A missile streaks in from off screen and blows each panel apart just
+     before the camera would reach it, so the camera flies on through the debris to the next one (the last panel, the
+     friends list, is where the run ends). */
+  var BS_LINE = [0, -1400, -2800, -4200], BS_CAM0 = 1000, BS_CAM1 = -3450;
+  function bsPanels(S) { return [S.achWall, S.profPanel, S.chatPanel, S.friendsPanel]; }
+  function bsSocialLayout(S) {
+    bsPanels(S).forEach(function (it, i) {
+      it.x = (i % 2 ? 1 : -1) * 60; it.y = i === 0 ? -20 : 0; it.z = BS_LINE[i]; it.ry = (i % 2 ? -1 : 1) * 4; it.rx = 0; it.home = { x: it.x, y: it.y, z: it.z, ry: it.ry };
+      it.canvas = panelRaster(it, ['ACHIEVEMENTS', 'PROFILE', 'CHAT', 'FRIENDS'][i]); it.head = 0;
+    });
+    S.invite.hidden = true;
+  }
+  function bsHits(S) {   // when the camera would reach panels 0-2, less a beat for the missile (worked out once)
+    if (S.bsHits) return S.bsHits;
+    var span0 = shotStart(S.achievements.cue), span1 = shotStart(S.modes.cue);
+    return (S.bsHits = [0, 1, 2].map(function (i) {
+      var k = (BS_CAM0 - BS_LINE[i]) / (BS_CAM0 - BS_CAM1);
+      return { i: i, t: span0 + (span1 - span0) * camInv(k) - 0.55 };
+    }));
+  }
+  // the dolly: a steady glide, easing in from the shot before (cam progress k at time fraction q, and back)
+  function camK(q) { return q < 0.15 ? q * q / 0.3 : q - 0.075; }
+  function camInv(k) { var q = 0, a = 0, b = 1; for (var n = 0; n < 30; n++) { q = (a + b) / 2; if (camK(q) / camK(1) < k) a = q; else b = q; } return q; }
+  function bsSocialCam(S, t) {
+    var span0 = shotStart(S.achievements.cue), span1 = shotStart(S.modes.cue), q = clamp01((t - span0) / (span1 - span0)), k = camK(q) / camK(1);
+    var c = Cine.cam;
+    c.x = Math.sin(q * 5) * 40; c.y = -60 + Math.sin(q * 3.4) * 20; c.z = lerp(BS_CAM0, BS_CAM1, k); c.fov = 56; c.roll = Math.sin(q * 4) * 1.5;
+    lookAt(c.x * 0.3, -20, c.z - 2000);
+  }
+  function bsSocialReset(S) {
+    bsPanels(S).forEach(function (it) { var h = it.home; if (!h) return; it.hidden = false; it.op = 1; it.x = h.x; it.y = h.y; it.z = h.z; it.ry = h.ry; it.blown = false; });
+    S.invite.op = 0;
+  }
+  function bsSocialPanels(S, t) {
+    S.invite.op = 0;
+    bsHits(S).forEach(function (h) {
+      var it = bsPanels(S)[h.i];
+      if (it.blown) return;
+      if (t >= h.t + 0.4) { it.blown = true; it.hidden = true; return; }   // (started past it)
+      // the missile comes in from high on one side, out of frame until its last few hundred units
+      var m0 = h.t - 0.42, side = h.i % 2 ? 1 : -1;
+      once(S, 'bsm' + h.i, t, m0, function () {
+        var hit = { x: it.x, y: it.y, z: it.z }, from = { x: side * 1900, y: -1100, z: it.z + 900 };
+        missile(from, hit, m0, 0.42, 'hit', function () {
+          it.blown = true;
+          shatterGlass(it, hit, { x: side * -700, y: -300, z: -2200 });
+          var p = projectP(hit); if (p) { ring(p, 520 * Math.min(2, p.s)); burst(p.x, p.y, 60, [20, 35, 320, 190], 1.1); }
+          Cine.shake = Math.max(Cine.shake, 0.6); Cine.fovKick = -6; Cine.hitStop = 0.06;
+        }, 120);
+      });
+    });
+  }
+  // a quick picture of a social panel, for its shards: the card, its border and its title
+  function panelRaster(it, title) {
+    var w = 240, h = Math.max(60, Math.round(240 * it.h / it.w)), cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    var x = cv.getContext('2d');
+    x.fillStyle = 'rgba(18,8,40,0.94)'; x.fillRect(0, 0, w, h);
+    x.strokeStyle = '#c77dff'; x.lineWidth = 3; x.strokeRect(2, 2, w - 4, h - 4);
+    x.fillStyle = '#f2e6ff'; x.font = 'bold 16px "JetBrains Mono", monospace'; x.fillText(title, 14, 28);
+    x.fillStyle = 'rgba(199,125,255,0.35)';
+    for (var i = 0; i < 5; i++) x.fillRect(14, 44 + i * Math.max(8, (h - 60) / 5), w * (0.4 + 0.1 * (i % 3)), 4);
+    return cv;
+  }
   function socialU(S, t) { var t0 = shotStart(S.achievements.cue), t1 = shotStart(S.modes.cue); return clamp01((t - t0) / (t1 - t0)); }
   function socialCam(u) {
     var K = SOCIAL_KEYS, i = 0;
@@ -1919,14 +1984,14 @@
   }
   function addSocialShots(S, me) {
     S.profile = { pat: 0, update: function (t) {
-      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
+      var u = socialU(S, t); bsSocialCam(S, t); bsSocialPanels(S, t);
       var beat = Math.floor(beatAt(t));
       S.profThemes.forEach(function (c, i) { c.classList.toggle('on', i === beat % S.profThemes.length); });
       S.profSw.forEach(function (c, i) { c.classList.toggle('on', i === (beat * 3) % S.profSw.length); });
       S.profBar.style.width = (40 + 50 * smooth(span(u, 0.32, 0.5))) + '%';
     } };
     S.chat = { pat: 0, update: function (t) {
-      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
+      var u = socialU(S, t); bsSocialCam(S, t); bsSocialPanels(S, t);
       // messages arrive one at a time and stay (appended, not rebuilt), the newest one popping in
       var shown = Math.max(0, Math.min(S.chatMsgs.length, Math.floor((u - 0.56) / 0.045) + 1));
       if (S.chatList.childElementCount > shown) S.chatList.textContent = '';
@@ -1939,7 +2004,7 @@
       }
     }, enter: function () { S.chatList.textContent = ''; } };
     S.friends = { pat: 0, update: function (t) {
-      var u = socialU(S, t); socialCam(u); socialPanels(S, u);
+      var u = socialU(S, t); bsSocialCam(S, t); bsSocialPanels(S, t);
       var beat = Math.floor(beatAt(t) * 2);
       S.friendRows.forEach(function (r, i) { r.classList.toggle('lit', (beat + i) % 4 === 0); });
     } };

@@ -1079,10 +1079,12 @@
   }
 
   // An attack bolt between two world points; its head runs 0..1 over `dur` seconds from t0 (cinematic time).
-  function bolt(from, to, t0, dur, onHit) { Cine.bolts.push({ from: from, to: to, t0: t0, dur: dur, onHit: onHit, hit: false }); }
+  function bolt(from, to, t0, dur, onHit, o) { Cine.bolts.push({ from: from, to: to, t0: t0, dur: dur, onHit: onHit, hit: false, arc: o && o.arc, ease: o && o.ease }); }
 
+  // b.arc: how high it bows (default 260); b.ease: its pace along the way (default steady)
   function boltHead(b, k) {
-    return { x: lerp(b.from.x, b.to.x, k), y: lerp(b.from.y, b.to.y, k) - Math.sin(k * Math.PI) * 260, z: lerp(b.from.z, b.to.z, k) };
+    var e = b.ease ? b.ease(k) : k, arc = b.arc == null ? 260 : b.arc;
+    return { x: lerp(b.from.x, b.to.x, e), y: lerp(b.from.y, b.to.y, e) - Math.sin(e * Math.PI) * arc, z: lerp(b.from.z, b.to.z, e) };
   }
 
   function drawBolts(ctx, t) {
@@ -2170,14 +2172,19 @@
         return { x: lerp(from.x, to.x, k2), y: lerp(from.y, to.y, k2), z: lerp(from.z, to.z, k2) };
       }
       for (var i = 0; i < pts.length - 1; i++) {
-        var a = pts[i], b = pts[i + 1];
+        var a = pts[i], b = pts[i + 1], dep = a.t + (i ? HOP_REST : 0);
         if (t <= b.t || i === pts.length - 2) {
-          var k = clamp01((t - a.t) / (b.t - a.t)), e = k * 0.75 + k * k * (3 - 2 * k) * 0.25;
-          return { x: lerp(a.p.x, b.p.x, e), y: lerp(a.p.y, b.p.y, e) - Math.sin(k * Math.PI) * (i === 0 ? 40 : 150), z: lerp(a.p.z, b.p.z, e) };
+          if (t < dep) return a.p;                                     // resting on the button it just smashed
+          return boltHead({ from: a.p, to: b.p, arc: hopArc(a.p, b.p), ease: hopEase }, clamp01((t - dep) / (b.t - dep)));
         }
       }
       return pts[pts.length - 1].p;
     }
+    // a hop between boxes: a short rest on the button, a bow in proportion to the distance, quick off the mark and
+    // settling into the landing (the camera rides the same curve as the bolt)
+    var HOP_REST = 0.14;
+    function hopEase(k) { return 1 - Math.pow(1 - k, 2.2) * (1 - 0.35 * k); }
+    function hopArc(a, b) { return Math.min(320, 0.3 * Math.hypot(b.x - a.x, b.z - a.z)); }
     // the camera along the whole run: chasing the ball, then the rush at the king, then a slow creep
     function runCam(t) {
       var H = S.orbHits, lastT = H[H.length - 1].t;
@@ -2214,7 +2221,13 @@
       b.x = o.x; b.y = o.y; b.z = o.z; b.ry = -Cine.cam.yaw; b.rz = t * 360;
       b.op = 0;   // the "ball" is the move effect itself: the bolt, sparks and petals (moveFx)
       var H = S.orbHits, hops = [{ t: 30.05, p: { x: 0, y: -380, z: 5250 } }].concat(H.map(function (h) { return { t: h.t, p: h.p }; }));
-      hops.forEach(function (a, i) { var nx = hops[i + 1]; if (nx) once(S, 'bolt' + i, t, a.t, function () { bolt(a.p, nx.p, a.t, nx.t - a.t); }); });
+      hops.forEach(function (a, i) {
+        var nx = hops[i + 1], dep = a.t + (i ? HOP_REST : 0);
+        if (nx) once(S, 'bolt' + i, t, dep, function () {
+          var pa = projectP(a.p); if (pa && i) burst(pa.x, pa.y, qn(10), [190, 320], 0.4);   // a kick off the button
+          bolt(a.p, nx.p, dep, nx.t - dep, null, { arc: hopArc(a.p, nx.p), ease: hopEase });
+        });
+      });
       once(S, 'boltIn', t, 38.75, function () { var cam = runCam(38.75); bolt({ x: cam.x + 120, y: cam.y - 60, z: cam.z + 420 }, { x: 0, y: -330, z: MATE_BOX_Z }, 38.75, 0.33); });
       once(S, 'boltKing', t, 39.08, function () { bolt({ x: 0, y: -330, z: MATE_BOX_Z }, { x: 0, y: -300, z: -760 }, 39.08, 0.06); });
       b.s = 1 + 0.4 * Math.max(0, 1 - Math.min.apply(null, S.orbHits.map(function (h) { return Math.abs(t - h.t); })) / 0.1);

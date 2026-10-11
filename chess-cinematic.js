@@ -1128,11 +1128,11 @@
     var src = item.canvas, copy = document.createElement('canvas');
     copy.width = src.width; copy.height = src.height;
     copy.getContext('2d').drawImage(src, 0, 0);
-    var cols = 16, rows = 10, tw = src.width / cols, th = src.height / rows, s = p.s * item.s;
+    var cols = 16, rows = 10, tw = src.width / cols, th = src.height / rows, s = p.s * item.s, kx = item.w / src.width, ky = (item.h - item.head) / src.height;
     var left = p.x - (item.w / 2) * s, top = p.y - (item.h / 2 - item.head) * s;
     for (var r = 0; r < rows; r++) for (var c = 0; c < cols; c++) {
-      var cx = left + (c + 0.5) * tw * s, cy = top + (r + 0.5) * th * s;
-      Cine.frags.push({ img: copy, sx: c * tw, sy: r * th, sw: tw, sh: th, x: cx, y: cy, w: tw * s, h: th * s,
+      var cx = left + (c + 0.5) * tw * kx * s, cy = top + (r + 0.5) * th * ky * s;
+      Cine.frags.push({ img: copy, sx: c * tw, sy: r * th, sw: tw, sh: th, x: cx, y: cy, w: tw * kx * s, h: th * ky * s,
         vx: (cx - p.x) * rand(0.6, 1.8), vy: (cy - p.y) * rand(0.6, 1.8) - 60, spin: rand(-4, 4), a: 0, age: 0, life: rand(0.9, 1.6) });
     }
     item.hidden = true;
@@ -2015,6 +2015,7 @@
     x.fillStyle = '#251e31'; x.fillRect(180, 76, 40, 8); x.fillStyle = '#fbf4f4'; x.font = 'bold 9px "JetBrains Mono", monospace'; x.textAlign = 'center'; x.fillText('OK', 200, 80);
     var it = plane(g, cv, 720, 300, o);
     it.canvas = cv; it.head = 0;
+    it.pristine = document.createElement('canvas'); it.pristine.width = cv.width; it.pristine.height = cv.height; it.pristine.getContext('2d').drawImage(cv, 0, 0);   // (resetAlert undoes the red)
     return it;
   }
 
@@ -2049,7 +2050,7 @@
     }
     var it = plane(g, cv, 40, 40, o); it.canvas = cv; return it;
   }
-  function resetAlert(it) { it.broken = false; it.hidden = false; it.op = 0; }
+  function resetAlert(it) { it.broken = false; it.hidden = false; it.op = 0; it.elimAt = null; it.shattered = false; if (it.el) it.el.style.filter = ''; if (it.pristine) { var x = it.canvas.getContext('2d'); x.clearRect(0, 0, it.canvas.width, it.canvas.height); x.drawImage(it.pristine, 0, 0); } }
 
   // The chess logo as a cut-out in the world (the ending): the same pink-and-cyan pixel lettering as the film's
   // logo, on a tight canvas so its letters' width is known (textFrac) and can be matched to the page title.
@@ -2196,20 +2197,35 @@
       c.roll = Math.sin(t * 1.1 + 0.6) * 3 * (1 - span(t, 36, 37.9));
       lookAt(r.tx, r.ty, r.tz);
     }
+    // Tetris's elimination, on a dialogue box: it lights up red (outline and glow), the picture tears and splits, and a
+    // moment later it breaks into pixel fragments that tumble away (shatter)
+    function eliminateBox(it, t) {
+      if (it.broken) return;
+      it.broken = true; it.elimAt = t; it.shattered = false;
+      var x = it.canvas.getContext('2d'), w = it.canvas.width, h = it.canvas.height;
+      x.save(); x.fillStyle = 'rgba(255,20,90,0.22)'; x.fillRect(0, 0, w, h);
+      x.strokeStyle = '#ff2f6e'; x.lineWidth = 6; x.strokeRect(3, 3, w - 6, h - 6); x.restore();
+      it.el.style.filter = 'drop-shadow(0 0 18px rgba(255,20,90,0.9))';
+      Cine.flash = Math.max(Cine.flash, 0.45); Cine.tear = Math.max(Cine.tear, 1.4); Cine.aberration = 1; Cine.vhs = 1; Cine.fovKick = -6; Cine.hitStop = 0.06;
+    }
     // the ball, its trail and its hits, every frame of the run
     function runBall(t, dt) {
       var o = orbAt(t), b = S.orb, lastT = S.orbHits[S.orbHits.length - 1].t;
       b.x = o.x; b.y = o.y; b.z = o.z; b.ry = -Cine.cam.yaw; b.rz = t * 360;
-      b.op = t < 30.05 ? 0 : t < lastT + 0.7 ? 1 : t < 38.75 ? 0 : t < 39.12 ? 1 : 0;
+      b.op = 0;   // the "ball" is the move effect itself: the bolt, sparks and petals (moveFx)
+      var H = S.orbHits, hops = [{ t: 30.05, p: { x: 0, y: -380, z: 5250 } }].concat(H.map(function (h) { return { t: h.t, p: h.p }; }));
+      hops.forEach(function (a, i) { var nx = hops[i + 1]; if (nx) once(S, 'bolt' + i, t, a.t, function () { bolt(a.p, nx.p, a.t, nx.t - a.t); }); });
+      once(S, 'boltIn', t, 38.75, function () { var cam = runCam(38.75); bolt({ x: cam.x + 120, y: cam.y - 60, z: cam.z + 420 }, { x: 0, y: -330, z: MATE_BOX_Z }, 38.75, 0.33); });
+      once(S, 'boltKing', t, 39.08, function () { bolt({ x: 0, y: -330, z: MATE_BOX_Z }, { x: 0, y: -300, z: -760 }, 39.08, 0.06); });
       b.s = 1 + 0.4 * Math.max(0, 1 - Math.min.apply(null, S.orbHits.map(function (h) { return Math.abs(t - h.t); })) / 0.1);
-      var p = b.op > 0 && projectP(o);
-      if (p && S.orbLast && dt) emitFlame(p.x, p.y, Math.max(3, 9 * p.s), (p.x - S.orbLast.x) / dt, (p.y - S.orbLast.y) / dt, 3);   // Pong's trail
-      S.orbLast = p || null;
+      var live = (t > 30.05 && t < lastT) || (t > 38.75 && t < 39.12), p = live && projectP(o);
+      if (p && Math.random() < 0.6) burst(p.x, p.y, 2, [320, 190, 285], 0.35);
+      S.checkAlerts.concat([S.mateAlert]).forEach(function (it) { if (it.elimAt != null && !it.shattered && t >= it.elimAt + 0.22) { it.shattered = true; shatter(it); Cine.shake = Math.max(Cine.shake, 0.6); } });
       S.orbHits.forEach(function (h, i) {
         if (t >= h.t + 0.4 && !h.it.broken) { h.it.broken = true; h.it.hidden = true; }   // (started past it)
         once(S, 'orb' + i, t, h.t, function () {
-          var pp = projectP(h.p); if (pp) { ring(pp, 260 * Math.min(2, pp.s)); burst(pp.x, pp.y, qn(30), [320, 190, 285], 0.7); }
-          h.it.broken = true; shatter(h.it);   // Tetris's pixel break
+          var pp = projectP(h.p); if (pp) { ring(pp, 220 * Math.min(2, pp.s)); burst(pp.x, pp.y, qn(28), [320, 190, 285], 0.6); } petals(h.p, 14);
+          eliminateBox(h.it, t);
           Cine.shake = Math.max(Cine.shake, 0.45); Cine.vhs = 1; Cine.fovKick = -6; Cine.hitStop = 0.06;
         });
       });
@@ -2462,7 +2478,7 @@
         // the Checkmate? box pops up between the camera and the king, centred, a beat after he's in focus; the ball smashes it
         var M = S.mateAlert, pk = clamp01((t - 38.45) / 0.3);
         if (!M.broken) { M.op = t >= 38.45 ? 1 : 0; M.s = 0.46 * (pk < 1 ? 0.6 + 0.4 * (1 + 2.9 * Math.pow(pk - 1, 3) + 1.9 * Math.pow(pk - 1, 2)) : 1); M.ry = -Cine.cam.yaw; M.rz = 0; }
-        once(S, 'mateBox', t, 39.08, function () { M.broken = true; shatter(M); Cine.shake = Math.max(Cine.shake, .6); Cine.vhs = 1; });
+        once(S, 'mateBox', t, 39.08, function () { eliminateBox(M, t); });
         if (t >= 39.5 && !M.broken) { M.broken = true; M.hidden = true; }
         var K = S.statues[2], KF = 23 * 4 * K.s, a = 0;           // KF: centre to the piece's foot (canvas row 63)
         K.holo.hit = t < 39.1 ? 0 : Math.max(0, 1 - (t - 39.1) / 0.9);

@@ -2047,7 +2047,7 @@
       x.fillStyle = d > 10.2 ? 'rgba(94,240,255,0.55)' : d > 8.6 ? '#ff71ce' : hl < 3 ? '#ffffff' : d > 6 ? '#ff9ad8' : '#ffe0f2';
       x.fillRect(c, y, 1, 1);
     }
-    var it = plane(g, cv, 72, 72, o); it.canvas = cv; return it;
+    var it = plane(g, cv, 40, 40, o); it.canvas = cv; return it;
   }
   function resetAlert(it) { it.broken = false; it.hidden = false; it.op = 0; }
 
@@ -2149,20 +2149,72 @@
       }
       if (q >= 1) { if (sl.ghost && sl.ghost.parentNode) sl.ghost.parentNode.removeChild(sl.ghost); sl.el.style.zIndex = ''; S.slide = null; }
     }
-    // the orb's flight: in from ahead of the camera, a hop from OK button to OK button, then on down to the king
+    /* The check run and the checkmate are one unbroken move. The ball (small, fast, with Pong's flame trail) hops from
+       OK button to OK button down a long straight run, each Check. box bursting into pixel fragments as it lands; the
+       camera chases it. Past the last box the ball loops up and back over the camera, and the camera rushes on at the
+       king (the field of view opening with the speed), slowing as the king comes into focus. A Checkmate? box pops up
+       between them; the ball comes back in from behind the camera, smashes the box and strikes the king (39.1 s, the
+       mating move), and the king falls with no cut until the social section. */
     function orbAt(t) {
       var H = S.orbHits;
       H.forEach(function (h) { if (!h.p) h.p = toWorld(h.it, 200 * 3, 80 * 3); });   // the OK button (canvas 200, 80; 3x)
-      var pts = [{ t: 30.05, p: { x: 0, y: -380, z: 2350 } }].concat(H.map(function (h) { return { t: h.t, p: h.p }; }), [{ t: 37.95, p: { x: 0, y: -300, z: -620 } }]);
+      var last = H[H.length - 1];
+      var pts = [{ t: 30.05, p: { x: 0, y: -380, z: 5250 } }].concat(H.map(function (h) { return { t: h.t, p: h.p }; }),
+        [{ t: last.t + 0.9, p: { x: 260, y: -1500, z: last.p.z + 1900 } }]);
+      if (t >= 38.75) {   // back in from behind the camera, through the box, into the king
+        var cam = runCam(38.75), k2 = clamp01((t - 38.75) / 0.37), from = { x: cam.x + 120, y: cam.y - 60, z: cam.z + 420 };
+        var to = t < 39.08 ? { x: 0, y: -330, z: MATE_BOX_Z } : { x: 0, y: -330, z: -760 };
+        if (t >= 39.08) { from = { x: 0, y: -330, z: MATE_BOX_Z }; k2 = clamp01((t - 39.08) / 0.05); }
+        else k2 = clamp01((t - 38.75) / 0.33);
+        return { x: lerp(from.x, to.x, k2), y: lerp(from.y, to.y, k2), z: lerp(from.z, to.z, k2) };
+      }
       for (var i = 0; i < pts.length - 1; i++) {
         var a = pts[i], b = pts[i + 1];
         if (t <= b.t || i === pts.length - 2) {
-          var k = clamp01((t - a.t) / (b.t - a.t)), e = k * k * (3 - 2 * k) * 0.35 + k * 0.65;
-          return { x: lerp(a.p.x, b.p.x, e), y: lerp(a.p.y, b.p.y, e) - Math.sin(k * Math.PI) * (i === 0 ? 60 : 170), z: lerp(a.p.z, b.p.z, e) };
+          var k = clamp01((t - a.t) / (b.t - a.t)), e = k * 0.75 + k * k * (3 - 2 * k) * 0.25;
+          return { x: lerp(a.p.x, b.p.x, e), y: lerp(a.p.y, b.p.y, e) - Math.sin(k * Math.PI) * (i === 0 ? 40 : 150), z: lerp(a.p.z, b.p.z, e) };
         }
       }
       return pts[pts.length - 1].p;
     }
+    // the camera along the whole run: chasing the ball, then the rush at the king, then a slow creep
+    function runCam(t) {
+      var H = S.orbHits, lastT = H[H.length - 1].t;
+      var o = orbAt(Math.min(t, lastT + 0.15));
+      var chase = { x: o.x * 0.5, y: o.y - 90, z: o.z + 560, tx: o.x * 0.7, ty: o.y + 10, tz: o.z - 300 };
+      var stop = { x: 60, y: -360, z: MATE_BOX_Z + 520 }, creep = { x: 30, y: -350, z: MATE_BOX_Z + 450 };
+      var k = smooth(span(t, lastT + 0.1, 37.9)), slow = smooth(span(t, 37.9, 43));
+      var r = { x: lerp(chase.x, lerp(stop.x, creep.x, slow), k), y: lerp(chase.y, lerp(stop.y, creep.y, slow), k), z: lerp(chase.z, lerp(stop.z, creep.z, slow), k),
+        tx: lerp(chase.tx, 0, k), ty: lerp(chase.ty, -320, k), tz: lerp(chase.tz, -760, k) };
+      var rushV = Math.sin(clamp01(span(t, lastT + 0.1, 37.9)) * Math.PI);   // how fast the rush is going
+      r.fov = 52 + 24 * rushV - 6 * k;
+      return r;
+    }
+    function applyRun(t, lt) {
+      var r = runCam(t), c = Cine.cam;
+      c.x = r.x + Math.sin(t * 1.1) * 30 * (1 - span(t, 36, 37.9)); c.y = r.y; c.z = r.z; c.fov = r.fov;
+      c.roll = Math.sin(t * 1.1 + 0.6) * 3 * (1 - span(t, 36, 37.9));
+      lookAt(r.tx, r.ty, r.tz);
+    }
+    // the ball, its trail and its hits, every frame of the run
+    function runBall(t, dt) {
+      var o = orbAt(t), b = S.orb, lastT = S.orbHits[S.orbHits.length - 1].t;
+      b.x = o.x; b.y = o.y; b.z = o.z; b.ry = -Cine.cam.yaw; b.rz = t * 360;
+      b.op = t < 30.05 ? 0 : t < lastT + 0.7 ? 1 : t < 38.75 ? 0 : t < 39.12 ? 1 : 0;
+      b.s = 1 + 0.4 * Math.max(0, 1 - Math.min.apply(null, S.orbHits.map(function (h) { return Math.abs(t - h.t); })) / 0.1);
+      var p = b.op > 0 && projectP(o);
+      if (p && S.orbLast && dt) emitFlame(p.x, p.y, Math.max(3, 9 * p.s), (p.x - S.orbLast.x) / dt, (p.y - S.orbLast.y) / dt, 3);   // Pong's trail
+      S.orbLast = p || null;
+      S.orbHits.forEach(function (h, i) {
+        if (t >= h.t + 0.4 && !h.it.broken) { h.it.broken = true; h.it.hidden = true; }   // (started past it)
+        once(S, 'orb' + i, t, h.t, function () {
+          var pp = projectP(h.p); if (pp) { ring(pp, 260 * Math.min(2, pp.s)); burst(pp.x, pp.y, qn(30), [320, 190, 285], 0.7); }
+          h.it.broken = true; shatter(h.it);   // Tetris's pixel break
+          Cine.shake = Math.max(Cine.shake, 0.45); Cine.vhs = 1; Cine.fovKick = -6; Cine.hitStop = 0.06;
+        });
+      });
+    }
+    var RUN_Z = [4700, 4000, 3300, 2600, 1900], MATE_BOX_Z = -120;
     function faceStatues() {
       slideTick(Cine.t);
       S.statues.forEach(function (it) { it.ry = -Cine.cam.yaw; });
@@ -2334,14 +2386,11 @@
         return plane(g, tile, 150, 150, { x: -470 + i * 105, y: 0, z: -950 - i * 145, rx: 90, rz: 0, op: 0, cull: false });
       });
       // a cascade of the same alert, each a step down and right of the last, like a window dragged on an old Mac
-      S.checkAlerts = [2450, 2130, 1810, 1490, 1170].map(   // along the run, one about every 1.4 s
-        function (z, i) { return macAlert(g, 'Check.', { x: (2900 - z) / 1900 * 700 + (i % 2 ? 1 : -1) * 50, y: -420 + i * 6, z: z, rz: (i % 2 ? 1 : -1) * 4, s: .55, op: 0, cull: false }); });
-      S.orb = orbPlane(g, { x: 0, y: -400, z: 2700, op: 0, cull: false });
-      S.orbHits = S.checkAlerts.map(function (it) {
-        var e = (2900 - it.z) / 1900, q = (1.15 - Math.sqrt(1.3225 - 0.6 * e)) / 0.3;   // the run's camera reaches this z at 30 + 8q
-        return { it: it, t: 30 + 8 * q - 1.5 };
-      });
-      S.mateAlert = macAlert(g, 'Checkmate.', { x: 385, y: -355, z: 430, s: .6, op: 0, cull: false });
+      S.checkAlerts = RUN_Z.map(   // a long straight run at the king, a box every 700 units
+        function (z, i) { return macAlert(g, 'Check.', { x: (i % 2 ? 1 : -1) * 90, y: -430 + (i % 2) * 30, z: z, rz: (i % 2 ? 1 : -1) * 4, s: .55, op: 0, cull: false }); });
+      S.orb = orbPlane(g, { x: 0, y: -400, z: 5200, op: 0, cull: false });
+      S.orbHits = S.checkAlerts.map(function (it, i) { return { it: it, t: 30.7 + i * 1.25 }; });
+      S.mateAlert = macAlert(g, 'Checkmate?', { x: 0, y: -330, z: MATE_BOX_Z, s: .46, op: 0, cull: false });
       S.captureAlert.baseS = .5; S.mateAlert.baseS = .6; S.checkAlerts.forEach(function (it) { it.baseS = .55; });
     }, enter: function () { var Qn = S.statues[1]; Qn.holo.hit = 0; Qn.holo.off = 0; var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.rz = 0; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; S.kingPad.op = 0; S.crown.op = 0; S.boardFrame = -1; S.board.op = 0; S.statues.forEach(function (it) { it.hidden = false; it.op = 0; }); S.props.forEach(function (it) { it.op = 0; }); S.afterimages.forEach(function (it) { it.op = 0; }); resetAlert(S.captureAlert); S.checkAlerts.forEach(resetAlert); resetAlert(S.mateAlert); hideLogo(); },
       update: function (t, lt) {
@@ -2391,53 +2440,30 @@
         S.statues[1].op = 0;   // (the queen was taken)
         // a run at the king through a corridor of Check. alerts, bursting through each, weaving a little, handing straight
         // on to the checkmate shot's opening move
-        path([{ t: 0, x: 0, y: -430, z: 2900, tx: 0, ty: -260, tz: -760, fov: 50 },
-          { t: 8, x: 700, y: -420, z: 1000, tx: 0, ty: -280, tz: -760, fov: 48, e: function (q) { return q * (1.15 - 0.15 * q); } }], lt);
-        Cine.cam.x += Math.sin(lt * 1.1) * 90 * (1 - span(lt, 6, 8)); Cine.cam.roll = Math.sin(lt * 1.1 + 0.6) * 4 * (1 - span(lt, 6.5, 8));
-        lookAt(0, -280, -760);
         // Ke7: the king flinches a step forward at 34 s
         var K = S.statues[2], fl = clamp01((t - 34) / 0.45);
         K.y = -290 - Math.sin(fl * Math.PI) * 60; K.rz = Math.sin(fl * Math.PI) * 6;
         once(S, 'ke7', t, 34, function () { K.holo.hit = 0.6; Cine.vhs = Math.max(Cine.vhs, 0.6); });
         K.holo.hit = Math.max(0, (K.holo.hit || 0) - dt * 1.2);
         once(S, 'chk', t, 30.5, function () { caption('CHECK', 'Bxf7+ · THE F1 BISHOP STRIKES'); Cine.vhs = 1; });
-        kick(dt);
-        var o = orbAt(t);
-        S.orb.x = o.x; S.orb.y = o.y; S.orb.z = o.z; S.orb.ry = -Cine.cam.yaw; S.orb.rz = t * 240;
-        S.orb.op = smooth(span(t, 30.05, 30.35)) * (1 - smooth(span(t, 37.6, 37.95)));
-        S.orb.s = 1 + 0.35 * Math.max(0, 1 - Math.min.apply(null, S.orbHits.map(function (h) { return Math.abs(t - h.t); })) / 0.12);
-        // the camera chases the orb (a little behind and above it, along the run), then settles onto the run's last
-        // pose for the checkmate shot
-        var c = Cine.cam, rd = { x: 700 / 2024, z: -1900 / 2024 }, back = 520, hand = smooth(span(t, 36.6, 38));
-        var fx = o.x - rd.x * back + Math.sin(lt * 1.1) * 40, fy = o.y - 100, fz = o.z - rd.z * back;
-        c.x = lerp(fx, c.x, hand); c.y = lerp(fy, c.y, hand); c.z = lerp(fz, c.z, hand);
-        lookAt(lerp(o.x + rd.x * 220, 0, hand), lerp(o.y + 10, -280, hand), lerp(o.z + rd.z * 220, -760, hand));
-        if (S.orb.op > 0.2 && Math.random() < 0.7) { var op2 = projectP(o); if (op2) burst(op2.x, op2.y, 2, [320, 190], 0.3); }
-        S.orbHits.forEach(function (h, i) {
-          if (t >= h.t + 0.4 && !h.it.broken) { h.it.broken = true; h.it.op = 0; }   // (started past it)
-          once(S, 'orb' + i, t, h.t, function () {
-            var pp = projectP(h.p); if (pp) { ring(pp, 300 * Math.min(2, pp.s)); burst(pp.x, pp.y, qn(36), [320, 190, 285], 0.8); }
-            var ya = Cine.cam.yaw * D2R;
-            breakAlert(h.it, { x: Math.sin(ya) * 1400 + (i % 2 ? -300 : 300), y: -260, z: -Math.cos(ya) * 1400 });
-            Cine.shake = Math.max(Cine.shake, 0.5); Cine.vhs = 1; Cine.fovKick = -7; Cine.hitStop = 0.08;
-          });
-        });
-        S.checkAlerts.forEach(function (it) { flyAlert(it, t, true); });
-        Cine.speed = 0.25; Cine.streaks = 0.3;
+        applyRun(t, lt); kick(dt); runBall(t, dt);
+        S.checkAlerts.forEach(function (it) { if (!it.broken) { it.ry = -Cine.cam.yaw; it.op = clamp01((it.z - Cine.cam.z + 3400) / 900); } });
+        Cine.speed = 0.25 + 0.5 * Math.sin(clamp01(span(t, 35.8, 37.9)) * Math.PI); Cine.streaks = Cine.speed;
         faceStatues();
         hud('CHECK', 'THE KING IS EXPOSED');
       } };
 
-    S.mate = { pat: 5, enter: function () { S.orb.op = 0; var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; K.holo.frame = -1; S.kingPad.op = 0; S.boardFrame = -1; S.board.op = 1; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 || i === 1 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.checkAlerts.forEach(function (it) { it.op = 0; }); resetAlert(S.mateAlert); S.statues[2].rz = 0; },
+    S.mate = { pat: 5, enter: function () { S.orbLast = null; var K = S.statues[2]; K.x = 0; K.y = -290; K.z = -760; K.holo.hit = 0; K.holo.off = 0; K.holo.noPad = false; K.holo.frame = -1; S.kingPad.op = 0; S.boardFrame = -1; S.board.op = 1; S.statues.forEach(function (it, i) { it.hidden = false; it.op = i === 3 || i === 1 ? 0 : 1; }); S.props.forEach(function (it) { it.op = 1; }); S.afterimages.forEach(function (it) { it.op = 0; }); S.checkAlerts.forEach(function (it) { it.op = 0; }); resetAlert(S.mateAlert); S.statues[2].rz = 0; },
       update: function (t, lt, u, dt) {
         boardAt(t);
-        // hit-stop: the camera all but stops for a quarter second on the blow, then carries on
-        var hs = lt < 1.1 ? lt : lt < 1.35 ? 1.1 + (lt - 1.1) * 0.12 : lt - 0.22;
-        path([{ t: 0, x: 700, y: -420, z: 1000, tx: 0, ty: -280, tz: -760, fov: 48 },
-          { t: 1.1, x: 360, y: -350, z: 380, tx: 0, ty: -250, tz: -760, fov: 54, e: function (q) { return q * (0.45 + 0.55 * q); } },   // through Checkmate. on the mating move
-          { t: 4.9, x: 120, y: -270, z: 100, tx: -180, ty: -140, tz: -760, fov: 62, roll: -5, e: easeOut }], hs);
-        kick(dt);
-        flyAlert(S.mateAlert, t, true);
+        applyRun(t, lt);
+        if (t >= 38.75 && t < 39.1) Cine.cam.fov += 12 * Math.sin(clamp01((t - 38.75) / 0.35) * Math.PI);   // the ball rushes past the lens
+        kick(dt); runBall(t, dt);
+        // the Checkmate? box pops up between the camera and the king, centred, a beat after he's in focus; the ball smashes it
+        var M = S.mateAlert, pk = clamp01((t - 38.45) / 0.3);
+        if (!M.broken) { M.op = t >= 38.45 ? 1 : 0; M.s = 0.46 * (pk < 1 ? 0.6 + 0.4 * (1 + 2.9 * Math.pow(pk - 1, 3) + 1.9 * Math.pow(pk - 1, 2)) : 1); M.ry = -Cine.cam.yaw; M.rz = 0; }
+        once(S, 'mateBox', t, 39.08, function () { M.broken = true; shatter(M); Cine.shake = Math.max(Cine.shake, .6); Cine.vhs = 1; });
+        if (t >= 39.5 && !M.broken) { M.broken = true; M.hidden = true; }
         var K = S.statues[2], KF = 23 * 4 * K.s, a = 0;           // KF: centre to the piece's foot (canvas row 63)
         K.holo.hit = t < 39.1 ? 0 : Math.max(0, 1 - (t - 39.1) / 0.9);
         K.holo.noPad = t >= 39.1; S.kingPad.op = t >= 39.1 ? 1 : 0; S.kingPad.ry = -Cine.cam.yaw;

@@ -2068,9 +2068,12 @@
      Frame loop
      ================================================================= */
 
-  // The letterbox: on a landscape screen the picture is a 32:9 band, the bars sliding in at the start and away for the
-  // hand-over to the menu; a portrait phone only gets thin bars (a 32:9 band there would be a sliver).
-  function bandHeight() { var vw = innerWidth, vh = innerHeight; return vw >= vh ? Math.min(vh, vw * 9 / 32) : vh * 0.88; }
+  // The letterbox, the bars sliding in at the start and away for the hand-over to the menu: a 32:9 band on a desktop
+  // screen, 21:9 on a phone (portrait or landscape) or any narrow screen.
+  function bandHeight() {
+    var vw = innerWidth, vh = innerHeight, phone = vh > vw || vw < 900 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    return Math.min(vh, vw * 9 / (phone ? 21 : 32));
+  }
   function bars(t) {
     var k = smooth(span(t, 0.1, 1.0)) * (1 - smooth(span(t, CUES.end - 1.4, CUES.end - 0.3))), h = (innerHeight - bandHeight()) / 2 * k;
     Cine.barTop.style.height = Cine.barBot.style.height = h.toFixed(1) + 'px';

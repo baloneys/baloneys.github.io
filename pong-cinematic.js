@@ -1626,6 +1626,12 @@
       // the board that breaks: bigger, red, centred at the end of the line, square on to the ball
       S.PE = courtPlane(g, makeCourt({ seed: 77, speed: 1.3, names: ['Gridlock', 'Vex'] }),
         { x: 0, y: 120 - NP * 250 - 150, z: -1400 - NP * 1300 - 700, s: 1.3, color: '#ff2f6e' });
+      // turn the first court so the side the ball leaves by faces the first board of the run: the ball then flies
+      // straight on from the point to that board, instead of changing direction in mid-air
+      var e0 = onFace(S.surf[0], S.surf[0].entryL.x, S.surf[0].entryL.y);
+      S.A.ry = Math.atan2(-e0.z, e0.x) / D2R;
+      S.exitW = toWorld(S.A, CW + 12, HEAD + CH * 0.5);
+      S.exitDir = (function () { var dx = e0.x - S.exitW.x, dz = e0.z - S.exitW.z, l = Math.hypot(dx, dz) || 1; return { x: dx / l, z: dz / l }; })();
       S.journey = buildJourney();
       S.A.bakeEnd = 23.2;   // from here the rally's last ball is steered live onto the point
       S.A.bakeInit = function (c) { var st = c.state; st.ball.x = 140; st.ball.y = CH * 0.45; st.ball.dx = Math.abs(st.ball.dx || 500); st.serveTimer = 0; };
@@ -1685,7 +1691,7 @@
     // the whole journey as hero segments (deterministic, so the film can start part way through)
     function buildJourney() {
       var segs = [], P = S.surf;
-      var hop = add3(S.exitW, { x: 260, y: -330, z: -60 });
+      var hop = add3(S.exitW, { x: S.exitDir.x * 280, y: -330, z: S.exitDir.z * 280 });   // up and on, towards the first board
       segs.push({ kind: 'hop', t0: T_POINT, t1: 25.0, from: S.exitW, to: hop, ease: easeOut });
       var prev = hop, prevT = 25.0;
       P.forEach(function (it, i) {
@@ -2193,11 +2199,15 @@
      Frame loop
      ================================================================= */
 
+  // smooth shake noise in [-1, 1]: three incommensurate sines (25 Hz or so), so it looks random but has no frame steps
+  function shakeN(t, k) { return Math.sin(t * 61 + k * 1.7) * 0.5 + Math.sin(t * 37.3 + k * 4.1) * 0.3 + Math.sin(t * 97.1 + k * 0.6) * 0.2; }
   function applyCamera() {
     var c = Cine.cam, vw = innerWidth, vh = innerHeight;
     var safeH = Math.min(vh, vw * 9 / 16), P = (safeH / 2) / Math.tan(c.fov * D2R / 2);
     var sx = 0, sy = 0, sr = 0;
-    if (Cine.shake > 0.01) { sx = (Math.random() - 0.5) * 28 * Cine.shake; sy = (Math.random() - 0.5) * 28 * Cine.shake; sr = (Math.random() - 0.5) * 1.6 * Cine.shake; }
+    // shake from smooth noise in time, not a fresh random offset every frame (at a high refresh rate per-frame jumps
+    // read as a doubled, ghosted picture; at a low one as jerks): the same shake at any frame rate
+    if (Cine.shake > 0.01) { var T = Cine.t; sx = shakeN(T, 1) * 14 * Cine.shake; sy = shakeN(T, 2) * 14 * Cine.shake; sr = shakeN(T, 3) * 0.8 * Cine.shake; }
     Cine.shakeX = sx; Cine.shakeY = sy; Cine.shakeR = sr;
     Cine.view.style.perspective = P.toFixed(1) + 'px';
     Cine.world.style.transform = 'translate3d(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px,' + P.toFixed(1) + 'px) rotateZ(' + (c.roll + sr).toFixed(2) + 'deg) rotateX(' +
@@ -2216,7 +2226,7 @@
       it.visible = vis;
       it.el.style.visibility = vis ? '' : 'hidden';
       if (!vis) return;
-      var jx = it.shakeUntil && Cine.t < it.shakeUntil ? (Math.random() - 0.5) * 40 : 0;
+      var jx = it.shakeUntil && Cine.t < it.shakeUntil ? shakeN(Cine.t * 1.3, 7) * 20 : 0;
       it.el.style.transform = 'translate3d(' + (it.x + jx) + 'px,' + it.y + 'px,' + it.z + 'px) rotateY(' + it.ry + 'deg) rotateX(' + it.rx + 'deg) rotateZ(' + it.rz + 'deg) scale(' + it.s + ') translate(' + (-it.w / 2) + 'px,' + (-it.h / 2) + 'px)';
       it.el.style.opacity = it.op < 1 ? it.op.toFixed(3) : '';
       if (it.fog) it.fog.style.opacity = clamp01((cd.d - 1800) / 5000).toFixed(3);
@@ -2287,8 +2297,8 @@
     // VHS: the chromatic split and tearing grow with hits and speed; a calm floor of it is always there
     // (the last shot settles: no split while the live menu fades in, which also keeps that hand-over smooth)
     // (two full-screen drop-shadows are costly, so the split is only on during hits and fast moves, never idling)
-    var ab = Math.min(1.4, Cine.aberration), off = (ab * 5).toFixed(1);
-    Cine.stage.style.filter = Cine.ending || ab < 0.08 || Q.level ? '' : 'drop-shadow(' + off + 'px 0 0 rgba(255,0,110,0.5)) drop-shadow(-' + off + 'px 0 0 rgba(0,220,255,0.45))';
+    var ab = Math.min(1.4, Cine.aberration), off = (ab * 3.5).toFixed(1);   // (a smaller split: big offsets read as ghost copies)
+    Cine.stage.style.filter = Cine.ending || ab < 0.15 || Q.level ? '' : 'drop-shadow(' + off + 'px 0 0 rgba(255,0,110,0.5)) drop-shadow(-' + off + 'px 0 0 rgba(0,220,255,0.45))';
     Cine.stage.style.transform = Cine.tear > 0.3 ? 'translateX(' + (Math.sin(t * 13) * 7 * Cine.tear).toFixed(1) + 'px) skewX(' + (Math.sin(t * 9) * 0.7 * Cine.tear).toFixed(2) + 'deg)' : '';
     Cine.raf = requestAnimationFrame(frame);
   }

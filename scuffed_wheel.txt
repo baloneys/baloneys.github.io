@@ -1,0 +1,344 @@
+[drink] Drink if you’re already drunk.
+[drink] Drink if you’re not drunk enough.
+[target] Give someone a drink.
+[group] Everyone but you drinks.
+[drink] You drink.
+[target] Pick two people to drink.
+[group] Everyone drinks.
+[group] Last person to raise their hand drinks.
+[group] Last person to point at the wheel drinks.
+[left] Person to your left drinks.
+[right] Person to your right drinks.
+[target] Person directly across from you drinks.
+[neighbours] Closest person to you drinks.
+[target] Furthest person from you drinks.
+[target] Pick someone. Drink together.
+[target] Choose someone who drinks instead of you.
+[target] Give a drink to the loudest person.
+[target] Give a drink to the quietest person.
+[target] Give a drink to whoever looks the drunkest.
+[target] Give a drink to whoever claims they’re sober.
+[truth] Drink if you lied about being sober.
+[drink] Drink if this isn’t your first drink tonight.
+[truth] Drink if you’ve lost count.
+[truth] Drink if you’ve said “I’m fine” tonight.
+[truth] Drink if you probably shouldn’t be spinning again.
+[target] Pick someone who deserves a drink.
+[target] Pick someone who absolutely does not need another drink.
+[group] Everyone wearing red drinks.
+[group] Everyone wearing black drinks.
+[group] Everyone with animal ears drinks.
+[group] Everyone with horns drinks.
+[group] Everyone with wings drinks.
+[group] Everyone with tattoos drinks.
+[group] Everyone with piercings drinks.
+[group] Everyone with glasses drinks.
+[group] Tallest avatar drinks.
+[group] Shortest avatar drinks.
+[group] Biggest avatar drinks.
+[group] Smallest avatar drinks.
+[group] Everyone in full body drinks.
+[group] Everyone on desktop drinks.
+[group] Everyone in VR drinks.
+[group] Quest users drink.
+[group] PCVR users drink.
+[group] Anyone muted drinks.
+[group] Anyone who was muted in the last 5 minutes drinks.
+[drink] Drink if you changed avatar tonight.
+[truth] Drink if you’ve changed avatar more than once.
+[drink] Drink if your avatar has jiggle physics.
+[drink] Drink if your avatar has more toggles than you actually use.
+[drink] Drink if your avatar cost money.
+[drink] Drink if your avatar has SPS.
+[group] Everyone with SPS drink.
+[truth] Drink if your avatar cost way too much money.
+[truth] Drink if you made your own avatar.
+[truth] Drink if Unity has ruined your evening before.
+[truth] Drink if VRChat has crashed on you today.
+[truth] Drink if you’ve crashed VRChat intentionally before.
+[truth] Drink if you've pretended to crash before.
+[truth] Drink if your avatar has a stupid toggle.
+[truth] Drink if you have more than 100 avatar favourites.
+[truth] Drink if your current avatar is your main.
+[dare] Do your best superman pose.
+[dare] Shhhhh. Don't speak until your next spin.
+[dare] Use UwU voice for the next round.
+[dare] Do your best 6-7.
+[dare] Speak in cave-man language till your next round.
+[dare] Say your next sentence like a villain.
+[dare] Say your next sentence like an NPC.
+[dare] Say your next sentence like you’re dying.
+[dare] Say your next sentence like you’re flirting.
+[dare] Give the player opposite you a compliment.
+[left] Give the player left of you a compliment.
+[right] Give the player right of you a compliment.
+[dare] Give someone an insult that sounds like a compliment.
+[dare] Give someone a compliment that sounds threatening.
+[target] Pick the hottest avatar at the table. They drink.
+[target] Pick the cutest avatar at the table. They drink.
+[target] Pick the most cursed avatar at the table. They drink.
+[target] Pick the most suspicious avatar at the table. They drink.
+[target] Pick the person most likely to start drama. They drink.
+[target] Pick the person most likely to survive a zombie apocalypse. They assign a drink.
+[target] Pick the person least likely to survive. They drink.
+[target] Pick the person most likely to get banned from a casino. They drink.
+[truth] Drink if you’ve slept in VRChat.
+[truth] Drink if you’ve fallen asleep in a public world.
+[truth] Drink if you’ve woken up still in VRChat.
+[truth] Drink if you’ve ever sleep-called someone.
+[truth] Drink if you’ve stayed in VRChat until sunrise.
+[truth] Drink if you’ve said “one more hour” and stayed for three.
+[truth] Drink if you’ve lost track of real-world time in VR.
+[truth] Drink if you’ve missed something IRL because of VRChat.
+[truth] Drink if you’ve taken your headset off and forgotten where you are.
+[truth] Drink if you’ve walked into furniture in VR.
+[truth] Drink if you’ve punched something IRL while playing.
+[truth] Drink if you’ve hit your ceiling.
+[truth] Drink if you’ve hit your monitor.
+[truth] Drink if you’ve broken a controller.
+[truth] Drink if your controllers/trackers have dents.
+[truth] Drink if your playspace is definitely too small.
+[truth] Drink if you’ve fallen over in VR.
+[truth] Drink if you’ve tried leaning on something that wasn’t real.
+[truth] Drink if your tracking has betrayed you before.
+[truth] Drink if your trackers have flown away.
+[truth] Drink if you’ve played VR without pants.
+[truth] Drink if you’re currently playing VR without pants.
+[truth] Drink if you’ve met someone in VRChat and later met them IRL.
+[truth] Drink if you want to meet someone here IRL.
+[truth] Drink if you’ve dated someone you met in VRChat.
+[truth] Drink if you’ve flirted with someone in VRChat.
+[truth] Drink if you’ve been flirted with tonight.
+[truth] Drink if you’re currently flirting with someone at this table.
+[truth] Drink if you’ve kissed someone in VRChat.
+[truth] Drink if you’ve fake-kissed someone in VRChat.
+[truth] Drink if you’ve had a VRChat crush.
+[truth] Drink if your crush is here.
+[truth] Drink if you've met Tupper.
+[truth] Drink if you've met proximitychat.
+[truth] Drink if you’ve had VRChat relationship drama.
+[truth] Drink if you’ve witnessed VRChat relationship drama.
+[truth] Drink if you stayed because the drama was entertaining.
+[truth] Drink if you’ve stalked someone’s bio.
+[truth] Drink if you’ve checked someone’s status more than once.
+[truth] Drink if you’ve joined a world because one specific person was there.
+[truth] Drink if you’ve avoided a world because one specific person was there.
+[truth] Drink if you’ve waited for someone to join.
+[truth] Drink if you’ve joined and immediately regretted it.
+[truth] Drink if you’ve gone invisible to avoid someone.
+[truth] Drink if you’ve blocked someone this month.
+[truth] Drink if you’ve unblocked someone this month.
+[truth] Drink if you’ve accidentally sent an invite request.
+[truth] Drink if you’ve accidentally joined someone.
+[truth] Drink if you’ve used “VRChat crashed” as an excuse.
+[drink] Drink if you have over 1,000 hours in VRChat.
+[drink] Drink if you have over 2,000.
+[drink] Drink if you have over 5,000.
+[target] Newest VRChat player drinks.
+[target] Oldest VRChat account assigns a drink.
+[truth] Drink if you remember old VRChat UI.
+[truth] Drink if you remember SDK2.
+[truth] Drink if you’ve ever uploaded an avatar.
+[truth] Drink if you’ve ever uploaded a world.
+[truth] Drink if you’ve opened Unity today.
+[truth] Drink if you have multiple Unity versions installed.
+[truth] Drink if ChatGPT has helped fix your Unity bullshit.
+[target] Pick someone to drink.
+[group] Everyone points at someone. They drink.
+[group] Everyone points at the drunkest person. They drink.
+[group] Everyone points at the least drunk person. They drink.
+[group] Everyone votes who has the nicest voice. They drink.
+[scuffed] Drink if you gambled in SCUFFED tonight.
+[scuffed] Drink if you lost money in SCUFFED tonight.
+[scuffed] Drink if you won money in SCUFFED tonight.
+[scuffed] Roulette players drink.
+[scuffed] Slot players drink.
+[scuffed] Horse Racing players drink.
+[scuffed] Balatro players drink.
+[scuffed] To the Moon players drink.
+[scuffed] Blackjack players drink.
+[scuffed] Drink if you said “one more spin.”
+[scuffed] Drink if you blame the casino.
+[scuffed] Drink if you blame the developers.
+[scuffed] Anyone who hasn’t gambled tonight drinks.
+[scuffed] Drink if you’ve gone broke in the casino.
+[scuffed] Drink if you played Beer Pong tonight.
+[scuffed] Drink if you played Pool tonight.
+[scuffed] Drink if you played UNO tonight.
+[scuffed] Drink if you used the Compatibility Calculator tonight.
+[drink] Drink if you have more than half of your drink.
+[drink] Drink if you have a full drink.
+[drink] Drink if your glass is almost empty.
+[drink] Drink if you played Wordle.
+[scuffed] Give the wheel an insult.
+[scuffed] Give the wheel a compliment.
+[scuffed] Apologise to the wheel.
+[scuffed] Thank the wheel.
+[scuffed] Blame the wheel.
+[scuffed] Blame Fenic.
+[scuffed] Blame Epsi.
+[scuffed] Blame Seany.
+[scuffed] Pick a developer. Take a drink in their honour.
+[scuffed] If a developer is at the table, they assign a drink.
+[scuffed] If no developer is here, everyone drinks for poor supervision.
+[scuffed] Drink if you are a part of Scuffed VRC group.
+[scuffed] Drink if you are NOT a part of Scuffed VRC group.
+[scuffed] Drink if you are in Scuffed discord.
+[scuffed] Drink if you are NOT in Scuffed discord.
+[scuffed] Drink if the wheel has personally victimised you tonight.
+[scuffed] Drink if you’ve spun this wheel more than five times.
+[target] Spinner chooses one person to drink with them.
+[group] Everyone but the spinner drinks.
+[scuffed] SCUFFED. Everyone takes one sip, cheers, and spins again.
+[truth] Drink if you’ve known someone at this table over a year.
+[truth] Drink if you’ve known someone here over three years.
+[truth] Drink if you met someone here this month.
+[truth] Drink if someone here has argued with someone.
+[truth] Drink if someone here has seen you blackout drunk.
+[truth] Drink if someone here knows your real name.
+[truth] Drink if someone here has your phone number.
+[truth] Drink if someone here has seen your face.
+[truth] Drink if someone here has heard you snore.
+[truth] Drink if someone here knows way too much about you.
+[group] Last person to wave drinks.
+[group] Last person to point upward drinks.
+[dare] Stay silent for 20 seconds.
+[group] First person to break silence drinks.
+[scuffed] Last person to say “SCUFFED” drinks.
+[dare] Pick someone. Maintain eye contact for 20 seconds.
+[dare] Pick someone to maintain eye contact. First person to look away drinks.
+[truth] Drink if this is your 3rd drinking time this week.
+[truth] Drink if you’ve ever lied about how drunk you are.
+[truth] Drink if you’ve said “I’m barely tipsy” while clearly drunk.
+[group] Everyone holding their drink right now drinks.
+[truth] Drink if someone asked you to get on, but never got on themselves.
+[truth] Drink if you mixed your own drink tonight.
+[truth] Drink if someone else made your drink.
+[truth] Drink if you’ve already spilled your drink tonight.
+[target] Pick someone whose drink you would never try. They drink.
+[group] Anyone drinking water is safe. Everyone else drinks.
+[group] Anyone drinking something non-alcoholic assigns a drink.
+[group] Anyone who has already finished one full drink tonight drinks.
+[group] Anyone who has finished more than two drinks tonight drinks.
+[group] Anyone who has said “this one is my last” drinks.
+[truth] Drink if you’ve ever gotten drunk faster than you intended.
+[truth] Drink if you’ve ever underestimated a drink.
+[truth] Drink if you’ve ever mixed drinks and regretted it.
+[truth] Drink if you’ve ever woken up and checked Discord in fear.
+[truth] Drink if you’ve ever deleted a drunk message.
+[truth] Drink if you’ve ever sent a drunk message you regretted.
+[truth] Drink if you’ve ever sent a drunk message you absolutely do NOT regret.
+[truth] Drink if you've ever had a GREAT outcome of a drunk message.
+[truth] Drink if you’ve ever joined VRChat drunk.
+[truth] Drink if VRChat drinking worlds are the reason you own alcohol.
+[truth] Drink if you specifically logged on tonight to drink.
+[truth] Drink if you said you weren’t drinking tonight.
+[truth] Drink if someone convinced you to drink tonight.
+[truth] Drink if you’re the bad influence of the group.
+[group] Everyone points at the biggest bad influence. They drink.
+[truth] Drink if you have ever convinced someone to stay for “one more game.”
+[truth] Drink if “one more game” turned into another hour.
+[drink] Drink if you have work tomorrow.
+[drink] Drink if you have work in less than 8 hours.
+[drink] Drink if you should probably be asleep right now.
+[drink] Drink if you said “I’ll go to bed soon” more than an hour ago.
+[truth] Drink if someone at this table has told you to go to bed before.
+[truth] Drink if you’ve ever woken up still wearing your headset.
+[truth] Drink if you’ve ever lost a tracker while drunk.
+[truth] Drink if you’ve ever forgotten to charge your trackers.
+[drink] Drink if one of your trackers is currently low battery.
+[truth] Drink if your headset has died during a drinking night.
+[truth] Drink if you’ve ever played until your controllers died.
+[drink] Drink if you own more VR accessories than you reasonably need.
+[truth] Drink if you’ve upgraded your VR setup more than once.
+[truth] Drink if you’ve spent more on VR than you planned to.
+[drink] Drink if your avatar is more expensive than your outfit IRL.
+[drink] Drink if your avatar has more clothes than you do.
+[drink] Drink if your avatar has a toggle you’ve never used.
+[drink] Drink if your avatar has a toggle you would NEVER show in public.
+[truth] Drink if you’ve ever bought an avatar asset at 3 AM.
+[truth] Drink if you’ve impulse-bought an avatar asset.
+[truth] Drink if you’ve bought something for an avatar and never used it.
+[truth] Drink if you have an unfinished avatar project.
+[truth] Drink if you have more than three unfinished avatar projects.
+[truth] Drink if you’ve said “I’ll finish it tomorrow.”
+[truth] Drink if you’ve stared at a Unity error for more than 10 minutes.
+[truth] Drink if fixing one Unity problem caused another.
+[truth] Drink if you forgot to save before Unity crashed.
+[truth] Drink if Blender has made you rage before.
+[drink] Drink. You just lost THE GAME.
+[scuffed] If all three developers are here, everyone else drinks.
+[truth] Drink if someone else has fixed your avatar for you.
+[truth] Drink if you’ve fixed someone else’s avatar.
+[truth] Drink if you’ve ever said “it works on my end.”
+[scuffed] If Fenic is here, he assigns a drink.
+[scuffed] If Epsi is here, he assigns a drink.
+[scuffed] If Seany is here, he assigns a drink.
+[group] Everyone point at who is most likely to accidentally leak a secret. They drink.
+[group] Everyone point at who you would trust with your password. Most-picked assigns a drink.
+[group] Everyone point at who you would NEVER trust with your password. They drink.
+[group] Everyone point at who would argue with airport security. They drink.
+[group] Everyone point at who would survive a horror movie. They assign a drink.
+[group] Everyone point at who dies first in a horror movie. They drink.
+[target] Pick the person most likely to have a secret second Discord account. They drink.
+[target] Pick the person most likely to have 100+ unread DMs. They drink.
+[target] Pick the person most likely to leave everyone on read. They drink.
+[target] Pick the person most likely to accidentally ghost someone. They drink.
+[target] Pick the person who would be the worst person to wake up next to after a night out. They drink.
+[target] Pick the person who would be the BEST person to wake up next to. Both drink.
+[target] Pick someone you think could beat you in a fight. Both drink.
+[target] Pick someone you think you could beat in a fight. They decide who drinks.
+[target] Pick the person whose avatar looks the most expensive. They drink.
+[dare] Pick someone and swap seats with them.
+[dare] Pick someone. Copy their pose until your next spin.
+[dare] Pick someone. Mimic their voice for one sentence.
+[dare] Make a random animal noise. Refuse? Drink.
+[dare] Say “nya” after every sentence until your next spin.
+[dare] End every sentence with “bro” until your next spin.
+[dare] Lame. Do the most dramatic sigh you can.
+[dare] You may not say the word “I” until your next spin. Say it? Drink.
+[dare] Call everyone “chat” until your next spin.
+[dare] Refer to yourself in third person until your next spin.
+[dare] Oop. Set a rule. Every time rule is broken - they drink.
+[dare] OOPSIE. Set a rule. Every time rule is broken - everyone drink.
+[truth] Drink if you’ve ever e-dated.
+[truth] Drink if you’ve ever said you would NEVER e-date. Drink again if you still did.
+[truth] Drink if you’ve ever had matching avatars with someone.
+[truth] Drink if you’ve ever had matching profile pictures with someone.
+[truth] Drink if you’ve ever put someone in your VRChat bio.
+[truth] Drink if someone has ever put YOU in their bio.
+[truth] Drink if you’ve removed someone from your bio after drama.
+[truth] Drink if you’ve changed your status because of one specific person.
+[truth] Drink if you’ve ever used a song lyric as your status.
+[truth] Drink if you’ve waited before accepting an invite so you didn’t look too eager.
+[truth] Drink if you’ve deliberately waited before replying to someone.
+[truth] Drink if you’ve refreshed Discord waiting for a response.
+[truth] Drink if you’ve checked VRChat to see if someone were online.
+[truth] Drink if you have a VRChat friend you have never actually spoken to.
+[truth] Drink if you don’t remember how you met half your friends list.
+[truth] Drink if you’ve accepted someone because you felt bad declining.
+[truth] Drink if you’ve declined someone and immediately felt bad.
+[truth] Drink if you’ve ever cleaned your friends list.
+[truth] Drink if you’ve ever been blocked without knowing why.
+[truth] Drink if you’ve ever pretended you weren’t jealous in VRChat.
+[truth] Drink if you’ve been kicked from a VRChat group.
+[truth] Drink if you’ve left a VRChat group because of drama.
+[truth] Drink if you’ve moderated a VRChat event.
+[truth] Drink if you’ve hosted a VRChat event.
+[group] Everyone mate'd drink.
+[drink] Spinner drinks. No reason.
+[target] Pick someone. They drink. No defence.
+[group] Choose left or right. Everyone on that side drinks.
+[neighbours] Everyone sitting beside someone drinks.
+[group] Anyone sitting alone drinks.
+[group] Anyone currently touching another player drinks.
+[group] Anyone currently looking at the spinner drinks.
+[group] Anyone who laughed at this prompt drinks.
+[group] Anyone who complained about drinking drinks.
+[group] Anyone who has sworn in the last minute drinks.
+[group] Anyone who checked Discord in the last 5 minutes drinks.
+[group] Anyone sitting cross-legged drinks.
+[group] Anyone lying down drinks.
+[group] Anyone standing up assigns a drink.
+[dare] Spinner chooses: drink or do an UwU voice until their next spin.
+[scuffed] SCUFFED tax: spinner drinks, then picks who spins next.

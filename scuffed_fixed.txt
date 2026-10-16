@@ -1,0 +1,12 @@
+[dare] Dare or drink.
+[truth] Truth or drink.
+[target] Pick a victim. Drink together.
+[group] Everyone but you drinks.
+[scuffed] SCUFFED TAX. Everyone drinks.
+[target] Pick 2 victims. They drink.
+[neighbours] Neighbour tax. Left + right drink.
+[drink] Drink & spin again. Unlucky.
+[left] Left side casualty. They drink.
+[right] Right side casualty. They drink.
+[group] Girls night. Girls drink.
+[men] Men’s problem. Men drink.

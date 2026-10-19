@@ -50,7 +50,7 @@
 [drink] Drink if your avatar has more toggles than you actually use.
 [drink] Drink if your avatar cost money.
 [drink] Drink if your avatar has SPS.
-[group] Everyone with SPS drink.
+[group] Everyone with SPS drinks.
 [truth] Drink if your avatar cost way too much money.
 [truth] Drink if you made your own avatar.
 [truth] Drink if Unity has ruined your evening before.
@@ -60,18 +60,18 @@
 [truth] Drink if your avatar has a stupid toggle.
 [truth] Drink if you have more than 100 avatar favourites.
 [truth] Drink if your current avatar is your main.
-[dare] Do your best superman pose.
+[dare] Do your best Superman pose.
 [dare] Shhhhh. Don't speak until your next spin.
 [dare] Use UwU voice for the next round.
 [dare] Do your best 6-7.
-[dare] Speak in cave-man language till your next round.
+[dare] Speak like a caveman until your next spin.
 [dare] Say your next sentence like a villain.
 [dare] Say your next sentence like an NPC.
 [dare] Say your next sentence like you’re dying.
 [dare] Say your next sentence like you’re flirting.
 [dare] Give the player opposite you a compliment.
-[left] Give the player left of you a compliment.
-[right] Give the player right of you a compliment.
+[left] Give the person to your left a compliment.
+[right] Give the person to your right a compliment.
 [dare] Give someone an insult that sounds like a compliment.
 [dare] Give someone a compliment that sounds threatening.
 [target] Pick the hottest avatar at the table. They drink.
@@ -181,10 +181,10 @@
 [scuffed] Pick a developer. Take a drink in their honour.
 [scuffed] If a developer is at the table, they assign a drink.
 [scuffed] If no developer is here, everyone drinks for poor supervision.
-[scuffed] Drink if you are a part of Scuffed VRC group.
-[scuffed] Drink if you are NOT a part of Scuffed VRC group.
-[scuffed] Drink if you are in Scuffed discord.
-[scuffed] Drink if you are NOT in Scuffed discord.
+[scuffed] Drink if you are a part of SCUFFED VRChat group.
+[scuffed] Drink if you are NOT a part of SCUFFED VRChat group.
+[scuffed] Drink if you are in SCUFFED Discord.
+[scuffed] Drink if you are NOT in SCUFFED Discord.
 [scuffed] Drink if the wheel has personally victimised you tonight.
 [scuffed] Drink if you’ve spun this wheel more than five times.
 [target] Spinner chooses one person to drink with them.
@@ -193,7 +193,7 @@
 [truth] Drink if you’ve known someone at this table over a year.
 [truth] Drink if you’ve known someone here over three years.
 [truth] Drink if you met someone here this month.
-[truth] Drink if someone here has argued with someone.
+[truth] Drink if you've argued with someone here.
 [truth] Drink if someone here has seen you blackout drunk.
 [truth] Drink if someone here knows your real name.
 [truth] Drink if someone here has your phone number.
@@ -207,11 +207,11 @@
 [scuffed] Last person to say “SCUFFED” drinks.
 [dare] Pick someone. Maintain eye contact for 20 seconds.
 [dare] Pick someone to maintain eye contact. First person to look away drinks.
-[truth] Drink if this is your 3rd drinking time this week.
+[truth] Drink if this is your third time drinking this week.
 [truth] Drink if you’ve ever lied about how drunk you are.
 [truth] Drink if you’ve said “I’m barely tipsy” while clearly drunk.
 [group] Everyone holding their drink right now drinks.
-[truth] Drink if someone asked you to get on, but never got on themselves.
+[truth] Drink if someone told you to get on, then never joined.
 [truth] Drink if you mixed your own drink tonight.
 [truth] Drink if someone else made your drink.
 [truth] Drink if you’ve already spilled your drink tonight.
@@ -228,7 +228,7 @@
 [truth] Drink if you’ve ever deleted a drunk message.
 [truth] Drink if you’ve ever sent a drunk message you regretted.
 [truth] Drink if you’ve ever sent a drunk message you absolutely do NOT regret.
-[truth] Drink if you've ever had a GREAT outcome of a drunk message.
+[truth] Drink if a drunk message actually worked out for you.
 [truth] Drink if you’ve ever joined VRChat drunk.
 [truth] Drink if VRChat drinking worlds are the reason you own alcohol.
 [truth] Drink if you specifically logged on tonight to drink.
@@ -274,12 +274,12 @@
 [scuffed] If Fenic is here, he assigns a drink.
 [scuffed] If Epsi is here, he assigns a drink.
 [scuffed] If Seany is here, he assigns a drink.
-[group] Everyone point at who is most likely to accidentally leak a secret. They drink.
-[group] Everyone point at who you would trust with your password. Most-picked assigns a drink.
-[group] Everyone point at who you would NEVER trust with your password. They drink.
-[group] Everyone point at who would argue with airport security. They drink.
-[group] Everyone point at who would survive a horror movie. They assign a drink.
-[group] Everyone point at who dies first in a horror movie. They drink.
+[group] Everyone points at who is most likely to accidentally leak a secret. They drink.
+[group] Everyone points at who you would trust with your password. Most-picked assigns a drink.
+[group] Everyone points at who you would NEVER trust with your password. They drink.
+[group] Everyone points at who would argue with airport security. They drink.
+[group] Everyone points at who would survive a horror movie. They assign a drink.
+[group] Everyone points at who dies first in a horror movie. They drink.
 [target] Pick the person most likely to have a secret second Discord account. They drink.
 [target] Pick the person most likely to have 100+ unread DMs. They drink.
 [target] Pick the person most likely to leave everyone on read. They drink.
@@ -299,8 +299,8 @@
 [dare] You may not say the word “I” until your next spin. Say it? Drink.
 [dare] Call everyone “chat” until your next spin.
 [dare] Refer to yourself in third person until your next spin.
-[dare] Oop. Set a rule. Every time rule is broken - they drink.
-[dare] OOPSIE. Set a rule. Every time rule is broken - everyone drink.
+[dare] Make a rule. Anyone who breaks it drinks.
+[dare] Make a rule. If anyone breaks it, everyone drinks.
 [truth] Drink if you’ve ever e-dated.
 [truth] Drink if you’ve ever said you would NEVER e-date. Drink again if you still did.
 [truth] Drink if you’ve ever had matching avatars with someone.
@@ -313,7 +313,7 @@
 [truth] Drink if you’ve waited before accepting an invite so you didn’t look too eager.
 [truth] Drink if you’ve deliberately waited before replying to someone.
 [truth] Drink if you’ve refreshed Discord waiting for a response.
-[truth] Drink if you’ve checked VRChat to see if someone were online.
+[truth] Drink if you've checked VRChat to see if someone was online.
 [truth] Drink if you have a VRChat friend you have never actually spoken to.
 [truth] Drink if you don’t remember how you met half your friends list.
 [truth] Drink if you’ve accepted someone because you felt bad declining.
@@ -325,7 +325,7 @@
 [truth] Drink if you’ve left a VRChat group because of drama.
 [truth] Drink if you’ve moderated a VRChat event.
 [truth] Drink if you’ve hosted a VRChat event.
-[group] Everyone mate'd drink.
+[group] Everyone with a mate drinks.
 [drink] Spinner drinks. No reason.
 [target] Pick someone. They drink. No defence.
 [group] Choose left or right. Everyone on that side drinks.
@@ -346,999 +346,999 @@
 [truth] Drink if you uploaded your own avatar.
 [target] If you drove to work today, give 10 drinks.
 [drink] If you took public transport today, take 10 drinks.
-[group] Everyone who is wearing socks IRL, say “I am the problem” together.
-[target] Pick the person most likely to insist the background music is flirting with them at a furry convention. They assign one sip.
-[group] Everyone currently lying down, give the lobby your best evil laugh.
-[dare] Say “My dignity disconnected before I did.” like a gym coach motivating a potato.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a nature-documentary narrator observing a horny lobby.
-[left] The person to your left is your scene partner. Give them a compliment that sounds like a patch note.
-[group] Everyone with a prop in their hand, say “I am the problem” together.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a disappointed game-show host.
-[target] Pick the person most likely to flirt their way into a worse situation at a haunted-house attraction. They assign one sip.
+[group] Everyone wearing socks IRL, say “I am the problem.”
+[target] Pick whoever would start a cult by accident. They assign a drink.
+[group] Everyone lying down, do your best evil laugh.
+[dare] Say your next sentence like a disappointed parent.
+[dare] Say 'I did nothing wrong' like a villain.
+[left] Give the person to your left a compliment like it's a patch note.
+[group] Everyone with a prop in their hand, say “I am the problem.”
+[dare] Say 'I can explain' like you've been caught.
+[target] Pick whoever would join a cult for the free food. They assign a drink.
 [truth] Drink if your best friend has enough screenshots to end your career.
-[target] Pick the person most likely to bring a spreadsheet to a social problem at an airport. They assign one sip.
-[group] Everyone in VR, take one sip.
-[target] Pick the person most likely to turn a queue into a therapy session at a furry convention. They assign one sip.
-[dare] Say “The red flags are decorative.” like a smug final boss with one hit point.
-[group] Everyone with a sword they absolutely don't need, say “I am the problem” together.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a very underpaid casino announcer.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a villain whose evil plan has no budget.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a dating coach with a zero-percent success rate.
-[dare] Say “Your honour, the vibes were immaculate.” like a dating coach with a zero-percent success rate.
-[target] Pick the person most likely to try to speedrun the entire experience at a furry convention. They assign one sip.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a ghost who is embarrassed about haunting you.
-[target] Pick the person most likely to start a conspiracy theory about the lighting at a fancy restaurant. They assign one sip.
+[target] Pick whoever would become a cult leader for the outfits. They assign a drink.
+[group] Everyone wearing a headset right now drinks.
+[target] Pick whoever would get kicked out of their own cult. They assign a drink.
+[dare] Say 'I'm not flirting' like you're obviously flirting.
+[group] Everyone with a sword, say “I am the problem.”
+[dare] Say 'that wasn't a moan' with full confidence.
+[dare] Say 'don't touch the tail' like a warning.
+[dare] Say 'I regret everything' like a game-show host.
+[dare] Say 'ignore the red flags' like a dating coach.
+[target] Pick whoever would mistake a cult meeting for a party. They assign a drink.
+[dare] Say 'stop looking at me' like a shy ghost.
+[target] Pick whoever would recruit the lobby into a pyramid scheme. They assign a drink.
 [truth] Drink if you've ever muted yourself to scream after someone called you cute.
-[truth] Drink if your type is just a collection of terrible decisions with a nice voice.
-[truth] Drink if you've ever said 'I can fix them' about someone who needed a whole development team.
-[dare] Say “I have a permit for this level of bullshit.” like a robot trying to understand flirting.
-[target] Pick the person most likely to find a mirror and forget the original plan at a haunted-house attraction. They assign one sip.
-[target] Pick the person most likely to make friends with the security guard at a furry convention. They assign one sip.
+[truth] Drink if a nice voice makes you ignore red flags.
+[truth] Drink if you've ever thought 'I can fix them'.
+[dare] Say 'what the fuck was that' like a news reporter.
+[target] Pick whoever would get mistaken for the manager. They assign a drink.
+[target] Pick whoever would complain to the wrong manager. They assign a drink.
 [truth] Drink if you've ever sent a spicy message to the wrong chat.
 [truth] Drink if you've ever checked a message three times before sending 'hey'.
-[target] Pick the person most likely to accidentally become the entertainment at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to create a new group chat nobody asked for at a karaoke bar. They assign one sip.
+[target] Pick whoever would ask to speak to the owner. They assign a drink.
+[target] Pick whoever would pretend to work somewhere for a discount. They assign a drink.
 [truth] Drink if your search history needs a lawyer.
-[target] Pick the person most likely to turn a minor inconvenience into a villain origin story at a furry convention. They assign one sip.
-[target] Pick the person most likely to make an apology that needs its own apology at a furry convention. They assign one sip.
+[target] Pick whoever would accidentally get promoted. They assign a drink.
+[target] Pick whoever would fire someone without working there. They assign a drink.
 [truth] Drink if you've bought lingerie that nobody ever saw.
 [truth] Drink if you've ever hidden a sex toy before someone visited.
 [truth] Drink if you own more sex toys than functioning charging cables.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a suspiciously cheerful tax collector.
-[target] Pick the person most likely to turn a minor inconvenience into a villain origin story at a wedding reception. They assign one sip.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a flustered dating-sim character.
-[right] The person to your right is your scene partner. Ask them to name your imaginary autobiography.
+[dare] Use a pirate voice until your next spin.
+[target] Pick whoever would flirt with airport security. They assign a drink.
+[dare] Use a robot voice for your next three sentences.
+[right] Let the person to your right name your autobiography.
 [truth] Drink if you've ever forgotten a sex toy was visible on camera.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a robot trying to understand flirting.
+[dare] Say your username like a royal announcement.
 [truth] Drink if you've ever ordered something spicy and prayed the packaging was discreet.
 [truth] Drink if you've ever had to explain a suspicious parcel.
-[target] Pick the person most likely to give unsolicited relationship advice at a wedding reception. They assign one sip.
-[group] Everyone currently sitting down, take one sip.
-[dare] Say “Your honour, the vibes were immaculate.” like a cowboy confronting a broken avatar toggle.
+[target] Pick whoever would flirt their way out of trouble. They assign a drink.
+[group] Everyone sitting down drinks.
+[dare] Introduce yourself like a final boss.
 [truth] Drink if you've ever sent a nude and immediately inspected the background.
 [truth] Drink if you've ever taken forty photos to send exactly one.
-[truth] Drink if you've ever received a nude and replied like a malfunctioning customer-service bot.
-[dare] Say “Your honour, the vibes were immaculate.” like a medieval peasant discovering Discord.
-[target] Pick the person most likely to lose an argument with an automatic door at a haunted-house attraction. They assign one sip.
-[truth] Drink if you've ever had a friends-with-benefits arrangement become a feelings-with-problems arrangement.
-[target] Pick the person most likely to try to speedrun the entire experience at a wedding reception. They assign one sip.
+[truth] Drink if you've ever had no idea how to reply to a nude.
+[dare] Order an imaginary meal like a cowboy.
+[target] Pick whoever would flirt their way into trouble. They assign a drink.
+[truth] Drink if you've caught feelings for a friend with benefits.
+[target] Pick whoever would flirt with someone interviewing them. They assign a drink.
 [truth] Drink if you've ever hooked up with someone and learned their surname afterwards.
-[truth] Drink if you've ever had a walk of shame that felt more like a victory lap.
-[dare] Say “My dignity disconnected before I did.” like a suspiciously cheerful tax collector.
-[group] Everyone currently lying down, take one sip.
-[truth] Drink if you've ever kept a hookup's hoodie as compensation.
-[group] Everyone wearing a hat, say “I am the problem” together.
+[truth] Drink if you've ever been proud of a walk of shame.
+[dare] Say 'good evening' like a suspicious butler.
+[group] Everyone lying down drinks.
+[truth] Drink if you've ever kept a hookup's hoodie.
+[group] Everyone wearing a hat, say “I am the problem.”
 [truth] Drink if you've ever had to retrieve your underwear from somewhere embarrassing.
-[truth] Drink if you've ever broken furniture during consensual adult activities.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a sleepy airport announcer.
-[truth] Drink if you've ever had sex interrupted by a pet judging you.
-[group] Everyone currently lying down, say “I am the problem” together.
+[truth] Drink if you've ever broken furniture during sex.
+[dare] Explain your outfit like a medieval peasant.
+[truth] Drink if a pet has ever interrupted you during sex.
+[group] Everyone lying down, say “I am the problem.”
 [truth] Drink if you've ever made a playlist for sex and regretted the shuffle button.
 [truth] Drink if you've ever laughed during sex at the worst possible moment.
-[group] Everyone who has their mic muted, take one sip.
-[target] Pick the person most likely to find a mirror and forget the original plan at a karaoke bar. They assign one sip.
-[group] Everyone in VR, give the lobby your best evil laugh.
-[truth] Drink if you've ever had a hookup turn into an unsolicited TED Talk.
+[group] Everyone muted drinks.
+[target] Pick whoever would flirt with their own reflection. They assign a drink.
+[group] Everyone in VR, do your best evil laugh.
+[truth] Drink if a hookup has ever talked way too fucking much.
 [truth] Drink if you've ever caught feelings for someone you introduced as 'just a friend'.
 [truth] Drink if you've ever pretended a thirst trap wasn't aimed at one specific person.
 [truth] Drink if you've ever posted a thirst trap and only your best friend reacted.
 [truth] Drink if you've ever deleted a thirst trap because the wrong person reacted first.
-[target] Pick the person most likely to accidentally join the staff at an airport. They assign one sip.
-[dare] Say “The red flags are decorative.” like a newsreader reporting the dumbest event in history.
-[group] Everyone using an anime avatar, say “I am the problem” together.
-[target] Pick the person most likely to try to turn the visit into a first date at a furry convention. They assign one sip.
+[target] Pick whoever would flirt without realising it. They assign a drink.
+[dare] Ask for a refund like a supervillain.
+[group] Everyone using an anime avatar, say “I am the problem.”
+[target] Pick whoever would walk into a glass door. They assign a drink.
 [truth] Drink if you've ever changed your outfit because someone hot was joining.
-[truth] Drink if you've ever changed your entire avatar because someone hot was joining.
-[target] Pick the person most likely to bring a spreadsheet to a social problem at a wedding reception. They assign one sip.
-[dare] Say “Your honour, the vibes were immaculate.” like a pirate negotiating a refund.
-[group] Everyone who is wearing socks IRL, give the lobby your best evil laugh.
-[truth] Drink if your horny purchases have their own budget category.
-[target] The player opposite you is your scene partner. Ask them to name your imaginary autobiography.
+[truth] Drink if you've changed avatars for someone hot.
+[target] Pick whoever would argue with an automatic door. They assign a drink.
+[dare] Describe this lobby like a nature documentary.
+[group] Everyone wearing socks IRL, do your best evil laugh.
+[truth] Drink if you've spent too much on horny shit.
+[target] Let the person opposite you name your autobiography.
 [truth] Drink if you've ever bought an avatar for exactly one toggle.
-[dare] Say “Your honour, the vibes were immaculate.” like a royal herald announcing an absolute disaster.
-[group] Everyone who changed avatars this round, say “I am the problem” together.
-[dare] Say “The red flags are decorative.” like a wizard whose spell has autocorrected.
-[truth] Drink if you've ever called someone daddy and discovered a new problem about yourself.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a royal herald announcing an absolute disaster.
-[dare] Say “My dignity disconnected before I did.” like a robot trying to understand flirting.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a wizard whose spell has autocorrected.
-[target] Pick the person most likely to give unsolicited relationship advice at a haunted-house attraction. They assign one sip.
-[truth] Drink if you've ever been called mommy and needed a minute to reboot.
-[dare] Say “I have a permit for this level of bullshit.” like a cowboy confronting a broken avatar toggle.
-[target] Pick the person most likely to convince themselves the place is haunted at a wedding reception. They assign one sip.
-[target] Pick the person most likely to give unsolicited relationship advice at an airport. They assign one sip.
-[group] Everyone who has Discord open, take one sip.
+[dare] Give a gym-coach speech about charging your trackers.
+[group] Everyone who changed avatars this round, say “I am the problem.”
+[dare] Whisper your next three sentences.
+[truth] Drink if you've ever called someone daddy and liked it.
+[dare] Shout a compliment in your quietest voice.
+[dare] Say your next sentence painfully slowly.
+[dare] Talk like you're half asleep until your next spin.
+[target] Pick whoever would push a door marked 'pull'. They assign a drink.
+[truth] Drink if being called mommy has ever flustered you.
+[dare] Speak like every sentence is a question.
+[target] Pick whoever would apologise to a lamppost. They assign a drink.
+[target] Pick whoever would lose a fight with a revolving door. They assign a drink.
+[group] Everyone who has Discord open drinks.
 [truth] Drink if you've ever said 'good boy' or 'good girl' and surprised yourself.
-[truth] Drink if you've ever discovered a kink through a joke that stopped being a joke.
-[target] Pick the person most likely to ask for the Wi-Fi password before saying hello at a wedding reception. They assign one sip.
-[truth] Drink if you've ever made a kink-test result your entire personality for a week.
-[truth] Drink if you've ever compared kink-test results like you were reviewing exam scores.
-[group] Everyone using full-body tracking, say “I am the problem” together.
-[target] Pick the person most likely to make everyone regret giving them a microphone at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to claim they could run the place better at a furry convention. They assign one sip.
+[truth] Drink if a joke has ever turned into a kink.
+[target] Pick whoever would get scared by a hand dryer. They assign a drink.
+[truth] Drink if you've ever put kink-test results in your bio.
+[truth] Drink if you've compared kink-test results with someone here.
+[group] Everyone in full body, say “I am the problem.”
+[target] Pick whoever would become the wedding entertainment. They assign a drink.
+[target] Pick whoever would steal the spotlight at karaoke. They assign a drink.
 [truth] Drink if you've ever joined a private instance knowing exactly what the invitation meant.
 [truth] Drink if you've ever ERP'd and then had a completely normal conversation about groceries.
-[dare] Say “I have a permit for this level of bullshit.” like a sleepy airport announcer.
-[target] Pick the person most likely to get rejected by a self-service machine at an airport. They assign one sip.
+[dare] Say everything dramatically until your next spin.
+[target] Pick whoever would accidentally interrupt a live show. They assign a drink.
 [truth] Drink if you've ever forgotten to turn off an NSFW avatar toggle before changing worlds.
-[group] Everyone using a joke avatar, give the lobby your best evil laugh.
-[truth] Drink if you've ever had a spicy call interrupted by Windows asking to update.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a tutorial NPC who has given up.
+[group] Everyone using a joke avatar, do your best evil laugh.
+[truth] Drink if Windows has ever interrupted a spicy call.
+[dare] Answer the next question like a politician.
 [truth] Drink if you've ever ruined a seductive moment by asking about graphics settings.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a suspiciously cheerful tax collector.
+[dare] Say your next sentence like you're buffering.
 [truth] Drink if you've ever flirted with someone's voice before you knew what their avatar looked like.
-[group] Everyone with a tiny avatar, say “I am the problem” together.
-[target] Pick the person most likely to try to pay with exposure at a furry convention. They assign one sip.
-[target] Pick the person most likely to ask for a loyalty card at the worst moment at a furry convention. They assign one sip.
-[target] Pick the person most likely to be politely asked to stop narrating everything at a haunted-house attraction. They assign one sip.
-[target] Pick the person most likely to ask for a loyalty card at the worst moment at a fancy restaurant. They assign one sip.
-[target] The player opposite you is your scene partner. Ask them which household appliance matches your energy.
-[target] The player opposite you is your scene partner. Challenge them to invent a worse pickup line than yours.
+[group] Everyone with a tiny avatar, say “I am the problem.”
+[target] Pick whoever would get dragged onstage and love it. They assign a drink.
+[target] Pick whoever would turn a speech into a performance. They assign a drink.
+[target] Pick whoever would make a funeral awkward by laughing. They assign a drink.
+[target] Pick whoever would flirt with a mascot. They assign a drink.
+[target] Ask the person opposite you what household appliance you'd be.
+[target] Trade bad pickup lines with the person opposite you.
 [truth] Drink if you've ever mistaken full-body tracking for a personality.
-[dare] Say “The red flags are decorative.” like a customer asking to speak to the wheel's manager.
-[group] Everyone with a giant avatar, give the lobby your best evil laugh.
-[target] Pick the person most likely to invent a rivalry with a stranger at a haunted-house attraction. They assign one sip.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a dramatic soap-opera actor.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a detective who has found suspicious browser history.
-[group] Everyone with a controller on charge, take one sip.
-[truth] Drink if your 'hear me out' has made your friends genuinely concerned about your taste.
-[target] Pick the person most likely to say 'I know a guy' and make everything worse at a furry convention. They assign one sip.
-[dare] Say “I have a permit for this level of bullshit.” like a tutorial NPC who has given up.
+[dare] Pretend your microphone has terrible reception.
+[group] Everyone with a giant avatar, do your best evil laugh.
+[target] Pick whoever would ask a cosplayer if they're single. They assign a drink.
+[dare] Give yourself a fake radio callsign. Use it this round.
+[dare] Give the lobby your best fake laugh.
+[group] Everyone with a controller on charge drinks.
+[truth] Drink if your friends have judged your 'hear me out'.
+[target] Pick whoever would fall for someone in a monster costume. They assign a drink.
+[dare] Give the lobby your best evil laugh.
 [truth] Drink if you've ever looked at a monster and thought 'would'.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a tutorial NPC who has given up.
-[truth] Drink if you've ever defended your fictional crush like they were paying your rent.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a smug final boss with one hit point.
-[left] The person to your left is your scene partner. Ask them which household appliance matches your energy.
+[dare] Laugh like you just won a million chips.
+[truth] Drink if you've defended a questionable fictional crush.
+[dare] Do a dramatic gasp at the next thing someone says.
+[left] Ask the person to your left what household appliance you'd be.
 [truth] Drink if you've ever said 'I'm over them' while checking their status.
-[target] Pick the person most likely to bring a spreadsheet to a social problem at a karaoke bar. They assign one sip.
-[truth] Drink if you've ever had a situationship require more admin than your actual job.
-[group] Everyone wearing glasses, say “I am the problem” together.
-[truth] Drink if you've ever needed a diagram to explain your friend group's dating history.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a disappointed game-show host.
-[group] Everyone with glowing eyes, say “I am the problem” together.
-[truth] Drink if you've ever returned to an ex like a bug that survived the patch.
-[target] Pick the person most likely to try to turn the visit into a first date at a fancy restaurant. They assign one sip.
+[target] Pick whoever would have a crush on a haunted-house actor. They assign a drink.
+[truth] Drink if a situationship has felt like a full-time job.
+[group] Everyone wearing glasses, say “I am the problem.”
+[truth] Drink if your friend group's dating history is a fucking mess.
+[dare] Pretend to cry over an empty chip balance.
+[group] Everyone with glowing eyes, say “I am the problem.”
+[truth] Drink if you've gone back to an ex. Again.
+[target] Pick whoever would get rejected by someone in a fursuit. They assign a drink.
 [truth] Drink if you've ever apologised just to make a conversation end.
 [truth] Drink if you've ever won an argument in the shower three days too late.
 [truth] Drink if you've ever turned your headset off to avoid saying goodbye.
 [truth] Drink if you've ever pretended to be AFK because the conversation was fucking unbearable.
-[right] The person to your right is your scene partner. Introduce them as your completely unqualified legal adviser.
-[group] Everyone with wings, take one sip.
-[target] Pick the person most likely to get recognised for something embarrassing at a haunted-house attraction. They assign one sip.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a villain whose evil plan has no budget.
-[dare] Say “The red flags are decorative.” like a very underpaid casino announcer.
+[right] Introduce the person to your right as your lawyer.
+[group] Everyone with feathered wings drinks.
+[target] Pick whoever would ask a fictional character on a date. They assign a drink.
+[dare] Give the most disappointed sigh you can.
+[dare] Do your best shocked NPC noise.
 [truth] Drink if you've ever forgotten which lie you told about being busy.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a smug final boss with one hit point.
-[target] Pick the person most likely to find an ex they didn't know they had at a furry convention. They assign one sip.
+[dare] Make a noise that sounds like a broken printer.
+[target] Pick whoever would make a spreadsheet for a night out. They assign a drink.
 [truth] Drink if you've ever had beef with someone whose real face you've never seen.
-[target] Pick the person most likely to ask for a loyalty card at the worst moment at an airport. They assign one sip.
-[target] Pick the person most likely to lose their friends within thirty seconds at a karaoke bar. They assign one sip.
-[target] Pick whoever would sell the group out for a limited-edition avatar. They take one sip.
-[target] Pick whoever has the strongest 'banned from the gift shop' energy. They take one sip.
-[target] Pick the person most likely to become a local legend for the stupidest reason at an airport. They assign one sip.
-[group] Everyone with a tail, take one sip.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a very underpaid casino announcer.
-[dare] Say “Your honour, the vibes were immaculate.” like a newsreader reporting the dumbest event in history.
-[group] Everyone with a prop in their hand, give the lobby your best evil laugh.
-[group] Everyone with a giant avatar, say “I am the problem” together.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a robot trying to understand flirting.
-[group] Everyone with a sword they absolutely don't need, give the lobby your best evil laugh.
-[target] Pick the person most likely to start an argument about a technicality at a furry convention. They assign one sip.
-[target] Pick the person most likely to create a new group chat nobody asked for at a haunted-house attraction. They assign one sip.
-[target] Pick the person most likely to make a grand entrance through the wrong door at a haunted-house attraction. They assign one sip.
-[target] Pick whoever could turn a toaster manual into a horny conversation. They take one sip.
-[target] Pick whoever would flirt with the demon before checking the summoning instructions. They take one sip.
-[target] Pick whoever treats red flags like collectables. They take one sip.
-[target] Pick the person most likely to try to pay with exposure at a fancy restaurant. They assign one sip.
-[target] Pick whoever would need a content warning on their autobiography. They choose its title.
-[dare] Say “I have a permit for this level of bullshit.” like a dating coach with a zero-percent success rate.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a wizard whose spell has autocorrected.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a smug final boss with one hit point.
-[target] Pick the person most likely to create a new group chat nobody asked for at a wedding reception. They assign one sip.
-[target] Pick whoever would accidentally become the face of a terrible cryptocurrency. They apologise to investors.
-[target] Pick the person most likely to find a mirror and forget the original plan at a wedding reception. They assign one sip.
-[target] Pick whoever would get catfished by an obvious NPC. They take one sip.
+[target] Pick whoever would schedule their own breakdown. They assign a drink.
+[target] Pick whoever would bring notes to an argument. They assign a drink.
+[target] Pick whoever would sell the group out for a limited-edition avatar. They drink.
+[target] Pick whoever would get banned from a gift shop. They drink.
+[target] Pick whoever would write a breakup announcement. They assign a drink.
+[group] Everyone with a tail drinks.
+[dare] Do your best dial-up internet noise.
+[dare] Make a sound effect for your current mood.
+[group] Everyone with a prop in their hand, do your best evil laugh.
+[group] Everyone with a giant avatar, say “I am the problem.”
+[dare] Describe your avatar in exactly three words.
+[group] Everyone with a sword, do your best evil laugh.
+[target] Pick whoever would make a presentation about their ex. They assign a drink.
+[target] Pick whoever would organise the group like a school trip. They assign a drink.
+[target] Pick whoever would think their phone is spying on them. They assign a drink.
+[target] Pick whoever can make anything sound horny. They drink.
+[target] Pick whoever would flirt with a demon. They drink.
+[target] Pick whoever treats red flags like collectables. They drink.
+[target] Pick whoever would argue that birds aren't real. They assign a drink.
+[target] Pick whoever has the most fucked-up life stories. They name their autobiography.
+[dare] Give your avatar a terrible new name.
+[dare] Explain your avatar to someone from the 1800s.
+[dare] Advertise your avatar like a used car.
+[target] Pick whoever would blame the moon for their mood. They assign a drink.
+[target] Pick whoever would accidentally promote a scam. They give a fake apology.
+[target] Pick whoever would believe a conspiracy from a meme. They assign a drink.
+[target] Pick whoever would get catfished by an obvious NPC. They drink.
 [target] Pick whoever has the least believable 'I'm innocent' voice. They plead their case.
-[target] Pick whoever would survive on flirting and absolutely no practical skills. They take one sip.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a detective who has found suspicious browser history.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a cowboy confronting a broken avatar toggle.
-[dare] Say “The red flags are decorative.” like a gym coach motivating a potato.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a customer asking to speak to the wheel's manager.
-[target] Pick the person most likely to flirt their way into a worse situation at a furry convention. They assign one sip.
-[dare] Give your avatar's ass a one-star product review. Keep it verbal.
-[dare] Explain being down bad as if you're presenting quarterly financial losses.
-[dare] Say “The red flags are decorative.” like a tutorial NPC who has given up.
-[dare] Invent a sex-toy brand that would immediately go bankrupt.
-[target] Pick the person most likely to say 'watch this' immediately before disaster at a haunted-house attraction. They assign one sip.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a customer asking to speak to the wheel's manager.
-[group] Everyone with a giant avatar, take one sip.
-[dare] Say “My dignity disconnected before I did.” like a villain whose evil plan has no budget.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a royal herald announcing an absolute disaster.
-[dare] Give a fake weather forecast for the lobby's sexual tension.
-[dare] Say “My dignity disconnected before I did.” like a detective who has found suspicious browser history.
-[dare] Pitch a dating app exclusively for people who ignore every red flag.
-[dare] Explain your taste in partners like you're reporting a software bug.
-[left] The person to your left is your scene partner. Let them rate your villain laugh out of ten.
-[group] Everyone using full-body tracking, give the lobby your best evil laugh.
-[group] Everyone with animal ears, say “I am the problem” together.
-[dare] Read an imaginary apology for accidentally flirting with the entire lobby.
-[target] Pick the person most likely to get mistaken for the manager at an airport. They assign one sip.
-[dare] Give the world's least convincing 'I'm definitely not jealous'.
-[dare] Announce your villain name and the extremely petty inconvenience that created you.
-[group] Everyone with glowing eyes, give the lobby your best evil laugh.
-[dare] Describe your rizz as a product being recalled for safety reasons.
-[dare] Invent a completely useless superpower and defend it passionately.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a newsreader reporting the dumbest event in history.
-[right] The person to your right is your scene partner. Invent a conspiracy theory about their avatar's shoes.
-[dare] Give your imaginary OnlyFans a catastrophically bad advertising slogan.
-[dare] Narrate a walk of shame like it's an Olympic event.
-[dare] Say “I have a permit for this level of bullshit.” like a royal herald announcing an absolute disaster.
-[dare] Explain a booty call as if you're requesting urgent technical support.
-[group] Everyone with a low-battery warning, take one sip.
-[dare] Advertise your emotional baggage like it's a luxury luggage set.
-[dare] Give an acceptance speech for Worst Timing in a Romantic Situation.
+[target] Pick whoever gets by on flirting. They drink.
+[dare] Give your avatar a one-star review.
+[dare] Name your avatar's most useless feature.
+[dare] Invent a job for your avatar.
+[dare] Give your avatar a fake criminal record.
+[target] Pick whoever would say 'hear me out' before absolute nonsense. They assign a drink.
+[dare] Give your avatar's ass a bad review.
+[dare] Explain being down bad like it's your job.
+[dare] Explain your avatar's outfit like it's high fashion.
+[dare] Make up a terrible sex-toy brand name.
+[target] Pick whoever would think the casino can smell fear. They assign a drink.
+[dare] Make up a warning label for your avatar.
+[group] Everyone with a giant avatar drinks.
+[dare] Pose like you're on a terrible album cover.
+[dare] Pose like you've just been caught stealing snacks.
+[dare] Give a weather report on the lobby's sexual tension.
+[dare] Do your best disappointed-parent pose.
+[dare] Invent a dating app for people with terrible taste.
+[dare] Explain your type like it's a technical problem.
+[left] Do an evil laugh. The person to your left rates it out of ten.
+[group] Everyone in full body, do your best evil laugh.
+[group] Everyone with animal ears, say “I am the problem.”
+[dare] Apologise for flirting with the entire lobby.
+[target] Pick whoever would get recognised from an embarrassing clip. They assign a drink.
+[dare] Say 'I'm not jealous' like you're clearly jealous.
+[dare] Give yourself a villain name and a stupid backstory.
+[group] Everyone with glowing eyes, do your best evil laugh.
+[dare] Advertise your flirting skills. Make it sound terrible.
+[dare] Make up a useless superpower. Explain why it's great.
+[dare] Strike your most overconfident pose.
+[right] Make up a rumour about the person to your right. Keep it about their shoes.
+[dare] Make up a terrible slogan for your OnlyFans.
+[dare] Narrate a walk of shame like a sports commentator.
+[dare] Copy a superhero landing while seated.
+[dare] Ask tech support for help with a booty call.
+[group] Everyone with a low-battery warning drinks.
+[dare] Try to sell someone your emotional baggage.
+[dare] Accept an award for being shit at romance.
 [dare] Say 'I'm emotionally available' like the biggest liar in the fucking lobby.
-[target] Pick the person most likely to ask whether the mascot is single at a karaoke bar. They assign one sip.
-[target] Pick the person most likely to get mistaken for the manager at a haunted-house attraction. They assign one sip.
-[target] Pick the person most likely to leave with more gossip than they arrived with at a fancy restaurant. They assign one sip.
-[dare] Invent a fake patch note that explains why your flirting keeps failing.
-[dare] Say “The red flags are decorative.” like a nature-documentary narrator observing a horny lobby.
-[target] Pick the person most likely to accidentally audition for a job at a haunted-house attraction. They assign one sip.
-[target] Pick the person most likely to start a cult at an airport. They assign one sip.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a flustered dating-sim character.
-[target] Pick the person most likely to get recognised for something embarrassing at a karaoke bar. They assign one sip.
-[target] Pick the person most likely to lose an argument with an automatic door at a furry convention. They assign one sip.
-[group] Everyone whose avatar has jiggle physics, take one sip.
-[target] Pick the person most likely to get recognised for something embarrassing at a furry convention. They assign one sip.
-[target] Pick the person most likely to make everyone regret giving them a microphone at a furry convention. They assign one sip.
-[dare] Give your microphone a formal warning for enabling your behaviour.
-[dare] Make up a perfume name that captures the smell of panic-buying an avatar.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a suspiciously cheerful tax collector.
-[neighbours] The closest player is your scene partner. Give them a pep talk for a problem they don't have.
-[dare] Say “I have a permit for this level of bullshit.” like a customer asking to speak to the wheel's manager.
-[dare] Say “Your honour, the vibes were immaculate.” like a nature-documentary narrator observing a horny lobby.
-[target] Pick the person most likely to accidentally join the staff at a wedding reception. They assign one sip.
-[group] Everyone with a sword they absolutely don't need, take one sip.
-[target] Pick the person most likely to leave with more gossip than they arrived with at a wedding reception. They assign one sip.
-[target] Pick the person most likely to be politely asked to stop narrating everything at a karaoke bar. They assign one sip.
-[group] Everyone whose 'just a friend' era ended badly, take one sip.
-[group] Everyone who has ever had a crush on a villain, take one sip.
-[group] Everyone whose avatar has a blush toggle, take one sip.
-[group] Everyone who has a completely indefensible fictional crush, say 'hear me out' together.
-[neighbours] The closest player is your scene partner. Challenge them to invent a worse pickup line than yours.
-[group] Everyone who has ever rehearsed a voice message, take one sip.
-[group] Everyone with a tiny avatar, give the lobby your best evil laugh.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a wizard whose spell has autocorrected.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a detective who has found suspicious browser history.
-[group] Everyone who has typed 'haha' with a completely straight face, take one sip.
-[target] Pick the person most likely to try to pay with exposure at a wedding reception. They assign one sip.
-[dare] Say “The red flags are decorative.” like a sleepy airport announcer.
-[target] Pick the person most likely to ask a deeply horny question with a completely straight face at a karaoke bar. They assign one sip.
-[group] Everyone who has screenshotted a conversation for the group chat, take one sip.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a restaurant critic reviewing a cursed sandwich.
-[dare] Say “My dignity disconnected before I did.” like a customer asking to speak to the wheel's manager.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a pirate negotiating a refund.
-[group] Everyone who needs five business days to recover from a compliment, take one sip.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a villain whose evil plan has no budget.
-[group] Everyone whose flirting could be mistaken for bullying, take one sip.
-[scuffed] Give the compatibility calculator a bad Yelp review for knowing your business.
-[group] Everyone whose avatar has piercings, take one sip.
+[target] Pick whoever would become a meme at a convention. They assign a drink.
+[target] Pick whoever would go viral for falling over. They assign a drink.
+[target] Pick whoever would get recognised by their laugh. They assign a drink.
+[dare] Give your flirting skills a patch note.
+[dare] Do your best NPC idle animation.
+[target] Pick whoever would be remembered for a terrible pickup line. They assign a drink.
+[target] Pick whoever would be famous for something they deny doing. They assign a drink.
+[dare] Pretend your avatar is stuck loading.
+[target] Pick whoever would ask for a discount on a first date. They assign a drink.
+[target] Pick whoever would use an expired coupon and argue. They assign a drink.
+[group] Everyone whose avatar has jiggle physics drinks.
+[target] Pick whoever would ask for a refund after eating everything. They assign a drink.
+[target] Pick whoever would try to get free entry by name-dropping. They assign a drink.
+[dare] Tell your mic off for letting everyone hear you.
+[dare] Name a perfume after your last bad purchase.
+[dare] Pose like the final frame of a dramatic movie.
+[neighbours] Give the closest person a completely unnecessary pep talk.
+[dare] Show the lobby your worst flirting pose.
+[dare] Pose like you just saw your ex enter the room.
+[target] Pick whoever would haggle over something already free. They assign a drink.
+[group] Everyone with a sword drinks.
+[target] Pick whoever would ask for a loyalty card at a wedding. They assign a drink.
+[target] Pick whoever would cry over a missing sauce packet. They assign a drink.
+[group] Everyone who caught feelings for 'just a friend' drinks.
+[group] Everyone who has ever had a crush on a villain drinks.
+[group] Everyone whose avatar has a blush toggle drinks.
+[group] Everyone with a questionable fictional crush, say 'hear me out'.
+[neighbours] Trade bad pickup lines with the closest person.
+[group] Everyone who has ever rehearsed a voice message drinks.
+[group] Everyone with a tiny avatar, do your best evil laugh.
+[dare] Give yourself a terrible dating-profile headline.
+[dare] Introduce yourself like you're on a dating show.
+[group] Everyone who has typed 'haha' with a completely straight face drinks.
+[target] Pick whoever would rage-quit a board game. They assign a drink.
+[dare] Explain your type without saying 'personality'.
+[target] Pick whoever would treat a minor delay like betrayal. They assign a drink.
+[group] Everyone who has screenshotted a conversation for the group chat drinks.
+[dare] Invent a dating-app opening line. Make it awful.
+[dare] Give the worst first-date advice you can.
+[dare] Describe your flirting skills in three words.
+[group] Everyone who gets flustered by compliments drinks.
+[dare] Advertise yourself using only bad qualities.
+[group] Everyone whose flirting could be mistaken for bullying drinks.
+[scuffed] Give the Compatibility Calculator a bad review.
+[group] Everyone whose avatar has piercings drinks.
 [scuffed] Name your imaginary casino. The worse the name, the better.
-[target] Pick the person most likely to ask a deeply horny question with a completely straight face at a wedding reception. They assign one sip.
+[target] Pick whoever would start beef over a parking space. They assign a drink.
 [scuffed] Invent a SCUFFED achievement for your worst social decision.
-[group] Everyone using an anime avatar, take one sip.
-[target] Pick the person most likely to ask for the Wi-Fi password before saying hello at a karaoke bar. They assign one sip.
-[neighbours] The closest player is your scene partner. Ask them to describe your vibe as a disappointing meal.
-[group] Everyone wearing a hoodie, give the lobby your best evil laugh.
-[scuffed] Give Fenic, Epsi and Seany a completely fictional boy-band name.
-[group] Everyone wearing boots, give the lobby your best evil laugh.
-[target] The player opposite you is your scene partner. Give them a five-second introduction like they're the final boss.
+[group] Everyone using an anime avatar drinks.
+[target] Pick whoever would hold a grudge against a vending machine. They assign a drink.
+[neighbours] Ask the closest person what terrible meal you'd be.
+[group] Everyone wearing a hoodie, do your best evil laugh.
+[scuffed] Give Fenic, Epsi and Seany a boy-band name.
+[group] Everyone wearing boots, do your best evil laugh.
+[target] Introduce the person opposite you like a final boss.
 [scuffed] Explain your losing streak without using the words 'rigged', 'luck' or 'bullshit'.
-[neighbours] The closest player is your scene partner. Ask them to name your imaginary autobiography.
-[target] Pick the person most likely to invent a rivalry with a stranger at a fancy restaurant. They assign one sip.
-[scuffed] Deliver a fake motivational speech to a slot machine with commitment issues.
-[left] Ask the person to your left to name your imaginary scandal. No real secrets required.
-[right] Give the person to your right a completely fictional nightclub nickname.
-[dare] Say “The red flags are decorative.” like a robot trying to understand flirting.
-[target] Pick the person most likely to create a new group chat nobody asked for at a furry convention. They assign one sip.
-[neighbours] You and the closest player invent a terrible slogan for couples therapy.
-[group] Everyone who is wearing socks IRL, take one sip.
-[group] Everyone who has a snack nearby, give the lobby your best evil laugh.
+[neighbours] Let the closest person name your autobiography.
+[target] Pick whoever would need a moment after bad takeaway. They assign a drink.
+[scuffed] Give a slot machine a pep talk.
+[left] Let the person to your left invent a scandal about you.
+[right] Give the person to your right a nightclub nickname.
+[dare] Explain why someone should definitely not date you.
+[target] Pick whoever would try to pay with exposure. They assign a drink.
+[neighbours] Make up a terrible couples-therapy slogan with the closest person.
+[group] Everyone wearing socks IRL drinks.
+[group] Everyone who has a snack nearby, do your best evil laugh.
 [drink] Drink if your best friend joined and immediately made the lobby worse.
 [drink] Drink if you've been personally attacked by a prompt that wasn't even about you.
-[target] Pick the person most likely to start an argument about a technicality at a karaoke bar. They assign one sip.
-[group] Everyone who has a pet in the room, give the lobby your best evil laugh.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a newsreader reporting the dumbest event in history.
-[target] Pick the person most likely to make an apology that needs its own apology at a fancy restaurant. They assign one sip.
-[group] Everyone with a controller on charge, give the lobby your best evil laugh.
+[target] Pick whoever would offer a shoutout instead of money. They assign a drink.
+[group] Everyone who has a pet in the room, do your best evil laugh.
+[dare] Give an imaginary date an unnecessary safety briefing.
+[target] Pick whoever would think being cute counts as payment. They assign a drink.
+[group] Everyone with a controller on charge, do your best evil laugh.
 [drink] Drink if you read 'NSFW' and suddenly started paying attention.
-[truth] Drink if you’ve ever made a suspicious noise while adjusting your headset in a private instance.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a royal herald announcing an absolute disaster.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a nature-documentary narrator observing a horny lobby.
-[truth] Drink if you’ve ever laughed so hard you snorted in front of your best friend.
-[dare] Say “Your honour, the vibes were immaculate.” like a tutorial NPC who has given up.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a wizard whose spell has autocorrected.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a supervillain stuck on hold.
-[target] Pick the person most likely to become a local legend for the stupidest reason at a furry convention. They assign one sip.
-[truth] Drink if you’ve ever tried to impress someone and lost your tracking in front of your best friend.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a nature-documentary narrator observing a horny lobby.
-[target] Pick the person most likely to get recognised for something embarrassing at an airport. They assign one sip.
-[truth] Drink if you’ve ever used a pickup line that deserved a restraining order from the English language in a public lobby.
-[truth] Drink if you’ve ever used a pickup line that deserved a restraining order from the English language in a private instance.
-[target] Pick the person most likely to start an argument about a technicality at a wedding reception. They assign one sip.
-[truth] Drink if you’ve ever said someone's name with far too much enthusiasm while someone was streaming.
-[truth] Drink if you’ve ever made eye contact with someone during an unfortunate sound effect while someone was streaming.
-[scuffed] Tell the wheel “the slots recognised my username” like you expect compensation.
-[scuffed] Give a fake press statement explaining that the UNO deck has favourites.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a nature-documentary narrator observing a horny lobby.
-[target] Pick the person most likely to lose an argument with an automatic door at a fancy restaurant. They assign one sip.
-[truth] Drink if you’ve ever heard your own voice played back and wanted a new identity in front of your best friend.
-[truth] Drink if you’ve ever accidentally sent a heart to someone you barely knew in front of your best friend.
-[left] The person to your left is your scene partner. Ask them for the worst possible name for a nightclub.
-[truth] Drink if you’ve ever made eye contact with someone during an unfortunate sound effect in front of your best friend.
-[dare] Say “The red flags are decorative.” like a flustered dating-sim character.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a tutorial NPC who has given up.
-[target] Pick the person most likely to make everyone regret giving them a microphone at a wedding reception. They assign one sip.
-[target] Pick the person most likely to try to pay with exposure at a karaoke bar. They assign one sip.
-[target] Pick the person most likely to say 'watch this' immediately before disaster at an airport. They assign one sip.
-[target] Pick the person most likely to make a grand entrance through the wrong door at an airport. They assign one sip.
-[group] Everyone currently standing up, say “I am the problem” together.
-[truth] Drink if you’ve ever said someone's username like it was their legal name in front of your best friend.
-[target] Pick the person most likely to be politely asked to stop narrating everything at a wedding reception. They assign one sip.
-[group] Everyone wearing a hoodie, take one sip.
-[right] The person to your right is your scene partner. Ask them which household appliance matches your energy.
-[target] Pick the person most likely to turn a minor inconvenience into a villain origin story at an airport. They assign one sip.
-[truth] Drink if you’ve ever called someone by your ex's name while someone was streaming.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a medieval peasant discovering Discord.
-[target] Pick the person most likely to convince themselves the place is haunted at a karaoke bar. They assign one sip.
-[scuffed] Pitch “the wheel ate my dignity” as the title of the next SCUFFED update.
-[target] Pick the person most likely to turn a minor inconvenience into a villain origin story at a karaoke bar. They assign one sip.
-[dare] Say “I have a permit for this level of bullshit.” like a ghost who is embarrassed about haunting you.
-[truth] Drink if you’ve ever made a noise you could never explain in court while someone was streaming.
-[target] Pick the person most likely to make friends with the security guard at a haunted-house attraction. They assign one sip.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a royal herald announcing an absolute disaster.
-[dare] Say “Your honour, the vibes were immaculate.” like a villain whose evil plan has no budget.
-[right] The person to your right is your scene partner. Give them a five-second introduction like they're the final boss.
-[target] Pick the person most likely to accidentally become the entertainment at a karaoke bar. They assign one sip.
-[truth] Drink if you’ve ever said someone's name with far too much enthusiasm in front of your best friend.
-[target] Pick the person most likely to ask for the Wi-Fi password before saying hello at an airport. They assign one sip.
-[truth] Drink if you’ve ever made a joke so bad you apologised to the room in front of your best friend.
-[target] Pick the person most likely to accidentally audition for a job at an airport. They assign one sip.
-[dare] Say “The red flags are decorative.” like a villain whose evil plan has no budget.
-[scuffed] Your villain origin story is “the moon was clearly out of budget.” Deliver the opening line.
-[target] Pick the person most likely to turn a queue into a therapy session at a wedding reception. They assign one sip.
-[scuffed] Pitch “the roulette ball has a personal grudge” as the title of the next SCUFFED update.
-[group] Everyone with a tail, give the lobby your best evil laugh.
-[target] Pick the person most likely to get mistaken for the manager at a furry convention. They assign one sip.
-[right] The person to your right is your scene partner. Give them an award for a completely fictional achievement.
-[scuffed] Pitch “the UNO deck has favourites” as the title of the next SCUFFED update.
-[target] Pick the person most likely to start an argument about a technicality at a haunted-house attraction. They assign one sip.
-[dare] Say “My dignity disconnected before I did.” like a nature-documentary narrator observing a horny lobby.
-[target] Pick the person most likely to ask whether the mascot is single at a wedding reception. They assign one sip.
-[target] Pick the person most likely to start an argument about a technicality at an airport. They assign one sip.
-[left] The person to your left is your scene partner. Give them an award for a completely fictional achievement.
-[neighbours] The closest player is your scene partner. Invent a ridiculous job title for them.
-[group] Everyone whose avatar has piercings, say “I am the problem” together.
-[target] Pick the person most likely to make a grand entrance through the wrong door at a wedding reception. They assign one sip.
-[group] Everyone who has Discord open, say “I am the problem” together.
-[scuffed] Finish your casino complaint with “the wheel ate my dignity.”
-[truth] Drink if you’ve ever made eye contact with someone during an unfortunate sound effect in a public lobby.
-[truth] Drink if you’ve ever pretended a spicy message was just a meme while someone was streaming.
-[truth] Drink if you’ve ever accidentally turned a normal conversation into a dating interview while someone was streaming.
-[target] Pick the person most likely to become a local legend for the stupidest reason at a fancy restaurant. They assign one sip.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a medieval peasant discovering Discord.
-[target] Pick the person most likely to find a mirror and forget the original plan at an airport. They assign one sip.
-[truth] Drink if you’ve ever called someone cute and then panicked while someone was streaming.
-[truth] Drink if you’ve ever said something horny and blamed your microphone while someone was streaming.
-[target] Pick the person most likely to start a conspiracy theory about the lighting at an airport. They assign one sip.
-[neighbours] The closest player is your scene partner. Give them a compliment that sounds like a patch note.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a dramatic soap-opera actor.
-[target] Pick the person most likely to lose their friends within thirty seconds at a fancy restaurant. They assign one sip.
-[group] Everyone using a joke avatar, say “I am the problem” together.
-[truth] Drink if you’ve ever made a joke so bad you apologised to the room in a private instance.
-[dare] Say “My dignity disconnected before I did.” like a pirate negotiating a refund.
-[target] Pick the person most likely to flirt their way into a worse situation at a wedding reception. They assign one sip.
-[target] Pick the person most likely to make an apology that needs its own apology at a haunted-house attraction. They assign one sip.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a newsreader reporting the dumbest event in history.
-[scuffed] Your villain origin story is “my luck is still importing.” Deliver the opening line.
-[truth] Drink if you’ve ever called someone babe out of habit in a public lobby.
-[dare] Say “Your honour, the vibes were immaculate.” like a detective who has found suspicious browser history.
-[scuffed] Pitch “Seany looked away for one fucking second” as the title of the next SCUFFED update.
-[dare] Say “Your honour, the vibes were immaculate.” like a smug final boss with one hit point.
-[scuffed] Give a fake press statement explaining that the roulette ball has a personal grudge.
-[dare] Say “I have a permit for this level of bullshit.” like a suspiciously cheerful tax collector.
-[truth] Drink if you’ve ever heard your own voice played back and wanted a new identity in a public lobby.
-[group] Everyone who changed avatars this round, take one sip.
-[truth] Drink if you’ve ever said something horny and blamed your microphone in front of your best friend.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a medieval peasant discovering Discord.
-[truth] Drink if you’ve ever tried to impress someone and lost your tracking in a public lobby.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a customer asking to speak to the wheel's manager.
-[truth] Drink if you’ve ever said you were leaving and stayed for the gossip in a public lobby.
-[scuffed] Give a fake press statement explaining that the pool table intimidated me.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a sleepy airport announcer.
-[truth] Drink if you’ve ever accidentally sent a heart to someone you barely knew in a public lobby.
-[truth] Drink if you’ve ever been betrayed by a suggestive avatar toggle while someone was streaming.
-[truth] Drink if you’ve ever been roasted by someone with a cartoon animal avatar in a private instance.
-[truth] Drink if you’ve ever accidentally invited the person you were talking about in a public lobby.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a wizard whose spell has autocorrected.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a smug final boss with one hit point.
-[truth] Drink if you’ve ever said something completely innocent that sounded filthy in front of your best friend.
-[truth] Drink if you’ve ever pretended to understand an inside joke in a public lobby.
-[truth] Drink if you’ve ever forgotten you were sharing your screen in a public lobby.
-[truth] Drink if you’ve ever mistaken flirting for an insult in a private instance.
-[target] Pick the person most likely to accidentally become the entertainment at a haunted-house attraction. They assign one sip.
-[dare] Say “The red flags are decorative.” like a detective who has found suspicious browser history.
-[truth] Drink if you’ve ever pretended an awkward silence was a connection issue in a private instance.
-[truth] Drink if you’ve ever made your avatar's face get stuck on a stupid expression in a private instance.
-[left] The person to your left is your scene partner. Invent a conspiracy theory about their avatar's shoes.
-[truth] Drink if you’ve ever accidentally invited the person you were talking about while someone was streaming.
-[target] Pick the person most likely to make friends with the security guard at an airport. They assign one sip.
-[left] The person to your left is your scene partner. Give them a pep talk for a problem they don't have.
-[target] Pick the person most likely to convince themselves the place is haunted at a fancy restaurant. They assign one sip.
-[truth] Drink if you’ve ever said someone's username like it was their legal name in a public lobby.
-[truth] Drink if you’ve ever said you were leaving and stayed for the gossip in a private instance.
-[target] The player opposite you is your scene partner. Invent a conspiracy theory about their avatar's shoes.
-[target] Pick the person most likely to claim they could run the place better at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to try to turn the visit into a first date at an airport. They assign one sip.
-[group] Everyone whose avatar has jiggle physics, give the lobby your best evil laugh.
-[dare] Say “I have a permit for this level of bullshit.” like a dramatic soap-opera actor.
-[target] Pick the person most likely to say 'watch this' immediately before disaster at a wedding reception. They assign one sip.
-[group] Everyone wearing a hat, give the lobby your best evil laugh.
-[group] Everyone using a robot avatar, give the lobby your best evil laugh.
-[truth] Drink if you’ve ever had your stomach interrupt your attempt to flirt in front of your best friend.
-[target] Pick the person most likely to find an ex they didn't know they had at a haunted-house attraction. They assign one sip.
-[scuffed] Finish your casino complaint with “the pool table intimidated me.”
-[scuffed] Finish your casino complaint with “my avatar spent the winnings before I got them.”
-[target] Pick the person most likely to ask for the Wi-Fi password before saying hello at a fancy restaurant. They assign one sip.
-[truth] Drink if you’ve ever said someone's name with far too much enthusiasm in a private instance.
-[group] Everyone who has music playing, take one sip.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a medieval peasant discovering Discord.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a restaurant critic reviewing a cursed sandwich.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a cowboy confronting a broken avatar toggle.
-[truth] Drink if you’ve ever admitted you were down bad in a private instance.
-[group] Everyone with a tail, say “I am the problem” together.
-[truth] Drink if you’ve ever made your avatar's face get stuck on a stupid expression in front of your best friend.
-[group] Everyone with a suspicious number of toggles, take one sip.
-[group] Everyone using a robot avatar, take one sip.
-[left] The person to your left is your scene partner. Invent a ridiculous job title for them.
-[truth] Drink if you’ve ever forgotten other people could hear your music in front of your best friend.
-[target] Pick the person most likely to insist the background music is flirting with them at a karaoke bar. They assign one sip.
-[dare] Say “I have a permit for this level of bullshit.” like a nature-documentary narrator observing a horny lobby.
-[target] Pick the person most likely to challenge the wrong person to a dance-off at a wedding reception. They assign one sip.
-[group] Everyone wearing glasses, give the lobby your best evil laugh.
-[target] Pick the person most likely to challenge the wrong person to a dance-off at a haunted-house attraction. They assign one sip.
-[truth] Drink if you’ve ever forgotten you were sharing your screen in a private instance.
-[target] Pick the person most likely to claim they could run the place better at an airport. They assign one sip.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a flustered dating-sim character.
-[truth] Drink if you’ve ever accidentally played your soundboard at the worst possible moment in front of your best friend.
-[dare] Say “I have a permit for this level of bullshit.” like a wizard whose spell has autocorrected.
-[target] The player opposite you is your scene partner. Give them an award for a completely fictional achievement.
-[truth] Drink if you’ve ever pretended a spicy message was just a meme in front of your best friend.
-[truth] Drink if you’ve ever had to explain why your status looked like a breakup announcement while someone was streaming.
-[target] Pick the person most likely to accidentally become the entertainment at a furry convention. They assign one sip.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a suspiciously cheerful tax collector.
-[truth] Drink if you’ve ever mistaken an insult for flirting in a public lobby.
-[target] Pick the person most likely to turn a queue into a therapy session at a haunted-house attraction. They assign one sip.
-[target] Pick the person most likely to ask for the Wi-Fi password before saying hello at a haunted-house attraction. They assign one sip.
-[scuffed] Pitch “the horse had terrible vibes” as the title of the next SCUFFED update.
-[scuffed] Tell the wheel “the compatibility calculator knows too much” like you expect compensation.
-[group] Everyone with horns, give the lobby your best evil laugh.
-[truth] Drink if you’ve ever had to clarify that you meant your avatar's tail in a private instance.
-[scuffed] Pitch “Fenic left me unsupervised” as the title of the next SCUFFED update.
-[truth] Drink if you’ve ever found out someone remembered your embarrassing phase in front of your best friend.
-[group] Everyone who joined in the last ten minutes, give the lobby your best evil laugh.
-[target] Pick the person most likely to start a cult at a haunted-house attraction. They assign one sip.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a restaurant critic reviewing a cursed sandwich.
-[target] Pick the person most likely to get rejected by a self-service machine at a karaoke bar. They assign one sip.
-[group] Everyone who has a snack nearby, take one sip.
-[dare] Say “Your honour, the vibes were immaculate.” like a restaurant critic reviewing a cursed sandwich.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a very underpaid casino announcer.
-[target] Pick the person most likely to ask whether the mascot is single at an airport. They assign one sip.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a wizard whose spell has autocorrected.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a dramatic soap-opera actor.
-[target] The player opposite you is your scene partner. Invent a ridiculous job title for them.
-[scuffed] Finish your casino complaint with “my luck is still importing.”
-[target] Pick the person most likely to flirt their way into a worse situation at a fancy restaurant. They assign one sip.
-[scuffed] Tell the wheel “the wheel and I are in a complicated relationship” like you expect compensation.
-[scuffed] Tell the wheel “Epsi said it was probably fine” like you expect compensation.
-[target] Pick the person most likely to give unsolicited relationship advice at a furry convention. They assign one sip.
-[truth] Drink if you’ve ever flirted with the wrong person while someone was streaming.
-[target] Pick the person most likely to challenge the wrong person to a dance-off at a fancy restaurant. They assign one sip.
-[truth] Drink if you’ve ever called someone daddy as a joke and immediately regretted the delivery while someone was streaming.
-[truth] Drink if you’ve ever realised your avatar was missing its trousers in front of your best friend.
-[dare] Say “I have a permit for this level of bullshit.” like a medieval peasant discovering Discord.
-[truth] Drink if you’ve ever been caught checking yourself in a mirror in a public lobby.
-[group] Everyone who has their mic muted, say “I am the problem” together.
-[target] Pick the person most likely to claim they could run the place better at a wedding reception. They assign one sip.
-[target] Pick the person most likely to be politely asked to stop narrating everything at a furry convention. They assign one sip.
-[dare] Say “The red flags are decorative.” like a royal herald announcing an absolute disaster.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a newsreader reporting the dumbest event in history.
-[truth] Drink if you’ve ever made your avatar's face get stuck on a stupid expression while someone was streaming.
-[group] Everyone currently standing up, give the lobby your best evil laugh.
-[group] Everyone with horns, say “I am the problem” together.
-[truth] Drink if you’ve ever said you were leaving and stayed for the gossip in front of your best friend.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a nature-documentary narrator observing a horny lobby.
-[truth] Drink if you’ve ever tried to act mysterious and sounded constipated while someone was streaming.
-[truth] Drink if you’ve ever practised your sexy voice while someone was streaming.
-[target] Pick the person most likely to accidentally join the staff at a haunted-house attraction. They assign one sip.
-[target] Pick the person most likely to get mistaken for the manager at a karaoke bar. They assign one sip.
-[group] Everyone on desktop, take one sip.
-[truth] Drink if you’ve ever mistaken flirting for an insult while someone was streaming.
-[target] Pick the person most likely to leave with more gossip than they arrived with at an airport. They assign one sip.
-[target] Pick the person most likely to challenge the wrong person to a dance-off at an airport. They assign one sip.
-[truth] Drink if you’ve ever tried to change the subject and made it worse while someone was streaming.
-[dare] Say “The red flags are decorative.” like a medieval peasant discovering Discord.
-[target] Pick the person most likely to turn a queue into a therapy session at an airport. They assign one sip.
-[left] The person to your left is your scene partner. Introduce them as your completely unqualified legal adviser.
-[truth] Drink if you’ve ever accidentally sent a heart to someone you barely knew in a private instance.
-[truth] Drink if you’ve ever announced something embarrassing because you thought you were muted in a private instance.
-[group] Everyone with a controller on charge, say “I am the problem” together.
-[dare] Say “I have a permit for this level of bullshit.” like a detective who has found suspicious browser history.
-[target] Pick the person most likely to try to speedrun the entire experience at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to convince themselves the place is haunted at a furry convention. They assign one sip.
-[truth] Drink if you’ve ever mistaken an insult for flirting in a private instance.
-[truth] Drink if you’ve ever been caught smiling at a message in a private instance.
-[truth] Drink if you’ve ever forgotten you were sharing your screen in front of your best friend.
-[dare] Say “My dignity disconnected before I did.” like a royal herald announcing an absolute disaster.
-[target] Pick the person most likely to invent a rivalry with a stranger at a karaoke bar. They assign one sip.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a villain whose evil plan has no budget.
-[neighbours] The closest player is your scene partner. Invent a conspiracy theory about their avatar's shoes.
-[target] Pick the person most likely to accidentally audition for a job at a karaoke bar. They assign one sip.
-[target] Pick the person most likely to try to turn the visit into a first date at a karaoke bar. They assign one sip.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a disappointed game-show host.
-[truth] Drink if you’ve ever said something horny and blamed your microphone in a private instance.
-[dare] Say “The red flags are decorative.” like a cowboy confronting a broken avatar toggle.
-[target] Pick the person most likely to become a local legend for the stupidest reason at a wedding reception. They assign one sip.
-[truth] Drink if you’ve ever been roasted by someone with a cartoon animal avatar in a public lobby.
-[target] Pick the person most likely to accidentally join the staff at a karaoke bar. They assign one sip.
-[group] Everyone who has their mic muted, give the lobby your best evil laugh.
-[group] Everyone with wings, give the lobby your best evil laugh.
-[dare] Say “I have a permit for this level of bullshit.” like a very underpaid casino announcer.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a gym coach motivating a potato.
-[scuffed] Tell the wheel “my chips are emotionally unavailable” like you expect compensation.
-[target] Pick the person most likely to flirt their way into a worse situation at an airport. They assign one sip.
-[truth] Drink if you’ve ever said something horny and blamed your microphone in a public lobby.
-[dare] Say “My dignity disconnected before I did.” like a wizard whose spell has autocorrected.
-[right] The person to your right is your scene partner. Let them choose your fake wrestling name.
-[target] Pick the person most likely to ask a deeply horny question with a completely straight face at a fancy restaurant. They assign one sip.
-[group] Everyone with a low-battery warning, say “I am the problem” together.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a ghost who is embarrassed about haunting you.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a very underpaid casino announcer.
-[target] Pick the person most likely to lose an argument with an automatic door at a karaoke bar. They assign one sip.
-[scuffed] Give a fake press statement explaining that the casino mistook me for someone competent.
-[truth] Drink if you’ve ever tried to act mysterious and sounded constipated in front of your best friend.
-[group] Everyone who changed avatars this round, give the lobby your best evil laugh.
-[target] Pick the person most likely to say 'I know a guy' and make everything worse at an airport. They assign one sip.
-[dare] Say “I have a permit for this level of bullshit.” like a smug final boss with one hit point.
-[target] The player opposite you is your scene partner. Ask them to describe your vibe as a disappointing meal.
-[scuffed] Your villain origin story is “my chips are emotionally unavailable.” Deliver the opening line.
-[group] Everyone with a prop in their hand, take one sip.
-[truth] Drink if you’ve ever forgotten you were sharing your screen while someone was streaming.
-[left] The person to your left is your scene partner. Ask them to describe your vibe as a disappointing meal.
-[truth] Drink if you’ve ever discovered your headset wasn't the thing making that noise in a public lobby.
-[truth] Drink if you’ve ever forgotten other people could hear your music while someone was streaming.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a robot trying to understand flirting.
-[truth] Drink if you’ve ever realised your avatar was missing its trousers in a private instance.
-[group] Everyone using a fallback avatar, give the lobby your best evil laugh.
-[truth] Drink if you’ve ever flirted with the wrong person in front of your best friend.
-[truth] Drink if you’ve ever called someone babe out of habit in a private instance.
-[target] Pick the person most likely to create a new group chat nobody asked for at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to accidentally join the staff at a furry convention. They assign one sip.
-[dare] Say “Your honour, the vibes were immaculate.” like a ghost who is embarrassed about haunting you.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a disappointed game-show host.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a cowboy confronting a broken avatar toggle.
-[group] Everyone with a low-battery warning, give the lobby your best evil laugh.
-[target] Pick the person most likely to try to pay with exposure at a haunted-house attraction. They assign one sip.
-[dare] Say “My dignity disconnected before I did.” like a dramatic soap-opera actor.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a cowboy confronting a broken avatar toggle.
-[group] Everyone with wings, say “I am the problem” together.
-[target] Pick the person most likely to get rejected by a self-service machine at a wedding reception. They assign one sip.
-[scuffed] Pitch “the moon was clearly out of budget” as the title of the next SCUFFED update.
-[scuffed] Your villain origin story is “the wheel ate my dignity.” Deliver the opening line.
-[truth] Drink if you’ve ever said you were leaving and stayed for the gossip while someone was streaming.
-[target] Pick the person most likely to accidentally audition for a job at a furry convention. They assign one sip.
-[truth] Drink if you’ve ever received a compliment and forgotten every word you knew in a public lobby.
-[group] Everyone with glowing eyes, take one sip.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a supervillain stuck on hold.
-[truth] Drink if you’ve ever discovered your headset wasn't the thing making that noise in front of your best friend.
-[group] Everyone whose avatar has piercings, give the lobby your best evil laugh.
-[dare] Say “My dignity disconnected before I did.” like a restaurant critic reviewing a cursed sandwich.
-[scuffed] Give a fake press statement explaining that the compatibility calculator knows too much.
-[group] Everyone with animal ears, give the lobby your best evil laugh.
-[truth] Drink if you’ve ever revealed a crush without meaning to in front of your best friend.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a pirate negotiating a refund.
-[group] Everyone using a fallback avatar, take one sip.
-[left] The person to your left is your scene partner. Give them a five-second introduction like they're the final boss.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a dramatic soap-opera actor.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a gym coach motivating a potato.
-[scuffed] Tell the wheel “my avatar spent the winnings before I got them” like you expect compensation.
-[truth] Drink if you’ve ever accidentally played your soundboard at the worst possible moment in a public lobby.
-[group] Everyone whose avatar has a blush toggle, give the lobby your best evil laugh.
-[truth] Drink if you’ve ever called someone cute and then panicked in front of your best friend.
-[target] Pick the person most likely to say 'I know a guy' and make everything worse at a haunted-house attraction. They assign one sip.
-[truth] Drink if you’ve ever been betrayed by a suggestive avatar toggle in front of your best friend.
-[truth] Drink if you’ve ever revealed a crush without meaning to while someone was streaming.
-[scuffed] Give a fake press statement explaining that SCUFFED is conducting a social experiment.
-[truth] Drink if you’ve ever practised your sexy voice in front of your best friend.
-[truth] Drink if you’ve ever rehearsed a confession and chickened out in a public lobby.
-[group] Everyone whose avatar has tattoos, take one sip.
-[group] Everyone with a suspicious number of toggles, say “I am the problem” together.
-[target] Pick the person most likely to invent a rivalry with a stranger at a wedding reception. They assign one sip.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a royal herald announcing an absolute disaster.
-[target] Pick the person most likely to say 'I know a guy' and make everything worse at a wedding reception. They assign one sip.
-[dare] Say “The red flags are decorative.” like a dating coach with a zero-percent success rate.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a robot trying to understand flirting.
-[truth] Drink if you’ve ever mistaken an insult for flirting in front of your best friend.
-[truth] Drink if you’ve ever been roasted by someone with a cartoon animal avatar in front of your best friend.
-[right] The person to your right is your scene partner. Ask them to describe your vibe as a disappointing meal.
-[target] Pick the person most likely to insist the background music is flirting with them at a wedding reception. They assign one sip.
-[target] Pick the person most likely to flirt their way into a worse situation at a karaoke bar. They assign one sip.
-[group] Everyone wearing a hat, take one sip.
-[target] Pick the person most likely to become a local legend for the stupidest reason at a karaoke bar. They assign one sip.
-[target] Pick the person most likely to insist the background music is flirting with them at a haunted-house attraction. They assign one sip.
-[truth] Drink if you’ve ever been caught checking yourself in a mirror in front of your best friend.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a nature-documentary narrator observing a horny lobby.
-[truth] Drink if you’ve ever realised someone was flirting three hours too late while someone was streaming.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a very underpaid casino announcer.
-[truth] Drink if you’ve ever practised your sexy voice in a private instance.
-[scuffed] Your villain origin story is “Unity compiled my bad decisions.” Deliver the opening line.
-[scuffed] Pitch “Unity compiled my bad decisions” as the title of the next SCUFFED update.
-[group] Everyone with a suspicious number of toggles, give the lobby your best evil laugh.
-[scuffed] Give a fake press statement explaining that the moon was clearly out of budget.
-[target] Pick the person most likely to find an ex they didn't know they had at a wedding reception. They assign one sip.
-[scuffed] Your villain origin story is “the compatibility calculator knows too much.” Deliver the opening line.
-[scuffed] Your villain origin story is “Epsi said it was probably fine.” Deliver the opening line.
-[target] Pick the person most likely to get rejected by a self-service machine at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to ask for a loyalty card at the worst moment at a karaoke bar. They assign one sip.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a pirate negotiating a refund.
-[truth] Drink if you’ve ever said 'that's my type' louder than intended in a public lobby.
-[right] The person to your right is your scene partner. Give them a compliment that sounds like a patch note.
-[target] Pick the person most likely to ask for a loyalty card at the worst moment at a haunted-house attraction. They assign one sip.
-[target] Pick the person most likely to start an argument about a technicality at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to try to speedrun the entire experience at an airport. They assign one sip.
-[target] Pick the person most likely to ask for a loyalty card at the worst moment at a wedding reception. They assign one sip.
-[target] Pick the person most likely to find a mirror and forget the original plan at a furry convention. They assign one sip.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a supervillain stuck on hold.
-[target] Pick the person most likely to try to pay with exposure at an airport. They assign one sip.
-[target] Pick the person most likely to make everyone regret giving them a microphone at an airport. They assign one sip.
-[dare] Say “I have a permit for this level of bullshit.” like a pirate negotiating a refund.
-[truth] Drink if you’ve ever been caught smiling at a message in front of your best friend.
-[dare] Say “I have a permit for this level of bullshit.” like a supervillain stuck on hold.
-[dare] Say “Your honour, the vibes were immaculate.” like a robot trying to understand flirting.
-[target] Pick the person most likely to start a cult at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to be politely asked to stop narrating everything at a fancy restaurant. They assign one sip.
-[scuffed] Give a fake press statement explaining that Unity compiled my bad decisions.
-[group] Everyone who has a snack nearby, say “I am the problem” together.
-[group] Everyone using a furry avatar, give the lobby your best evil laugh.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a pirate negotiating a refund.
-[truth] Drink if you’ve ever rehearsed a confession and chickened out while someone was streaming.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a medieval peasant discovering Discord.
-[target] Pick the person most likely to make everyone regret giving them a microphone at a haunted-house attraction. They assign one sip.
-[target] Pick the person most likely to turn a queue into a therapy session at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to bring a spreadsheet to a social problem at a furry convention. They assign one sip.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a very underpaid casino announcer.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a supervillain stuck on hold.
-[truth] Drink if you’ve ever had your stomach interrupt your attempt to flirt in a public lobby.
-[group] Everyone whose avatar has tattoos, give the lobby your best evil laugh.
-[target] Pick the person most likely to accidentally become the entertainment at an airport. They assign one sip.
-[group] Everyone wearing a collar, give the lobby your best evil laugh.
-[dare] Say “The red flags are decorative.” like a supervillain stuck on hold.
-[truth] Drink if you’ve ever made your avatar's face get stuck on a stupid expression in a public lobby.
-[truth] Drink if you’ve ever called someone by your ex's name in a private instance.
-[group] Everyone using a furry avatar, say “I am the problem” together.
-[truth] Drink if you’ve ever tried to sound dominant and coughed halfway through in front of your best friend.
-[dare] Say “Your honour, the vibes were immaculate.” like a dramatic soap-opera actor.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a ghost who is embarrassed about haunting you.
-[scuffed] Pitch “the compatibility calculator knows too much” as the title of the next SCUFFED update.
-[target] Pick the person most likely to lose an argument with an automatic door at a wedding reception. They assign one sip.
-[left] The person to your left is your scene partner. Let them choose your fake wrestling name.
-[truth] Drink if you’ve ever called an avatar hot before its owner spoke in a private instance.
-[target] Pick the person most likely to find an ex they didn't know they had at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to challenge the wrong person to a dance-off at a furry convention. They assign one sip.
-[dare] Say “Your honour, the vibes were immaculate.” like a gym coach motivating a potato.
-[scuffed] Finish your casino complaint with “the roulette ball has a personal grudge.”
-[dare] Say “My dignity disconnected before I did.” like a sleepy airport announcer.
-[scuffed] Pitch “my avatar spent the winnings before I got them” as the title of the next SCUFFED update.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a detective who has found suspicious browser history.
-[neighbours] The closest player is your scene partner. Give them an award for a completely fictional achievement.
-[target] Pick the person most likely to try to speedrun the entire experience at a karaoke bar. They assign one sip.
-[target] Pick the person most likely to ask a deeply horny question with a completely straight face at a furry convention. They assign one sip.
-[target] Pick the person most likely to ask for the Wi-Fi password before saying hello at a furry convention. They assign one sip.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a villain whose evil plan has no budget.
-[scuffed] Give a fake press statement explaining that the wheel ate my dignity.
-[dare] Say “My dignity disconnected before I did.” like a dating coach with a zero-percent success rate.
-[target] Pick the person most likely to lose an argument with an automatic door at an airport. They assign one sip.
-[target] Pick the person most likely to try to turn the visit into a first date at a wedding reception. They assign one sip.
-[target] Pick the person most likely to start a conspiracy theory about the lighting at a haunted-house attraction. They assign one sip.
-[target] Pick the person most likely to make everyone regret giving them a microphone at a karaoke bar. They assign one sip.
-[target] Pick the person most likely to get rejected by a self-service machine at a haunted-house attraction. They assign one sip.
-[scuffed] Pitch “the slots recognised my username” as the title of the next SCUFFED update.
-[truth] Drink if you’ve ever been caught checking yourself in a mirror while someone was streaming.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a flustered dating-sim character.
-[target] Pick the person most likely to find a mirror and forget the original plan at a fancy restaurant. They assign one sip.
-[scuffed] Tell the wheel “the wheel ate my dignity” like you expect compensation.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a flustered dating-sim character.
-[truth] Drink if you’ve ever pretended a spicy message was just a meme in a public lobby.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a supervillain stuck on hold.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a cowboy confronting a broken avatar toggle.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a robot trying to understand flirting.
-[target] Pick the person most likely to ask whether the mascot is single at a fancy restaurant. They assign one sip.
-[target] The player opposite you is your scene partner. Let them choose your fake wrestling name.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a ghost who is embarrassed about haunting you.
-[target] Pick the person most likely to be politely asked to stop narrating everything at an airport. They assign one sip.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a medieval peasant discovering Discord.
-[target] Pick the person most likely to start a conspiracy theory about the lighting at a furry convention. They assign one sip.
-[target] Pick the person most likely to insist the background music is flirting with them at a fancy restaurant. They assign one sip.
-[truth] Drink if you’ve ever had to clarify that you meant your avatar's tail in front of your best friend.
-[scuffed] Tell the wheel “the roulette ball has a personal grudge” like you expect compensation.
-[target] The player opposite you is your scene partner. Ask them for the worst possible name for a nightclub.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a dating coach with a zero-percent success rate.
-[scuffed] Give a fake press statement explaining that the slots recognised my username.
-[scuffed] Finish your casino complaint with “Seany looked away for one fucking second.”
-[dare] Say “My dignity disconnected before I did.” like a very underpaid casino announcer.
-[truth] Drink if you’ve ever made eye contact with someone during an unfortunate sound effect in a private instance.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a villain whose evil plan has no budget.
-[target] Pick the person most likely to make friends with the security guard at a karaoke bar. They assign one sip.
-[target] Pick the person most likely to say 'watch this' immediately before disaster at a fancy restaurant. They assign one sip.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a royal herald announcing an absolute disaster.
-[dare] Say “I have a permit for this level of bullshit.” like a newsreader reporting the dumbest event in history.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a customer asking to speak to the wheel's manager.
-[target] Pick the person most likely to leave with more gossip than they arrived with at a haunted-house attraction. They assign one sip.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a supervillain stuck on hold.
-[group] Everyone with a tiny avatar, take one sip.
-[dare] Say “I have a permit for this level of bullshit.” like a gym coach motivating a potato.
-[scuffed] Your villain origin story is “the pool table intimidated me.” Deliver the opening line.
-[group] Everyone wearing boots, take one sip.
-[scuffed] Your villain origin story is “Fenic left me unsupervised.” Deliver the opening line.
-[dare] Say “My dignity disconnected before I did.” like a supervillain stuck on hold.
-[group] Everyone wearing a collar, take one sip.
-[target] Pick the person most likely to make an apology that needs its own apology at an airport. They assign one sip.
-[scuffed] Finish your casino complaint with “the UNO deck has favourites.”
-[group] Everyone with horns, take one sip.
-[truth] Drink if you’ve ever accidentally turned a normal conversation into a dating interview in a private instance.
-[scuffed] Finish your casino complaint with “the slots recognised my username.”
-[truth] Drink if you’ve ever laughed at a notification and refused to explain it in a private instance.
-[target] Pick the person most likely to accidentally become the entertainment at a wedding reception. They assign one sip.
-[scuffed] Finish your casino complaint with “Fenic left me unsupervised.”
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a restaurant critic reviewing a cursed sandwich.
-[truth] Drink if you’ve ever pretended an awkward silence was a connection issue while someone was streaming.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a suspiciously cheerful tax collector.
-[target] Pick the person most likely to make friends with the security guard at a wedding reception. They assign one sip.
-[group] Everyone using a joke avatar, take one sip.
-[scuffed] Finish your casino complaint with “the casino mistook me for someone competent.”
-[target] Pick the person most likely to make a grand entrance through the wrong door at a fancy restaurant. They assign one sip.
-[truth] Drink if you’ve ever admitted you were down bad while someone was streaming.
-[dare] Say “My dignity disconnected before I did.” like a medieval peasant discovering Discord.
-[scuffed] Your villain origin story is “my common sense is a missing script.” Deliver the opening line.
-[right] The person to your right is your scene partner. Invent a ridiculous job title for them.
-[truth] Drink if you’ve ever made a joke so bad you apologised to the room in a public lobby.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a gym coach motivating a potato.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a newsreader reporting the dumbest event in history.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a tutorial NPC who has given up.
-[target] Pick the person most likely to turn a queue into a therapy session at a karaoke bar. They assign one sip.
-[dare] Say “My dignity disconnected before I did.” like a ghost who is embarrassed about haunting you.
-[truth] Drink if you’ve ever rehearsed a confession and chickened out in front of your best friend.
-[group] Everyone who has a pet in the room, take one sip.
-[scuffed] Tell the wheel “the blackjack dealer read my thoughts” like you expect compensation.
-[target] Pick the person most likely to start a conspiracy theory about the lighting at a wedding reception. They assign one sip.
-[dare] Say “The red flags are decorative.” like a ghost who is embarrassed about haunting you.
-[dare] Say “I have a permit for this level of bullshit.” like a villain whose evil plan has no budget.
-[dare] Say “The red flags are decorative.” like a pirate negotiating a refund.
-[group] Everyone who has a pet in the room, say “I am the problem” together.
-[dare] Say “Your honour, the vibes were immaculate.” like a supervillain stuck on hold.
-[target] Pick the person most likely to accidentally join the staff at a fancy restaurant. They assign one sip.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a tutorial NPC who has given up.
-[scuffed] Give a fake press statement explaining that Epsi said it was probably fine.
-[truth] Drink if you’ve ever mistaken flirting for an insult in front of your best friend.
-[target] Pick the person most likely to make friends with the security guard at a fancy restaurant. They assign one sip.
-[scuffed] Your villain origin story is “the blackjack dealer read my thoughts.” Deliver the opening line.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a dating coach with a zero-percent success rate.
-[group] Everyone who has music playing, give the lobby your best evil laugh.
-[truth] Drink if you’ve ever announced something embarrassing because you thought you were muted while someone was streaming.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a ghost who is embarrassed about haunting you.
-[group] Everyone wearing a collar, say “I am the problem” together.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a gym coach motivating a potato.
-[group] Everyone currently sitting down, say “I am the problem” together.
-[group] Everyone who has music playing, say “I am the problem” together.
-[truth] Drink if you’ve ever called an avatar hot before its owner spoke in front of your best friend.
-[truth] Drink if you’ve ever tried to sound dominant and coughed halfway through in a private instance.
-[truth] Drink if you’ve ever heard your own voice played back and wanted a new identity while someone was streaming.
-[group] Everyone wearing glasses, take one sip.
-[truth] Drink if you’ve ever said 'that's my type' louder than intended in a private instance.
-[target] Pick the person most likely to invent a rivalry with a stranger at an airport. They assign one sip.
-[dare] Say “Your honour, the vibes were immaculate.” like a wizard whose spell has autocorrected.
-[target] Pick the person most likely to get rejected by a self-service machine at a furry convention. They assign one sip.
-[truth] Drink if you’ve ever found out someone remembered your embarrassing phase while someone was streaming.
-[target] The player opposite you is your scene partner. Let them rate your villain laugh out of ten.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a restaurant critic reviewing a cursed sandwich.
-[truth] Drink if you’ve ever overshared and watched the room go quiet in front of your best friend.
-[truth] Drink if you’ve ever admitted you were down bad in a public lobby.
-[truth] Drink if you’ve ever laughed so hard you snorted while someone was streaming.
-[truth] Drink if you’ve ever made a noise you could never explain in court in a public lobby.
-[right] The person to your right is your scene partner. Challenge them to invent a worse pickup line than yours.
-[target] Pick the person most likely to ask a deeply horny question with a completely straight face at a haunted-house attraction. They assign one sip.
-[dare] Say “My dignity disconnected before I did.” like a disappointed game-show host.
-[neighbours] The closest player is your scene partner. Let them choose your fake wrestling name.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a sleepy airport announcer.
-[target] Pick the person most likely to claim they could run the place better at a haunted-house attraction. They assign one sip.
-[scuffed] Your villain origin story is “the horse had terrible vibes.” Deliver the opening line.
-[dare] Say “My dignity disconnected before I did.” like a flustered dating-sim character.
-[target] Pick the person most likely to start a cult at a karaoke bar. They assign one sip.
-[right] The person to your right is your scene partner. Let them rate your villain laugh out of ten.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a gym coach motivating a potato.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a robot trying to understand flirting.
-[group] Everyone currently sitting down, give the lobby your best evil laugh.
-[dare] Say “I have a permit for this level of bullshit.” like a flustered dating-sim character.
-[target] Pick the person most likely to leave with more gossip than they arrived with at a karaoke bar. They assign one sip.
-[group] Everyone on desktop, say “I am the problem” together.
-[target] Pick the person most likely to make a grand entrance through the wrong door at a furry convention. They assign one sip.
-[group] Everyone using an anime avatar, give the lobby your best evil laugh.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a customer asking to speak to the wheel's manager.
-[left] The person to your left is your scene partner. Ask them to name your imaginary autobiography.
-[target] Pick the person most likely to convince themselves the place is haunted at a haunted-house attraction. They assign one sip.
-[scuffed] Tell the wheel “the casino mistook me for someone competent” like you expect compensation.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a sleepy airport announcer.
-[target] Pick the person most likely to convince themselves the place is haunted at an airport. They assign one sip.
-[scuffed] Finish your casino complaint with “my common sense is a missing script.”
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a sleepy airport announcer.
-[target] Pick the person most likely to say 'I know a guy' and make everything worse at a karaoke bar. They assign one sip.
-[target] Pick the person most likely to accidentally audition for a job at a wedding reception. They assign one sip.
-[truth] Drink if you’ve ever tried to whisper and announced it to everyone while someone was streaming.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a detective who has found suspicious browser history.
-[target] Pick the person most likely to get mistaken for the manager at a fancy restaurant. They assign one sip.
-[truth] Drink if you’ve ever used a voice changer and forgotten it was on in a private instance.
-[target] Pick the person most likely to create a new group chat nobody asked for at an airport. They assign one sip.
-[target] Pick the person most likely to start a cult at a wedding reception. They assign one sip.
-[group] Everyone using a furry avatar, take one sip.
-[target] Pick the person most likely to make an apology that needs its own apology at a wedding reception. They assign one sip.
-[truth] Drink if you’ve ever forgotten what you were saying halfway through a sentence in a private instance.
-[group] Everyone who joined in the last ten minutes, say “I am the problem” together.
-[truth] Drink if you’ve ever forgotten what you were saying halfway through a sentence while someone was streaming.
-[target] Pick the person most likely to challenge the wrong person to a dance-off at a karaoke bar. They assign one sip.
-[truth] Drink if you’ve ever used a voice changer and forgotten it was on in front of your best friend.
-[scuffed] Finish your casino complaint with “the moon was clearly out of budget.”
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a gym coach motivating a potato.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a customer asking to speak to the wheel's manager.
-[dare] Say “The red flags are decorative.” like a disappointed game-show host.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a pirate negotiating a refund.
-[target] Pick the person most likely to ask whether the mascot is single at a furry convention. They assign one sip.
-[neighbours] The closest player is your scene partner. Let them rate your villain laugh out of ten.
-[target] Pick the person most likely to ask a deeply horny question with a completely straight face at an airport. They assign one sip.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a dating coach with a zero-percent success rate.
-[scuffed] Your villain origin story is “the roulette ball has a personal grudge.” Deliver the opening line.
-[dare] Say “The red flags are decorative.” like a dramatic soap-opera actor.
-[scuffed] Finish your casino complaint with “the compatibility calculator knows too much.”
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a disappointed game-show host.
-[target] Pick the person most likely to insist the background music is flirting with them at an airport. They assign one sip.
-[truth] Drink if you’ve ever laughed so hard you snorted in a private instance.
-[target] Pick the person most likely to make an apology that needs its own apology at a karaoke bar. They assign one sip.
-[truth] Drink if you’ve ever had to explain why your status looked like a breakup announcement in a public lobby.
-[scuffed] Finish your casino complaint with “SCUFFED is conducting a social experiment.”
-[neighbours] The closest player is your scene partner. Ask them for the worst possible name for a nightclub.
-[target] Pick the person most likely to say 'watch this' immediately before disaster at a furry convention. They assign one sip.
-[truth] Drink if you’ve ever tried to sound dominant and coughed halfway through while someone was streaming.
-[truth] Drink if you’ve ever accidentally unmuted during a private conversation while someone was streaming.
-[target] Pick the person most likely to turn a minor inconvenience into a villain origin story at a fancy restaurant. They assign one sip.
-[group] Everyone with animal ears, take one sip.
-[target] Pick the person most likely to ask whether the mascot is single at a haunted-house attraction. They assign one sip.
-[left] The person to your left is your scene partner. Challenge them to invent a worse pickup line than yours.
-[truth] Drink if you’ve ever laughed at a notification and refused to explain it in front of your best friend.
-[group] Everyone wearing a hoodie, say “I am the problem” together.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a sleepy airport announcer.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a tutorial NPC who has given up.
-[truth] Drink if you’ve ever used a voice changer and forgotten it was on while someone was streaming.
-[dare] Say “My dignity disconnected before I did.” like a smug final boss with one hit point.
-[truth] Drink if you’ve ever pretended to understand an inside joke while someone was streaming.
-[dare] Say “The red flags are decorative.” like a restaurant critic reviewing a cursed sandwich.
-[truth] Drink if you’ve ever forgotten what you were saying halfway through a sentence in front of your best friend.
-[truth] Drink if you’ve ever heard your own voice played back and wanted a new identity in a private instance.
-[target] Pick the person most likely to leave with more gossip than they arrived with at a furry convention. They assign one sip.
-[group] Everyone using a fallback avatar, say “I am the problem” together.
-[truth] Drink if you’ve ever admitted you were down bad in front of your best friend.
-[target] Pick the person most likely to get mistaken for the manager at a wedding reception. They assign one sip.
-[scuffed] Your villain origin story is “SCUFFED is conducting a social experiment.” Deliver the opening line.
-[scuffed] Finish your casino complaint with “the horse had terrible vibes.”
-[target] Pick the person most likely to bring a spreadsheet to a social problem at a haunted-house attraction. They assign one sip.
-[dare] Say “I have a permit for this level of bullshit.” like a disappointed game-show host.
-[target] Pick the person most likely to say 'I know a guy' and make everything worse at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to lose their friends within thirty seconds at an airport. They assign one sip.
-[truth] Drink if you’ve ever accidentally unmuted during a private conversation in a private instance.
-[target] Pick the person most likely to make a grand entrance through the wrong door at a karaoke bar. They assign one sip.
-[truth] Drink if you’ve ever had to clarify that you meant your avatar's tail in a public lobby.
-[scuffed] Your villain origin story is “my avatar spent the winnings before I got them.” Deliver the opening line.
-[scuffed] Pitch “Epsi said it was probably fine” as the title of the next SCUFFED update.
-[truth] Drink if you’ve ever accidentally played your soundboard at the worst possible moment in a private instance.
-[dare] Say “My dignity disconnected before I did.” like a newsreader reporting the dumbest event in history.
-[target] Pick the person most likely to start a cult at a furry convention. They assign one sip.
-[truth] Drink if you’ve ever pretended an awkward silence was a connection issue in a public lobby.
-[dare] Say “Your honour, the vibes were immaculate.” like a customer asking to speak to the wheel's manager.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a dating coach with a zero-percent success rate.
-[truth] Drink if you’ve ever tried to sound dominant and coughed halfway through in a public lobby.
-[truth] Drink if you’ve ever accidentally played your soundboard at the worst possible moment while someone was streaming.
-[target] Pick the person most likely to claim they could run the place better at a karaoke bar. They assign one sip.
-[target] Pick the person most likely to get recognised for something embarrassing at a wedding reception. They assign one sip.
-[truth] Drink if you’ve ever made a noise you could never explain in court in a private instance.
-[target] Pick the person most likely to turn a minor inconvenience into a villain origin story at a haunted-house attraction. They assign one sip.
-[truth] Drink if you’ve ever made a joke so bad you apologised to the room while someone was streaming.
-[group] Everyone currently standing up, take one sip.
-[truth] Drink if you’ve ever mistaken flirting for an insult in a public lobby.
-[right] The person to your right is your scene partner. Give them a pep talk for a problem they don't have.
-[scuffed] Tell the wheel “the moon was clearly out of budget” like you expect compensation.
-[scuffed] Pitch “the wheel and I are in a complicated relationship” as the title of the next SCUFFED update.
-[group] Everyone using full-body tracking, take one sip.
-[group] Everyone whose avatar has jiggle physics, say “I am the problem” together.
-[dare] Say “Your honour, the vibes were immaculate.” like a suspiciously cheerful tax collector.
-[truth] Drink if you’ve ever announced something embarrassing because you thought you were muted in front of your best friend.
-[target] Pick the person most likely to lose their friends within thirty seconds at a haunted-house attraction. They assign one sip.
-[right] The person to your right is your scene partner. Ask them for the worst possible name for a nightclub.
-[target] Pick the person most likely to find an ex they didn't know they had at an airport. They assign one sip.
-[dare] Say “Your honour, the vibes were immaculate.” like a sleepy airport announcer.
-[neighbours] The closest player is your scene partner. Give them a five-second introduction like they're the final boss.
-[target] The player opposite you is your scene partner. Give them a pep talk for a problem they don't have.
-[target] Pick the person most likely to give unsolicited relationship advice at a fancy restaurant. They assign one sip.
-[dare] Say “Your honour, the vibes were immaculate.” like a very underpaid casino announcer.
-[group] Everyone who joined in the last ten minutes, take one sip.
-[scuffed] Give a fake press statement explaining that my common sense is a missing script.
-[scuffed] Tell the wheel “Seany looked away for one fucking second” like you expect compensation.
-[target] Pick the person most likely to get recognised for something embarrassing at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to try to speedrun the entire experience at a haunted-house attraction. They assign one sip.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a dramatic soap-opera actor.
-[neighbours] The closest player is your scene partner. Ask them which household appliance matches your energy.
-[target] Pick the person most likely to say 'watch this' immediately before disaster at a karaoke bar. They assign one sip.
-[group] Everyone on desktop, give the lobby your best evil laugh.
-[truth] Drink if you’ve ever made a suspicious noise while adjusting your headset in front of your best friend.
-[target] The player opposite you is your scene partner. Introduce them as your completely unqualified legal adviser.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a flustered dating-sim character.
-[target] Pick the person most likely to give unsolicited relationship advice at a karaoke bar. They assign one sip.
-[neighbours] The closest player is your scene partner. Introduce them as your completely unqualified legal adviser.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a restaurant critic reviewing a cursed sandwich.
-[scuffed] Give a fake press statement explaining that the wheel and I are in a complicated relationship.
-[scuffed] Pitch “the casino mistook me for someone competent” as the title of the next SCUFFED update.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a dramatic soap-opera actor.
-[group] Everyone whose avatar has tattoos, say “I am the problem” together.
-[truth] Drink if you’ve ever received a compliment and forgotten every word you knew in front of your best friend.
-[target] The player opposite you is your scene partner. Give them a compliment that sounds like a patch note.
-[dare] Say “Please stop perceiving me. My confidence is still loading.” like a cowboy confronting a broken avatar toggle.
-[truth] Drink if you’ve ever tried to impress someone and lost your tracking while someone was streaming.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a pirate negotiating a refund.
-[group] Everyone using a robot avatar, say “I am the problem” together.
-[truth] Drink if you’ve ever tried to change the subject and made it worse in a public lobby.
-[truth] Drink if you’ve ever pretended to understand an inside joke in front of your best friend.
-[target] Pick the person most likely to bring a spreadsheet to a social problem at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to lose their friends within thirty seconds at a furry convention. They assign one sip.
-[group] Everyone whose avatar has a blush toggle, say “I am the problem” together.
-[scuffed] Give a fake press statement explaining that the blackjack dealer read my thoughts.
-[dare] Say “My dignity disconnected before I did.” like a cowboy confronting a broken avatar toggle.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a disappointed game-show host.
-[truth] Drink if you’ve ever been roasted by someone with a cartoon animal avatar while someone was streaming.
-[dare] Say “Your honour, the vibes were immaculate.” like a disappointed game-show host.
-[truth] Drink if you’ve ever received a compliment and forgotten every word you knew while someone was streaming.
-[target] Pick the person most likely to find an ex they didn't know they had at a karaoke bar. They assign one sip.
-[dare] Say “The red flags are decorative.” like a suspiciously cheerful tax collector.
-[truth] Drink if you’ve ever realised someone was flirting three hours too late in a private instance.
-[scuffed] Your villain origin story is “Seany looked away for one fucking second.” Deliver the opening line.
-[dare] Say “My dignity disconnected before I did.” like a tutorial NPC who has given up.
-[dare] Say “Your honour, the vibes were immaculate.” like a flustered dating-sim character.
-[target] Pick the person most likely to start a conspiracy theory about the lighting at a karaoke bar. They assign one sip.
-[group] Everyone who has Discord open, give the lobby your best evil laugh.
-[truth] Drink if you’ve ever said 'that's my type' louder than intended while someone was streaming.
-[scuffed] Tell the wheel “Fenic left me unsupervised” like you expect compensation.
-[group] Everyone in VR, say “I am the problem” together.
-[scuffed] Pitch “my luck is still importing” as the title of the next SCUFFED update.
-[truth] Drink if you’ve ever laughed at a notification and refused to explain it while someone was streaming.
-[scuffed] Tell the wheel “the pool table intimidated me” like you expect compensation.
-[dare] Say “I can explain the tail. The rest is between me and Unity.” like a suspiciously cheerful tax collector.
-[target] Pick the person most likely to accidentally audition for a job at a fancy restaurant. They assign one sip.
-[target] Pick the person most likely to lose their friends within thirty seconds at a wedding reception. They assign one sip.
-[target] Pick the person most likely to invent a rivalry with a stranger at a furry convention. They assign one sip.
-[target] Pick the person most likely to become a local legend for the stupidest reason at a haunted-house attraction. They assign one sip.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a dating coach with a zero-percent success rate.
-[dare] Say “I demand a refund on whatever the fuck just happened.” like a newsreader reporting the dumbest event in history.
-[dare] Say “I have a permit for this level of bullshit.” like a restaurant critic reviewing a cursed sandwich.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a detective who has found suspicious browser history.
-[dare] Say “This isn't flirting. My microphone just sounds like that.” like a smug final boss with one hit point.
-[truth] Drink if you’ve ever called someone daddy as a joke and immediately regretted the delivery in a private instance.
-[dare] Say “I came here for friendship and made a terrible administrative error.” like a ghost who is embarrassed about haunting you.
-[target] Pick the person most likely to try to turn the visit into a first date at a haunted-house attraction. They assign one sip.
-[group] Everyone wearing boots, say “I am the problem” together.
-[dare] Say “That was not a moan. That was emotional packet loss.” like a smug final boss with one hit point.
+[truth] Drink if you've ever made a suspicious noise adjusting your headset in a private world.
+[dare] Pretend you're ending a date because their avatar has no tail.
+[dare] Try to flirt using only weather terms.
+[truth] Drink if you've ever snorted while laughing in front of your best friend.
+[dare] Deliver a pickup line about Unity.
+[dare] Deliver a pickup line about a low battery.
+[dare] Deliver a pickup line about the casino.
+[target] Pick whoever would ask a friend to spot them again. They assign a drink.
+[truth] Drink if you've ever lost tracking while trying to impress someone in front of your best friend.
+[dare] Deliver a pickup line about terrible internet.
+[target] Pick whoever would forget their wallet on a date. They assign a drink.
+[truth] Drink if you've ever used an absolutely terrible pickup line in public.
+[truth] Drink if you've ever used an absolutely terrible pickup line in a private world.
+[target] Pick whoever would spend their rent money on avatar assets. They assign a drink.
+[truth] Drink if you've ever sounded way too excited to see someone on stream.
+[truth] Drink if you've ever made eye contact during a moan sound effect on stream.
+[scuffed] Ask the slots what you did wrong.
+[scuffed] Defend your last UNO play.
+[dare] Deliver a pickup line without saying 'you'.
+[target] Pick whoever would think every song is about them. They assign a drink.
+[truth] Drink if you've ever hated hearing your own voice in front of your best friend.
+[truth] Drink if you've ever sent a heart to someone by accident in front of your best friend.
+[left] Invent a terrible nightclub name with the person to your left.
+[truth] Drink if you've ever made eye contact during a moan sound effect in front of your best friend.
+[dare] Try to make 'please restart your headset' sound seductive.
+[dare] Try to make 'your mic is muted' sound romantic.
+[target] Pick whoever would send a song instead of admitting feelings. They assign a drink.
+[target] Pick whoever would make a breakup playlist before breaking up. They assign a drink.
+[target] Pick whoever would flirt by sending increasingly obvious lyrics. They assign a drink.
+[target] Pick whoever would think a DJ is sending secret messages. They assign a drink.
+[group] Everyone standing up, say “I am the problem.”
+[truth] Drink if you've ever called someone by their full username in front of your best friend.
+[target] Pick whoever would request the same song five times. They assign a drink.
+[group] Everyone wearing a hoodie drinks.
+[right] Ask the person to your right what household appliance you'd be.
+[target] Pick whoever would befriend the bouncer. They assign a drink.
+[truth] Drink if you've ever called someone by your ex's name on stream.
+[dare] Make a grocery item sound like a pet name.
+[target] Pick whoever would get adopted by a group of strangers. They assign a drink.
+[scuffed] Give this wheel a worse name.
+[target] Pick whoever would know the security guard by name. They assign a drink.
+[dare] Give the wheel your worst pickup line.
+[truth] Drink if you've ever made a noise you couldn't explain on stream.
+[target] Pick whoever would make friends while being kicked out. They assign a drink.
+[dare] Say 'good boy' like you're reading a shopping list.
+[dare] Say 'daddy' like you're deeply disappointed.
+[right] Introduce the person to your right like a final boss.
+[target] Pick whoever would talk their way into a VIP area. They assign a drink.
+[truth] Drink if you've ever sounded way too excited to see someone in front of your best friend.
+[target] Pick whoever would leave a party knowing every staff member. They assign a drink.
+[truth] Drink if you've ever apologised for a terrible joke in front of your best friend.
+[target] Pick whoever would get lost at the airport. They assign a drink.
+[dare] Say 'mommy' like it's a customer-service complaint.
+[scuffed] Declare revenge on the moon.
+[target] Pick whoever would lose the group in an empty room. They assign a drink.
+[scuffed] Give the roulette ball a villain name.
+[group] Everyone with a tail, do your best evil laugh.
+[target] Pick whoever would miss their stop while gossiping. They assign a drink.
+[right] Give the person to your right a made-up award.
+[scuffed] Rename UNO after the person who beat you.
+[target] Pick whoever would follow the wrong group at a convention. They assign a drink.
+[dare] Say 'I'm down bad' like a medical diagnosis.
+[target] Pick whoever would forget which car they arrived in. They assign a drink.
+[target] Pick whoever would need a rescue mission at a shopping centre. They assign a drink.
+[left] Give the person to your left a made-up award.
+[neighbours] Give the closest person a stupid job title.
+[group] Everyone whose avatar has piercings, say “I am the problem.”
+[target] Pick whoever would rush through a museum. They assign a drink.
+[group] Everyone who has Discord open, say “I am the problem.”
+[scuffed] Complain to the wheel. Make it personal.
+[truth] Drink if you've ever made eye contact during a moan sound effect in public.
+[truth] Drink if you've ever pretended a horny message was a meme on stream.
+[truth] Drink if you've ever accidentally interviewed someone like a potential date on stream.
+[target] Pick whoever would skip the tutorial and blame the game. They assign a drink.
+[dare] Say 'I have standards' like you don't.
+[target] Pick whoever would turn a walk into a race. They assign a drink.
+[truth] Drink if you've ever panicked after calling someone cute on stream.
+[truth] Drink if you've ever blamed your mic for something horny you said on stream.
+[target] Pick whoever would ask when dinner ends before ordering. They assign a drink.
+[neighbours] Give the closest person a compliment like it's a patch note.
+[dare] Say 'we're just friends' like nobody believes you.
+[target] Pick whoever would speedrun getting blocked. They assign a drink.
+[group] Everyone using a joke avatar, say “I am the problem.”
+[truth] Drink if you've ever apologised for a terrible joke in a private world.
+[dare] Say 'I'm over my ex' like it's obviously a lie.
+[target] Pick whoever would leave before the party actually starts. They assign a drink.
+[target] Pick whoever would argue over a board-game rule. They assign a drink.
+[dare] Say 'this is my main avatar' like it's a confession.
+[scuffed] Promise revenge on your losing streak.
+[truth] Drink if you've ever called someone babe out of habit in public.
+[dare] Say 'I didn't buy it for that toggle' convincingly.
+[scuffed] Name a SCUFFED update after Seany.
+[dare] Say 'the collar is decorative' like you're under oath.
+[scuffed] Explain why roulette owes you an apology.
+[dare] Invent a fake kink. Give it a stupid name.
+[truth] Drink if you've ever hated hearing your own voice in public.
+[group] Everyone who changed avatars this round drinks.
+[truth] Drink if you've ever blamed your mic for something horny you said in front of your best friend.
+[dare] Invent the worst name for a sex shop.
+[truth] Drink if you've ever lost tracking while trying to impress someone in public.
+[dare] Invent a sex toy nobody would buy.
+[truth] Drink if you've ever stayed for gossip after saying goodbye in public.
+[scuffed] Explain your worst pool shot.
+[dare] Give an imaginary strip club a terrible name.
+[truth] Drink if you've ever sent a heart to someone by accident in public.
+[truth] Drink if you've ever turned on the wrong NSFW toggle on stream.
+[truth] Drink if you've ever been roasted by a furry in a private world.
+[truth] Drink if you've ever invited someone you were gossiping about in public.
+[dare] Invent a terrible safe word for a fictional couple.
+[dare] Name a perfume for people who are down bad.
+[truth] Drink if you've ever said something innocent that sounded dirty in front of your best friend.
+[truth] Drink if you've ever pretended to get an inside joke in public.
+[truth] Drink if you've ever forgotten you were screen-sharing in public.
+[truth] Drink if you've ever mistaken flirting for an insult in a private world.
+[target] Pick whoever would correct someone during an apology. They assign a drink.
+[dare] Give a condom brand a terrible slogan.
+[truth] Drink if you've ever blamed an awkward silence on lag in a private world.
+[truth] Drink if you've ever got your avatar stuck making a stupid face in a private world.
+[left] Make up a rumour about the person to your left. Keep it about their shoes.
+[truth] Drink if you've ever invited someone you were gossiping about on stream.
+[target] Pick whoever would debate the meaning of 'technically'. They assign a drink.
+[left] Give the person to your left a completely unnecessary pep talk.
+[target] Pick whoever would argue with a quiz answer. They assign a drink.
+[truth] Drink if you've ever called someone by their full username in public.
+[truth] Drink if you've ever stayed for gossip after saying goodbye in a private world.
+[target] Make up a rumour about the person opposite you. Keep it about their shoes.
+[target] Pick whoever would start a fight over pizza toppings. They assign a drink.
+[target] Pick whoever would need the last word in every argument. They assign a drink.
+[group] Everyone whose avatar has jiggle physics, do your best evil laugh.
+[dare] Invent a horny achievement for a dating sim.
+[target] Pick whoever would get banned from the karaoke mic. They assign a drink.
+[group] Everyone wearing a hat, do your best evil laugh.
+[group] Everyone using a robot avatar, do your best evil laugh.
+[truth] Drink if you've ever had your stomach growl while flirting in front of your best friend.
+[target] Pick whoever would make a speech nobody requested. They assign a drink.
+[scuffed] Blame the pool table for your aim.
+[scuffed] Blame your avatar for your empty wallet.
+[target] Pick whoever would turn a toast into stand-up comedy. They assign a drink.
+[truth] Drink if you've ever sounded way too excited to see someone in a private world.
+[group] Everyone who has music playing drinks.
+[dare] Name a nightclub nobody would admit visiting.
+[dare] Give a fictional adult film the least sexy title possible.
+[dare] Give a fake apology for being too horny.
+[truth] Drink if you've ever admitted you were down bad in a private world.
+[group] Everyone with a tail, say “I am the problem.”
+[truth] Drink if you've ever got your avatar stuck making a stupid face in front of your best friend.
+[group] Everyone with too many toggles drinks.
+[group] Everyone using a robot avatar drinks.
+[left] Give the person to your left a stupid job title.
+[truth] Drink if you've ever forgotten everyone could hear your music in front of your best friend.
+[target] Pick whoever would tell a story without reaching the point. They assign a drink.
+[dare] Explain a thirst trap like it's a work project.
+[target] Pick whoever would keep talking after the music starts. They assign a drink.
+[group] Everyone wearing glasses, do your best evil laugh.
+[target] Pick whoever would make everyone regret asking them a question. They assign a drink.
+[truth] Drink if you've ever forgotten you were screen-sharing in a private world.
+[target] Pick whoever would run into two exes at one party. They assign a drink.
+[dare] Give your imaginary OnlyFans a terrible username.
+[truth] Drink if you've ever played a soundboard at the worst possible time in front of your best friend.
+[dare] Advertise an imaginary pair of cursed underwear.
+[target] Give the person opposite you a made-up award.
+[truth] Drink if you've ever pretended a horny message was a meme in front of your best friend.
+[truth] Drink if you've ever had to explain your dramatic status on stream.
+[target] Pick whoever would forget they briefly dated someone. They assign a drink.
+[dare] Describe a booty call like a calendar appointment.
+[truth] Drink if you've ever mistaken an insult for flirting in public.
+[target] Pick whoever would meet their ex's new partner accidentally. They assign a drink.
+[target] Pick whoever would say 'small world' in the worst situation. They assign a drink.
+[scuffed] Give the worst horse a new name.
+[scuffed] Ask the calculator to keep your secrets.
+[group] Everyone with horns, do your best evil laugh.
+[truth] Drink if you've ever had to explain you meant your avatar's tail in a private world.
+[scuffed] Name a SCUFFED update after Fenic.
+[truth] Drink if you've ever been reminded of your embarrassing phase in front of your best friend.
+[group] Everyone who joined in the last ten minutes, do your best evil laugh.
+[target] Pick whoever would introduce an ex as a friend. They assign a drink.
+[dare] Explain a walk of shame like a tourist guide.
+[target] Pick whoever would find out their ex knows everyone here. They assign a drink.
+[group] Everyone who has a snack nearby drinks.
+[dare] Give an imaginary hickey a formal apology.
+[dare] Write a verbal complaint about a terrible hookup.
+[target] Pick whoever would say 'I know a guy' and make things worse. They assign a drink.
+[dare] Explain sexting to a confused alien.
+[dare] Make a boring sentence sound like a horny text.
+[target] Give the person opposite you a stupid job title.
+[scuffed] Blame your luck. Again.
+[target] Pick whoever would recommend a terrible shortcut. They assign a drink.
+[scuffed] Flirt with the wheel. Make it awkward.
+[scuffed] Tell the wheel Epsi said you could.
+[target] Pick whoever would bring the least qualified friend to help. They assign a drink.
+[truth] Drink if you've ever flirted with the wrong person on stream.
+[target] Pick whoever would claim they can fix a broken car. They assign a drink.
+[truth] Drink if you've ever called someone daddy and regretted it on stream.
+[truth] Drink if you've ever realised your avatar had no pants on in front of your best friend.
+[dare] Invent a terrible romantic nickname for yourself.
+[truth] Drink if you've ever been caught admiring yourself in public.
+[group] Everyone muted, say “I am the problem.”
+[target] Pick whoever would promise something on someone else's behalf. They assign a drink.
+[target] Pick whoever would offer help nobody wants. They assign a drink.
+[dare] Give the lobby an aggressively unromantic compliment.
+[dare] Compliment someone's voice like a food critic.
+[truth] Drink if you've ever got your avatar stuck making a stupid face on stream.
+[group] Everyone standing up, do your best evil laugh.
+[group] Everyone with horns, say “I am the problem.”
+[truth] Drink if you've ever stayed for gossip after saying goodbye in front of your best friend.
+[dare] Make a compliment sound like a warning.
+[truth] Drink if you've ever tried to sound mysterious and failed on stream.
+[truth] Drink if you've ever tried out your sexy voice on stream.
+[target] Pick whoever would get mistaken for event staff. They assign a drink.
+[target] Pick whoever would help clean up and get given a uniform. They assign a drink.
+[group] Everyone using a mouse to look around drinks.
+[truth] Drink if you've ever mistaken flirting for an insult on stream.
+[target] Pick whoever would accidentally volunteer for a whole shift. They assign a drink.
+[target] Pick whoever would give directions while completely lost. They assign a drink.
+[truth] Drink if you've ever made things worse by changing the subject on stream.
+[dare] Make a warning sound like a compliment.
+[target] Pick whoever would answer a work phone they shouldn't. They assign a drink.
+[left] Introduce the person to your left as your lawyer.
+[truth] Drink if you've ever sent a heart to someone by accident in a private world.
+[truth] Drink if you've ever said something embarrassing while unmuted in a private world.
+[group] Everyone with a controller on charge, say “I am the problem.”
+[dare] Give the spinner a compliment using a cooking term.
+[target] Pick whoever would talk themselves into an unpaid job. They assign a drink.
+[target] Pick whoever would walk into the wrong wedding. They assign a drink.
+[truth] Drink if you've ever mistaken an insult for flirting in a private world.
+[truth] Drink if you've ever been caught smiling at a message in a private world.
+[truth] Drink if you've ever forgotten you were screen-sharing in front of your best friend.
+[dare] Compliment someone's avatar like you're selling a house.
+[target] Pick whoever would enter through a staff-only door. They assign a drink.
+[dare] Give yourself a compliment you clearly don't deserve.
+[neighbours] Make up a rumour about the closest person. Keep it about their shoes.
+[target] Pick whoever would wave at someone waving behind them. They assign a drink.
+[target] Pick whoever would introduce themselves to someone they already know. They assign a drink.
+[dare] Compliment the lobby without using 'nice' or 'good'.
+[truth] Drink if you've ever blamed your mic for something horny you said in a private world.
+[dare] Give your own laugh a five-star review.
+[target] Pick whoever would arrive confidently at the wrong restaurant. They assign a drink.
+[truth] Drink if you've ever been roasted by a furry in public.
+[target] Pick whoever would make an entrance and immediately trip. They assign a drink.
+[group] Everyone muted, do your best evil laugh.
+[group] Everyone with wings, do your best evil laugh.
+[dare] Roast your own username.
+[dare] Roast your avatar's shoes.
+[scuffed] Ask your chips to come back.
+[target] Pick whoever would think their hotel room is haunted. They assign a drink.
+[truth] Drink if you've ever blamed your mic for something horny you said in public.
+[dare] Roast your own music taste.
+[right] Let the person to your right give you a wrestling name.
+[target] Pick whoever would try to befriend a ghost. They assign a drink.
+[group] Everyone with a low-battery warning, say “I am the problem.”
+[dare] Roast your own flirting skills.
+[dare] Roast your imaginary dating profile.
+[target] Pick whoever would get scared by their own shadow. They assign a drink.
+[scuffed] Explain the casino like you've never gambled before.
+[truth] Drink if you've ever tried to sound mysterious and failed in front of your best friend.
+[group] Everyone who changed avatars this round, do your best evil laugh.
+[target] Pick whoever would leave a haunted house before entering. They assign a drink.
+[dare] Roast your last bad purchase.
+[target] Ask the person opposite you what terrible meal you'd be.
+[scuffed] Give a dramatic goodbye to your chips.
+[group] Everyone with a prop in their hand drinks.
+[truth] Drink if you've ever forgotten you were screen-sharing on stream.
+[left] Ask the person to your left what terrible meal you'd be.
+[truth] Drink if you've ever blamed your headset for a noise you made in public.
+[truth] Drink if you've ever forgotten everyone could hear your music on stream.
+[dare] Roast your own sleep schedule.
+[truth] Drink if you've ever realised your avatar had no pants on in a private world.
+[group] Everyone using a fallback avatar, do your best evil laugh.
+[truth] Drink if you've ever flirted with the wrong person in front of your best friend.
+[truth] Drink if you've ever called someone babe out of habit in a private world.
+[target] Pick whoever would apologise to a haunted-house actor. They assign a drink.
+[target] Pick whoever would challenge a ghost to prove it exists. They assign a drink.
+[dare] Roast your avatar's haircut.
+[dare] Roast your own microphone quality.
+[dare] Roast your friends-list management.
+[group] Everyone with a low-battery warning, do your best evil laugh.
+[target] Pick whoever would argue with a self-checkout. They assign a drink.
+[dare] Name your autobiography after tonight.
+[dare] Name a horror movie about this lobby.
+[group] Everyone with wings, say “I am the problem.”
+[target] Pick whoever would ask a chatbot for dating advice. They assign a drink.
+[scuffed] Give To the Moon a worse name.
+[scuffed] Give the wheel your best villain speech.
+[truth] Drink if you've ever stayed for gossip after saying goodbye on stream.
+[target] Pick whoever would lose patience with a parking meter. They assign a drink.
+[truth] Drink if you've ever forgotten how to talk after a compliment in public.
+[group] Everyone with glowing eyes drinks.
+[dare] Invent a terrible title for your next stream.
+[truth] Drink if you've ever blamed your headset for a noise you made in front of your best friend.
+[group] Everyone whose avatar has piercings, do your best evil laugh.
+[dare] Name a sitcom about your friend group.
+[scuffed] Explain your worst compatibility result.
+[group] Everyone with animal ears, do your best evil laugh.
+[truth] Drink if you've ever accidentally revealed your crush in front of your best friend.
+[dare] Name a soap opera about your dating history.
+[group] Everyone using a fallback avatar drinks.
+[left] Introduce the person to your left like a final boss.
+[dare] Invent a band name using two things nearby.
+[dare] Name a documentary about your sleep schedule.
+[scuffed] Ask the wheel to pay for your avatar.
+[truth] Drink if you've ever played a soundboard at the worst possible time in public.
+[group] Everyone whose avatar has a blush toggle, do your best evil laugh.
+[truth] Drink if you've ever panicked after calling someone cute in front of your best friend.
+[target] Pick whoever would get rejected by facial recognition. They assign a drink.
+[truth] Drink if you've ever turned on the wrong NSFW toggle in front of your best friend.
+[truth] Drink if you've ever accidentally revealed your crush on stream.
+[scuffed] Explain what SCUFFED is testing on you.
+[truth] Drink if you've ever tried out your sexy voice in front of your best friend.
+[truth] Drink if you've ever chickened out of admitting a crush in public.
+[group] Everyone whose avatar has tattoos drinks.
+[group] Everyone with too many toggles, say “I am the problem.”
+[target] Pick whoever would need help using a ticket machine. They assign a drink.
+[dare] Give tonight's session a clickbait title.
+[target] Pick whoever would think the printer hates them personally. They assign a drink.
+[dare] Name a cooking show hosted by your avatar.
+[dare] Invent a terrible sequel to your favourite movie.
+[truth] Drink if you've ever mistaken an insult for flirting in front of your best friend.
+[truth] Drink if you've ever been roasted by a furry in front of your best friend.
+[right] Ask the person to your right what terrible meal you'd be.
+[target] Pick whoever would give dating advice while single. They assign a drink.
+[target] Pick whoever would tell someone to text their ex. They assign a drink.
+[group] Everyone wearing a hat drinks.
+[target] Pick whoever would recommend breaking up over nothing. They assign a drink.
+[target] Pick whoever would turn a stranger's date into group therapy. They assign a drink.
+[truth] Drink if you've ever been caught admiring yourself in front of your best friend.
+[dare] Give a fake acceptance speech for Worst Flirting.
+[truth] Drink if you've ever realised way too late someone was flirting on stream.
+[dare] Accept an award for Most Unnecessary Drama.
+[truth] Drink if you've ever tried out your sexy voice in a private world.
+[scuffed] Give Unity a villain monologue.
+[scuffed] Name a SCUFFED update after a Unity error.
+[group] Everyone with too many toggles, do your best evil laugh.
+[scuffed] Explain your To the Moon strategy.
+[target] Pick whoever would offer relationship advice during an argument. They assign a drink.
+[scuffed] Threaten to expose the compatibility calculator.
+[scuffed] Tell Epsi this is your villain origin story.
+[target] Pick whoever would ignore every piece of advice they give. They assign a drink.
+[target] Pick whoever would make a group chat for one question. They assign a drink.
+[dare] Give a speech after losing an imaginary election.
+[truth] Drink if you've ever said 'that's my type' too loudly in public.
+[right] Give the person to your right a compliment like it's a patch note.
+[target] Pick whoever would start a server nobody uses. They assign a drink.
+[target] Pick whoever would name a group chat something embarrassing. They assign a drink.
+[target] Pick whoever would add the wrong person to a private chat. They assign a drink.
+[target] Pick whoever would make separate chats for the same people. They assign a drink.
+[target] Pick whoever would turn a dinner plan into fifty notifications. They assign a drink.
+[dare] Announce you've been promoted to Lobby Idiot.
+[target] Pick whoever would say 'watch this' before falling over. They assign a drink.
+[target] Pick whoever would announce a trick they haven't practised. They assign a drink.
+[dare] Introduce the next spinner like a wrestling announcer.
+[truth] Drink if you've ever been caught smiling at a message in front of your best friend.
+[dare] Give a press conference about losing your last brain cell.
+[dare] Accept an award for Terrible Timing.
+[target] Pick whoever would try to catch something and break it. They assign a drink.
+[target] Pick whoever would celebrate before actually winning. They assign a drink.
+[scuffed] Explain your last Unity error like it's personal.
+[group] Everyone who has a snack nearby, say “I am the problem.”
+[group] Everyone using a furry avatar, do your best evil laugh.
+[dare] Give a victory speech for getting out of bed.
+[truth] Drink if you've ever chickened out of admitting a crush on stream.
+[dare] Announce your retirement from making good decisions.
+[target] Pick whoever would say 'easy' and immediately lose. They assign a drink.
+[target] Pick whoever would claim they can dance and prove otherwise. They assign a drink.
+[target] Pick whoever would mistake a friendly dinner for a date. They assign a drink.
+[dare] Give a speech celebrating one functioning tracker.
+[dare] Make up a conspiracy about the wheel.
+[truth] Drink if you've ever had your stomach growl while flirting in public.
+[group] Everyone whose avatar has tattoos, do your best evil laugh.
+[target] Pick whoever would turn a group outing into a double date. They assign a drink.
+[group] Everyone wearing a collar, do your best evil laugh.
+[dare] Invent a rumour about your avatar's hat.
+[truth] Drink if you've ever got your avatar stuck making a stupid face in public.
+[truth] Drink if you've ever called someone by your ex's name in a private world.
+[group] Everyone using a furry avatar, say “I am the problem.”
+[truth] Drink if you've ever coughed halfway through trying to sound dominant in front of your best friend.
+[dare] Explain why your controller is secretly evil.
+[dare] Accuse a piece of furniture of judging you.
+[scuffed] Give the compatibility calculator a dating-app name.
+[target] Pick whoever would ask 'so what are we' too early. They assign a drink.
+[left] Let the person to your left give you a wrestling name.
+[truth] Drink if you've ever called someone hot before hearing their voice in a private world.
+[target] Pick whoever would plan a second date during the first. They assign a drink.
+[target] Pick whoever would bring flowers to a casual hangout. They assign a drink.
+[dare] Explain why the moon owes you money.
+[scuffed] Blame the roulette ball.
+[dare] Invent a conspiracy involving your missing socks.
+[scuffed] Name a SCUFFED update after an overpriced avatar.
+[dare] Explain why your headset is plotting against you.
+[neighbours] Give the closest person a made-up award.
+[target] Pick whoever would romanticise a trip to the supermarket. They assign a drink.
+[target] Pick whoever would ask a horny question at dinner. They assign a drink.
+[target] Pick whoever would make a normal interview sound sexual. They assign a drink.
+[dare] Accuse your charging cable of betrayal.
+[scuffed] Explain how the wheel ruined your night.
+[dare] Explain why the mirror knows too much.
+[target] Pick whoever would ask about kinks before hobbies. They assign a drink.
+[target] Pick whoever would say something filthy without changing expression. They assign a drink.
+[target] Pick whoever would find innuendo in every sentence. They assign a drink.
+[target] Pick whoever would ask 'how flexible are you' for the wrong reason. They assign a drink.
+[target] Pick whoever would get banned from a gift shop. They assign a drink.
+[scuffed] Rename the slot machine after your luck.
+[truth] Drink if you've ever been caught admiring yourself on stream.
+[dare] Give your keyboard a suspicious backstory.
+[target] Pick whoever would become a local legend for being an idiot. They assign a drink.
+[scuffed] Demand an apology from the wheel.
+[dare] Sell the lobby an imaginary useless product.
+[truth] Drink if you've ever pretended a horny message was a meme in public.
+[dare] Advertise a chair nobody can sit on.
+[dare] Pitch a phone that only receives bad news.
+[dare] Sell a tracker that only tracks poor decisions.
+[target] Pick whoever would end up on a pub's wall of shame. They assign a drink.
+[target] Let the person opposite you give you a wrestling name.
+[dare] Advertise a microphone that mutes compliments.
+[target] Pick whoever would get a warning named after them. They assign a drink.
+[dare] Pitch an alarm clock that gives up.
+[target] Pick whoever would be the reason a sign exists. They assign a drink.
+[target] Pick whoever would get remembered by hotel staff for the wrong reason. They assign a drink.
+[truth] Drink if you've ever had to explain you meant your avatar's tail in front of your best friend.
+[scuffed] Ask the roulette ball for a second chance.
+[target] Invent a terrible nightclub name with the person opposite you.
+[dare] Sell a virtual pet rock with attitude.
+[scuffed] Explain your slot losses without saying 'rigged'.
+[scuffed] Blame Seany for letting this happen.
+[dare] Advertise an avatar with exactly one terrible toggle.
+[truth] Drink if you've ever made eye contact during a moan sound effect in a private world.
+[dare] Pitch a dating app that only matches exes.
+[target] Pick whoever would challenge a stranger to a dance-off. They assign a drink.
+[target] Pick whoever would dance like their trackers are broken. They assign a drink.
+[dare] Sell insurance against embarrassing Discord messages.
+[dare] Explain the internet without using 'computer'.
+[dare] Explain VRChat without using 'VR' or 'chat'.
+[target] Pick whoever would think they can outdance a professional. They assign a drink.
+[dare] Explain flirting without using 'attractive' or 'like'.
+[group] Everyone with a tiny avatar drinks.
+[dare] Explain gambling without using 'money' or 'luck'.
+[scuffed] Threaten the pool table. Keep it verbal.
+[group] Everyone wearing boots drinks.
+[scuffed] Threaten to tell Fenic about the wheel.
+[dare] Explain a furry convention to a confused grandparent.
+[group] Everyone wearing a collar drinks.
+[target] Pick whoever would start dancing before any music plays. They assign a drink.
+[scuffed] Accuse the UNO deck of having favourites.
+[group] Everyone with glowing horns drinks.
+[truth] Drink if you've ever accidentally interviewed someone like a potential date in a private world.
+[scuffed] Accuse the slots of holding a grudge.
+[truth] Drink if you've ever refused to explain why a message made you laugh in a private world.
+[target] Pick whoever would turn a queue into a conga line. They assign a drink.
+[scuffed] Blame Fenic for your last bad decision.
+[dare] Explain Discord drama like a school lesson.
+[truth] Drink if you've ever blamed an awkward silence on lag on stream.
+[dare] Explain an avatar toggle like it's illegal technology.
+[target] Pick whoever would lose a dance-off to someone sitting down. They assign a drink.
+[group] Everyone using a joke avatar drinks.
+[scuffed] Complain that the casino expected too much of you.
+[target] Pick whoever would trauma-dump in a taxi. They assign a drink.
+[truth] Drink if you've ever admitted you were down bad on stream.
+[dare] Explain full-body tracking like you're making it up.
+[scuffed] Give a dramatic speech about losing your last brain cell.
+[right] Give the person to your right a stupid job title.
+[truth] Drink if you've ever apologised for a terrible joke in public.
+[dare] Explain your last dream in ten words.
+[dare] Explain your favourite game as badly as possible.
+[dare] Give your headset a relationship status.
+[target] Pick whoever would tell a stranger their entire dating history. They assign a drink.
+[dare] Give your left controller a new name.
+[truth] Drink if you've ever chickened out of admitting a crush in front of your best friend.
+[group] Everyone who has a pet in the room drinks.
+[scuffed] Ask the blackjack dealer for a refund.
+[target] Pick whoever would cry during small talk. They assign a drink.
+[dare] Give your right controller a terrible nickname.
+[dare] Apologise to your neglected charging cable.
+[dare] Thank your microphone for keeping your secrets.
+[group] Everyone who has a pet in the room, say “I am the problem.”
+[dare] Give your chair a formal performance review.
+[target] Pick whoever would turn a haircut into therapy. They assign a drink.
+[dare] Ask your keyboard why it enabled that message.
+[scuffed] Defend a bad decision by blaming Epsi.
+[truth] Drink if you've ever mistaken flirting for an insult in front of your best friend.
+[target] Pick whoever would overshare with the person delivering food. They assign a drink.
+[scuffed] Give the blackjack dealer a villain speech.
+[dare] Give your monitor a pep talk.
+[group] Everyone who has music playing, do your best evil laugh.
+[truth] Drink if you've ever said something embarrassing while unmuted on stream.
+[dare] Break up with your low-battery warning.
+[group] Everyone wearing a collar, say “I am the problem.”
+[dare] Congratulate your internet for surviving tonight.
+[group] Everyone sitting down, say “I am the problem.”
+[group] Everyone who has music playing, say “I am the problem.”
+[truth] Drink if you've ever called someone hot before hearing their voice in front of your best friend.
+[truth] Drink if you've ever coughed halfway through trying to sound dominant in a private world.
+[truth] Drink if you've ever hated hearing your own voice on stream.
+[group] Everyone wearing glasses drinks.
+[truth] Drink if you've ever said 'that's my type' too loudly in a private world.
+[target] Pick whoever would tell airport security far too much. They assign a drink.
+[dare] Make up a law for this lobby.
+[target] Pick whoever would tell a chef how to cook. They assign a drink.
+[truth] Drink if you've ever been reminded of your embarrassing phase on stream.
+[target] Do an evil laugh. The person opposite you rates it out of ten.
+[dare] Invent a tax nobody would agree to pay.
+[truth] Drink if you've ever overshared and made everyone go quiet in front of your best friend.
+[truth] Drink if you've ever admitted you were down bad in public.
+[truth] Drink if you've ever snorted while laughing on stream.
+[truth] Drink if you've ever made a noise you couldn't explain in public.
+[right] Trade bad pickup lines with the person to your right.
+[target] Pick whoever would backseat-drive from the passenger seat. They assign a drink.
+[dare] Give yourself an absurd official title.
+[neighbours] Let the closest person give you a wrestling name.
+[dare] Announce a ridiculous new avatar regulation.
+[target] Pick whoever would explain someone's job to them. They assign a drink.
+[scuffed] Threaten to race the horse yourself.
+[dare] Give the mirror a parking ticket.
+[target] Pick whoever would claim they could run the casino better. They assign a drink.
+[right] Do an evil laugh. The person to your right rates it out of ten.
+[dare] Issue yourself a warning for excessive flirting.
+[dare] Fine the wheel for being annoying.
+[group] Everyone sitting down, do your best evil laugh.
+[dare] Ban a completely harmless word for your next three sentences.
+[target] Pick whoever would give unsolicited microphone advice. They assign a drink.
+[group] Everyone on desktop, say “I am the problem.”
+[target] Pick whoever would tell a DJ what the crowd wants. They assign a drink.
+[group] Everyone using an anime avatar, do your best evil laugh.
+[dare] Invent a legal defence for being down bad.
+[left] Let the person to your left name your autobiography.
+[target] Pick whoever would ditch the group for a mirror. They assign a drink.
+[scuffed] Tell the wheel you have no idea what you're doing.
+[dare] Pretend you're the lobby's extremely unqualified mayor.
+[target] Pick whoever would miss an announcement while fixing their hair. They assign a drink.
+[scuffed] Admit your common sense is missing.
+[dare] Give a five-second motivational speech.
+[target] Pick whoever would spend an hour choosing an avatar. They assign a drink.
+[target] Pick whoever would check their reflection during an argument. They assign a drink.
+[truth] Drink if you've ever tried to whisper and been way too loud on stream.
+[dare] Give terrible advice about saving money.
+[target] Pick whoever would arrive late because of one accessory. They assign a drink.
+[truth] Drink if you've ever forgotten your voice changer was on in a private world.
+[target] Pick whoever would treat a mirror like reserved seating. They assign a drink.
+[target] Pick whoever would make an apology worse by explaining. They assign a drink.
+[group] Everyone using a furry avatar drinks.
+[target] Pick whoever would say 'sorry you feel that way'. They assign a drink.
+[truth] Drink if you've ever forgotten your point halfway through talking in a private world.
+[group] Everyone who joined in the last ten minutes, say “I am the problem.”
+[truth] Drink if you've ever forgotten your point halfway through talking on stream.
+[target] Pick whoever would apologise and immediately do it again. They assign a drink.
+[truth] Drink if you've ever forgotten your voice changer was on in front of your best friend.
+[scuffed] Blame the moon for your losses.
+[dare] Give terrible advice about getting more sleep.
+[dare] Give terrible advice about replying to a crush.
+[dare] Make up a proverb that means absolutely nothing.
+[dare] Explain why your worst habit is actually a skill.
+[target] Pick whoever would turn an apology into an argument. They assign a drink.
+[neighbours] Do an evil laugh. The closest person rates it out of ten.
+[target] Pick whoever would need help writing a three-word apology. They assign a drink.
+[dare] Defend pineapple on an imaginary food nobody asked about.
+[scuffed] Declare the roulette ball your nemesis.
+[dare] Argue that socks are the height of fashion.
+[scuffed] Complain about your compatibility result.
+[dare] Explain why your avatar should run the casino.
+[target] Pick whoever would say 'my bad' after a complete disaster. They assign a drink.
+[truth] Drink if you've ever snorted while laughing in a private world.
+[target] Pick whoever would leave a party knowing all the gossip. They assign a drink.
+[truth] Drink if you've ever had to explain your dramatic status in public.
+[scuffed] Accuse SCUFFED of using you as a test subject.
+[neighbours] Invent a terrible nightclub name with the closest person.
+[target] Pick whoever would get the drama from both sides. They assign a drink.
+[truth] Drink if you've ever coughed halfway through trying to sound dominant on stream.
+[truth] Drink if you've ever unmuted during a private conversation on stream.
+[target] Pick whoever would remember gossip but forget birthdays. They assign a drink.
+[group] Everyone with floppy ears drinks.
+[target] Pick whoever would say 'I hate drama' while asking for details. They assign a drink.
+[left] Trade bad pickup lines with the person to your left.
+[truth] Drink if you've ever refused to explain why a message made you laugh in front of your best friend.
+[group] Everyone wearing a hoodie, say “I am the problem.”
+[dare] Defend the worst username you've ever used.
+[dare] Make up a new swear word.
+[truth] Drink if you've ever forgotten your voice changer was on on stream.
+[dare] Invent a greeting for the lobby.
+[truth] Drink if you've ever pretended to get an inside joke on stream.
+[dare] Make up a fake loading-screen tip.
+[truth] Drink if you've ever forgotten your point halfway through talking in front of your best friend.
+[truth] Drink if you've ever hated hearing your own voice in a private world.
+[target] Pick whoever would get invited purely for the gossip. They assign a drink.
+[group] Everyone using a fallback avatar, say “I am the problem.”
+[truth] Drink if you've ever admitted you were down bad in front of your best friend.
+[target] Pick whoever would know about a breakup before the couple does. They assign a drink.
+[scuffed] Give a villain speech about taking over SCUFFED.
+[scuffed] Insult the horse you bet on.
+[target] Pick whoever would get offered a job by accident. They assign a drink.
+[dare] Invent an achievement for joining this instance.
+[target] Pick whoever would go to an interview at the wrong company. They assign a drink.
+[target] Pick whoever would apply for a job they don't understand. They assign a drink.
+[truth] Drink if you've ever unmuted during a private conversation in a private world.
+[target] Pick whoever would lie about a skill and immediately need it. They assign a drink.
+[truth] Drink if you've ever had to explain you meant your avatar's tail in public.
+[scuffed] Give your avatar a warning about spending.
+[scuffed] Name a SCUFFED update after Epsi.
+[truth] Drink if you've ever played a soundboard at the worst possible time in a private world.
+[dare] Make up a terrible error message.
+[target] Pick whoever would quit a job in the group chat. They assign a drink.
+[truth] Drink if you've ever blamed an awkward silence on lag in public.
+[dare] Invent a fake Discord status.
+[dare] Write a verbal patch note for your personality.
+[truth] Drink if you've ever coughed halfway through trying to sound dominant in public.
+[truth] Drink if you've ever played a soundboard at the worst possible time on stream.
+[target] Pick whoever would turn a hobby into unwanted work. They assign a drink.
+[target] Pick whoever would ask for Wi-Fi before saying hello. They assign a drink.
+[truth] Drink if you've ever made a noise you couldn't explain in a private world.
+[target] Pick whoever would complain about the internet on a date. They assign a drink.
+[truth] Drink if you've ever apologised for a terrible joke on stream.
+[group] Everyone standing up drinks.
+[truth] Drink if you've ever mistaken flirting for an insult in public.
+[right] Give the person to your right a completely unnecessary pep talk.
+[scuffed] Ask the moon where your money went.
+[scuffed] Give the wheel a terrible pet name.
+[group] Everyone with waist tracking drinks.
+[group] Everyone whose avatar has jiggle physics, say “I am the problem.”
+[dare] Make up a useless life hack.
+[truth] Drink if you've ever said something embarrassing while unmuted in front of your best friend.
+[target] Pick whoever would name their hotspot something embarrassing. They assign a drink.
+[right] Invent a terrible nightclub name with the person to your right.
+[target] Pick whoever would use the same password for everything. They assign a drink.
+[dare] Invent a terrible inspirational quote.
+[neighbours] Introduce the closest person like a final boss.
+[target] Give the person opposite you a completely unnecessary pep talk.
+[target] Pick whoever would forget their own Wi-Fi password. They assign a drink.
+[dare] Make up a new meaning for 'AFK'.
+[group] Everyone who joined in the last ten minutes drinks.
+[scuffed] Explain your worst decision tonight.
+[scuffed] Tell the wheel Seany should know better.
+[target] Pick whoever would join the wrong voice channel and stay. They assign a drink.
+[target] Pick whoever would start beef with a stranger. They assign a drink.
+[dare] Predict the next person's terrible purchase.
+[neighbours] Ask the closest person what household appliance you'd be.
+[target] Pick whoever would invent a rivalry nobody else knows about. They assign a drink.
+[group] Everyone on desktop, do your best evil laugh.
+[truth] Drink if you've ever made a suspicious noise adjusting your headset in front of your best friend.
+[target] Introduce the person opposite you as your lawyer.
+[dare] Give a fake horoscope for the spinner.
+[target] Pick whoever would treat eye contact like a challenge. They assign a drink.
+[neighbours] Introduce the closest person as your lawyer.
+[dare] Predict the wheel's dating future.
+[scuffed] Explain why you keep coming back to the wheel.
+[scuffed] Give SCUFFED a terrible advertising slogan.
+[dare] Give tomorrow's forecast in dramatic nonsense.
+[group] Everyone whose avatar has tattoos, say “I am the problem.”
+[truth] Drink if you've ever forgotten how to talk after a compliment in front of your best friend.
+[target] Give the person opposite you a compliment like it's a patch note.
+[dare] Predict your next Unity error.
+[truth] Drink if you've ever lost tracking while trying to impress someone on stream.
+[dare] Give the lobby a prophecy involving a sandwich.
+[group] Everyone using a robot avatar, say “I am the problem.”
+[truth] Drink if you've ever made things worse by changing the subject in public.
+[truth] Drink if you've ever pretended to get an inside joke in front of your best friend.
+[target] Pick whoever would get competitive during a charity event. They assign a drink.
+[target] Pick whoever would have a nemesis in every world. They assign a drink.
+[group] Everyone whose avatar has a blush toggle, say “I am the problem.”
+[scuffed] Defend your worst blackjack decision.
+[dare] Predict what your avatar will do after you log off.
+[dare] Give your wallet a very bad fortune.
+[truth] Drink if you've ever been roasted by a furry on stream.
+[dare] Predict the next ridiculous trend in VRChat.
+[truth] Drink if you've ever forgotten how to talk after a compliment on stream.
+[target] Pick whoever would beef with someone over a stolen username. They assign a drink.
+[dare] Tell the lobby what your evil twin is doing tonight.
+[truth] Drink if you've ever realised way too late someone was flirting in a private world.
+[scuffed] Give Seany your best disappointed-parent voice.
+[dare] Say goodbye like you're leaving for ten years.
+[dare] Say hello like you've just walked into the wrong wedding.
+[target] Pick whoever would narrate everything they do. They assign a drink.
+[group] Everyone who has Discord open, do your best evil laugh.
+[truth] Drink if you've ever said 'that's my type' too loudly on stream.
+[scuffed] Tell the wheel this is Fenic's fault.
+[group] Everyone in VR, say “I am the problem.”
+[scuffed] Name a SCUFFED update after your bad luck.
+[truth] Drink if you've ever refused to explain why a message made you laugh on stream.
+[scuffed] Ask the pool table to stop judging you.
+[dare] Say sorry like your lawyer wrote it.
+[target] Pick whoever would talk through a whole movie. They assign a drink.
+[target] Pick whoever would provide commentary during someone's date. They assign a drink.
+[target] Pick whoever would read every menu option aloud. They assign a drink.
+[target] Pick whoever would repeat a joke until someone laughs. They assign a drink.
+[dare] Say thank you like you've been cursed.
+[dare] Say 'one more game' like you know it's a lie.
+[dare] Say 'I'll be right back' like an NPC side quest.
+[dare] Say 'I need a minute' like a dramatic movie line.
+[dare] Say 'who invited you' like you're delighted.
+[truth] Drink if you've ever called someone daddy and regretted it in a private world.
+[dare] Say 'I love this place' like you're trapped here.
+[target] Pick whoever would need to be reminded their mic is on. They assign a drink.
+[group] Everyone wearing boots, say “I am the problem.”
+[dare] Say 'I'm going to bed' like a villain making a threat.

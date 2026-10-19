@@ -1342,3 +1342,15 @@
 [target] Pick whoever would need to be reminded their mic is on. They assign a drink.
 [group] Everyone wearing boots, say “I am the problem.”
 [dare] Say 'I'm going to bed' like a villain making a threat.
+[group] Drink if you were born in January.
+[group] Drink if you were born in February.
+[group] Drink if you were born in March.
+[group] Drink if you were born in April.
+[group] Drink if you were born in May.
+[group] Drink if you were born in June.
+[group] Drink if you were born in July.
+[group] Drink if you were born in August.
+[group] Drink if you were born in September.
+[group] Drink if you were born in October.
+[group] Drink if you were born in November.
+[group] Drink if you were born in December.

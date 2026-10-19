@@ -1,5 +1,5 @@
-[drink] <player>, drink if you’re already drunk. Otherwise, pick someone to drink.
-[drink] Drink if you’re not drunk enough. Otherwise, pick someone to drink.
+[drink] <player>, drink if you’re already drunk. Otherwise, give a drink.
+[drink] Drink if you’re not drunk enough. Otherwise, give a drink.
 [target] <player>, give someone a drink.
 [group] Everyone but you drinks.
 [drink] Drink.
@@ -18,11 +18,11 @@
 [target] Give a drink to the quietest person.
 [target] Give a drink to whoever looks the drunkest.
 [target] <player>, give a drink to whoever claims they’re sober.
-[truth] Drink if you lied about being sober. Otherwise, pick someone to drink.
-[drink] Drink if this isn’t your first drink tonight. Otherwise, pick someone to drink.
-[truth] Drink if you’ve lost count. Otherwise, pick someone to drink.
-[truth] Drink if you’ve said “I’m fine” tonight. Otherwise, pick someone to drink.
-[truth] Drink if you probably shouldn’t be spinning again. Otherwise, pick someone to drink.
+[truth] Drink if you lied about being sober. Otherwise, give a drink.
+[drink] Drink if this isn’t your first drink tonight. Otherwise, give a drink.
+[truth] Drink if you’ve lost count. Otherwise, give a drink.
+[truth] Drink if you’ve said “I’m fine” tonight. Otherwise, give a drink.
+[truth] Drink if you probably shouldn’t be spinning again. Otherwise, give a drink.
 [target] <player>, pick someone who deserves a drink.
 [target] Pick someone who absolutely does not need another drink. You drink instead.
 [group] Everyone wearing red drinks. Nobody qualifies? you drink.
@@ -44,22 +44,22 @@
 [group] PCVR users drink. Nobody qualifies? <player> drinks.
 [group] Anyone muted drinks. Nobody qualifies? <player> drinks.
 [group] Anyone who was muted in the last 5 minutes drinks. Nobody qualifies? <player> drinks.
-[drink] Drink if you changed avatar tonight. Otherwise, pick someone to drink.
-[truth] Drink if you’ve changed avatar more than once. Otherwise, pick someone to drink.
-[drink] Drink if your avatar has jiggle physics. Otherwise, pick someone to drink.
-[drink] Drink if your avatar has more toggles than you actually use. Otherwise, pick someone to drink.
-[drink] <player>, drink if your avatar cost money. Otherwise, pick someone to drink.
-[drink] Drink if your avatar has SPS. Otherwise, pick someone to drink.
+[drink] Drink if you changed avatar tonight. Otherwise, give a drink.
+[truth] Drink if you’ve changed avatar more than once. Otherwise, give a drink.
+[drink] Drink if your avatar has jiggle physics. Otherwise, give a drink.
+[drink] Drink if your avatar has more toggles than you actually use. Otherwise, give a drink.
+[drink] <player>, drink if your avatar cost money. Otherwise, give a drink.
+[drink] Drink if your avatar has SPS. Otherwise, give a drink.
 [group] Everyone with SPS drinks. Nobody qualifies? you drink.
-[truth] Drink if your avatar cost way too much money. Otherwise, pick someone to drink.
-[truth] <player>, drink if you made your own avatar. Otherwise, pick someone to drink.
-[truth] Drink if Unity has ruined your evening before. Otherwise, pick someone to drink.
-[truth] Drink if VRChat has crashed on you today. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve crashed VRChat intentionally before. Otherwise, pick someone to drink.
-[truth] Drink if you've pretended to crash before. Otherwise, pick someone to drink.
-[truth] Drink if your avatar has a stupid toggle. Otherwise, pick someone to drink.
-[truth] Drink if you have more than 100 avatar favourites. Otherwise, pick someone to drink.
-[truth] Drink if your current avatar is your main. Otherwise, pick someone to drink.
+[truth] Drink if your avatar cost way too much money. Otherwise, give a drink.
+[truth] <player>, drink if you made your own avatar. Otherwise, give a drink.
+[truth] Drink if Unity has ruined your evening before. Otherwise, give a drink.
+[truth] Drink if VRChat has crashed on you today. Otherwise, give a drink.
+[truth] <player>, drink if you’ve crashed VRChat intentionally before. Otherwise, give a drink.
+[truth] Drink if you've pretended to crash before. Otherwise, give a drink.
+[truth] Drink if your avatar has a stupid toggle. Otherwise, give a drink.
+[truth] Drink if you have more than 100 avatar favourites. Otherwise, give a drink.
+[truth] Drink if your current avatar is your main. Otherwise, give a drink.
 [dare] Do your best Superman pose. Or drink 2.
 [dare] Shhhhh. Don't speak until your next turn. Or drink 3.
 [dare] Use UwU voice for the next round. Or drink 3.
@@ -82,94 +82,94 @@
 [target] <player>, pick the person most likely to survive a zombie apocalypse. They drink.
 [target] <player>, pick the person least likely to survive. They drink.
 [target] Pick the person most likely to get banned from a casino. They drink.
-[truth] <player>, drink if you’ve slept in VRChat. Otherwise, pick someone to drink.
-[truth] Drink if you’ve fallen asleep in a public world. Otherwise, pick someone to drink.
-[truth] Drink if you’ve woken up still in VRChat. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve ever sleep-called someone. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve stayed in VRChat until sunrise. Otherwise, pick someone to drink.
-[truth] Drink if you’ve said “one more hour” and stayed for three. Otherwise, pick someone to drink.
-[truth] Drink if you’ve lost track of real-world time in VR. Otherwise, pick someone to drink.
-[truth] Drink if you’ve missed something IRL because of VRChat. Otherwise, pick someone to drink.
-[truth] Drink if you’ve taken your headset off and forgotten where you are. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve walked into furniture in VR. Otherwise, pick someone to drink.
-[truth] Drink if you’ve punched something IRL while playing. Otherwise, pick someone to drink.
-[truth] Drink if you’ve hit your ceiling. Otherwise, pick someone to drink.
-[truth] Drink if you’ve hit your monitor. Otherwise, pick someone to drink.
-[truth] Drink if you’ve broken a controller. Otherwise, pick someone to drink.
-[truth] Drink if your controllers/trackers have dents. Otherwise, pick someone to drink.
-[truth] <player>, drink if your playspace is definitely too small. Otherwise, pick someone to drink.
-[truth] Drink if you’ve fallen over in VR. Otherwise, pick someone to drink.
-[truth] Drink if you’ve tried leaning on something that wasn’t real. Otherwise, pick someone to drink.
-[truth] Drink if your tracking has betrayed you before. Otherwise, pick someone to drink.
-[truth] Drink if your trackers have flown away. Otherwise, pick someone to drink.
-[truth] Drink if you’ve played VR without pants. Otherwise, pick someone to drink.
-[truth] Drink if you’re currently playing VR without pants. Otherwise, pick someone to drink.
-[truth] Drink if you’ve met someone in VRChat and later met them IRL. Otherwise, pick someone to drink.
-[truth] <player>, drink if you want to meet someone here IRL. Otherwise, pick someone to drink.
-[truth] Drink if you’ve dated someone you met in VRChat. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve flirted with someone in VRChat. Otherwise, pick someone to drink.
-[truth] Drink if you’ve been flirted with tonight. Otherwise, pick someone to drink.
-[truth] Drink if you’re currently flirting with someone at this table. Otherwise, pick someone to drink.
-[truth] Drink if you’ve kissed someone in VRChat. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve fake-kissed someone in VRChat. Otherwise, pick someone to drink.
-[truth] Drink if you’ve had a VRChat crush. Otherwise, pick someone to drink.
-[truth] <player>, drink if your crush is here. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've met Tupper. Otherwise, pick someone to drink.
-[truth] Drink if you've met proximitychat. Otherwise, pick someone to drink.
-[truth] Drink if you’ve had VRChat relationship drama. Otherwise, pick someone to drink.
-[truth] Drink if you’ve witnessed VRChat relationship drama. Otherwise, pick someone to drink.
-[truth] Drink if you stayed because the drama was entertaining. Otherwise, pick someone to drink.
-[truth] Drink if you’ve stalked someone’s bio. Otherwise, pick someone to drink.
-[truth] Drink if you’ve checked someone’s status more than once. Otherwise, pick someone to drink.
-[truth] Drink if you’ve joined a world because one specific person was there. Otherwise, pick someone to drink.
-[truth] Drink if you’ve avoided a world because one specific person was there. Otherwise, pick someone to drink.
-[truth] Drink if you’ve waited for someone to join. Otherwise, pick someone to drink.
-[truth] Drink if you’ve joined and immediately regretted it. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve gone invisible to avoid someone. Otherwise, pick someone to drink.
-[truth] Drink if you’ve blocked someone this month. Otherwise, pick someone to drink.
-[truth] Drink if you’ve unblocked someone this month. Otherwise, pick someone to drink.
-[truth] Drink if you’ve accidentally sent an invite request. Otherwise, pick someone to drink.
-[truth] Drink if you’ve accidentally joined someone. Otherwise, pick someone to drink.
-[truth] Drink if you’ve used “VRChat crashed” as an excuse. Otherwise, pick someone to drink.
-[drink] <player>, drink if you have over 1,000 hours in VRChat. Otherwise, pick someone to drink.
-[drink] <player>, drink if you have over 2,000. Otherwise, pick someone to drink.
-[drink] <player>, drink if you have over 5,000. Otherwise, pick someone to drink.
+[truth] <player>, drink if you’ve slept in VRChat. Otherwise, give a drink.
+[truth] Drink if you’ve fallen asleep in a public world. Otherwise, give a drink.
+[truth] Drink if you’ve woken up still in VRChat. Otherwise, give a drink.
+[truth] <player>, drink if you’ve ever sleep-called someone. Otherwise, give a drink.
+[truth] <player>, drink if you’ve stayed in VRChat until sunrise. Otherwise, give a drink.
+[truth] Drink if you’ve said “one more hour” and stayed for three. Otherwise, give a drink.
+[truth] Drink if you’ve lost track of real-world time in VR. Otherwise, give a drink.
+[truth] Drink if you’ve missed something IRL because of VRChat. Otherwise, give a drink.
+[truth] Drink if you’ve taken your headset off and forgotten where you are. Otherwise, give a drink.
+[truth] <player>, drink if you’ve walked into furniture in VR. Otherwise, give a drink.
+[truth] Drink if you’ve punched something IRL while playing. Otherwise, give a drink.
+[truth] Drink if you’ve hit your ceiling. Otherwise, give a drink.
+[truth] Drink if you’ve hit your monitor. Otherwise, give a drink.
+[truth] Drink if you’ve broken a controller. Otherwise, give a drink.
+[truth] Drink if your controllers/trackers have dents. Otherwise, give a drink.
+[truth] <player>, drink if your playspace is definitely too small. Otherwise, give a drink.
+[truth] Drink if you’ve fallen over in VR. Otherwise, give a drink.
+[truth] Drink if you’ve tried leaning on something that wasn’t real. Otherwise, give a drink.
+[truth] Drink if your tracking has betrayed you before. Otherwise, give a drink.
+[truth] Drink if your trackers have flown away. Otherwise, give a drink.
+[truth] Drink if you’ve played VR without pants. Otherwise, give a drink.
+[truth] Drink if you’re currently playing VR without pants. Otherwise, give a drink.
+[truth] Drink if you’ve met someone in VRChat and later met them IRL. Otherwise, give a drink.
+[truth] <player>, drink if you want to meet someone here IRL. Otherwise, give a drink.
+[truth] Drink if you’ve dated someone you met in VRChat. Otherwise, give a drink.
+[truth] <player>, drink if you’ve flirted with someone in VRChat. Otherwise, give a drink.
+[truth] Drink if you’ve been flirted with tonight. Otherwise, give a drink.
+[truth] Drink if you’re currently flirting with someone at this table. Otherwise, give a drink.
+[truth] Drink if you’ve kissed someone in VRChat. Otherwise, give a drink.
+[truth] <player>, drink if you’ve fake-kissed someone in VRChat. Otherwise, give a drink.
+[truth] Drink if you’ve had a VRChat crush. Otherwise, give a drink.
+[truth] <player>, drink if your crush is here. Otherwise, give a drink.
+[truth] <player>, drink if you've met Tupper. Otherwise, give a drink.
+[truth] Drink if you've met proximitychat. Otherwise, give a drink.
+[truth] Drink if you’ve had VRChat relationship drama. Otherwise, give a drink.
+[truth] Drink if you’ve witnessed VRChat relationship drama. Otherwise, give a drink.
+[truth] Drink if you stayed because the drama was entertaining. Otherwise, give a drink.
+[truth] Drink if you’ve stalked someone’s bio. Otherwise, give a drink.
+[truth] Drink if you’ve checked someone’s status more than once. Otherwise, give a drink.
+[truth] Drink if you’ve joined a world because one specific person was there. Otherwise, give a drink.
+[truth] Drink if you’ve avoided a world because one specific person was there. Otherwise, give a drink.
+[truth] Drink if you’ve waited for someone to join. Otherwise, give a drink.
+[truth] Drink if you’ve joined and immediately regretted it. Otherwise, give a drink.
+[truth] <player>, drink if you’ve gone invisible to avoid someone. Otherwise, give a drink.
+[truth] Drink if you’ve blocked someone this month. Otherwise, give a drink.
+[truth] Drink if you’ve unblocked someone this month. Otherwise, give a drink.
+[truth] Drink if you’ve accidentally sent an invite request. Otherwise, give a drink.
+[truth] Drink if you’ve accidentally joined someone. Otherwise, give a drink.
+[truth] Drink if you’ve used “VRChat crashed” as an excuse. Otherwise, give a drink.
+[drink] <player>, drink if you have over 1,000 hours in VRChat. Otherwise, give a drink.
+[drink] <player>, drink if you have over 2,000. Otherwise, give a drink.
+[drink] <player>, drink if you have over 5,000. Otherwise, give a drink.
 [target] Newest VRChat player drinks.
 [target] <player>, oldest VRChat account drinks.
-[truth] Drink if you remember old VRChat UI. Otherwise, pick someone to drink.
-[truth] Drink if you remember SDK2. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever uploaded an avatar. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever uploaded a world. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve opened Unity today. Otherwise, pick someone to drink.
-[truth] Drink if you have multiple Unity versions installed. Otherwise, pick someone to drink.
-[truth] Drink if ChatGPT has helped fix your Unity bullshit. Otherwise, pick someone to drink.
-[target] Pick someone to drink.
+[truth] Drink if you remember old VRChat UI. Otherwise, give a drink.
+[truth] Drink if you remember SDK2. Otherwise, give a drink.
+[truth] Drink if you’ve ever uploaded an avatar. Otherwise, give a drink.
+[truth] Drink if you’ve ever uploaded a world. Otherwise, give a drink.
+[truth] <player>, drink if you’ve opened Unity today. Otherwise, give a drink.
+[truth] Drink if you have multiple Unity versions installed. Otherwise, give a drink.
+[truth] Drink if ChatGPT has helped fix your Unity bullshit. Otherwise, give a drink.
+[target] give a drink.
 [group] Everyone points at someone. The most-picked person drinks. Tie? You choose who drinks.
 [group] Everyone points at the drunkest person. The most-picked person chooses someone else to drink.
 [group] Everyone points at the least drunk person. The most-picked person drinks. Tie? You choose.
 [group] <player>, everyone votes for the nicest voice. The winner drinks. Tie? You choose.
-[scuffed] Drink if you gambled in SCUFFED tonight. Otherwise, pick someone to drink.
-[scuffed] Drink if you lost money in SCUFFED tonight. Otherwise, pick someone to drink.
-[scuffed] Drink if you won money in SCUFFED tonight. Otherwise, pick someone to drink.
+[scuffed] Drink if you gambled in SCUFFED tonight. Otherwise, give a drink.
+[scuffed] Drink if you lost money in SCUFFED tonight. Otherwise, give a drink.
+[scuffed] Drink if you won money in SCUFFED tonight. Otherwise, give a drink.
 [scuffed] Roulette players drink. Nobody qualifies? You drink.
 [scuffed] Slot players drink. Nobody qualifies? You drink.
 [scuffed] <player>, horse Racing players drink. Nobody qualifies? You drink.
 [scuffed] Balatro players drink. Nobody qualifies? You drink.
 [scuffed] <player>, to the Moon players drink. Nobody qualifies? You drink.
 [scuffed] <player>, blackjack players drink. Nobody qualifies? You drink.
-[scuffed] Drink if you said “one more spin.” Otherwise, pick someone to drink.
-[scuffed] Drink if you blame the casino. Otherwise, pick someone to drink.
-[scuffed] <player>, drink if you blame the developers. Otherwise, pick someone to drink.
+[scuffed] Drink if you said “one more spin.” Otherwise, give a drink.
+[scuffed] Drink if you blame the casino. Otherwise, give a drink.
+[scuffed] <player>, drink if you blame the developers. Otherwise, give a drink.
 [scuffed] Anyone who hasn’t gambled tonight drinks. Nobody qualifies? You drink.
-[scuffed] Drink if you’ve gone broke in the casino. Otherwise, pick someone to drink.
-[scuffed] <player>, drink if you played Beer Pong tonight. Otherwise, pick someone to drink.
-[scuffed] Drink if you played Pool tonight. Otherwise, pick someone to drink.
-[scuffed] <player>, drink if you played UNO tonight. Otherwise, pick someone to drink.
-[scuffed] Drink if you used the Compatibility Calculator tonight. Otherwise, pick someone to drink.
-[drink] Drink if you have more than half of your drink. Otherwise, pick someone to drink.
-[drink] Drink if you have a full drink. Otherwise, pick someone to drink.
-[drink] Drink if your glass is almost empty. Otherwise, pick someone to drink.
-[drink] Drink if you played Wordle. Otherwise, pick someone to drink.
+[scuffed] Drink if you’ve gone broke in the casino. Otherwise, give a drink.
+[scuffed] <player>, drink if you played Beer Pong tonight. Otherwise, give a drink.
+[scuffed] Drink if you played Pool tonight. Otherwise, give a drink.
+[scuffed] <player>, drink if you played UNO tonight. Otherwise, give a drink.
+[scuffed] Drink if you used the Compatibility Calculator tonight. Otherwise, give a drink.
+[drink] Drink if you have more than half of your drink. Otherwise, give a drink.
+[drink] Drink if you have a full drink. Otherwise, give a drink.
+[drink] Drink if your glass is almost empty. Otherwise, give a drink.
+[drink] Drink if you played Wordle. Otherwise, give a drink.
 [scuffed] Give the wheel an insult. Or drink 2.
 [scuffed] <player>, give the wheel a compliment. Or drink 2.
 [scuffed] <player>, apologise to the wheel. Or drink 2.
@@ -181,25 +181,25 @@
 [scuffed] <player>, pick a developer. Take a drink in their honour.
 [scuffed] Pick a developer at the table. They drink. No developers? You drink.
 [scuffed] No developers here? You drink for poor supervision. Otherwise, pick one to drink.
-[scuffed] <player>, drink if you are a part of SCUFFED VRChat group. Otherwise, pick someone to drink.
-[scuffed] Drink if you are NOT a part of SCUFFED VRChat group. Otherwise, pick someone to drink.
-[scuffed] Drink if you are in SCUFFED Discord. Otherwise, pick someone to drink.
-[scuffed] Drink if you are NOT in SCUFFED Discord. Otherwise, pick someone to drink.
-[scuffed] Drink if the wheel has personally victimised you tonight. Otherwise, pick someone to drink.
-[scuffed] Drink if you’ve spun this wheel more than five times. Otherwise, pick someone to drink.
+[scuffed] <player>, drink if you are a part of SCUFFED VRChat group. Otherwise, give a drink.
+[scuffed] Drink if you are NOT a part of SCUFFED VRChat group. Otherwise, give a drink.
+[scuffed] Drink if you are in SCUFFED Discord. Otherwise, give a drink.
+[scuffed] Drink if you are NOT in SCUFFED Discord. Otherwise, give a drink.
+[scuffed] Drink if the wheel has personally victimised you tonight. Otherwise, give a drink.
+[scuffed] Drink if you’ve spun this wheel more than five times. Otherwise, give a drink.
 [target] You choose one person to drink with them.
 [group] Everyone but the spinner drinks.
 [scuffed] SCUFFED. Everyone takes one sip, cheers, and spins again.
-[truth] Drink if you’ve known someone at this table over a year. Otherwise, pick someone to drink.
-[truth] Drink if you’ve known someone here over three years. Otherwise, pick someone to drink.
-[truth] <player>, drink if you met someone here this month. Otherwise, pick someone to drink.
-[truth] Drink if you've argued with someone here. Otherwise, pick someone to drink.
-[truth] Drink if someone here has seen you blackout drunk. Otherwise, pick someone to drink.
-[truth] Drink if someone here knows your real name. Otherwise, pick someone to drink.
-[truth] Drink if someone here has your phone number. Otherwise, pick someone to drink.
-[truth] <player>, drink if someone here has seen your face. Otherwise, pick someone to drink.
-[truth] <player>, drink if someone here has heard you snore. Otherwise, pick someone to drink.
-[truth] Drink if someone here knows way too much about you. Otherwise, pick someone to drink.
+[truth] Drink if you’ve known someone at this table over a year. Otherwise, give a drink.
+[truth] Drink if you’ve known someone here over three years. Otherwise, give a drink.
+[truth] <player>, drink if you met someone here this month. Otherwise, give a drink.
+[truth] Drink if you've argued with someone here. Otherwise, give a drink.
+[truth] Drink if someone here has seen you blackout drunk. Otherwise, give a drink.
+[truth] Drink if someone here knows your real name. Otherwise, give a drink.
+[truth] Drink if someone here has your phone number. Otherwise, give a drink.
+[truth] <player>, drink if someone here has seen your face. Otherwise, give a drink.
+[truth] <player>, drink if someone here has heard you snore. Otherwise, give a drink.
+[truth] Drink if someone here knows way too much about you. Otherwise, give a drink.
 [group] Last person to wave drinks.
 [group] Last person to point upward drinks.
 [dare] <player>, stay silent for 20 seconds. Or drink 3.
@@ -207,73 +207,73 @@
 [scuffed] <player>, last person to say “SCUFFED” drinks.
 [dare] Pick someone. Maintain eye contact for 20 seconds. Or drink 3.
 [dare] <player>, hold eye contact with <rem_player> for 20 seconds, or drink 3.
-[truth] Drink if this is your third time drinking this week. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever lied about how drunk you are. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve said “I’m barely tipsy” while clearly drunk. Otherwise, pick someone to drink.
+[truth] Drink if this is your third time drinking this week. Otherwise, give a drink.
+[truth] Drink if you’ve ever lied about how drunk you are. Otherwise, give a drink.
+[truth] <player>, drink if you’ve said “I’m barely tipsy” while clearly drunk. Otherwise, give a drink.
 [group] Everyone holding their drink right now drinks. Nobody qualifies? you drink.
-[truth] Drink if someone told you to get on, then never joined. Otherwise, pick someone to drink.
-[truth] <player>, drink if you mixed your own drink tonight. Otherwise, pick someone to drink.
-[truth] Drink if someone else made your drink. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve already spilled your drink tonight. Otherwise, pick someone to drink.
+[truth] Drink if someone told you to get on, then never joined. Otherwise, give a drink.
+[truth] <player>, drink if you mixed your own drink tonight. Otherwise, give a drink.
+[truth] Drink if someone else made your drink. Otherwise, give a drink.
+[truth] <player>, drink if you’ve already spilled your drink tonight. Otherwise, give a drink.
 [target] Pick someone whose drink you would never try. They drink.
-[group] Everyone drinking alcohol drinks 1. Nobody? Pick someone to take a sip of whatever they have.
+[group] Everyone drinking alcohol drinks 1. Nobody? give a take a sip of whatever they have.
 [group] Pick someone drinking something non-alcoholic. They take a sip. Nobody? you drink.
 [group] Anyone who has already finished one full drink tonight drinks. Nobody qualifies? you drink.
 [group] Anyone who has finished more than two drinks tonight drinks. Nobody qualifies? <player> drinks.
 [group] Anyone who has said “this one is my last” drinks. Nobody qualifies? you drink.
-[truth] Drink if you’ve ever gotten drunk faster than you intended. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever underestimated a drink. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever mixed drinks and regretted it. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve ever woken up and checked Discord in fear. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever deleted a drunk message. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve ever sent a drunk message you regretted. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever sent a drunk message you absolutely do NOT regret. Otherwise, pick someone to drink.
-[truth] Drink if a drunk message actually worked out for you. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever joined VRChat drunk. Otherwise, pick someone to drink.
-[truth] Drink if VRChat drinking worlds are the reason you own alcohol. Otherwise, pick someone to drink.
-[truth] Drink if you specifically logged on tonight to drink. Otherwise, pick someone to drink.
-[truth] <player>, drink if you said you weren’t drinking tonight. Otherwise, pick someone to drink.
-[truth] <player>, drink if someone convinced you to drink tonight. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’re the bad influence of the group. Otherwise, pick someone to drink.
+[truth] Drink if you’ve ever gotten drunk faster than you intended. Otherwise, give a drink.
+[truth] Drink if you’ve ever underestimated a drink. Otherwise, give a drink.
+[truth] Drink if you’ve ever mixed drinks and regretted it. Otherwise, give a drink.
+[truth] <player>, drink if you’ve ever woken up and checked Discord in fear. Otherwise, give a drink.
+[truth] Drink if you’ve ever deleted a drunk message. Otherwise, give a drink.
+[truth] <player>, drink if you’ve ever sent a drunk message you regretted. Otherwise, give a drink.
+[truth] Drink if you’ve ever sent a drunk message you absolutely do NOT regret. Otherwise, give a drink.
+[truth] Drink if a drunk message actually worked out for you. Otherwise, give a drink.
+[truth] Drink if you’ve ever joined VRChat drunk. Otherwise, give a drink.
+[truth] Drink if VRChat drinking worlds are the reason you own alcohol. Otherwise, give a drink.
+[truth] Drink if you specifically logged on tonight to drink. Otherwise, give a drink.
+[truth] <player>, drink if you said you weren’t drinking tonight. Otherwise, give a drink.
+[truth] <player>, drink if someone convinced you to drink tonight. Otherwise, give a drink.
+[truth] <player>, drink if you’re the bad influence of the group. Otherwise, give a drink.
 [group] Everyone points at the biggest bad influence. They drink.
-[truth] <player>, drink if you have ever convinced someone to stay for “one more game.” Otherwise, pick someone to drink.
-[truth] <player>, drink if “one more game” turned into another hour. Otherwise, pick someone to drink.
-[drink] <player>, drink if you have work tomorrow. Otherwise, pick someone to drink.
-[drink] Drink if you have work in less than 8 hours. Otherwise, pick someone to drink.
-[drink] <player>, drink if you should probably be asleep right now. Otherwise, pick someone to drink.
-[drink] Drink if you said “I’ll go to bed soon” more than an hour ago. Otherwise, pick someone to drink.
-[truth] <player>, drink if someone at this table has told you to go to bed before. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever woken up still wearing your headset. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve ever lost a tracker while drunk. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever forgotten to charge your trackers. Otherwise, pick someone to drink.
-[drink] <player>, drink if one of your trackers is currently low battery. Otherwise, pick someone to drink.
-[truth] <player>, drink if your headset has died during a drinking night. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever played until your controllers died. Otherwise, pick someone to drink.
-[drink] Drink if you own more VR accessories than you reasonably need. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve upgraded your VR setup more than once. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve spent more on VR than you planned to. Otherwise, pick someone to drink.
-[drink] <player>, drink if your avatar is more expensive than your outfit IRL. Otherwise, pick someone to drink.
-[drink] Drink if your avatar has more clothes than you do. Otherwise, pick someone to drink.
-[drink] Drink if your avatar has a toggle you’ve never used. Otherwise, pick someone to drink.
-[drink] Drink if your avatar has a toggle you would NEVER show in public. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever bought an avatar asset at 3 AM. Otherwise, pick someone to drink.
-[truth] Drink if you’ve impulse-bought an avatar asset. Otherwise, pick someone to drink.
-[truth] Drink if you’ve bought something for an avatar and never used it. Otherwise, pick someone to drink.
-[truth] Drink if you have an unfinished avatar project. Otherwise, pick someone to drink.
-[truth] <player>, drink if you have more than three unfinished avatar projects. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve said “I’ll finish it tomorrow.” Otherwise, pick someone to drink.
-[truth] Drink if you’ve stared at a Unity error for more than 10 minutes. Otherwise, pick someone to drink.
-[truth] Drink if fixing one Unity problem caused another. Otherwise, pick someone to drink.
-[truth] Drink if you forgot to save before Unity crashed. Otherwise, pick someone to drink.
-[truth] Drink if Blender has made you rage before. Otherwise, pick someone to drink.
+[truth] <player>, drink if you have ever convinced someone to stay for “one more game.” Otherwise, give a drink.
+[truth] <player>, drink if “one more game” turned into another hour. Otherwise, give a drink.
+[drink] <player>, drink if you have work tomorrow. Otherwise, give a drink.
+[drink] Drink if you have work in less than 8 hours. Otherwise, give a drink.
+[drink] <player>, drink if you should probably be asleep right now. Otherwise, give a drink.
+[drink] Drink if you said “I’ll go to bed soon” more than an hour ago. Otherwise, give a drink.
+[truth] <player>, drink if someone at this table has told you to go to bed before. Otherwise, give a drink.
+[truth] Drink if you’ve ever woken up still wearing your headset. Otherwise, give a drink.
+[truth] <player>, drink if you’ve ever lost a tracker while drunk. Otherwise, give a drink.
+[truth] Drink if you’ve ever forgotten to charge your trackers. Otherwise, give a drink.
+[drink] <player>, drink if one of your trackers is currently low battery. Otherwise, give a drink.
+[truth] <player>, drink if your headset has died during a drinking night. Otherwise, give a drink.
+[truth] Drink if you’ve ever played until your controllers died. Otherwise, give a drink.
+[drink] Drink if you own more VR accessories than you reasonably need. Otherwise, give a drink.
+[truth] <player>, drink if you’ve upgraded your VR setup more than once. Otherwise, give a drink.
+[truth] <player>, drink if you’ve spent more on VR than you planned to. Otherwise, give a drink.
+[drink] <player>, drink if your avatar is more expensive than your outfit IRL. Otherwise, give a drink.
+[drink] Drink if your avatar has more clothes than you do. Otherwise, give a drink.
+[drink] Drink if your avatar has a toggle you’ve never used. Otherwise, give a drink.
+[drink] Drink if your avatar has a toggle you would NEVER show in public. Otherwise, give a drink.
+[truth] Drink if you’ve ever bought an avatar asset at 3 AM. Otherwise, give a drink.
+[truth] Drink if you’ve impulse-bought an avatar asset. Otherwise, give a drink.
+[truth] Drink if you’ve bought something for an avatar and never used it. Otherwise, give a drink.
+[truth] Drink if you have an unfinished avatar project. Otherwise, give a drink.
+[truth] <player>, drink if you have more than three unfinished avatar projects. Otherwise, give a drink.
+[truth] <player>, drink if you’ve said “I’ll finish it tomorrow.” Otherwise, give a drink.
+[truth] Drink if you’ve stared at a Unity error for more than 10 minutes. Otherwise, give a drink.
+[truth] Drink if fixing one Unity problem caused another. Otherwise, give a drink.
+[truth] Drink if you forgot to save before Unity crashed. Otherwise, give a drink.
+[truth] Drink if Blender has made you rage before. Otherwise, give a drink.
 [drink] Drink. You just lost THE GAME.
-[scuffed] If all three developers are here, they drink. Otherwise, pick someone to drink.
-[truth] Drink if someone else has fixed your avatar for you. Otherwise, pick someone to drink.
-[truth] Drink if you’ve fixed someone else’s avatar. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever said “it works on my end.” Otherwise, pick someone to drink.
-[scuffed] <player>, if Fenic is here, he drinks. Otherwise, pick someone to drink.
-[scuffed] If Epsi is here, he drinks. Otherwise, pick someone to drink.
-[scuffed] <player>, if Seany is here, he drinks. Otherwise, pick someone to drink.
+[scuffed] If all three developers are here, they drink. Otherwise, give a drink.
+[truth] Drink if someone else has fixed your avatar for you. Otherwise, give a drink.
+[truth] Drink if you’ve fixed someone else’s avatar. Otherwise, give a drink.
+[truth] Drink if you’ve ever said “it works on my end.” Otherwise, give a drink.
+[scuffed] <player>, if Fenic is here, he drinks. Otherwise, give a drink.
+[scuffed] If Epsi is here, he drinks. Otherwise, give a drink.
+[scuffed] <player>, if Seany is here, he drinks. Otherwise, give a drink.
 [group] Everyone points at who is most likely to accidentally leak a secret. They drink.
 [group] Everyone points at who you would trust with your password. Most-picked drinks.
 [group] <player>, everyone points at who you would NEVER trust with your password. They drink.
@@ -301,30 +301,30 @@
 [dare] Refer to yourself in third person until your next turn. Or drink 3.
 [dare] Make a rule until your next turn, or drink 3. Anyone who breaks it drinks 1.
 [dare] <player>, make a rule until your next turn, or drink 3. If anyone breaks it, everyone drinks 1.
-[truth] Drink if you’ve ever e-dated. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever said you would NEVER e-date. Drink again if you still did. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever had matching avatars with someone. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve ever had matching profile pictures with someone. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever put someone in your VRChat bio. Otherwise, pick someone to drink.
-[truth] Drink if someone has ever put YOU in their bio. Otherwise, pick someone to drink.
-[truth] Drink if you’ve removed someone from your bio after drama. Otherwise, pick someone to drink.
-[truth] Drink if you’ve changed your status because of one specific person. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever used a song lyric as your status. Otherwise, pick someone to drink.
-[truth] Drink if you’ve waited before accepting an invite so you didn’t look too eager. Otherwise, pick someone to drink.
-[truth] Drink if you’ve deliberately waited before replying to someone. Otherwise, pick someone to drink.
-[truth] Drink if you’ve refreshed Discord waiting for a response. Otherwise, pick someone to drink.
-[truth] Drink if you've checked VRChat to see if someone was online. Otherwise, pick someone to drink.
-[truth] <player>, drink if you have a VRChat friend you have never actually spoken to. Otherwise, pick someone to drink.
-[truth] <player>, drink if you don’t remember how you met half your friends list. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve accepted someone because you felt bad declining. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve declined someone and immediately felt bad. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever cleaned your friends list. Otherwise, pick someone to drink.
-[truth] Drink if you’ve ever been blocked without knowing why. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve ever pretended you weren’t jealous in VRChat. Otherwise, pick someone to drink.
-[truth] Drink if you’ve been kicked from a VRChat group. Otherwise, pick someone to drink.
-[truth] Drink if you’ve left a VRChat group because of drama. Otherwise, pick someone to drink.
-[truth] <player>, drink if you’ve moderated a VRChat event. Otherwise, pick someone to drink.
-[truth] Drink if you’ve hosted a VRChat event. Otherwise, pick someone to drink.
+[truth] Drink if you’ve ever e-dated. Otherwise, give a drink.
+[truth] Drink if you’ve ever said you would NEVER e-date. Drink again if you still did. Otherwise, give a drink.
+[truth] Drink if you’ve ever had matching avatars with someone. Otherwise, give a drink.
+[truth] <player>, drink if you’ve ever had matching profile pictures with someone. Otherwise, give a drink.
+[truth] Drink if you’ve ever put someone in your VRChat bio. Otherwise, give a drink.
+[truth] Drink if someone has ever put YOU in their bio. Otherwise, give a drink.
+[truth] Drink if you’ve removed someone from your bio after drama. Otherwise, give a drink.
+[truth] Drink if you’ve changed your status because of one specific person. Otherwise, give a drink.
+[truth] Drink if you’ve ever used a song lyric as your status. Otherwise, give a drink.
+[truth] Drink if you’ve waited before accepting an invite so you didn’t look too eager. Otherwise, give a drink.
+[truth] Drink if you’ve deliberately waited before replying to someone. Otherwise, give a drink.
+[truth] Drink if you’ve refreshed Discord waiting for a response. Otherwise, give a drink.
+[truth] Drink if you've checked VRChat to see if someone was online. Otherwise, give a drink.
+[truth] <player>, drink if you have a VRChat friend you have never actually spoken to. Otherwise, give a drink.
+[truth] <player>, drink if you don’t remember how you met half your friends list. Otherwise, give a drink.
+[truth] <player>, drink if you’ve accepted someone because you felt bad declining. Otherwise, give a drink.
+[truth] <player>, drink if you’ve declined someone and immediately felt bad. Otherwise, give a drink.
+[truth] Drink if you’ve ever cleaned your friends list. Otherwise, give a drink.
+[truth] Drink if you’ve ever been blocked without knowing why. Otherwise, give a drink.
+[truth] <player>, drink if you’ve ever pretended you weren’t jealous in VRChat. Otherwise, give a drink.
+[truth] Drink if you’ve been kicked from a VRChat group. Otherwise, give a drink.
+[truth] Drink if you’ve left a VRChat group because of drama. Otherwise, give a drink.
+[truth] <player>, drink if you’ve moderated a VRChat event. Otherwise, give a drink.
+[truth] Drink if you’ve hosted a VRChat event. Otherwise, give a drink.
 [group] Everyone with a mate drinks. Nobody qualifies? <player> drinks.
 [drink] <player> drinks. No reason.
 [target] Pick someone. They drink. No defence.
@@ -342,10 +342,10 @@
 [group] Anyone standing up drinks. Nobody qualifies? <player> drinks.
 [dare] Use an UwU voice until your next turn, or drink 3.
 [scuffed] <player>, sCUFFED tax: spinner drinks, then picks who spins next.
-[drink] Drink if your best friend is in the lobby. Otherwise, pick someone to drink.
-[truth] Drink if you uploaded your own avatar. Otherwise, pick someone to drink.
-[target] If you drove to work today, pick someone to drink 10. Otherwise, drink 1.
-[drink] If you took public transport today, drink 10. Otherwise, pick someone to drink 1.
+[drink] Drink if your best friend is in the lobby. Otherwise, give a drink.
+[truth] Drink if you uploaded your own avatar. Otherwise, give a drink.
+[target] If you drove to work today, give a drink 10. Otherwise, drink 1.
+[drink] If you took public transport today, drink 10. Otherwise, give a drink 1.
 [group] Everyone wearing socks IRL, say “I am the problem”, or drink 2. Nobody qualifies? <player> drinks.
 [target] Pick whoever would start a cult by accident. They drink.
 [group] Everyone lying down, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
@@ -355,7 +355,7 @@
 [group] Everyone with a prop in their hand, say “I am the problem”, or drink 2. Nobody qualifies? <player> drinks.
 [dare] Say 'I can explain' like you've been caught. Or drink 2.
 [target] Pick whoever would join a cult for the free food. They drink.
-[truth] <player>, drink if your best friend has enough screenshots to end your career. Otherwise, pick someone to drink.
+[truth] <player>, drink if your best friend has enough screenshots to end your career. Otherwise, give a drink.
 [target] Pick whoever would become a cult leader for the outfits. They drink.
 [group] Everyone wearing a headset right now drinks. Nobody qualifies? <player> drinks.
 [target] <player>, pick whoever would get kicked out of their own cult. They drink.
@@ -368,105 +368,105 @@
 [target] Pick whoever would mistake a cult meeting for a party. They drink.
 [dare] Say 'stop looking at me' like a shy ghost. Or drink 2.
 [target] <player>, pick whoever would recruit the lobby into a pyramid scheme. They drink.
-[truth] <player>, drink if you've ever muted yourself to scream after someone called you cute. Otherwise, pick someone to drink.
-[truth] <player>, drink if a nice voice makes you ignore red flags. Otherwise, pick someone to drink.
-[truth] Drink if you've ever thought 'I can fix them'. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever muted yourself to scream after someone called you cute. Otherwise, give a drink.
+[truth] <player>, drink if a nice voice makes you ignore red flags. Otherwise, give a drink.
+[truth] Drink if you've ever thought 'I can fix them'. Otherwise, give a drink.
 [dare] Say 'what the fuck was that' like a news reporter. Or drink 2.
 [target] Pick whoever would get mistaken for the manager. They drink.
 [target] Pick whoever would complain to the wrong manager. They drink.
-[truth] Drink if you've ever sent a spicy message to the wrong chat. Otherwise, pick someone to drink.
-[truth] Drink if you've ever checked a message three times before sending 'hey'. Otherwise, pick someone to drink.
+[truth] Drink if you've ever sent a spicy message to the wrong chat. Otherwise, give a drink.
+[truth] Drink if you've ever checked a message three times before sending 'hey'. Otherwise, give a drink.
 [target] <player>, pick whoever would ask to speak to the owner. They drink.
 [target] Pick whoever would pretend to work somewhere for a discount. They drink.
-[truth] Drink if your search history needs a lawyer. Otherwise, pick someone to drink.
+[truth] Drink if your search history needs a lawyer. Otherwise, give a drink.
 [target] Pick whoever would accidentally get promoted. They drink.
 [target] <player>, pick whoever would fire someone without working there. They drink.
-[truth] Drink if you've bought lingerie that nobody ever saw. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever hidden a sex toy before someone visited. Otherwise, pick someone to drink.
-[truth] Drink if you own more sex toys than functioning charging cables. Otherwise, pick someone to drink.
+[truth] Drink if you've bought lingerie that nobody ever saw. Otherwise, give a drink.
+[truth] <player>, drink if you've ever hidden a sex toy before someone visited. Otherwise, give a drink.
+[truth] Drink if you own more sex toys than functioning charging cables. Otherwise, give a drink.
 [dare] Use a pirate voice until your next turn. Or drink 3.
 [target] <player>, pick whoever would flirt with airport security. They drink.
 [dare] Use a robot voice for your next three sentences. Or drink 3.
 [right] Let the person to your right name your autobiography. Or drink 2.
-[truth] <player>, drink if you've ever forgotten a sex toy was visible on camera. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever forgotten a sex toy was visible on camera. Otherwise, give a drink.
 [dare] Say your username like a royal announcement. Or drink 2.
-[truth] Drink if you've ever ordered something spicy and prayed the packaging was discreet. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever had to explain a suspicious parcel. Otherwise, pick someone to drink.
+[truth] Drink if you've ever ordered something spicy and prayed the packaging was discreet. Otherwise, give a drink.
+[truth] <player>, drink if you've ever had to explain a suspicious parcel. Otherwise, give a drink.
 [target] Pick whoever would flirt their way out of trouble. They drink.
 [group] Everyone sitting down drinks. Nobody qualifies? you drink.
 [dare] <player>, introduce yourself like a final boss. Or drink 2.
-[truth] Drink if you've ever sent a nude and immediately inspected the background. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever taken forty photos to send exactly one. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever had no idea how to reply to a nude. Otherwise, pick someone to drink.
+[truth] Drink if you've ever sent a nude and immediately inspected the background. Otherwise, give a drink.
+[truth] <player>, drink if you've ever taken forty photos to send exactly one. Otherwise, give a drink.
+[truth] <player>, drink if you've ever had no idea how to reply to a nude. Otherwise, give a drink.
 [dare] <player>, order an imaginary meal like a cowboy. Or drink 2.
 [target] Pick whoever would flirt their way into trouble. They drink.
-[truth] Drink if you've caught feelings for a friend with benefits. Otherwise, pick someone to drink.
+[truth] Drink if you've caught feelings for a friend with benefits. Otherwise, give a drink.
 [target] <player>, pick whoever would flirt with someone interviewing them. They drink.
-[truth] Drink if you've ever hooked up with someone and learned their surname afterwards. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever been proud of a walk of shame. Otherwise, pick someone to drink.
+[truth] Drink if you've ever hooked up with someone and learned their surname afterwards. Otherwise, give a drink.
+[truth] <player>, drink if you've ever been proud of a walk of shame. Otherwise, give a drink.
 [dare] Say 'good evening' like a suspicious butler. Or drink 2.
 [group] Everyone lying down drinks. Nobody qualifies? you drink.
-[truth] Drink if you've ever kept a hookup's hoodie. Otherwise, pick someone to drink.
+[truth] Drink if you've ever kept a hookup's hoodie. Otherwise, give a drink.
 [group] Everyone wearing a hat, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever had to retrieve your underwear from somewhere embarrassing. Otherwise, pick someone to drink.
-[truth] Drink if you've ever broken furniture during sex. Otherwise, pick someone to drink.
+[truth] Drink if you've ever had to retrieve your underwear from somewhere embarrassing. Otherwise, give a drink.
+[truth] Drink if you've ever broken furniture during sex. Otherwise, give a drink.
 [dare] Explain your outfit like a medieval peasant. Or drink 2.
-[truth] <player>, drink if a pet has ever interrupted you during sex. Otherwise, pick someone to drink.
+[truth] <player>, drink if a pet has ever interrupted you during sex. Otherwise, give a drink.
 [group] Everyone lying down, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever made a playlist for sex and regretted the shuffle button. Otherwise, pick someone to drink.
-[truth] Drink if you've ever laughed during sex at the worst possible moment. Otherwise, pick someone to drink.
+[truth] Drink if you've ever made a playlist for sex and regretted the shuffle button. Otherwise, give a drink.
+[truth] Drink if you've ever laughed during sex at the worst possible moment. Otherwise, give a drink.
 [group] Everyone muted drinks. Nobody qualifies? you drink.
 [target] Pick whoever would flirt with their own reflection. They drink.
 [group] Everyone in VR, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if a hookup has ever talked way too fucking much. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever caught feelings for someone you introduced as 'just a friend'. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever pretended a thirst trap wasn't aimed at one specific person. Otherwise, pick someone to drink.
-[truth] Drink if you've ever posted a thirst trap and only your best friend reacted. Otherwise, pick someone to drink.
-[truth] Drink if you've ever deleted a thirst trap because the wrong person reacted first. Otherwise, pick someone to drink.
+[truth] Drink if a hookup has ever talked way too fucking much. Otherwise, give a drink.
+[truth] <player>, drink if you've ever caught feelings for someone you introduced as 'just a friend'. Otherwise, give a drink.
+[truth] <player>, drink if you've ever pretended a thirst trap wasn't aimed at one specific person. Otherwise, give a drink.
+[truth] Drink if you've ever posted a thirst trap and only your best friend reacted. Otherwise, give a drink.
+[truth] Drink if you've ever deleted a thirst trap because the wrong person reacted first. Otherwise, give a drink.
 [target] <player>, pick whoever would flirt without realising it. They drink.
 [dare] Ask for a refund like a supervillain. Or drink 2.
 [group] Everyone using an anime avatar, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [target] Pick whoever would walk into a glass door. They drink.
-[truth] Drink if you've ever changed your outfit because someone hot was joining. Otherwise, pick someone to drink.
-[truth] Drink if you've changed avatars for someone hot. Otherwise, pick someone to drink.
+[truth] Drink if you've ever changed your outfit because someone hot was joining. Otherwise, give a drink.
+[truth] Drink if you've changed avatars for someone hot. Otherwise, give a drink.
 [target] Pick whoever would argue with an automatic door. They drink.
 [dare] <player>, describe this lobby like a nature documentary. Or drink 2.
 [group] Everyone wearing socks IRL, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've spent too much on horny shit. Otherwise, pick someone to drink.
+[truth] Drink if you've spent too much on horny shit. Otherwise, give a drink.
 [target] Let the person opposite you name your autobiography. Or drink 2.
-[truth] Drink if you've ever bought an avatar for exactly one toggle. Otherwise, pick someone to drink.
+[truth] Drink if you've ever bought an avatar for exactly one toggle. Otherwise, give a drink.
 [dare] Give a gym-coach speech about charging your trackers. Or drink 2.
 [group] Everyone who changed avatars this round, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [dare] Whisper your next three sentences. Or drink 3.
-[truth] Drink if you've ever called someone daddy and liked it. Otherwise, pick someone to drink.
+[truth] Drink if you've ever called someone daddy and liked it. Otherwise, give a drink.
 [dare] <player>, shout a compliment in your quietest voice. Or drink 2.
 [dare] Say your next sentence painfully slowly. Or drink 2.
 [dare] Talk like you're half asleep until your next turn. Or drink 3.
 [target] <player>, pick whoever would push a door marked 'pull'. They drink.
-[truth] Drink if being called mommy has ever flustered you. Otherwise, pick someone to drink.
+[truth] Drink if being called mommy has ever flustered you. Otherwise, give a drink.
 [dare] Speak like every sentence is a question. Or drink 2.
 [target] Pick whoever would apologise to a lamppost. They drink.
 [target] <player>, pick whoever would lose a fight with a revolving door. They drink.
 [group] Everyone who has Discord open drinks. Nobody qualifies? you drink.
-[truth] Drink if you've ever said 'good boy' or 'good girl' and surprised yourself. Otherwise, pick someone to drink.
-[truth] <player>, drink if a joke has ever turned into a kink. Otherwise, pick someone to drink.
+[truth] Drink if you've ever said 'good boy' or 'good girl' and surprised yourself. Otherwise, give a drink.
+[truth] <player>, drink if a joke has ever turned into a kink. Otherwise, give a drink.
 [target] Pick whoever would get scared by a hand dryer. They drink.
-[truth] Drink if you've ever put kink-test results in your bio. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've compared kink-test results with someone here. Otherwise, pick someone to drink.
+[truth] Drink if you've ever put kink-test results in your bio. Otherwise, give a drink.
+[truth] <player>, drink if you've compared kink-test results with someone here. Otherwise, give a drink.
 [group] Everyone in full body, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [target] <player>, pick whoever would become the wedding entertainment. They drink.
 [target] Pick whoever would steal the spotlight at karaoke. They drink.
-[truth] <player>, drink if you've ever joined a private instance knowing exactly what the invitation meant. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever ERP'd and then had a completely normal conversation about groceries. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever joined a private instance knowing exactly what the invitation meant. Otherwise, give a drink.
+[truth] <player>, drink if you've ever ERP'd and then had a completely normal conversation about groceries. Otherwise, give a drink.
 [dare] Say everything dramatically until your next turn. Or drink 3.
 [target] <player>, pick whoever would accidentally interrupt a live show. They drink.
-[truth] Drink if you've ever forgotten to turn off an NSFW avatar toggle before changing worlds. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten to turn off an NSFW avatar toggle before changing worlds. Otherwise, give a drink.
 [group] Everyone using a joke avatar, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if Windows has ever interrupted a spicy call. Otherwise, pick someone to drink.
+[truth] Drink if Windows has ever interrupted a spicy call. Otherwise, give a drink.
 [dare] Answer the next question like a politician. Or drink 2.
-[truth] <player>, drink if you've ever ruined a seductive moment by asking about graphics settings. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever ruined a seductive moment by asking about graphics settings. Otherwise, give a drink.
 [dare] <player>, say your next sentence like you're buffering. Or drink 2.
-[truth] Drink if you've ever flirted with someone's voice before you knew what their avatar looked like. Otherwise, pick someone to drink.
+[truth] Drink if you've ever flirted with someone's voice before you knew what their avatar looked like. Otherwise, give a drink.
 [group] Everyone with a tiny avatar, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [target] Pick whoever would get dragged onstage and love it. They drink.
 [target] Pick whoever would turn a speech into a performance. They drink.
@@ -474,43 +474,43 @@
 [target] Pick whoever would flirt with a mascot. They drink.
 [target] <player>, ask the person opposite you what household appliance you'd be. Or drink 2.
 [target] <player>, trade bad pickup lines with the person opposite you. Or drink 2.
-[truth] Drink if you've ever mistaken full-body tracking for a personality. Otherwise, pick someone to drink.
+[truth] Drink if you've ever mistaken full-body tracking for a personality. Otherwise, give a drink.
 [dare] Pretend your microphone has terrible reception. Or drink 2.
 [group] Everyone with a giant avatar, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
 [target] Pick whoever would ask a cosplayer if they're single. They drink.
 [dare] Give yourself a fake radio callsign. Use it this round. Or drink 3.
 [dare] <player>, give the lobby your best fake laugh. Or drink 2.
 [group] Everyone with a controller on charge drinks. Nobody qualifies? you drink.
-[truth] <player>, drink if your friends have judged your 'hear me out'. Otherwise, pick someone to drink.
+[truth] <player>, drink if your friends have judged your 'hear me out'. Otherwise, give a drink.
 [target] <player>, pick whoever would fall for someone in a monster costume. They drink.
 [dare] Give the lobby your best evil laugh. Or drink 2.
-[truth] Drink if you've ever looked at a monster and thought 'would'. Otherwise, pick someone to drink.
+[truth] Drink if you've ever looked at a monster and thought 'would'. Otherwise, give a drink.
 [dare] <player>, laugh like you just won a million chips. Or drink 2.
-[truth] <player>, drink if you've defended a questionable fictional crush. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've defended a questionable fictional crush. Otherwise, give a drink.
 [dare] Do a dramatic gasp at the next thing someone says. Or drink 2.
 [left] Ask the person to your left what household appliance you'd be. Or drink 2.
-[truth] Drink if you've ever said 'I'm over them' while checking their status. Otherwise, pick someone to drink.
+[truth] Drink if you've ever said 'I'm over them' while checking their status. Otherwise, give a drink.
 [target] Pick whoever would have a crush on a haunted-house actor. They drink.
-[truth] Drink if a situationship has felt like a full-time job. Otherwise, pick someone to drink.
+[truth] Drink if a situationship has felt like a full-time job. Otherwise, give a drink.
 [group] Everyone wearing glasses, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if your friend group's dating history is a fucking mess. Otherwise, pick someone to drink.
+[truth] Drink if your friend group's dating history is a fucking mess. Otherwise, give a drink.
 [dare] Pretend to cry over an empty chip balance. Or drink 2.
 [group] Everyone with glowing eyes, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've gone back to an ex. Again. Otherwise, pick someone to drink.
+[truth] Drink if you've gone back to an ex. Again. Otherwise, give a drink.
 [target] Pick whoever would get rejected by someone in a fursuit. They drink.
-[truth] Drink if you've ever apologised just to make a conversation end. Otherwise, pick someone to drink.
-[truth] Drink if you've ever won an argument in the shower three days too late. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever turned your headset off to avoid saying goodbye. Otherwise, pick someone to drink.
-[truth] Drink if you've ever pretended to be AFK because the conversation was fucking unbearable. Otherwise, pick someone to drink.
+[truth] Drink if you've ever apologised just to make a conversation end. Otherwise, give a drink.
+[truth] Drink if you've ever won an argument in the shower three days too late. Otherwise, give a drink.
+[truth] <player>, drink if you've ever turned your headset off to avoid saying goodbye. Otherwise, give a drink.
+[truth] Drink if you've ever pretended to be AFK because the conversation was fucking unbearable. Otherwise, give a drink.
 [right] Introduce the person to your right as your lawyer. Or drink 2.
 [group] Everyone with feathered wings drinks. Nobody qualifies? you drink.
 [target] <player>, pick whoever would ask a fictional character on a date. They drink.
 [dare] Give the most disappointed sigh you can. Or drink 2.
 [dare] <player>, do your best shocked NPC noise. Or drink 2.
-[truth] Drink if you've ever forgotten which lie you told about being busy. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten which lie you told about being busy. Otherwise, give a drink.
 [dare] <player>, make a noise that sounds like a broken printer. Or drink 2.
 [target] <player>, pick whoever would make a spreadsheet for a night out. They drink.
-[truth] Drink if you've ever had beef with someone whose real face you've never seen. Otherwise, pick someone to drink.
+[truth] Drink if you've ever had beef with someone whose real face you've never seen. Otherwise, give a drink.
 [target] Pick whoever would schedule their own breakdown. They drink.
 [target] Pick whoever would bring notes to an argument. They drink.
 [target] Pick whoever would sell the group out for a limited-edition avatar. They drink.
@@ -644,38 +644,38 @@
 [neighbours] Make up a terrible couples-therapy slogan with the closest person. Or drink 2.
 [group] Everyone wearing socks IRL drinks. Nobody qualifies? you drink.
 [group] Everyone who has a snack nearby, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
-[drink] Drink if your best friend joined and immediately made the lobby worse. Otherwise, pick someone to drink.
-[drink] <player>, drink if you've been personally attacked by a prompt that wasn't even about you. Otherwise, pick someone to drink.
+[drink] Drink if your best friend joined and immediately made the lobby worse. Otherwise, give a drink.
+[drink] <player>, drink if you've been personally attacked by a prompt that wasn't even about you. Otherwise, give a drink.
 [target] <player>, pick whoever would offer a shoutout instead of money. They drink.
 [group] Everyone who has a pet in the room, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
 [dare] Give an imaginary date an unnecessary safety briefing. Or drink 2.
 [target] Pick whoever would think being cute counts as payment. They drink.
 [group] Everyone with a controller on charge, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
-[drink] Drink if you read 'NSFW' and suddenly started paying attention. Otherwise, pick someone to drink.
-[truth] Drink if you've ever made a suspicious noise adjusting your headset in a private world. Otherwise, pick someone to drink.
+[drink] Drink if you read 'NSFW' and suddenly started paying attention. Otherwise, give a drink.
+[truth] Drink if you've ever made a suspicious noise adjusting your headset in a private world. Otherwise, give a drink.
 [dare] Pretend you're ending a date because their avatar has no tail. Or drink 2.
 [dare] <player>, try to flirt using only weather terms. Or drink 2.
-[truth] Drink if you've ever snorted while laughing in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever snorted while laughing in front of your best friend. Otherwise, give a drink.
 [dare] <player>, deliver a pickup line about Unity. Or drink 2.
 [dare] Deliver a pickup line about a low battery. Or drink 2.
 [dare] <player>, deliver a pickup line about the casino. Or drink 2.
 [target] Pick whoever would ask a friend to spot them again. They drink.
-[truth] <player>, drink if you've ever lost tracking while trying to impress someone in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever lost tracking while trying to impress someone in front of your best friend. Otherwise, give a drink.
 [dare] Deliver a pickup line about terrible internet. Or drink 2.
 [target] Pick whoever would forget their wallet on a date. They drink.
-[truth] Drink if you've ever used an absolutely terrible pickup line in public. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever used an absolutely terrible pickup line in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever used an absolutely terrible pickup line in public. Otherwise, give a drink.
+[truth] <player>, drink if you've ever used an absolutely terrible pickup line in a private world. Otherwise, give a drink.
 [target] Pick whoever would spend their rent money on avatar assets. They drink.
-[truth] Drink if you've ever sounded way too excited to see someone on stream. Otherwise, pick someone to drink.
-[truth] Drink if you've ever made eye contact during a moan sound effect on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever sounded way too excited to see someone on stream. Otherwise, give a drink.
+[truth] Drink if you've ever made eye contact during a moan sound effect on stream. Otherwise, give a drink.
 [scuffed] <player>, ask the slots what you did wrong. Or drink 2.
 [scuffed] <player>, defend your last UNO play. Or drink 2.
 [dare] <player>, deliver a pickup line without saying 'you'. Or drink 2.
 [target] Pick whoever would think every song is about them. They drink.
-[truth] Drink if you've ever hated hearing your own voice in front of your best friend. Otherwise, pick someone to drink.
-[truth] Drink if you've ever sent a heart to someone by accident in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever hated hearing your own voice in front of your best friend. Otherwise, give a drink.
+[truth] Drink if you've ever sent a heart to someone by accident in front of your best friend. Otherwise, give a drink.
 [left] <player>, invent a terrible nightclub name with the person to your left. Or drink 2.
-[truth] Drink if you've ever made eye contact during a moan sound effect in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever made eye contact during a moan sound effect in front of your best friend. Otherwise, give a drink.
 [dare] <player>, try to make 'please restart your headset' sound seductive. Or drink 2.
 [dare] Try to make 'your mic is muted' sound romantic. Or drink 2.
 [target] Pick whoever would send a song instead of admitting feelings. They drink.
@@ -683,26 +683,26 @@
 [target] Pick whoever would flirt by sending increasingly obvious lyrics. They drink.
 [target] Pick whoever would think a DJ is sending secret messages. They drink.
 [group] Everyone standing up, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever called someone by their full username in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever called someone by their full username in front of your best friend. Otherwise, give a drink.
 [target] Pick whoever would request the same song five times. They drink.
 [group] Everyone wearing a hoodie drinks. Nobody qualifies? you drink.
 [right] <player>, ask the person to your right what household appliance you'd be. Or drink 2.
 [target] <player>, pick whoever would befriend the bouncer. They drink.
-[truth] <player>, drink if you've ever called someone by your ex's name on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever called someone by your ex's name on stream. Otherwise, give a drink.
 [dare] Make a grocery item sound like a pet name. Or drink 2.
 [target] <player>, pick whoever would get adopted by a group of strangers. They drink.
 [scuffed] Give this wheel a worse name. Or drink 2.
 [target] Pick whoever would know the security guard by name. They drink.
 [dare] Give the wheel your worst pickup line. Or drink 2.
-[truth] Drink if you've ever made a noise you couldn't explain on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever made a noise you couldn't explain on stream. Otherwise, give a drink.
 [target] Pick whoever would make friends while being kicked out. They drink.
 [dare] <player>, say 'good boy' like you're reading a shopping list. Or drink 2.
 [dare] Say 'daddy' like you're deeply disappointed. Or drink 2.
 [right] <player>, introduce the person to your right like a final boss. Or drink 2.
 [target] <player>, pick whoever would talk their way into a VIP area. They drink.
-[truth] <player>, drink if you've ever sounded way too excited to see someone in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever sounded way too excited to see someone in front of your best friend. Otherwise, give a drink.
 [target] Pick whoever would leave a party knowing every staff member. They drink.
-[truth] <player>, drink if you've ever apologised for a terrible joke in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever apologised for a terrible joke in front of your best friend. Otherwise, give a drink.
 [target] Pick whoever would get lost at the airport. They drink.
 [dare] Say 'mommy' like it's a customer-service complaint. Or drink 2.
 [scuffed] Declare revenge on the moon. Or drink 2.
@@ -722,61 +722,61 @@
 [target] <player>, pick whoever would rush through a museum. They drink.
 [group] Everyone who has Discord open, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [scuffed] Complain to the wheel. Make it personal. Or drink 2.
-[truth] <player>, drink if you've ever made eye contact during a moan sound effect in public. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever pretended a horny message was a meme on stream. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever accidentally interviewed someone like a potential date on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever made eye contact during a moan sound effect in public. Otherwise, give a drink.
+[truth] <player>, drink if you've ever pretended a horny message was a meme on stream. Otherwise, give a drink.
+[truth] <player>, drink if you've ever accidentally interviewed someone like a potential date on stream. Otherwise, give a drink.
 [target] <player>, pick whoever would skip the tutorial and blame the game. They drink.
 [dare] Say 'I have standards' like you don't. Or drink 2.
 [target] Pick whoever would turn a walk into a race. They drink.
-[truth] Drink if you've ever panicked after calling someone cute on stream. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever blamed your mic for something horny you said on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever panicked after calling someone cute on stream. Otherwise, give a drink.
+[truth] <player>, drink if you've ever blamed your mic for something horny you said on stream. Otherwise, give a drink.
 [target] Pick whoever would ask when dinner ends before ordering. They drink.
 [neighbours] Give the closest person a compliment like it's a patch note. Or drink 2.
 [dare] Say 'we're just friends' like nobody believes you. Or drink 2.
 [target] Pick whoever would speedrun getting blocked. They drink.
 [group] Everyone using a joke avatar, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever apologised for a terrible joke in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever apologised for a terrible joke in a private world. Otherwise, give a drink.
 [dare] <player>, say 'I'm over my ex' like it's obviously a lie. Or drink 2.
 [target] Pick whoever would leave before the party actually starts. They drink.
 [target] Pick whoever would argue over a board-game rule. They drink.
 [dare] Say 'this is my main avatar' like it's a confession. Or drink 2.
 [scuffed] Promise revenge on your losing streak. Or drink 2.
-[truth] <player>, drink if you've ever called someone babe out of habit in public. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever called someone babe out of habit in public. Otherwise, give a drink.
 [dare] <player>, say 'I didn't buy it for that toggle' convincingly. Or drink 2.
 [scuffed] Name a SCUFFED update after Seany. Or drink 2.
 [dare] Say 'the collar is decorative' like you're under oath. Or drink 2.
 [scuffed] Explain why roulette owes you an apology. Or drink 2.
 [dare] <player>, invent a fake kink. Give it a stupid name. Or drink 2.
-[truth] Drink if you've ever hated hearing your own voice in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever hated hearing your own voice in public. Otherwise, give a drink.
 [group] Everyone who changed avatars this round drinks. Nobody qualifies? you drink.
-[truth] <player>, drink if you've ever blamed your mic for something horny you said in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever blamed your mic for something horny you said in front of your best friend. Otherwise, give a drink.
 [dare] <player>, invent the worst name for a sex shop. Or drink 2.
-[truth] Drink if you've ever lost tracking while trying to impress someone in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever lost tracking while trying to impress someone in public. Otherwise, give a drink.
 [dare] <player>, invent a sex toy nobody would buy. Or drink 2.
-[truth] <player>, drink if you've ever stayed for gossip after saying goodbye in public. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever stayed for gossip after saying goodbye in public. Otherwise, give a drink.
 [scuffed] Explain your worst pool shot. Or drink 2.
 [dare] Give an imaginary strip club a terrible name. Or drink 2.
-[truth] Drink if you've ever sent a heart to someone by accident in public. Otherwise, pick someone to drink.
-[truth] Drink if you've ever turned on the wrong NSFW toggle on stream. Otherwise, pick someone to drink.
-[truth] Drink if you've ever been roasted by a furry in a private world. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever invited someone you were gossiping about in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever sent a heart to someone by accident in public. Otherwise, give a drink.
+[truth] Drink if you've ever turned on the wrong NSFW toggle on stream. Otherwise, give a drink.
+[truth] Drink if you've ever been roasted by a furry in a private world. Otherwise, give a drink.
+[truth] <player>, drink if you've ever invited someone you were gossiping about in public. Otherwise, give a drink.
 [dare] Invent a terrible safe word for a fictional couple. Or drink 2.
 [dare] Name a perfume for people who are down bad. Or drink 2.
-[truth] Drink if you've ever said something innocent that sounded dirty in front of your best friend. Otherwise, pick someone to drink.
-[truth] Drink if you've ever pretended to get an inside joke in public. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever forgotten you were screen-sharing in public. Otherwise, pick someone to drink.
-[truth] Drink if you've ever mistaken flirting for an insult in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever said something innocent that sounded dirty in front of your best friend. Otherwise, give a drink.
+[truth] Drink if you've ever pretended to get an inside joke in public. Otherwise, give a drink.
+[truth] <player>, drink if you've ever forgotten you were screen-sharing in public. Otherwise, give a drink.
+[truth] Drink if you've ever mistaken flirting for an insult in a private world. Otherwise, give a drink.
 [target] Pick whoever would correct someone during an apology. They drink.
 [dare] Give a condom brand a terrible slogan. Or drink 2.
-[truth] Drink if you've ever blamed an awkward silence on lag in a private world. Otherwise, pick someone to drink.
-[truth] Drink if you've ever got your avatar stuck making a stupid face in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever blamed an awkward silence on lag in a private world. Otherwise, give a drink.
+[truth] Drink if you've ever got your avatar stuck making a stupid face in a private world. Otherwise, give a drink.
 [left] Make up a rumour about the person to your left. Keep it about their shoes. Or drink 2.
-[truth] <player>, drink if you've ever invited someone you were gossiping about on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever invited someone you were gossiping about on stream. Otherwise, give a drink.
 [target] Pick whoever would debate the meaning of 'technically'. They drink.
 [left] <player>, give the person to your left a completely unnecessary pep talk. Or drink 2.
 [target] Pick whoever would argue with a quiz answer. They drink.
-[truth] Drink if you've ever called someone by their full username in public. Otherwise, pick someone to drink.
-[truth] Drink if you've ever stayed for gossip after saying goodbye in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever called someone by their full username in public. Otherwise, give a drink.
+[truth] Drink if you've ever stayed for gossip after saying goodbye in a private world. Otherwise, give a drink.
 [target] Make up a rumour about the person opposite you. Keep it about their shoes. Or drink 2.
 [target] Pick whoever would start a fight over pizza toppings. They drink.
 [target] Pick whoever would need the last word in every argument. They drink.
@@ -785,47 +785,47 @@
 [target] Pick whoever would get banned from the karaoke mic. They drink.
 [group] Everyone wearing a hat, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
 [group] Everyone using a robot avatar, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
-[truth] Drink if you've ever had your stomach growl while flirting in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever had your stomach growl while flirting in front of your best friend. Otherwise, give a drink.
 [target] Pick whoever would make a speech nobody requested. They drink.
 [scuffed] Blame the pool table for your aim. Or drink 2.
 [scuffed] Blame your avatar for your empty wallet. Or drink 2.
 [target] Pick whoever would turn a toast into stand-up comedy. They drink.
-[truth] <player>, drink if you've ever sounded way too excited to see someone in a private world. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever sounded way too excited to see someone in a private world. Otherwise, give a drink.
 [group] Everyone who has music playing drinks. Nobody qualifies? you drink.
 [dare] Name a nightclub nobody would admit visiting. Or drink 2.
 [dare] <player>, give a fictional adult film the least sexy title possible. Or drink 2.
 [dare] <player>, give a fake apology for being too horny. Or drink 2.
-[truth] Drink if you've ever admitted you were down bad in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever admitted you were down bad in a private world. Otherwise, give a drink.
 [group] Everyone with a tail, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever got your avatar stuck making a stupid face in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever got your avatar stuck making a stupid face in front of your best friend. Otherwise, give a drink.
 [group] Everyone with too many toggles drinks. Nobody qualifies? you drink.
 [group] Everyone using a robot avatar drinks. Nobody qualifies? you drink.
 [left] Give the person to your left a stupid job title. Or drink 2.
-[truth] <player>, drink if you've ever forgotten everyone could hear your music in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever forgotten everyone could hear your music in front of your best friend. Otherwise, give a drink.
 [target] Pick whoever would tell a story without reaching the point. They drink.
 [dare] Explain a thirst trap like it's a work project. Or drink 2.
 [target] <player>, pick whoever would keep talking after the music starts. They drink.
 [group] Everyone wearing glasses, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
 [target] Pick whoever would make everyone regret asking them a question. They drink.
-[truth] Drink if you've ever forgotten you were screen-sharing in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten you were screen-sharing in a private world. Otherwise, give a drink.
 [target] Pick whoever would run into two exes at one party. They drink.
 [dare] Give your imaginary OnlyFans a terrible username. Or drink 2.
-[truth] <player>, drink if you've ever played a soundboard at the worst possible time in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever played a soundboard at the worst possible time in front of your best friend. Otherwise, give a drink.
 [dare] <player>, advertise an imaginary pair of cursed underwear. Or drink 2.
 [target] Give the person opposite you a made-up award. Or drink 2.
-[truth] <player>, drink if you've ever pretended a horny message was a meme in front of your best friend. Otherwise, pick someone to drink.
-[truth] Drink if you've ever had to explain your dramatic status on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever pretended a horny message was a meme in front of your best friend. Otherwise, give a drink.
+[truth] Drink if you've ever had to explain your dramatic status on stream. Otherwise, give a drink.
 [target] Pick whoever would forget they briefly dated someone. They drink.
 [dare] Describe a booty call like a calendar appointment. Or drink 2.
-[truth] Drink if you've ever mistaken an insult for flirting in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever mistaken an insult for flirting in public. Otherwise, give a drink.
 [target] Pick whoever would meet their ex's new partner accidentally. They drink.
 [target] <player>, pick whoever would say 'small world' in the worst situation. They drink.
 [scuffed] Give the worst horse a new name. Or drink 2.
 [scuffed] Ask the calculator to keep your secrets. Or drink 2.
 [group] Everyone with horns, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
-[truth] <player>, drink if you've ever had to explain you meant your avatar's tail in a private world. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever had to explain you meant your avatar's tail in a private world. Otherwise, give a drink.
 [scuffed] Name a SCUFFED update after Fenic. Or drink 2.
-[truth] <player>, drink if you've ever been reminded of your embarrassing phase in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever been reminded of your embarrassing phase in front of your best friend. Otherwise, give a drink.
 [group] Everyone who joined in the last ten minutes, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
 [target] <player>, pick whoever would introduce an ex as a friend. They drink.
 [dare] <player>, explain a walk of shame like a tourist guide. Or drink 2.
@@ -842,43 +842,43 @@
 [scuffed] Flirt with the wheel. Make it awkward. Or drink 2.
 [scuffed] Tell the wheel Epsi said you could. Or drink 2.
 [target] Pick whoever would bring the least qualified friend to help. They drink.
-[truth] <player>, drink if you've ever flirted with the wrong person on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever flirted with the wrong person on stream. Otherwise, give a drink.
 [target] Pick whoever would claim they can fix a broken car. They drink.
-[truth] Drink if you've ever called someone daddy and regretted it on stream. Otherwise, pick someone to drink.
-[truth] Drink if you've ever realised your avatar had no pants on in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever called someone daddy and regretted it on stream. Otherwise, give a drink.
+[truth] Drink if you've ever realised your avatar had no pants on in front of your best friend. Otherwise, give a drink.
 [dare] <player>, invent a terrible romantic nickname for yourself. Or drink 2.
-[truth] Drink if you've ever been caught admiring yourself in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever been caught admiring yourself in public. Otherwise, give a drink.
 [group] Everyone muted, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [target] Pick whoever would promise something on someone else's behalf. They drink.
 [target] Pick whoever would offer help nobody wants. They drink.
 [dare] Give the lobby an aggressively unromantic compliment. Or drink 2.
 [dare] Compliment someone's voice like a food critic. Or drink 2.
-[truth] Drink if you've ever got your avatar stuck making a stupid face on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever got your avatar stuck making a stupid face on stream. Otherwise, give a drink.
 [group] Everyone standing up, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
 [group] Everyone with horns, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] <player>, drink if you've ever stayed for gossip after saying goodbye in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever stayed for gossip after saying goodbye in front of your best friend. Otherwise, give a drink.
 [dare] Make a compliment sound like a warning. Or drink 2.
-[truth] Drink if you've ever tried to sound mysterious and failed on stream. Otherwise, pick someone to drink.
-[truth] Drink if you've ever tried out your sexy voice on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever tried to sound mysterious and failed on stream. Otherwise, give a drink.
+[truth] Drink if you've ever tried out your sexy voice on stream. Otherwise, give a drink.
 [target] Pick whoever would get mistaken for event staff. They drink.
 [target] Pick whoever would help clean up and get given a uniform. They drink.
 [group] Everyone using a mouse to look around drinks. Nobody qualifies? you drink.
-[truth] Drink if you've ever mistaken flirting for an insult on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever mistaken flirting for an insult on stream. Otherwise, give a drink.
 [target] <player>, pick whoever would accidentally volunteer for a whole shift. They drink.
 [target] Pick whoever would give directions while completely lost. They drink.
-[truth] Drink if you've ever made things worse by changing the subject on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever made things worse by changing the subject on stream. Otherwise, give a drink.
 [dare] <player>, make a warning sound like a compliment. Or drink 2.
 [target] <player>, pick whoever would answer a work phone they shouldn't. They drink.
 [left] Introduce the person to your left as your lawyer. Or drink 2.
-[truth] Drink if you've ever sent a heart to someone by accident in a private world. Otherwise, pick someone to drink.
-[truth] Drink if you've ever said something embarrassing while unmuted in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever sent a heart to someone by accident in a private world. Otherwise, give a drink.
+[truth] Drink if you've ever said something embarrassing while unmuted in a private world. Otherwise, give a drink.
 [group] Everyone with a controller on charge, say “I am the problem”, or drink 2. Nobody qualifies? <player> drinks.
 [dare] Give the spinner a compliment using a cooking term. Or drink 2.
 [target] <player>, pick whoever would talk themselves into an unpaid job. They drink.
 [target] Pick whoever would walk into the wrong wedding. They drink.
-[truth] <player>, drink if you've ever mistaken an insult for flirting in a private world. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever been caught smiling at a message in a private world. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever forgotten you were screen-sharing in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever mistaken an insult for flirting in a private world. Otherwise, give a drink.
+[truth] <player>, drink if you've ever been caught smiling at a message in a private world. Otherwise, give a drink.
+[truth] <player>, drink if you've ever forgotten you were screen-sharing in front of your best friend. Otherwise, give a drink.
 [dare] Compliment someone's avatar like you're selling a house. Or drink 2.
 [target] Pick whoever would enter through a staff-only door. They drink.
 [dare] Give yourself a compliment you clearly don't deserve. Or drink 2.
@@ -886,10 +886,10 @@
 [target] Pick whoever would wave at someone waving behind them. They drink.
 [target] Pick whoever would introduce themselves to someone they already know. They drink.
 [dare] <player>, compliment the lobby without using 'nice' or 'good'. Or drink 2.
-[truth] Drink if you've ever blamed your mic for something horny you said in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever blamed your mic for something horny you said in a private world. Otherwise, give a drink.
 [dare] <player>, give your own laugh a five-star review. Or drink 2.
 [target] Pick whoever would arrive confidently at the wrong restaurant. They drink.
-[truth] Drink if you've ever been roasted by a furry in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever been roasted by a furry in public. Otherwise, give a drink.
 [target] Pick whoever would make an entrance and immediately trip. They drink.
 [group] Everyone muted, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
 [group] Everyone with wings, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
@@ -897,7 +897,7 @@
 [dare] Roast your avatar's shoes. Or drink 2.
 [scuffed] Ask your chips to come back. Or drink 2.
 [target] Pick whoever would think their hotel room is haunted. They drink.
-[truth] Drink if you've ever blamed your mic for something horny you said in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever blamed your mic for something horny you said in public. Otherwise, give a drink.
 [dare] Roast your own music taste. Or drink 2.
 [right] <player>, let the person to your right give you a wrestling name. Or drink 2.
 [target] Pick whoever would try to befriend a ghost. They drink.
@@ -906,22 +906,22 @@
 [dare] Roast your imaginary dating profile. Or drink 2.
 [target] Pick whoever would get scared by their own shadow. They drink.
 [scuffed] Explain the casino like you've never gambled before. Or drink 2.
-[truth] <player>, drink if you've ever tried to sound mysterious and failed in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever tried to sound mysterious and failed in front of your best friend. Otherwise, give a drink.
 [group] Everyone who changed avatars this round, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
 [target] <player>, pick whoever would leave a haunted house before entering. They drink.
 [dare] Roast your last bad purchase. Or drink 2.
 [target] <player>, ask the person opposite you what terrible meal you'd be. Or drink 2.
 [scuffed] Give a dramatic goodbye to your chips. Or drink 2.
 [group] Everyone with a prop in their hand drinks. Nobody qualifies? <player> drinks.
-[truth] Drink if you've ever forgotten you were screen-sharing on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten you were screen-sharing on stream. Otherwise, give a drink.
 [left] <player>, ask the person to your left what terrible meal you'd be. Or drink 2.
-[truth] Drink if you've ever blamed your headset for a noise you made in public. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever forgotten everyone could hear your music on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever blamed your headset for a noise you made in public. Otherwise, give a drink.
+[truth] <player>, drink if you've ever forgotten everyone could hear your music on stream. Otherwise, give a drink.
 [dare] Roast your own sleep schedule. Or drink 2.
-[truth] Drink if you've ever realised your avatar had no pants on in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever realised your avatar had no pants on in a private world. Otherwise, give a drink.
 [group] Everyone using a fallback avatar, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
-[truth] <player>, drink if you've ever flirted with the wrong person in front of your best friend. Otherwise, pick someone to drink.
-[truth] Drink if you've ever called someone babe out of habit in a private world. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever flirted with the wrong person in front of your best friend. Otherwise, give a drink.
+[truth] Drink if you've ever called someone babe out of habit in a private world. Otherwise, give a drink.
 [target] <player>, pick whoever would apologise to a haunted-house actor. They drink.
 [target] <player>, pick whoever would challenge a ghost to prove it exists. They drink.
 [dare] Roast your avatar's haircut. Or drink 2.
@@ -935,32 +935,32 @@
 [target] Pick whoever would ask a chatbot for dating advice. They drink.
 [scuffed] Give To the Moon a worse name. Or drink 2.
 [scuffed] <player>, give the wheel your best villain speech. Or drink 2.
-[truth] <player>, drink if you've ever stayed for gossip after saying goodbye on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever stayed for gossip after saying goodbye on stream. Otherwise, give a drink.
 [target] Pick whoever would lose patience with a parking meter. They drink.
-[truth] Drink if you've ever forgotten how to talk after a compliment in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten how to talk after a compliment in public. Otherwise, give a drink.
 [group] Everyone with glowing eyes drinks. Nobody qualifies? <player> drinks.
 [dare] Invent a terrible title for your next stream. Or drink 2.
-[truth] <player>, drink if you've ever blamed your headset for a noise you made in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever blamed your headset for a noise you made in front of your best friend. Otherwise, give a drink.
 [group] Everyone whose avatar has piercings, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
 [dare] Name a sitcom about your friend group. Or drink 2.
 [scuffed] <player>, explain your worst compatibility result. Or drink 2.
 [group] Everyone with animal ears, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever accidentally revealed your crush in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever accidentally revealed your crush in front of your best friend. Otherwise, give a drink.
 [dare] <player>, name a soap opera about your dating history. Or drink 2.
 [group] Everyone using a fallback avatar drinks. Nobody qualifies? <player> drinks.
 [left] Introduce the person to your left like a final boss. Or drink 2.
 [dare] Invent a band name using two things nearby. Or drink 2.
 [dare] Name a documentary about your sleep schedule. Or drink 2.
 [scuffed] <player>, ask the wheel to pay for your avatar. Or drink 2.
-[truth] <player>, drink if you've ever played a soundboard at the worst possible time in public. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever played a soundboard at the worst possible time in public. Otherwise, give a drink.
 [group] Everyone whose avatar has a blush toggle, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
-[truth] Drink if you've ever panicked after calling someone cute in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever panicked after calling someone cute in front of your best friend. Otherwise, give a drink.
 [target] Pick whoever would get rejected by facial recognition. They drink.
-[truth] Drink if you've ever turned on the wrong NSFW toggle in front of your best friend. Otherwise, pick someone to drink.
-[truth] Drink if you've ever accidentally revealed your crush on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever turned on the wrong NSFW toggle in front of your best friend. Otherwise, give a drink.
+[truth] Drink if you've ever accidentally revealed your crush on stream. Otherwise, give a drink.
 [scuffed] Explain what SCUFFED is testing on you. Or drink 2.
-[truth] <player>, drink if you've ever tried out your sexy voice in front of your best friend. Otherwise, pick someone to drink.
-[truth] Drink if you've ever chickened out of admitting a crush in public. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever tried out your sexy voice in front of your best friend. Otherwise, give a drink.
+[truth] Drink if you've ever chickened out of admitting a crush in public. Otherwise, give a drink.
 [group] Everyone whose avatar has tattoos drinks. Nobody qualifies? you drink.
 [group] Everyone with too many toggles, say “I am the problem”, or drink 2. Nobody qualifies? <player> drinks.
 [target] Pick whoever would need help using a ticket machine. They drink.
@@ -968,19 +968,19 @@
 [target] Pick whoever would think the printer hates them personally. They drink.
 [dare] Name a cooking show hosted by your avatar. Or drink 2.
 [dare] <player>, invent a terrible sequel to your favourite movie. Or drink 2.
-[truth] <player>, drink if you've ever mistaken an insult for flirting in front of your best friend. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever been roasted by a furry in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever mistaken an insult for flirting in front of your best friend. Otherwise, give a drink.
+[truth] <player>, drink if you've ever been roasted by a furry in front of your best friend. Otherwise, give a drink.
 [right] Ask the person to your right what terrible meal you'd be. Or drink 2.
 [target] Pick whoever would give dating advice while single. They drink.
 [target] Pick whoever would tell someone to text their ex. They drink.
 [group] Everyone wearing a hat drinks. Nobody qualifies? you drink.
 [target] <player>, pick whoever would recommend breaking up over nothing. They drink.
 [target] Pick whoever would turn a stranger's date into group therapy. They drink.
-[truth] Drink if you've ever been caught admiring yourself in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever been caught admiring yourself in front of your best friend. Otherwise, give a drink.
 [dare] Give a fake acceptance speech for Worst Flirting. Or drink 2.
-[truth] Drink if you've ever realised way too late someone was flirting on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever realised way too late someone was flirting on stream. Otherwise, give a drink.
 [dare] Accept an award for Most Unnecessary Drama. Or drink 2.
-[truth] Drink if you've ever tried out your sexy voice in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever tried out your sexy voice in a private world. Otherwise, give a drink.
 [scuffed] Give Unity a villain monologue. Or drink 2.
 [scuffed] <player>, name a SCUFFED update after a Unity error. Or drink 2.
 [group] Everyone with too many toggles, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
@@ -991,7 +991,7 @@
 [target] Pick whoever would ignore every piece of advice they give. They drink.
 [target] Pick whoever would make a group chat for one question. They drink.
 [dare] Give a speech after losing an imaginary election. Or drink 2.
-[truth] Drink if you've ever said 'that's my type' too loudly in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever said 'that's my type' too loudly in public. Otherwise, give a drink.
 [right] Give the person to your right a compliment like it's a patch note. Or drink 2.
 [target] Pick whoever would start a server nobody uses. They drink.
 [target] Pick whoever would name a group chat something embarrassing. They drink.
@@ -1002,7 +1002,7 @@
 [target] <player>, pick whoever would say 'watch this' before falling over. They drink.
 [target] Pick whoever would announce a trick they haven't practised. They drink.
 [dare] <player>, introduce the next spinner like a wrestling announcer. Or drink 3.
-[truth] Drink if you've ever been caught smiling at a message in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever been caught smiling at a message in front of your best friend. Otherwise, give a drink.
 [dare] Give a press conference about losing your last brain cell. Or drink 2.
 [dare] Accept an award for Terrible Timing. Or drink 2.
 [target] Pick whoever would try to catch something and break it. They drink.
@@ -1011,28 +1011,28 @@
 [group] Everyone who has a snack nearby, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [group] Everyone using a furry avatar, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
 [dare] Give a victory speech for getting out of bed. Or drink 2.
-[truth] <player>, drink if you've ever chickened out of admitting a crush on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever chickened out of admitting a crush on stream. Otherwise, give a drink.
 [dare] <player>, announce your retirement from making good decisions. Or drink 2.
 [target] Pick whoever would say 'easy' and immediately lose. They drink.
 [target] Pick whoever would claim they can dance and prove otherwise. They drink.
 [target] Pick whoever would mistake a friendly dinner for a date. They drink.
 [dare] Give a speech celebrating one functioning tracker. Or drink 2.
 [dare] Make up a conspiracy about the wheel. Or drink 2.
-[truth] Drink if you've ever had your stomach growl while flirting in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever had your stomach growl while flirting in public. Otherwise, give a drink.
 [group] Everyone whose avatar has tattoos, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
 [target] Pick whoever would turn a group outing into a double date. They drink.
 [group] Everyone wearing a collar, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
 [dare] <player>, invent a rumour about your avatar's hat. Or drink 2.
-[truth] Drink if you've ever got your avatar stuck making a stupid face in public. Otherwise, pick someone to drink.
-[truth] Drink if you've ever called someone by your ex's name in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever got your avatar stuck making a stupid face in public. Otherwise, give a drink.
+[truth] Drink if you've ever called someone by your ex's name in a private world. Otherwise, give a drink.
 [group] Everyone using a furry avatar, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever coughed halfway through trying to sound dominant in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever coughed halfway through trying to sound dominant in front of your best friend. Otherwise, give a drink.
 [dare] Explain why your controller is secretly evil. Or drink 2.
 [dare] <player>, accuse a piece of furniture of judging you. Or drink 2.
 [scuffed] <player>, give the compatibility calculator a dating-app name. Or drink 2.
 [target] Pick whoever would ask 'so what are we' too early. They drink.
 [left] Let the person to your left give you a wrestling name. Or drink 2.
-[truth] <player>, drink if you've ever called someone hot before hearing their voice in a private world. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever called someone hot before hearing their voice in a private world. Otherwise, give a drink.
 [target] Pick whoever would plan a second date during the first. They drink.
 [target] Pick whoever would bring flowers to a casual hangout. They drink.
 [dare] Explain why the moon owes you money. Or drink 2.
@@ -1053,12 +1053,12 @@
 [target] Pick whoever would ask 'how flexible are you' for the wrong reason. They drink.
 [target] Pick whoever would get banned from a museum shop. They drink.
 [scuffed] <player>, rename the slot machine after your luck. Or drink 2.
-[truth] Drink if you've ever been caught admiring yourself on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever been caught admiring yourself on stream. Otherwise, give a drink.
 [dare] <player>, give your keyboard a suspicious backstory. Or drink 2.
 [target] Pick whoever would become a local legend for being an idiot. They drink.
 [scuffed] Demand an apology from the wheel. Or drink 2.
 [dare] Sell the lobby an imaginary useless product. Or drink 2.
-[truth] <player>, drink if you've ever pretended a horny message was a meme in public. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever pretended a horny message was a meme in public. Otherwise, give a drink.
 [dare] <player>, advertise a chair nobody can sit on. Or drink 2.
 [dare] Pitch a phone that only receives bad news. Or drink 2.
 [dare] Sell a tracker that only tracks poor decisions. Or drink 2.
@@ -1069,14 +1069,14 @@
 [dare] Pitch an alarm clock that gives up. Or drink 2.
 [target] Pick whoever would be the reason a sign exists. They drink.
 [target] Pick whoever would get remembered by hotel staff for the wrong reason. They drink.
-[truth] <player>, drink if you've ever had to explain you meant your avatar's tail in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever had to explain you meant your avatar's tail in front of your best friend. Otherwise, give a drink.
 [scuffed] Ask the roulette ball for a second chance. Or drink 2.
 [target] <player>, invent a terrible nightclub name with the person opposite you. Or drink 2.
 [dare] Sell a virtual pet rock with attitude. Or drink 2.
 [scuffed] <player>, explain your slot losses without saying 'rigged'. Or drink 2.
 [scuffed] Blame Seany for letting this happen. Or drink 2.
 [dare] Advertise an avatar with exactly one terrible toggle. Or drink 2.
-[truth] <player>, drink if you've ever made eye contact during a moan sound effect in a private world. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever made eye contact during a moan sound effect in a private world. Otherwise, give a drink.
 [dare] Pitch a dating app that only matches exes. Or drink 2.
 [target] Pick whoever would challenge a stranger to a dance-off. They drink.
 [target] <player>, pick whoever would dance like their trackers are broken. They drink.
@@ -1095,29 +1095,29 @@
 [target] <player>, pick whoever would start dancing before any music plays. They drink.
 [scuffed] Accuse the UNO deck of having favourites. Or drink 2.
 [group] Everyone with glowing horns drinks. Nobody qualifies? <player> drinks.
-[truth] Drink if you've ever accidentally interviewed someone like a potential date in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever accidentally interviewed someone like a potential date in a private world. Otherwise, give a drink.
 [scuffed] <player>, accuse the slots of holding a grudge. Or drink 2.
-[truth] <player>, drink if you've ever refused to explain why a message made you laugh in a private world. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever refused to explain why a message made you laugh in a private world. Otherwise, give a drink.
 [target] <player>, pick whoever would turn a queue into a conga line. They drink.
 [scuffed] Blame Fenic for your last bad decision. Or drink 2.
 [dare] Explain Discord drama like a school lesson. Or drink 2.
-[truth] Drink if you've ever blamed an awkward silence on lag on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever blamed an awkward silence on lag on stream. Otherwise, give a drink.
 [dare] <player>, explain an avatar toggle like it's illegal technology. Or drink 2.
 [target] Pick whoever would lose a dance-off to someone sitting down. They drink.
 [group] Everyone using a joke avatar drinks. Nobody qualifies? you drink.
 [scuffed] <player>, complain that the casino expected too much of you. Or drink 2.
 [target] <player>, pick whoever would trauma-dump in a taxi. They drink.
-[truth] <player>, drink if you've ever admitted you were down bad on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever admitted you were down bad on stream. Otherwise, give a drink.
 [dare] <player>, explain full-body tracking like you're making it up. Or drink 2.
 [scuffed] Give a dramatic speech about losing your last brain cell. Or drink 2.
 [right] <player>, give the person to your right a stupid job title. Or drink 2.
-[truth] Drink if you've ever apologised for a terrible joke in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever apologised for a terrible joke in public. Otherwise, give a drink.
 [dare] <player>, explain your last dream in ten words. Or drink 2.
 [dare] Explain your favourite game as badly as possible. Or drink 2.
 [dare] <player>, give your headset a relationship status. Or drink 2.
 [target] <player>, pick whoever would tell a stranger their entire dating history. They drink.
 [dare] Give your left controller a new name. Or drink 2.
-[truth] <player>, drink if you've ever chickened out of admitting a crush in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever chickened out of admitting a crush in front of your best friend. Otherwise, give a drink.
 [group] Everyone who has a pet in the room drinks. Nobody qualifies? <player> drinks.
 [scuffed] Ask the blackjack dealer for a refund. Or drink 2.
 [target] Pick whoever would cry during small talk. They drink.
@@ -1129,32 +1129,32 @@
 [target] <player>, pick whoever would turn a haircut into therapy. They drink.
 [dare] Ask your keyboard why it enabled that message. Or drink 2.
 [scuffed] Defend a bad decision by blaming Epsi. Or drink 2.
-[truth] <player>, drink if you've ever mistaken flirting for an insult in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever mistaken flirting for an insult in front of your best friend. Otherwise, give a drink.
 [target] Pick whoever would overshare with the person delivering food. They drink.
 [scuffed] <player>, give the blackjack dealer a villain speech. Or drink 2.
 [dare] Give your monitor a pep talk. Or drink 2.
 [group] Everyone who has music playing, do your best evil laugh, or drink 2. Nobody qualifies? <player> drinks.
-[truth] <player>, drink if you've ever said something embarrassing while unmuted on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever said something embarrassing while unmuted on stream. Otherwise, give a drink.
 [dare] Break up with your low-battery warning. Or drink 2.
 [group] Everyone wearing a collar, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [dare] <player>, congratulate your internet for surviving tonight. Or drink 2.
 [group] Everyone sitting down, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [group] Everyone who has music playing, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever called someone hot before hearing their voice in front of your best friend. Otherwise, pick someone to drink.
-[truth] Drink if you've ever coughed halfway through trying to sound dominant in a private world. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever hated hearing your own voice on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever called someone hot before hearing their voice in front of your best friend. Otherwise, give a drink.
+[truth] Drink if you've ever coughed halfway through trying to sound dominant in a private world. Otherwise, give a drink.
+[truth] <player>, drink if you've ever hated hearing your own voice on stream. Otherwise, give a drink.
 [group] Everyone wearing glasses drinks. Nobody qualifies? you drink.
-[truth] Drink if you've ever said 'that's my type' too loudly in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever said 'that's my type' too loudly in a private world. Otherwise, give a drink.
 [target] Pick whoever would tell airport security far too much. They drink.
 [dare] Make up a law for this lobby. Or drink 2.
 [target] <player>, pick whoever would tell a chef how to cook. They drink.
-[truth] <player>, drink if you've ever been reminded of your embarrassing phase on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever been reminded of your embarrassing phase on stream. Otherwise, give a drink.
 [target] Do an evil laugh. The person opposite you rates it out of ten. Or drink 2.
 [dare] Invent a tax nobody would agree to pay. Or drink 2.
-[truth] Drink if you've ever overshared and made everyone go quiet in front of your best friend. Otherwise, pick someone to drink.
-[truth] Drink if you've ever admitted you were down bad in public. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever snorted while laughing on stream. Otherwise, pick someone to drink.
-[truth] <player>, drink if you've ever made a noise you couldn't explain in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever overshared and made everyone go quiet in front of your best friend. Otherwise, give a drink.
+[truth] Drink if you've ever admitted you were down bad in public. Otherwise, give a drink.
+[truth] <player>, drink if you've ever snorted while laughing on stream. Otherwise, give a drink.
+[truth] <player>, drink if you've ever made a noise you couldn't explain in public. Otherwise, give a drink.
 [right] Trade bad pickup lines with the person to your right. Or drink 2.
 [target] <player>, pick whoever would backseat-drive from the passenger seat. They drink.
 [dare] <player>, give yourself an absurd official title. Or drink 2.
@@ -1183,19 +1183,19 @@
 [dare] <player>, give a five-second motivational speech. Or drink 2.
 [target] <player>, pick whoever would spend an hour choosing an avatar. They drink.
 [target] Pick whoever would check their reflection during an argument. They drink.
-[truth] Drink if you've ever tried to whisper and been way too loud on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever tried to whisper and been way too loud on stream. Otherwise, give a drink.
 [dare] Give terrible advice about saving money. Or drink 2.
 [target] Pick whoever would arrive late because of one accessory. They drink.
-[truth] Drink if you've ever forgotten your voice changer was on in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten your voice changer was on in a private world. Otherwise, give a drink.
 [target] Pick whoever would treat a mirror like reserved seating. They drink.
 [target] <player>, pick whoever would make an apology worse by explaining. They drink.
 [group] Everyone using a furry avatar drinks. Nobody qualifies? <player> drinks.
 [target] <player>, pick whoever would say 'sorry you feel that way'. They drink.
-[truth] <player>, drink if you've ever forgotten your point halfway through talking in a private world. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever forgotten your point halfway through talking in a private world. Otherwise, give a drink.
 [group] Everyone who joined in the last ten minutes, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever forgotten your point halfway through talking on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten your point halfway through talking on stream. Otherwise, give a drink.
 [target] Pick whoever would apologise and immediately do it again. They drink.
-[truth] Drink if you've ever forgotten your voice changer was on in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten your voice changer was on in front of your best friend. Otherwise, give a drink.
 [scuffed] Blame the moon for your losses. Or drink 2.
 [dare] Give terrible advice about getting more sleep. Or drink 2.
 [dare] <player>, give terrible advice about replying to a crush. Or drink 2.
@@ -1210,31 +1210,31 @@
 [scuffed] Complain about your compatibility result. Or drink 2.
 [dare] Explain why your avatar should run the casino. Or drink 2.
 [target] Pick whoever would say 'my bad' after a complete disaster. They drink.
-[truth] Drink if you've ever snorted while laughing in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever snorted while laughing in a private world. Otherwise, give a drink.
 [target] <player>, pick whoever would leave a party knowing all the gossip. They drink.
-[truth] <player>, drink if you've ever had to explain your dramatic status in public. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever had to explain your dramatic status in public. Otherwise, give a drink.
 [scuffed] Accuse SCUFFED of using you as a test subject. Or drink 2.
 [neighbours] <player>, invent a terrible nightclub name with the closest person. Or drink 2.
 [target] <player>, pick whoever would get the drama from both sides. They drink.
-[truth] Drink if you've ever coughed halfway through trying to sound dominant on stream. Otherwise, pick someone to drink.
-[truth] Drink if you've ever unmuted during a private conversation on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever coughed halfway through trying to sound dominant on stream. Otherwise, give a drink.
+[truth] Drink if you've ever unmuted during a private conversation on stream. Otherwise, give a drink.
 [target] <player>, pick whoever would remember gossip but forget birthdays. They drink.
 [group] Everyone with floppy ears drinks. Nobody qualifies? you drink.
 [target] Pick whoever would say 'I hate drama' while asking for details. They drink.
 [left] <player>, trade bad pickup lines with the person to your left. Or drink 2.
-[truth] <player>, drink if you've ever refused to explain why a message made you laugh in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever refused to explain why a message made you laugh in front of your best friend. Otherwise, give a drink.
 [group] Everyone wearing a hoodie, say “I am the problem”, or drink 2. Nobody qualifies? <player> drinks.
 [dare] Defend the worst username you've ever used. Or drink 2.
 [dare] Make up a new swear word. Or drink 2.
-[truth] Drink if you've ever forgotten your voice changer was on on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten your voice changer was on on stream. Otherwise, give a drink.
 [dare] Invent a greeting for the lobby. Or drink 2.
-[truth] Drink if you've ever pretended to get an inside joke on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever pretended to get an inside joke on stream. Otherwise, give a drink.
 [dare] Make up a fake loading-screen tip. Or drink 2.
-[truth] Drink if you've ever forgotten your point halfway through talking in front of your best friend. Otherwise, pick someone to drink.
-[truth] Drink if you've ever hated hearing your own voice in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten your point halfway through talking in front of your best friend. Otherwise, give a drink.
+[truth] Drink if you've ever hated hearing your own voice in a private world. Otherwise, give a drink.
 [target] <player>, pick whoever would get invited purely for the gossip. They drink.
 [group] Everyone using a fallback avatar, say “I am the problem”, or drink 2. Nobody qualifies? <player> drinks.
-[truth] Drink if you've ever admitted you were down bad in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever admitted you were down bad in front of your best friend. Otherwise, give a drink.
 [target] Pick whoever would know about a breakup before the couple does. They drink.
 [scuffed] Give a villain speech about taking over SCUFFED. Or drink 2.
 [scuffed] Insult the horse you bet on. Or drink 2.
@@ -1242,33 +1242,33 @@
 [dare] Invent an achievement for joining this instance. Or drink 2.
 [target] <player>, pick whoever would go to an interview at the wrong company. They drink.
 [target] <player>, pick whoever would apply for a job they don't understand. They drink.
-[truth] Drink if you've ever unmuted during a private conversation in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever unmuted during a private conversation in a private world. Otherwise, give a drink.
 [target] Pick whoever would lie about a skill and immediately need it. They drink.
-[truth] Drink if you've ever had to explain you meant your avatar's tail in public. Otherwise, pick someone to drink.
+[truth] Drink if you've ever had to explain you meant your avatar's tail in public. Otherwise, give a drink.
 [scuffed] Give your avatar a warning about spending. Or drink 2.
 [scuffed] Name a SCUFFED update after Epsi. Or drink 2.
-[truth] Drink if you've ever played a soundboard at the worst possible time in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever played a soundboard at the worst possible time in a private world. Otherwise, give a drink.
 [dare] Make up a terrible error message. Or drink 2.
 [target] Pick whoever would quit a job in the group chat. They drink.
-[truth] <player>, drink if you've ever blamed an awkward silence on lag in public. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever blamed an awkward silence on lag in public. Otherwise, give a drink.
 [dare] Invent a fake Discord status. Or drink 2.
 [dare] Write a verbal patch note for your personality. Or drink 2.
-[truth] Drink if you've ever coughed halfway through trying to sound dominant in public. Otherwise, pick someone to drink.
-[truth] Drink if you've ever played a soundboard at the worst possible time on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever coughed halfway through trying to sound dominant in public. Otherwise, give a drink.
+[truth] Drink if you've ever played a soundboard at the worst possible time on stream. Otherwise, give a drink.
 [target] Pick whoever would turn a hobby into unwanted work. They drink.
 [target] Pick whoever would ask for Wi-Fi before saying hello. They drink.
-[truth] <player>, drink if you've ever made a noise you couldn't explain in a private world. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever made a noise you couldn't explain in a private world. Otherwise, give a drink.
 [target] Pick whoever would complain about the internet on a date. They drink.
-[truth] <player>, drink if you've ever apologised for a terrible joke on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever apologised for a terrible joke on stream. Otherwise, give a drink.
 [group] Everyone standing up drinks. Nobody qualifies? <player> drinks.
-[truth] <player>, drink if you've ever mistaken flirting for an insult in public. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever mistaken flirting for an insult in public. Otherwise, give a drink.
 [right] Give the person to your right a completely unnecessary pep talk. Or drink 2.
 [scuffed] Ask the moon where your money went. Or drink 2.
 [scuffed] Give the wheel a terrible pet name. Or drink 2.
 [group] Everyone with waist tracking drinks. Nobody qualifies? you drink.
 [group] Everyone whose avatar has jiggle physics, say “I am the problem”, or drink 2. Nobody qualifies? <player> drinks.
 [dare] Make up a useless life hack. Or drink 2.
-[truth] <player>, drink if you've ever said something embarrassing while unmuted in front of your best friend. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever said something embarrassing while unmuted in front of your best friend. Otherwise, give a drink.
 [target] <player>, pick whoever would name their hotspot something embarrassing. They drink.
 [right] <player>, invent a terrible nightclub name with the person to your right. Or drink 2.
 [target] <player>, pick whoever would use the same password for everything. They drink.
@@ -1286,7 +1286,7 @@
 [neighbours] <player>, ask the closest person what household appliance you'd be. Or drink 2.
 [target] <player>, pick whoever would invent a rivalry nobody else knows about. They drink.
 [group] Everyone on desktop, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever made a suspicious noise adjusting your headset in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever made a suspicious noise adjusting your headset in front of your best friend. Otherwise, give a drink.
 [target] <player>, introduce the person opposite you as your lawyer. Or drink 2.
 [dare] <player>, give a fake horoscope for the spinner. Or drink 2.
 [target] <player>, pick whoever would treat eye contact like a challenge. They drink.
@@ -1296,36 +1296,36 @@
 [scuffed] Give SCUFFED a terrible advertising slogan. Or drink 2.
 [dare] Give tomorrow's forecast in dramatic nonsense. Or drink 2.
 [group] Everyone whose avatar has tattoos, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever forgotten how to talk after a compliment in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten how to talk after a compliment in front of your best friend. Otherwise, give a drink.
 [target] Give the person opposite you a compliment like it's a patch note. Or drink 2.
 [dare] Predict your next Unity error. Or drink 2.
-[truth] Drink if you've ever lost tracking while trying to impress someone on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever lost tracking while trying to impress someone on stream. Otherwise, give a drink.
 [dare] Give the lobby a prophecy involving a sandwich. Or drink 2.
 [group] Everyone using a robot avatar, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever made things worse by changing the subject in public. Otherwise, pick someone to drink.
-[truth] Drink if you've ever pretended to get an inside joke in front of your best friend. Otherwise, pick someone to drink.
+[truth] Drink if you've ever made things worse by changing the subject in public. Otherwise, give a drink.
+[truth] Drink if you've ever pretended to get an inside joke in front of your best friend. Otherwise, give a drink.
 [target] Pick whoever would get competitive during a charity event. They drink.
 [target] <player>, pick whoever would have a nemesis in every world. They drink.
 [group] Everyone whose avatar has a blush toggle, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [scuffed] <player>, defend your worst blackjack decision. Or drink 2.
 [dare] <player>, predict what your avatar will do after you log off. Or drink 2.
 [dare] Give your wallet a very bad fortune. Or drink 2.
-[truth] Drink if you've ever been roasted by a furry on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever been roasted by a furry on stream. Otherwise, give a drink.
 [dare] Predict the next ridiculous trend in VRChat. Or drink 2.
-[truth] Drink if you've ever forgotten how to talk after a compliment on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever forgotten how to talk after a compliment on stream. Otherwise, give a drink.
 [target] Pick whoever would beef with someone over a stolen username. They drink.
 [dare] Tell the lobby what your evil twin is doing tonight. Or drink 2.
-[truth] Drink if you've ever realised way too late someone was flirting in a private world. Otherwise, pick someone to drink.
+[truth] Drink if you've ever realised way too late someone was flirting in a private world. Otherwise, give a drink.
 [scuffed] <player>, give Seany your best disappointed-parent voice. Or drink 2.
 [dare] <player>, say goodbye like you're leaving for ten years. Or drink 2.
 [dare] <player>, say hello like you've just walked into the wrong wedding. Or drink 2.
 [target] <player>, pick whoever would narrate everything they do. They drink.
 [group] Everyone who has Discord open, do your best evil laugh, or drink 2. Nobody qualifies? you drink.
-[truth] Drink if you've ever said 'that's my type' too loudly on stream. Otherwise, pick someone to drink.
+[truth] Drink if you've ever said 'that's my type' too loudly on stream. Otherwise, give a drink.
 [scuffed] Tell the wheel this is Fenic's fault. Or drink 2.
 [group] Everyone in VR, say “I am the problem”, or drink 2. Nobody qualifies? you drink.
 [scuffed] <player>, name a SCUFFED update after your bad luck. Or drink 2.
-[truth] <player>, drink if you've ever refused to explain why a message made you laugh on stream. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever refused to explain why a message made you laugh on stream. Otherwise, give a drink.
 [scuffed] Ask the pool table to stop judging you. Or drink 2.
 [dare] Say sorry like your lawyer wrote it. Or drink 2.
 [target] Pick whoever would talk through a whole movie. They drink.
@@ -1337,23 +1337,23 @@
 [dare] <player>, say 'I'll be right back' like an NPC side quest. Or drink 2.
 [dare] Say 'I need a minute' like a dramatic movie line. Or drink 2.
 [dare] <player>, say 'who invited you' like you're delighted. Or drink 2.
-[truth] <player>, drink if you've ever called someone daddy and regretted it in a private world. Otherwise, pick someone to drink.
+[truth] <player>, drink if you've ever called someone daddy and regretted it in a private world. Otherwise, give a drink.
 [dare] <player>, say 'I love this place' like you're trapped here. Or drink 2.
 [target] Pick whoever would need to be reminded their mic is on. They drink.
 [group] Everyone wearing boots, say “I am the problem”, or drink 2. Nobody qualifies? <player> drinks.
 [dare] Say 'I'm going to bed' like a villain making a threat. Or drink 2.
-[group] If you were born in January, drink. Otherwise, pick someone to drink.
-[group] If you were born in February, drink. Otherwise, pick someone to drink.
-[group] <player>, if you were born in March, drink. Otherwise, pick someone to drink.
-[group] <player>, if you were born in April, drink. Otherwise, pick someone to drink.
-[group] <player>, if you were born in May, drink. Otherwise, pick someone to drink.
-[group] If you were born in June, drink. Otherwise, pick someone to drink.
-[group] If you were born in July, drink. Otherwise, pick someone to drink.
-[group] <player>, if you were born in August, drink. Otherwise, pick someone to drink.
-[group] If you were born in September, drink. Otherwise, pick someone to drink.
-[group] <player>, if you were born in October, drink. Otherwise, pick someone to drink.
-[group] If you were born in November, drink. Otherwise, pick someone to drink.
-[group] If you were born in December, drink. Otherwise, pick someone to drink.
+[group] If you were born in January, drink. Otherwise, give a drink.
+[group] If you were born in February, drink. Otherwise, give a drink.
+[group] <player>, if you were born in March, drink. Otherwise, give a drink.
+[group] <player>, if you were born in April, drink. Otherwise, give a drink.
+[group] <player>, if you were born in May, drink. Otherwise, give a drink.
+[group] If you were born in June, drink. Otherwise, give a drink.
+[group] If you were born in July, drink. Otherwise, give a drink.
+[group] <player>, if you were born in August, drink. Otherwise, give a drink.
+[group] If you were born in September, drink. Otherwise, give a drink.
+[group] <player>, if you were born in October, drink. Otherwise, give a drink.
+[group] If you were born in November, drink. Otherwise, give a drink.
+[group] If you were born in December, drink. Otherwise, give a drink.
 [dare] <player>, if they're happy to, sit on <rem_player>'s lap until your next turn, or drink 5.
 [group] Drink if you were born in January.
 [group] Drink if you were born in February.

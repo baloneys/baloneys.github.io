@@ -1355,3 +1355,15 @@
 [group] If you were born in November, drink. Otherwise, pick someone to drink.
 [group] If you were born in December, drink. Otherwise, pick someone to drink.
 [dare] <player>, if they're happy to, sit on <rem_player>'s lap until your next turn, or drink 5.
+[group] Drink if you were born in January.
+[group] Drink if you were born in February.
+[group] Drink if you were born in March.
+[group] Drink if you were born in April.
+[group] Drink if you were born in May.
+[group] Drink if you were born in June.
+[group] Drink if you were born in July.
+[group] Drink if you were born in August.
+[group] Drink if you were born in September.
+[group] Drink if you were born in October.
+[group] Drink if you were born in November.
+[group] Drink if you were born in December.

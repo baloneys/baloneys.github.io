@@ -1367,3 +1367,503 @@
 [group] Drink if you were born in October.
 [group] Drink if you were born in November.
 [group] Drink if you were born in December.
+[group] Everyone who has spent real money on a completely useless icon drinks 1. Nobody? The spinner drinks 1.
+[target] Pick whoever would accidentally audition for a reality show. They drink 1.
+[group] Everyone cheers as <player> and <rem_player> announce a fake engagement. They both drink 1.
+[target] Pick whoever would build a whole conspiracy around missing socks. They drink 1.
+[group] Everyone who has ever talked to a loading screen drinks 1. Nobody? The spinner drinks 1.
+[drink] <player>, raise a glass with <rem_player> and say "BOMBOCLAT, THE GNOMES HAVE UNIONISED!" Both sip.
+[left] The person to your left is your legal representative for ten seconds. Both drink 1.
+[right] The person to your right decides your villain catchphrase. Both drink 1.
+[group] Everyone who has experienced an unexplained full-body tracking pose drinks 1. Nobody? The spinner drinks 1.
+[drink] Drink with <rem_player>, you absolute bomboclat! One celebratory sip each.
+[dare] <player>, explain to <rem_player> why your avatar deserves a tax deduction. Both drink 1.
+[dare] Explain why your avatar should be allowed to run for prime minister. Or drink 1.
+[dare] <rem_player> invents a cursed sound effect for your entrance. Both drink 1.
+[scuffed] Drink 1 if you've ever accused roulette of having personal opinions. Otherwise, give a drink.
+[dare] <player>, apologise to <rem_player> on behalf of every cursed avatar in VRChat. Both drink 1.
+[target] Pick whoever would call an in-game achievement a career milestone. They drink 1.
+[dare] Pitch a horror movie where the villain is your internet connection. Or drink 1.
+[target] Pick whoever would hire a lawyer to dispute a parking sign. They drink 1.
+[dare] Introduce your imaginary pet dragon to the group. Or drink 1.
+[target] Pick whoever would argue with the tutorial narrator. They drink 1.
+[group] Everyone who's been called a goblin by a friend drinks 1. Nobody? The spinner drinks 1.
+[left] Tell the person on your left what cartoon villain they resemble. Both drink 1.
+[drink] <player>, you and <rem_player> drink 1 because the wheel has declared you "Too Silly to Function."
+[target] <player>, choose a song title that describes <rem_player>'s romantic life. Both drink 1.
+[truth] <rem_player> must guess your favourite excuse for being late. Both drink 1 if they're wildly wrong.
+[target] Pick whoever would lose their passport inside their own jacket. They drink 1.
+[truth] Drink 1 if you've hidden in a mirror crowd to avoid small talk. Otherwise, give a drink.
+[truth] Drink 1 if you've walked through somebody while trying to hug them. Otherwise, give a drink.
+[scuffed] Choose a made-up mascot for SCUFFED. The spinner drinks 1 to approve it.
+[dare] Perform the least intimidating war cry in human history. Or drink 1.
+[drink] <player>, you and <rem_player> are now drinking buddies in a deeply cursed side quest. Sip 1 each.
+[neighbours] Announce your neighbours as the official SCUFFED Bureau of Nonsense. All three drink 1.
+[truth] Drink 1 if you've made a private instance to escape one person's jokes. Otherwise, give a drink.
+[target] <player>, pick whether you or <rem_player> is more likely to befriend an AI vending machine. The other drinks 1.
+[truth] Drink 1 if you've waved at someone who had already left the instance. Otherwise, give a drink.
+[dare] Tell the lobby why your avatar is a terrible roommate. Or drink 1.
+[target] <player>, tell <rem_player> exactly why they wouldn't survive in a horror movie. Both drink 1.
+[group] Everyone who has ever forgotten they're not muted drinks 1. Nobody? The spinner drinks 1.
+[dare] Pretend you're a customer-service agent for a haunted casino. Or drink 1.
+[scuffed] Offer an imaginary refund to everyone who has suffered at the wheel. Drink 1.
+[truth] <player>, ask <rem_player> whether your avatar passes the vibe check. If they hesitate, both drink 1.
+[group] Everyone who's made a pet noise into their microphone on purpose drinks 1. Nobody? The spinner drinks 1.
+[target] Pick whoever would win an argument with a scarecrow and brag about it. They drink 1.
+[truth] Drink 1 if you've listened to someone's entire tangent because leaving felt rude. Otherwise, give a drink.
+[truth] <rem_player> asks which embarrassing song you know every word to. Tell them or take a sip together.
+[truth] Drink 1 if you've accidentally left your avatar's mouth wide open. Otherwise, give a drink.
+[dare] Make a fake movie trailer for this lobby. Or drink 1.
+[scuffed] <player>, challenge <rem_player> to name three SCUFFED games. First to stumble drinks 1.
+[group] Everyone who would definitely negotiate with a ghost drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've saved an avatar outfit called "final FINAL final". Otherwise, give a drink.
+[truth] Drink 1 if you've pretended an awkward silence was a connection issue. Otherwise, give a drink.
+[target] Pick whoever would become a Discord mod purely for the badge. They drink 1.
+[group] Everyone who has accidentally liked an old post drinks 1. Nobody? The spinner drinks 1.
+[truth] <player>, ask <rem_player> who takes longer choosing an avatar. The slower one drinks 1.
+[truth] Drink 1 if you've claimed you knew a song and then sung the wrong words. Otherwise, give a drink.
+[scuffed] Give the casino a customer-service slogan that would scare customers away. Or drink 1.
+[truth] Drink 1 if you've sat silently through a story because the speaker was very attractive. Otherwise, give a drink.
+[scuffed] <player>, report <rem_player> to the imaginary Department of Suspicious Roulette Results. Both drink 1.
+[drink] <player>, if <rem_player> has ever witnessed you embarrass yourself, both drink 1 to forget it.
+[dare] Imitate a toaster trying to ask someone on a date. Or drink 1.
+[scuffed] Declare the horse-racing odds a national emergency. Drink 1.
+[target] Pick whoever would take relationship advice from a roulette wheel. They drink 1.
+[neighbours] Neighbourhood council meeting! Both sides name a law this lobby needs. Council members drink 1.
+[target] Pick whoever would fall in love with the voice of a satnav. They drink 1.
+[target] Pick whoever would open a secret club with no entrance. They drink 1.
+[target] <player>, tell <rem_player> which of you would get voted off a reality show first. That person drinks 1.
+[drink] Drink 1. Your imaginary lawyer has advised you not to elaborate.
+[target] <player>, award <rem_player> a PhD in Goblin Behaviour. Both drink 1 at graduation.
+[truth] Drink 1 if you've answered "I'm busy" while actually staring at a menu. Otherwise, give a drink.
+[scuffed] <rem_player> predicts your next horrible casino decision. Both drink 1 for its inevitable accuracy.
+[group] Everyone who has screenshots from a long-dead group chat drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone who has a friend they only know by their avatar drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone whose avatar is wearing shoes they wouldn't wear IRL drinks 1. Nobody? The spinner drinks 1.
+[target] Pick whoever would fight a goose and lose their dignity. They drink 1.
+[scuffed] <player>, nominate <rem_player> to inspect the wheel for emotional misconduct. Both drink 1.
+[target] <player>, name a fictional crime you and <rem_player> would be terrible at committing. Both drink 1.
+[target] <player>, tell <rem_player> they are the final boss of awkward conversations. Both drink 1.
+[truth] Drink 1 if you've given a fictional character better dating advice than yourself. Otherwise, give a drink.
+[dare] Deliver an apology in the style of a wrestling villain. Or drink 1.
+[drink] Take a sip for every imaginary friend your avatar has. Maximum two sips.
+[dare] Pretend you're a sentient loading bar having a nervous breakdown. Or drink 1.
+[target] <player>, decide which of you and <rem_player> is more likely to get banned from a buffet. The loser drinks 1.
+[target] Pick whoever would make a terrible undercover agent because they talk too much. They drink 1.
+[group] Everyone vote: should <player> or <rem_player> run this lobby? The winner drinks 1; the loser drinks 1 in protest.
+[target] <player>, swap imaginary criminal records with <rem_player>. Both drink 1.
+[dare] Explain your flirting style as though it's an unresolved software bug. Or drink 1.
+[group] Everyone who has ever said "the patch broke everything" drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone who has ever used a terrible pun as a pickup line drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've heard your own microphone echo and questioned your existence. Otherwise, give a drink.
+[dare] Announce a new law banning your own catchphrase. Or drink 1.
+[dare] <player>, copy <rem_player>'s idle pose. Both drink 1 if it looks like a broken marionette.
+[dare] <rem_player> must whisper "I know what you did in Unity" dramatically. Both drink 1.
+[neighbours] Take a sip with whichever neighbour has the more cursed avatar. Both neighbours tied? All three sip.
+[right] Your right-hand neighbour gives you a fake celebrity scandal. Both drink 1.
+[dare] Explain why your avatar has been banned from the moon. Or drink 1.
+[right] The person to your right gets to write your imaginary dating bio. Both drink 1.
+[scuffed] Name a SCUFFED slot machine after your ex. Drink 1 for the bad idea.
+[drink] <player>, cheers <rem_player> for somehow making this lobby even less respectable.
+[target] Pick whoever would call a ghost rude for interrupting them. They drink 1.
+[truth] Drink 1 if you've joined a friend's world and immediately heard your name. Otherwise, give a drink.
+[group] Everyone who has ever joined a world because of the music drinks 1. Nobody? The spinner drinks 1.
+[target] Pick whoever would use the wrong emote at a wedding. They drink 1.
+[scuffed] Announce an absurd roulette superstition. Drink 1 to activate it.
+[scuffed] Tell the wheel it's being audited. Drink 1 for your bravery.
+[neighbours] Raise a glass with both neighbours to celebrate your deeply questionable friendship. Everyone sips 1.
+[dare] <player>, give <rem_player> your most unconvincing "we're just friends" speech. Both drink 1.
+[dare] Invent a new holiday to celebrate terrible decisions. Or drink 1.
+[right] Ask the person on your right to grade your NPC impression. Both drink 1.
+[dare] <player>, propose to <rem_player> using only the language of patch notes. Both drink 1 for the update.
+[drink] <player>, take a sip with <rem_player> because the wheel demands a dramatic partnership.
+[dare] <player>, pitch a terrible dating show starring you and <rem_player>. Drink 1 if nobody would watch it.
+[truth] <rem_player> guesses whether you've ever fallen asleep in front of a mirror in VR. Reveal it or drink 1 together.
+[truth] Drink 1 if you've complained about an update before reading the patch notes. Otherwise, give a drink.
+[scuffed] Take a sip to honour every fake chip you'll never see again.
+[scuffed] <player>, ask <rem_player> to apologise to the horse-racing gods on your behalf. Both drink 1.
+[target] Pick whoever would get nervous during a job interview with a robot. They drink 1.
+[target] Pick whoever would challenge a vacuum cleaner to a duel. They drink 1.
+[group] Everyone who has a virtual pet on their avatar drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've accidentally flirted while trying to be sarcastic. Otherwise, give a drink.
+[dare] Make the sound of a Discord notification having a crisis. Or drink 1.
+[drink] <player>, declare "THIS IS A HOSTILE TAKEOVER" with <rem_player>. Both take a sip.
+[target] Pick whoever would host a fake awards ceremony for their pets. They drink 1.
+[scuffed] Propose a new SCUFFED minigame with the worst name imaginable. Drink 1.
+[truth] Drink 1 if you've laughed at something you didn't actually hear. Otherwise, give a drink.
+[truth] Drink 1 if you've confused someone's username with their pronouns. Otherwise, give a drink.
+[target] <player>, decide which of you and <rem_player> would lose a fight with a revolving door. The loser drinks 1.
+[target] Pick whoever would get kicked off a quiz show for heckling the host. They drink 1.
+[target] <player>, nominate <rem_player> as the lobby's Minister of Bad Decisions. Drink 1 together.
+[group] Everyone who has ever taken a screenshot instead of solving the problem drinks 1. Nobody? The spinner drinks 1.
+[right] Let the right neighbour decide which fictional creature should babysit you. Both drink 1.
+[target] <player>, give <rem_player> the job title "Executive Director of Tomfoolery." Both drink 1.
+[dare] <player>, argue with <rem_player> about which of you is the NPC. Both drink 1 after ten seconds.
+[drink] <player>, share a toast with <rem_player> to a future where Unity opens without errors.
+[right] Ask the person on your right whether they'd trust you to cook dinner. Both drink 1.
+[truth] Drink 1 if you've had a serious discussion interrupted by an incredibly tiny person. Otherwise, give a drink.
+[truth] Drink 1 if you've named a Unity project something that shouldn't be said aloud. Otherwise, give a drink.
+[target] Pick whoever would start a business selling emotional-support potatoes. They drink 1.
+[neighbours] Your neighbours each name one ridiculous thing about this lobby. All three drink 1.
+[scuffed] Pretend you are the SCUFFED Minister of Questionable Mathematics. Drink 1.
+[target] Pick whoever would propose marriage over a game bug. They drink 1.
+[truth] Drink 1 if you've apologised to a slot machine after insulting it. Otherwise, give a drink.
+[neighbours] <player>, if <rem_player> is seated beside you, drink 1 together. Otherwise, cheers across the table and sip.
+[target] Pick whoever would flirt with a statue and claim it flirted back. They drink 1.
+[scuffed] Turn your last chip balance into a tragic love poem. Or drink 1.
+[dare] <player>, break up with <rem_player> like a soap-opera villain. Both drink 1 for the performance.
+[target] Pick whoever would wear formal clothes to a VRChat argument. They drink 1.
+[scuffed] <rem_player> must give your latest roulette strategy a one-star review. Both drink 1.
+[scuffed] Explain why an imaginary casino duck deserves a salary. Drink 1.
+[dare] Pretend to be a restaurant critic reviewing a virtual sandwich. Or drink 1.
+[scuffed] Ask the SCUFFED wheel whether it takes bribes. Drink 1 for asking.
+[scuffed] <player>, you and <rem_player> owe a fictional fine for disturbing the SCUFFED peace. Pay one sip each.
+[truth] Drink 1 if you've typed a long message, deleted it, and sent "lol". Otherwise, give a drink.
+[scuffed] <player>, accuse <rem_player> of feeding your chips to a digital horse. Both drink 1.
+[truth] Drink 1 if you've accidentally made your voice sound romantic by lowering the volume. Otherwise, give a drink.
+[scuffed] Claim the roulette wheel is actually three goblins in a trench coat. Drink 1.
+[truth] Drink 1 if you've pretended not to care who viewed your status. Otherwise, give a drink.
+[group] Everyone who has accidentally opened the wrong Unity project drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've misheard a compliment as an insult and started defending yourself. Otherwise, give a drink.
+[target] <player>, blame <rem_player> for the wheel's terrible attitude. Both drink 1.
+[left] The person on your left nominates you for an award you don't deserve. Both drink 1.
+[target] Pick whoever would lose a staring contest to a mirror. They drink 1.
+[dare] Pretend to auction off an invisible gaming chair. Or drink 1.
+[target] <player>, give <rem_player> a terrible superhero name. Both drink 1.
+[target] <player>, crown <rem_player> Emperor of Unread Notifications. Both drink 1.
+[group] Everyone who has ever misread a username spectacularly drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've said "I know a shortcut" and got everybody lost in a world. Otherwise, give a drink.
+[dare] <player>, sing three words of an imaginary national anthem for <rem_player>. Both drink 1.
+[right] Your right-hand neighbour chooses the most embarrassing award you'd win. Both drink 1.
+[dare] Describe your love life using only error messages. Or drink 1.
+[drink] Drink all your drink and declare "THE GNOME COUNCIL HAS SPOKEN!" A sip is fine too.
+[scuffed] Give the SCUFFED wheel an employee performance review, or drink 1.
+[scuffed] <player>, tell <rem_player> how you'd spend one million imaginary SCUFFED chips. Both drink 1.
+[drink] Drink 1 for each imaginary goblin in your wallet. Maximum two goblins.
+[drink] <player>, drink 1 with <rem_player> if either of you has ever lost chips while insisting you were winning.
+[truth] Drink 1 if you've said "that's crazy" because you were multitasking. Otherwise, give a drink.
+[drink] One ceremonial sip for everybody who has suffered through a Unity loading bar.
+[group] Everyone who has ever accidentally entered a wrong instance drinks 1. Nobody? The spinner drinks 1.
+[truth] <player>, ask <rem_player> which of you would get caught lying first. The chosen player drinks 1.
+[truth] Drink 1 if you've joined a world solely because of its thumbnail. Otherwise, give a drink.
+[scuffed] Describe the SCUFFED casino as a five-star resort. Fail to be convincing? Drink 1.
+[truth] Drink 1 if you've joined a conversation halfway through and agreed with the wrong side. Otherwise, give a drink.
+[target] Pick whoever would try to settle a feud using rock-paper-scissors. They drink 1.
+[dare] Make <rem_player> laugh without using words. Fail? Drink 1 together.
+[dare] Explain why the moon owes you an apology. Or drink 1.
+[truth] Drink 1 if you've blamed your headset for making you look like you were nodding along. Otherwise, give a drink.
+[target] Pick whoever would announce their own entrance with sound effects. They drink 1.
+[drink] <player>, drink with <rem_player> if you've both ever accidentally talked while muted. Otherwise, you each sip for being suspiciously competent.
+[target] Pick whoever would get caught flirting with a hologram. They drink 1.
+[dare] Invent the worst possible name for a nightclub on Mars. Or drink 1.
+[dare] <player>, tell <rem_player> they're your favourite malfunctioning appliance. Both drink 1.
+[scuffed] Invent a patch note that makes the wheel even less trustworthy. Drink 1.
+[target] Pick whoever would fail a captcha designed for toddlers. They drink 1.
+[truth] <rem_player> chooses: reveal your last harmless search query or share one sip.
+[truth] Drink 1 if you've joined a public lobby just to inspect the drama. Otherwise, give a drink.
+[left] Let the left neighbour name your imaginary autobiography sequel. Both drink 1.
+[target] Pick whoever would mistake a loading screen for an invitation to reflect on life. They drink 1.
+[truth] Drink 1 if you've been personally offended by a loading screen. Otherwise, give a drink.
+[dare] <player>, give <rem_player> a fake police interrogation. Either one breaks character? Both drink 1.
+[target] Pick whoever would insist a rubber duck is their financial adviser. They drink 1.
+[group] Everyone votes which of <player> and <rem_player> would survive in a haunted IKEA. Loser drinks 1.
+[dare] Convince the wheel that you are its long-lost parent. Or drink 1.
+[scuffed] Drink 1 if you've ever celebrated a casino win before the game was over. Otherwise, give a drink.
+[drink] <player>, finish what's left of your drink with <rem_player>, you BOMBOCLAT! Water or a sip counts too.
+[drink] Drink 1 because the SCUFFED wheel has mistaken you for a responsible adult.
+[scuffed] <player>, you and <rem_player> are the new casino security team. Drink 1 because this is a disaster.
+[dare] <player>, compliment <rem_player> as though you're reviewing a suspicious online purchase. Both drink 1.
+[truth] Drink 1 if you've lost track of a conversation because a mirror was nearby. Otherwise, give a drink.
+[target] Pick whoever would turn a simple vote into a parliamentary crisis. They drink 1.
+[target] Pick whoever would get defeated by a child-proof bottle cap. They drink 1.
+[dare] Pretend your controller has filed a formal grievance. Or drink 1.
+[dare] Deliver a motivational speech to an empty chair. Or drink 1.
+[truth] Drink 1 if you've complimented somebody's avatar instead of their actual joke. Otherwise, give a drink.
+[truth] <player>, ask <rem_player> whether they trust you to plan a first date. Their answer costs you both 1 sip.
+[target] <rem_player> decides which of you is worse at flirting. The winner drinks 1 out of pity.
+[target] <player>, decide whether <rem_player> would be a hero or villain in your origin story. Both drink 1.
+[drink] Take a sip and declare your glass an ancient magical artefact.
+[target] Pick whoever would order a mystery cocktail and review its backstory. They drink 1.
+[target] Pick whoever would get caught reading the terms and conditions out loud. They drink 1.
+[scuffed] Drink 1 if a wheel prompt has ever made the lobby roast you. Otherwise, give a drink.
+[target] Pick whoever would accidentally subscribe to their own fan club. They drink 1.
+[target] Pick whoever would flirt with a villain during the final battle. They drink 1.
+[truth] Drink 1 if you've had to explain what ERP means to somebody innocent. Otherwise, give a drink.
+[target] Pick whoever would bring a PowerPoint to a first date. They drink 1.
+[target] <player>, designate <rem_player> your emotional-support goblin. Both drink 1.
+[truth] Drink 1 if you've checked the time and decided sleep was tomorrow's problem. Otherwise, give a drink.
+[truth] <player>, tell <rem_player> your most embarrassing VRChat moment, or both drink 1.
+[dare] Give your most convincing "I am definitely not a goblin" speech. Or drink 1.
+[target] Pick whoever would show up to a costume party as themselves. They drink 1.
+[left] Your left-hand neighbour chooses your official goblin title. Both drink 1.
+[dare] <player>, imitate <rem_player>'s reaction to getting a friend request from their ex. Both drink 1.
+[truth] <player>, ask <rem_player> which of you would try to flirt with a customer-service chatbot. The nominee drinks 1.
+[group] Everyone who has sent a message with the wrong emoji drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've secretly practised a game so you could beat your friends later. Otherwise, give a drink.
+[scuffed] <player>, you and <rem_player> are accused of stealing the roulette ball. Plead guilty and both drink 1.
+[truth] Drink 1 if you've celebrated an imaginary victory over a real person. Otherwise, give a drink.
+[dare] <player>, describe <rem_player> as a mysterious creature in a nature documentary. Both drink 1.
+[group] Everyone who's edited a message three times after sending it drinks 1. Nobody? The spinner drinks 1.
+[target] Pick whoever would be mistaken for an unpaid event organiser. They drink 1.
+[dare] Give a professional review of your current posture. Or drink 1.
+[group] Everyone who has ever called a friend by the wrong username drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone who has named an avatar preset something embarrassing drinks 1. Nobody? The spinner drinks 1.
+[scuffed] Make a toast to the Wheel's Department of Unnecessary Drama. Drink 1.
+[dare] Tell an imaginary child why the wheel can't be trusted. Or drink 1.
+[group] Everyone who has played a game solely because friends begged them drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone currently wearing headphones over their headset drinks 1. Nobody? The spinner drinks 1.
+[target] <player>, pick an embarrassing nickname for <rem_player>. Both drink 1.
+[left] The person to your left gets to invent a fake charge against you. Both drink 1.
+[target] Pick whoever would get roasted by an automated customer-support bot. They drink 1.
+[drink] <player>, toast <rem_player> for their heroic contribution to absolutely nothing. Both drink 1.
+[scuffed] <rem_player> has to explain why your Balatro hand was a crime against mathematics. Both drink 1.
+[group] Everyone who has ever made an avatar too tall for a doorway drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've called someone "bestie" after knowing them for eight minutes. Otherwise, give a drink.
+[drink] Your glass has been knighted. Take 1 royal sip.
+[dare] <rem_player> has to deliver a dramatic weather forecast for your love life. Both drink 1.
+[target] Pick whoever would take thirty selfies with the wrong camera. They drink 1.
+[target] Pick whoever would treat karaoke like a competitive sport. They drink 1.
+[truth] <player>, guess which of you and <rem_player> has more screenshots of Discord arguments. Both drink 1.
+[scuffed] <player>, accuse <rem_player> of having a secret sponsorship deal with the wheel. Both drink 1.
+[group] Everyone who has ever forgotten what a friend looks like outside VR drinks 1. Nobody? The spinner drinks 1.
+[scuffed] If you've ever lost to someone playing UNO for the first time, drink 1. Otherwise, assign a sip.
+[scuffed] Name the most suspicious imaginary developer secret. Drink 1 for speculation.
+[truth] <player>, ask <rem_player> which of you has the more cursed Discord search history. The accused drinks 1.
+[truth] Drink 1 if you've pretended an accidental swear was part of a sentence. Otherwise, give a drink.
+[truth] Drink 1 if you've questioned whether you were the villain of the group chat. Otherwise, give a drink.
+[group] Everyone who would rather fight one horse-sized duck drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've made a joke so bad that Discord went silent. Otherwise, give a drink.
+[group] Everyone who would rather fight a hundred duck-sized horses drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone who's bought a cosmetic and immediately regretted it drinks 1. Nobody? The spinner drinks 1.
+[target] <player>, point at <rem_player> and yell "ACCOMPLICE!" Both drink 1.
+[target] <player>, appoint <rem_player> Head of Vibes. Both drink 1; there is no salary.
+[truth] Drink 1 if you've inspected your avatar from an angle no human would use. Otherwise, give a drink.
+[group] Everyone who has an avatar with a ridiculous idle animation drinks 1. Nobody? The spinner drinks 1.
+[drink] Drink 1 because your avatar has committed crimes against fashion.
+[drink] <player>, take a sip with <rem_player> if either of you has an avatar you regret buying.
+[dare] Give your next sentence the dramatic intensity of a soap-opera betrayal. Or drink 1.
+[target] Pick whoever would write a dramatic apology to a microwave. They drink 1.
+[target] <player>, drink with <rem_player> like you've just survived a terrible business meeting.
+[drink] <player>, you and <rem_player> drink 1 for every fake award you invent for each other, maximum two awards.
+[dare] Describe your microphone as though it's a dangerous wild animal. Or drink 1.
+[drink] Drink 1 if your microphone is working. Otherwise, give a drink.
+[truth] Drink 1 if you've sent "on my way" while still selecting an avatar. Otherwise, give a drink.
+[truth] Drink 1 if you've stayed in a world because someone's laugh was contagious. Otherwise, give a drink.
+[truth] <player>, guess <rem_player>'s most cursed avatar toggle. Wrong? Both drink 1.
+[truth] Drink 1 if you've accidentally activated a dance animation during a serious conversation. Otherwise, give a drink.
+[target] <player>, declare <rem_player> your co-defendant in the Great SCUFFED Nonsense Trial. Both drink 1.
+[truth] Drink 1 if you've introduced your pet to the entire lobby without warning. Otherwise, give a drink.
+[scuffed] Call a fake press conference about the casino's vibes. Drink 1.
+[drink] <player>, take a sip with <rem_player> for crimes against common sense.
+[group] Everyone who has had the same profile picture for over a year drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've tried to act mysterious and only looked AFK. Otherwise, give a drink.
+[group] <player> and <rem_player> raise your drinks. Everyone else gives you a dramatic boo, then drinks 1.
+[scuffed] If you've ever rage-clicked a virtual button, drink 1. Otherwise, give a drink.
+[truth] Drink 1 if you've spent an hour discussing a relationship you said wasn't serious. Otherwise, give a drink.
+[truth] Drink 1 if you've dramatically whispered "no witnesses" over something completely harmless. Otherwise, give a drink.
+[group] Everyone who has ever defended an objectively terrible meme drinks 1. Nobody? The spinner drinks 1.
+[scuffed] Pretend to summon the Slot Machine Ghost. Fail? Drink 1.
+[dare] Make a public apology to every mirror you've ever ignored. Or drink 1.
+[drink] Drink 1 and announce that you are no longer taking questions from the press.
+[truth] <rem_player> asks whether you'd date your own avatar. Answer or share a sip.
+[scuffed] <player>, introduce <rem_player> as the official SCUFFED Roulette Whisperer. Both drink 1.
+[dare] Introduce yourself as a royal adviser to the King of Nonsense. Or drink 1.
+[scuffed] <player>, accuse <rem_player> of rigging the roulette wheel. Both drink 1 for defamation.
+[dare] Create a slogan for the world's least romantic dating service. Or drink 1.
+[scuffed] <player>, blame <rem_player> for the suspiciously intelligent slot machines. Both drink 1.
+[dare] Give a health-and-safety warning about your sense of humour. Or drink 1.
+[group] Everyone who has ever had a crush on a fictional villain drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've started troubleshooting and made the original bug look friendly. Otherwise, give a drink.
+[group] Everyone who has a completely unnecessary desk accessory drinks 1. Nobody? The spinner drinks 1.
+[dare] <player>, shout "OBJECTION!" when <rem_player> says their next sentence. Both drink 1.
+[truth] Drink 1 if you've pretended not to see somebody typing. Otherwise, give a drink.
+[dare] Give a heartfelt farewell speech to one imaginary potato. Or drink 1.
+[dare] <rem_player> must introduce you like you're entering a wrestling ring. Both drink 1.
+[dare] <player>, make up a scandal involving you, <rem_player>, and a rubber duck. Both drink 1.
+[target] <rem_player> nominates you for "least prepared for a zombie apocalypse." Drink 1 together.
+[truth] Drink 1 if you've kept a broken asset because you were emotionally attached to it. Otherwise, give a drink.
+[dare] Narrate your next sip as though it's the climax of an action movie. Or drink 1.
+[group] Everyone who has a drink within reach drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've laughed so hard your tracking started looking haunted. Otherwise, give a drink.
+[truth] Drink 1 if you've offered to help in Unity and regretted volunteering instantly. Otherwise, give a drink.
+[group] Everyone whose avatar has more than one tail drinks 1. Nobody? The spinner drinks 1.
+[dare] <player>, sell <rem_player> an imaginary timeshare on the moon. Refuse the sales pitch? Both drink 1.
+[scuffed] Make a toast to the imaginary security cameras. Everyone drinks 1.
+[group] Everyone who has sent a gif instead of answering a question drinks 1. Nobody? The spinner drinks 1.
+[scuffed] <player>, ask <rem_player> whether the slots are haunted. Whatever they answer, both drink 1.
+[dare] <player>, challenge <rem_player> to your worst evil laugh. The less convincing laugh drinks 1.
+[group] Everyone who has ever said "trust the process" while panicking drinks 1. Nobody? The spinner drinks 1.
+[neighbours] Both neighbours vote whether you're secretly a goblin. Everyone involved drinks 1.
+[left] Ask the person to your left if your avatar passes airport security. Both drink 1.
+[dare] Read your imaginary criminal charges in a royal accent. Or drink 1.
+[truth] Drink 1 if you've pretended to recognise someone based on an avatar alone. Otherwise, give a drink.
+[drink] Take a sip if you've ever lost an argument to autocorrect. Otherwise, give a sip.
+[target] Pick whoever would join a cult for its excellent catering. They drink 1.
+[dare] <rem_player> must read an imaginary eviction notice to your avatar. Both drink 1.
+[dare] Say "everything is fine" as if the whole casino is on fire. Or drink 1.
+[truth] Drink 1 if you've pretended a bizarre avatar choice was a sophisticated artistic statement. Otherwise, give a drink.
+[truth] <rem_player> asks which of your VRChat habits would horrify your grandparents. Confess or drink 1 together.
+[target] <rem_player> tells you what your warning label should say. Both drink 1.
+[scuffed] Accuse the moon of interfering with SCUFFED's economy. Drink 1.
+[truth] Drink 1 if you've screenshotted a message to ask a friend what it meant. Otherwise, give a drink.
+[target] Pick whoever would attempt to negotiate with a tutorial pop-up. They drink 1.
+[target] <rem_player> gives your romantic life a one-word review. Both drink 1.
+[dare] Describe the sound of lag using only your voice. Or drink 1.
+[neighbours] Both neighbours give you a new nickname. Pick the worse one and drink 1 together.
+[drink] <player>, you and <rem_player> have been sentenced to one ceremonial sip of pudding-flavoured nonsense.
+[truth] Drink 1 if you've tried to impress somebody with a toggle that didn't work. Otherwise, give a drink.
+[group] Everyone who owns a novelty mug drinks 1. Nobody? The spinner drinks 1.
+[left] Describe the person to your left as a fantasy RPG item. Both drink 1.
+[dare] <rem_player> chooses a household object you must impersonate. Both drink 1 for the artistic crime.
+[dare] Narrate a cat walking across a keyboard like a nature documentary. Or drink 1.
+[group] Everyone who's forgotten why they opened a menu drinks 1. Nobody? The spinner drinks 1.
+[right] Describe the person to your right as a deeply suspicious restaurant dish. Both drink 1.
+[truth] Drink 1 if you've been held hostage by a very long VRChat goodbye. Otherwise, give a drink.
+[drink] Drink 1 to celebrate the fact your headset hasn't achieved sentience yet.
+[dare] Announce your next imaginary Unity update as though it cured world hunger. Or drink 1.
+[truth] <player>, ask <rem_player> whether your flirting style is charming or a cybercrime. Both drink 1.
+[drink] <player>, drink with <rem_player> because apparently one bad influence wasn't enough.
+[scuffed] Give Blackjack a terrible new name. Drink 1 for copyright violations.
+[truth] Drink 1 if you've been more excited by a Discord notification than by your dinner. Otherwise, give a drink.
+[truth] Drink 1 if you've played a drinking game and forgotten whose turn it was. Otherwise, give a drink.
+[dare] <player>, impersonate <rem_player> discovering their avatar has no pants. Both drink 1.
+[truth] <rem_player> guesses your most used emoji. Wrong guess? Both drink 1.
+[target] Pick whoever would start a rivalry with an NPC shopkeeper. They drink 1.
+[truth] Drink 1 if you've wanted to leave but didn't want to interrupt the goodbye circle. Otherwise, give a drink.
+[truth] Drink 1 if you've had an entire friendship based on sending terrible memes. Otherwise, give a drink.
+[scuffed] You and <rem_player> must explain a casino loss using only conspiracy theories. Both drink 1.
+[drink] Drink 1 because the wheel has filed an anonymous complaint about you.
+[target] Pick whoever would tell a haunted doll to mind its business. They drink 1.
+[dare] Ask <rem_player> to rate your villain monologue. Below seven out of ten? Drink 1 together.
+[truth] Drink 1 if you've wondered whether the wheel actually hates you personally. Otherwise, give a drink.
+[target] Pick whoever would get distracted by their own reflection mid-sentence. They drink 1.
+[target] Pick whoever would apologise to a virtual tree for walking through it. They drink 1.
+[truth] <rem_player> asks you an innocent question. Answer sincerely or take a sip together.
+[target] Pick whoever would get lost following a straight arrow. They drink 1.
+[dare] Sell the lobby a lifetime supply of invisible socks. Or drink 1.
+[dare] Speak like a disappointed medieval wizard for one sentence. Or drink 1.
+[truth] Drink 1 if you've smiled at a message and immediately locked your phone. Otherwise, give a drink.
+[target] <rem_player> gives you a terrible villain name. Both drink 1 for accepting it.
+[target] Pick whoever would start arguing with the captions on a video. They drink 1.
+[scuffed] <rem_player> represents you at the SCUFFED Casino Complaints Tribunal. Both drink 1 while awaiting judgment.
+[scuffed] Describe your favourite SCUFFED minigame like a terrible dating profile. Or drink 1.
+[truth] <player>, ask <rem_player> who would survive longer with no internet. The loser drinks 1.
+[truth] Drink 1 if you've pretended you were fine with losing a minigame. Otherwise, give a drink.
+[target] <player>, decide whether <rem_player> is a trustworthy getaway driver. Both drink 1 regardless of the verdict.
+[target] Pick whoever would buy an imaginary bridge from a stranger. They drink 1.
+[truth] Drink 1 if you've put on an avatar solely to annoy a specific friend. Otherwise, give a drink.
+[scuffed] Invent a special slot-machine sound for absolute disappointment. Or drink 1.
+[target] Pick whoever would befriend the monster in a horror game. They drink 1.
+[truth] Drink 1 if you've spent more time adjusting avatar hair than your own. Otherwise, give a drink.
+[dare] <rem_player> must dramatically forgive you for something you didn't do. Both drink 1.
+[truth] Drink 1 if you've changed avatars because a mirror made you insecure. Otherwise, give a drink.
+[group] Everyone who has ever laughed at the wrong moment drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone decides whether <player> and <rem_player> would make a terrible podcast. The pair drinks 1.
+[drink] <player> and <rem_player>, drink 1 if either of you has ever blamed lag for your own stupidity.
+[target] Pick whoever would bring snacks to a dramatic confrontation. They drink 1.
+[truth] Drink 1 if you've dressed your avatar better for an imaginary occasion than a real one. Otherwise, give a drink.
+[truth] Drink 1 if you've defended a game you secretly rage-quit yesterday. Otherwise, give a drink.
+[drink] If <rem_player> has a better avatar than you, drink 2. If not, you both drink 1.
+[drink] Drink 1 and tell the lobby "I am the plot twist."
+[scuffed] Explain how Balatro has affected your personality. Drink 1 if the answer is "badly."
+[group] Everyone whose avatar has an expression permanently stuck on drinks 1. Nobody? The spinner drinks 1.
+[scuffed] Invent a SCUFFED achievement called "Unemployable." Take a sip to unlock it.
+[truth] <player>, ask <rem_player> which one of you would accidentally post in the wrong Discord channel. That person drinks 1.
+[dare] Recreate the noise a printer makes when it finds out about love. Or drink 1.
+[target] <player>, tell <rem_player> which fictional monster they'd probably try to date. Both drink 1.
+[dare] Announce a fictional parking fine for everybody in the lobby. Or drink 1.
+[truth] Drink 1 if you've rehearsed a comeback after everyone had logged off. Otherwise, give a drink.
+[left] The person to your left must accuse your avatar of a petty crime. Both drink 1.
+[dare] <rem_player> has ten seconds to invent a SCUFFED conspiracy about you. Both drink 1.
+[target] Pick whoever would accidentally invent the world's worst catchphrase. They drink 1.
+[target] Pick whoever would ask for the manager of the weather. They drink 1.
+[target] Pick whoever would tell a medieval knight to update their drivers. They drink 1.
+[target] <player>, give <rem_player> a toast worthy of a royal scandal. Both drink 1.
+[dare] Do an impression of a horse that has just discovered taxes. Or drink 1.
+[group] Everyone who has ever fallen asleep during a movie night drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone whose avatar currently has a ridiculous hat drinks 1. Nobody? The spinner drinks 1.
+[target] Pick whoever would accidentally become mayor of a tiny village. They drink 1.
+[drink] <player>, your mission with <rem_player>: take a sip while maintaining maximum villain energy.
+[target] <rem_player> chooses a word you can't say until your next spin. Slip up? Drink 1 together.
+[truth] Drink 1 if you've taken screenshots you would struggle to explain in court. Otherwise, give a drink.
+[target] Pick whoever would make a spreadsheet ranking fictional crushes. They drink 1.
+[truth] <rem_player> guesses which of you would spend real money on a useless cosmetic. The chosen person drinks 1.
+[dare] Read a fake breaking-news report about your last embarrassing moment. Or drink 1.
+[target] Pick whoever would spend three hours customizing a character's shoes. They drink 1.
+[dare] <player>, give <rem_player> a terrible pickup line about tracking calibration. Both drink 1.
+[dare] <rem_player> compliments your avatar like a car mechanic. Both drink 1.
+[target] Pick whoever would get banned from a library for whispering too loudly. They drink 1.
+[truth] Drink 1 if you've written a bug report that was mostly emotional damage. Otherwise, give a drink.
+[truth] Drink 1 if you've looked up whether a terrible pickup line was actually romantic. Otherwise, give a drink.
+[drink] Take a sip if your avatar looks like it knows a secret. Otherwise, assign a sip.
+[truth] Drink 1 if you've yelled at a virtual horse as though it could hear you. Otherwise, give a drink.
+[target] Pick whoever would become emotionally attached to a parking ticket. They drink 1.
+[dare] Compose a one-line diss track about the wheel. Or drink 1.
+[truth] Drink 1 if you've spent ten minutes looking for a friend standing behind you. Otherwise, give a drink.
+[truth] <rem_player> guesses whether you have more unfinished Unity projects than clean socks. Admit it or drink 1 together.
+[target] Pick whoever would buy an umbrella for a weather forecast inside VR. They drink 1.
+[truth] Drink 1 if you've sent a friend request to somebody you mistook for another person. Otherwise, give a drink.
+[target] Pick whoever would become famous for a completely useless world record. They drink 1.
+[group] Everyone who has ever invented a fake backstory for their avatar drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone points at either <player> or <rem_player> for "most dramatic sneeze." The winner drinks 1.
+[dare] <player>, give <rem_player> the worst motivational speech in human history. Both drink 1.
+[group] Everyone who has ever accidentally muted somebody they liked drinks 1. Nobody? The spinner drinks 1.
+[dare] Pretend to file a complaint against your own reflection. Or drink 1.
+[target] Pick whoever would attempt to bribe the wheel with compliments. They drink 1.
+[dare] <rem_player> is your imaginary therapist for ten seconds. Both drink 1 for the emotional damage.
+[truth] Drink 1 if you've used a fake accent and been unable to escape it. Otherwise, give a drink.
+[dare] <rem_player> acts as a court judge while you defend a stupid avatar purchase. Both drink 1.
+[drink] <player>, drink with <rem_player> to celebrate your combined total of two functioning brain cells.
+[truth] Drink 1 if you've turned on push-to-talk and then forgotten how to push. Otherwise, give a drink.
+[group] Everyone who secretly enjoys terrible jokes drinks 1. Nobody? The spinner drinks 1.
+[dare] Announce that your headset has officially resigned. Or drink 1.
+[truth] Drink 1 if you've left your microphone on while talking to a pet. Otherwise, give a drink.
+[dare] Give a ten-second speech accepting the award for Worst Timing. Or drink 1.
+[target] Pick whoever would invent an embarrassing catchphrase and use it forever. They drink 1.
+[drink] Drink 1, then make the least intimidating battle cry imaginable.
+[truth] <rem_player> guesses whether you've ever stalked someone's VRChat bio. Reveal the answer or drink 1 together.
+[drink] Finish your drink, you absolute bomboclat! Or take one sip if you're pacing yourself.
+[scuffed] <player>, have <rem_player> announce your imaginary SCUFFED gambling debt on live television. Both sip 1.
+[scuffed] Announce that your imaginary SCUFFED membership has been upgraded to "Menace." Drink 1.
+[dare] Explain your last purchase like a courtroom defence. Or drink 1.
+[truth] <rem_player> asks if you've ever pretended not to recognise someone in VRChat. Confess or share a sip.
+[target] <rem_player> must appoint you either Hero or Public Nuisance. Both drink 1.
+[group] Everyone who has ever spent ten minutes hunting for their VR controllers drinks 1. Nobody? The spinner drinks 1.
+[dare] Advertise a dating app exclusively for ghosts. Or drink 1.
+[target] <player>, rate <rem_player>'s avatar as if it's a restaurant. Both drink 1 for the service charge.
+[dare] Make a two-sentence commercial for haunted furniture. Or drink 1.
+[right] The person to your right explains your last relationship as an error code. Both drink 1.
+[group] Everyone who has a discord server with fewer than five members drinks 1. Nobody? The spinner drinks 1.
+[truth] <rem_player> guesses the most questionable purchase you've made for VR. Wrong? Both drink 1.
+[group] Everyone who has laughed during a supposedly serious meeting drinks 1. Nobody? The spinner drinks 1.
+[target] Pick whoever would offer a goblin a business partnership. They drink 1.
+[dare] <rem_player> delivers their worst pickup line about Unity errors. Both drink 1.
+[truth] Drink 1 if you've fallen for a joke because everyone delivered it seriously. Otherwise, give a drink.
+[drink] Raise your drink like a triumphant villain, then sip 1.
+[target] <rem_player> chooses your new nickname for this round. You both drink 1 to make it official.
+[group] Everyone who believes they would survive a zombie apocalypse drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone who has more than one microphone connected drinks 1. Nobody? The spinner drinks 1.
+[group] Everyone who has ever named a pet after a fictional character drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've bought a cosmetic just because a friend had it. Otherwise, give a drink.
+[dare] Explain why your avatar deserves diplomatic immunity. Or drink 1.
+[scuffed] <rem_player> is now your casino accountant. Ask where the chips went. Both drink 1.
+[truth] Drink 1 if you've used an avatar's expression menu as an emotional coping mechanism. Otherwise, give a drink.
+[drink] <rem_player> is your designated partner in poor decisions. Both drink 1.
+[target] <player>, declare <rem_player> your witness at the Wheel Crime Commission. Both drink 1.
+[truth] Drink 1 if you've caught yourself flirting with somebody you intended to roast. Otherwise, give a drink.
+[group] Everyone who has ever been mistaken for someone else drinks 1. Nobody? The spinner drinks 1.
+[truth] Drink 1 if you've turned a harmless game into a personal rivalry. Otherwise, give a drink.
+[scuffed] Drink 1 if you've ever believed a casino minigame owed you an apology. Otherwise, give a drink.
+[drink] You owe the Wheel Goblin 1 sip in unpaid nonsense tax.
+[dare] <rem_player> must invent your fake OnlyFans tagline. Either laugh? Both drink 1.
+[target] Pick whoever would turn a group selfie into an existential crisis. They drink 1.
+[truth] Drink 1 if you've spent five minutes deciding between two identical avatar colours. Otherwise, give a drink.
+[dare] Give a dramatic eulogy for your lost casino chips. Or drink 1.
+[target] Pick whoever would consider a goose an acceptable bodyguard. They drink 1.
+[drink] <player>, take a sip with <rem_player>. You're now legally a two-person circus.
+[target] Pick whoever would bring a measuring tape to a date. They drink 1.
+[dare] Present your invisible crown and explain why you deserve it. Or drink 1.
+[dare] <player>, duet one line of an imaginary boy-band song with <rem_player>, or both drink 1.
+[truth] Drink 1 if you've practised saying hello before unmuting. Otherwise, give a drink.
+[truth] Drink 1 if you've left an instance without telling the people you came with. Otherwise, give a drink.
+[target] <player>, make <rem_player> the official mascot of poor financial decisions. Both drink 1.
